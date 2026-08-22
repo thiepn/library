@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#f3f0e8" />
+    <meta name="description" content="A digital library for books, essays, courses, and research editions." />
+    <link rel="icon" href="/library/icon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/library/site.webmanifest" />
+    <title>Library</title>
+    <script>
+      (function () {
+        var params = new URLSearchParams(location.search);
+        var redirectedPath = params.get('p');
+        if (redirectedPath) {
+          params.delete('p');
+          var query = params.toString();
+          history.replaceState(null, '', redirectedPath + (query ? '?' + query : '') + location.hash);
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
