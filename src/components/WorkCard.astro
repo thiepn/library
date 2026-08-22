@@ -1,0 +1,20 @@
+---
+import type { ResolvedWork } from '../lib/content/repository';
+interface Props { work: ResolvedWork; index?: number; }
+const { work, index = 1 } = Astro.props;
+---
+<article class="work-card" data-pagefind-ignore="all">
+  <a class="cover" href={`/works/${work.slug}`} aria-label={`Open ${work.title}`}>
+    <span class="cover-index">{String(index).padStart(2, '0')}</span>
+    <span class="cover-title">{work.title}</span>
+    <span class="cover-rule"></span>
+    <span class="cover-type">{work.type}</span>
+  </a>
+  <div class="work-card-copy">
+    <p class="eyebrow">{work.classification.subjects.slice(0, 3).join(' · ')}</p>
+    <h2><a href={`/works/${work.slug}`}>{work.title}</a></h2>
+    {work.subtitle && <p class="work-subtitle">{work.subtitle}</p>}
+    <p class="muted">{work.shortDescription}</p>
+    <p class="micro">{work.publication.editionLabel} · {work.publication.version}</p>
+  </div>
+</article>

@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /saved
+Disallow: /offline
+Disallow: /annotations
+Disallow: /ask
+
+Sitemap: https://library.thiepn.dev/sitemap.xml

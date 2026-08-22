@@ -1,0 +1,88 @@
+schemaVersion: 1
+id: ai-for-the-kingdom
+slug: ai-for-the-kingdom
+title: AI for the Kingdom
+subtitle: Stewarding Artificial Intelligence for the Great Commission
+type: book
+language: en-US
+
+contributors: []
+
+description: >
+  Artificial intelligence is rapidly changing translation, research, teaching,
+  software, administration, communication, and access to expertise. AI for the
+  Kingdom asks how Christians, churches, missionaries, and mission organizations
+  can steward these capabilities faithfully in service of God's mission among the nations.
+shortDescription: >
+  A theological, missiological, and practical framework for stewarding artificial
+  intelligence in Christian mission.
+
+status: published
+visibility: public
+
+publication:
+  firstPublished: 2026-08-22
+  lastUpdated: 2026-08-22
+  edition: 1
+  editionLabel: First Edition — Release Candidate
+  version: 1.0.0-rc4
+  activeRelease: 1.0.0-rc4
+
+cover:
+  src: /covers/ai-for-the-kingdom.webp
+  alt: Cover of AI for the Kingdom
+
+classification:
+  subjects: [theology, missions, technology]
+  tags:
+    - artificial-intelligence
+    - great-commission
+    - christian-ethics
+    - mission-technology
+    - bible-translation
+    - ai-governance
+  collections: [mission]
+
+parts:
+  - id: god-humanity-technology-and-mission
+    title: God, Humanity, Technology, and Mission
+    order: 10
+  - id: understanding-and-discerning-ai
+    title: Understanding and Discerning AI
+    order: 20
+  - id: ai-in-missionary-practice
+    title: AI in Missionary Practice
+    order: 30
+  - id: ai-as-mission-infrastructure
+    title: AI as Mission Infrastructure
+    order: 40
+  - id: when-ai-becomes-dangerous
+    title: When AI Becomes Dangerous
+    order: 50
+  - id: governing-ai-faithfully
+    title: Governing AI Faithfully
+    order: 60
+  - id: the-strategic-frontier
+    title: The Strategic Frontier
+    order: 70
+  - id: from-capability-to-obedience
+    title: From Capability to Obedience
+    order: 80
+
+formats:
+  web:
+    enabled: true
+  pdf:
+    enabled: true
+  epub:
+    enabled: true
+
+relationships:
+  relatedWorks: []
+  prerequisites: []
+
+resources: []
+
+rights:
+  status: copyright
+  notice: Copyright © 2026. All rights reserved.

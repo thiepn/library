@@ -1,0 +1,65 @@
+---
+import '../styles/global.css';
+interface Props { title?: string; description?: string; noindex?: boolean; }
+const { title = 'Thiepn Library', description = 'Books, research, and courses in durable digital editions.', noindex = false } = Astro.props;
+const pageTitle = title === 'Thiepn Library' ? title : `${title} — Thiepn Library`;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#F5F3EE" />
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex,nofollow" />}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+    <link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400;7..72,600&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <title>{pageTitle}</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <a class="wordmark" href="/" aria-label="Thiepn Library home"><span>THIEPN</span><span>LIBRARY</span></a>
+      <nav aria-label="Primary">
+        <a href="/library">Library</a>
+        <a href="/search">Search</a>
+        <a href="/about">About</a>
+      </nav>
+      <button class="appearance-toggle" type="button" data-appearance-toggle aria-label="Change appearance">Theme</button>
+    </header>
+    <main id="main"><slot /></main>
+    <footer class="site-footer">
+      <span>THIEPN / LIBRARY</span>
+      <nav aria-label="Footer"><a href="/privacy">Privacy</a><a href="/about">About</a></nav>
+      <span>v1.0.0-rc.1 recovery</span>
+    </footer>
+    <script>
+      const key = 'thiepn.library.settings.v1';
+      const root = document.documentElement;
+      const button = document.querySelector('[data-appearance-toggle]');
+      const valid = new Set(['system', 'light', 'dark']);
+      const read = () => {
+        try {
+          const value = JSON.parse(localStorage.getItem(key) ?? '{}');
+          return valid.has(value.appearance) ? value.appearance : 'system';
+        } catch { return 'system'; }
+      };
+      const apply = (appearance) => {
+        if (appearance === 'system') delete root.dataset.theme;
+        else root.dataset.theme = appearance;
+        if (button) button.textContent = appearance === 'system' ? 'Theme' : appearance[0].toUpperCase() + appearance.slice(1);
+      };
+      let appearance = read();
+      apply(appearance);
+      button?.addEventListener('click', () => {
+        appearance = appearance === 'system' ? 'light' : appearance === 'light' ? 'dark' : 'system';
+        const current = (() => { try { return JSON.parse(localStorage.getItem(key) ?? '{}'); } catch { return {}; } })();
+        localStorage.setItem(key, JSON.stringify({ ...current, appearance }));
+        apply(appearance);
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,14 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import WorkCard from '../components/WorkCard.astro';
+import { getWorks } from '../lib/content/repository';
+const works = await getWorks();
+---
+<BaseLayout title="Library" description="The complete Thiepn Library catalog.">
+  <div class="page">
+    <section class="section">
+      <div class="section-heading"><div><p class="eyebrow">01 / Catalog</p><h1>Library</h1></div><p class="micro">{works.length} registered {works.length === 1 ? 'work' : 'works'}</p></div>
+      <div class="work-list">{works.map((work, index) => <WorkCard work={work} index={index + 1} />)}</div>
+    </section>
+  </div>
+</BaseLayout>

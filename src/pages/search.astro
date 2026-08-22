@@ -1,0 +1,62 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout title="Search" description="Full-text search across published Library works.">
+  <div class="page">
+    <section class="section">
+      <div class="section-heading"><div><p class="eyebrow">02 / Search</p><h1>Search</h1></div></div>
+      <form class="search-form" role="search" data-search-form><input type="search" name="q" aria-label="Search Library" placeholder="Search titles, chapters, topics…" autocomplete="off" /><button type="submit">Search</button></form>
+      <p class="micro" data-search-status>Search loads only when you use it.</p>
+      <div class="search-results" data-search-results></div>
+    </section>
+  </div>
+  <script>
+    const form = document.querySelector('[data-search-form]');
+    const input = form?.querySelector('input');
+    const status = document.querySelector('[data-search-status]');
+    const results = document.querySelector('[data-search-results]');
+    const params = new URLSearchParams(location.search);
+    const initial = params.get('q') ?? '';
+    if (input instanceof HTMLInputElement) input.value = initial;
+
+    async function run(rawQuery) {
+      const query = String(rawQuery ?? '').trim();
+      if (!query || !results || !status) return;
+      status.textContent = 'Searching…';
+      results.replaceChildren();
+      try {
+        const modulePath = '/pagefind/pagefind.js';
+        const pagefind = await import(/* @vite-ignore */ modulePath);
+        await pagefind.init();
+        const search = await pagefind.search(query);
+        const items = await Promise.all(search.results.slice(0, 20).map((item) => item.data()));
+        status.textContent = `${search.results.length} result${search.results.length === 1 ? '' : 's'}`;
+        for (const item of items) {
+          const article = document.createElement('article');
+          const heading = document.createElement('h2');
+          const link = document.createElement('a');
+          link.href = item.url;
+          link.textContent = item.meta?.title || item.url;
+          heading.append(link);
+          const excerpt = document.createElement('p');
+          excerpt.className = 'muted';
+          excerpt.textContent = item.excerpt?.replace(/<[^>]*>/g, '') ?? '';
+          article.append(heading, excerpt);
+          results.append(article);
+        }
+      } catch {
+        status.textContent = 'Search index unavailable. Ordinary Library navigation still works.';
+      }
+    }
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const query = input instanceof HTMLInputElement ? input.value.trim() : '';
+      const url = new URL(location.href);
+      query ? url.searchParams.set('q', query) : url.searchParams.delete('q');
+      history.replaceState({}, '', url);
+      void run(query);
+    });
+    if (initial) void run(initial);
+  </script>
+</BaseLayout>

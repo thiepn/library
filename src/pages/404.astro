@@ -1,0 +1,7 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+Astro.response.status = 404;
+---
+<BaseLayout title="Not found" noindex>
+  <div class="page"><section class="section"><div class="empty"><p class="eyebrow">404</p><h2>This shelf does not exist.</h2><p><a href="/library">Return to the Library</a></p></div></section></div>
+</BaseLayout>

@@ -1,47 +1,59 @@
-# Library
+# Thiepn Library
 
-A static-first digital publishing library for long-form books, essays, research editions, and courses.
+Static-first personal publishing, reading, and learning platform for books, courses, research editions, PDFs, EPUBs, annotations, and cross-work knowledge.
 
-## Product surface
+## Architecture
 
-- Editorial catalog and publication pages
-- Clean web reader with chapter navigation
-- Reader typography controls and light/dark appearance
-- Local saved-library state and reading progress
-- Chapter notes stored locally in the browser
-- Full-text search index
-- PDF edition viewer and EPUB download support
-- Offline-capable PWA shell
-- Deterministic, versioned JSON content contracts
-- GitHub Pages deployment under `/library/`
+The canonical runtime is:
 
-The public site is designed to live at `https://thiepn.dev/library/`.
+- Astro 6 + strict TypeScript
+- native Archive Editorial CSS
+- build-time publication metadata and Markdown/MDX content
+- Pagefind for static full-text search
+- Cloudflare Workers Static Assets for the application
+- Cloudflare R2 for immutable PDF/EPUB publication binaries
+- browser-local reading state; no account is required for the public library
+- optional owner-authenticated AI as a separate Worker, never as a dependency of the static library
 
-## Development
+Production application: `https://library.thiepn.dev`
 
-```bash
-npm install
-npm run dev
-```
+Publication media: `https://media.library.thiepn.dev`
 
-Production validation:
+## Local development
+
+Requirements: Node.js 22.12+ and pnpm 11.21.0.
 
 ```bash
-npm run check
+corepack enable
+corepack prepare pnpm@11.21.0 --activate
+pnpm install
+pnpm dev
 ```
 
-## Publishing a work
+## Validation
 
-A publication is data, not hard-coded UI. Add:
+```bash
+pnpm validate
+pnpm build
+pnpm certify:source
+```
 
-1. a catalog entry in `public/content/catalog.json`;
-2. a versioned work manifest under `public/content/works/<slug>/manifest.json`;
-3. ordered chapter JSON documents referenced by that manifest;
-4. optional PDF/EPUB files referenced by `formats`;
-5. search entries in `public/content/search-index.json`.
+Formal release certification additionally requires a committed `pnpm-lock.yaml`, the complete publication payload, a dependency-connected build, and production/runtime evidence. The recovery tree deliberately does not manufacture those results.
 
-`npm run validate:content` rejects duplicate IDs/slugs, broken chapter references, missing edition files, manifest mismatches, and invalid search references before deployment.
+## Content
 
-## Current state
+Canonical publication source belongs under:
 
-The application shell and publishing infrastructure are implemented. The catalog intentionally contains no placeholder publications. The next release operation is the first real publication import.
+```text
+src/content/works/<work-id>/
+├── work.yaml
+└── chapters/
+```
+
+Large immutable public binaries do **not** belong in Git. Release records point to the R2 publication domain.
+
+## Recovery status
+
+The repository was originally bootstrapped without the cumulative L0–L16 source. The current tree restores the canonical Astro architecture and Archive Editorial runtime surface. The validated L17 metadata for **AI for the Kingdom** is registered, but its 57 native reader files and immutable PDF/EPUB/cover bytes have not been materialized into this repository/runtime yet, so reader/download controls remain intentionally unavailable instead of failing at runtime.
+
+See `docs/RECOVERY_STATUS.md`.

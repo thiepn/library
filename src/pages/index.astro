@@ -1,0 +1,18 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import WorkCard from '../components/WorkCard.astro';
+import { getWorks } from '../lib/content/repository';
+const works = await getWorks();
+---
+<BaseLayout>
+  <div class="page">
+    <section class="hero">
+      <div><p class="eyebrow">00 / Library</p><h1>Read deeply. Keep what matters.</h1></div>
+      <p class="hero-copy">A durable home for books, research editions, courses, and long-form work—designed around reading rather than feeds, dashboards, or disposable content.</p>
+    </section>
+    <section class="section">
+      <div class="section-heading"><div><p class="eyebrow">01 / Publications</p><h2>Library</h2></div><a href="/library">View catalog →</a></div>
+      {works.length ? <div class="work-list">{works.slice(0, 3).map((work, index) => <WorkCard work={work} index={index + 1} />)}</div> : <div class="empty"><h2>The shelves are being prepared.</h2><p>No complete publication payload is available in this deployment yet.</p></div>}
+    </section>
+  </div>
+</BaseLayout>

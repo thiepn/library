@@ -1,0 +1,35 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getWorks, type ResolvedWork } from '../../lib/content/repository';
+export async function getStaticPaths() {
+  return (await getWorks()).map((work) => ({ params: { slug: work.slug }, props: { work } }));
+}
+interface Props { work: ResolvedWork; }
+const { work } = Astro.props;
+const year = new Date(String(work.publication.firstPublished)).getFullYear();
+---
+<BaseLayout title={work.title} description={work.shortDescription}>
+  <article class="page" data-pagefind-body data-pagefind-meta={`work_id:${work.id}`}>
+    <section class="work-hero">
+      <div class="cover" aria-hidden="true"><span class="cover-index">{year}</span><span class="cover-title">{work.title}</span><span class="cover-rule"></span><span class="cover-type">{work.type}</span></div>
+      <div>
+        <p class="eyebrow">{work.publication.editionLabel}</p>
+        <h1 data-pagefind-weight="10">{work.title}</h1>
+        {work.subtitle && <p class="work-deck">{work.subtitle}</p>}
+        <p class="work-description">{work.description}</p>
+        <div class="format-status" aria-label="Edition status">
+          <span>Web · {work.webMaterialized ? 'available' : 'restoring'}</span>
+          <span>PDF · restoring</span>
+          <span>EPUB · restoring</span>
+        </div>
+        {!work.webMaterialized && <p class="recovery-note"><strong>Edition restoration:</strong> the validated publication metadata is present, but the native reader files and immutable binary assets are not yet materialized in this deployment. Reading and download actions stay hidden until the real artifacts are restored.</p>}
+      </div>
+    </section>
+    <dl class="meta-grid">
+      <div><dt>Release</dt><dd>{work.publication.version}</dd></div>
+      <div><dt>Language</dt><dd>{work.language}</dd></div>
+      <div><dt>Subjects</dt><dd>{work.classification.subjects.join(', ')}</dd></div>
+      <div><dt>Rights</dt><dd>{work.rights.status}</dd></div>
+    </dl>
+  </article>
+</BaseLayout>
