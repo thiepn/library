@@ -1,0 +1,53 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout title="Annotations" description="Browser-local Library annotations." noindex>
+  <div class="page">
+    <section class="section">
+      <div class="section-heading"><div><p class="eyebrow">Local / Notes</p><h1>Annotations</h1></div><p class="micro" data-annotation-count>Loading local state…</p></div>
+      <div class="annotation-list" data-annotation-list></div>
+      <div class="empty" data-annotation-empty hidden><h2>No annotations yet.</h2><p>Highlights and notes created in the reader will appear here. They remain browser-local unless you explicitly export them.</p></div>
+    </section>
+  </div>
+  <script>
+    import { deleteAnnotation, getAnnotations, subscribeLibraryState } from '../lib/client/library-db';
+    const list = document.querySelector<HTMLElement>('[data-annotation-list]');
+    const empty = document.querySelector<HTMLElement>('[data-annotation-empty]');
+    const count = document.querySelector<HTMLElement>('[data-annotation-count]');
+    async function render() {
+      if (!list) return;
+      try {
+        const annotations = await getAnnotations();
+        list.replaceChildren();
+        if (count) count.textContent = `${annotations.length} annotation${annotations.length === 1 ? '' : 's'}`;
+        if (empty) empty.hidden = annotations.length !== 0;
+        for (const annotation of annotations) {
+          const article = document.createElement('article');
+          article.className = 'annotation-item';
+          const meta = document.createElement('p');
+          meta.className = 'eyebrow';
+          meta.textContent = annotation.chapterId ? `${annotation.workId} · ${annotation.chapterId}` : annotation.workId;
+          if (annotation.quote) {
+            const quote = document.createElement('blockquote');
+            quote.textContent = annotation.quote;
+            article.append(meta, quote);
+          } else article.append(meta);
+          const note = document.createElement('p');
+          note.textContent = annotation.note;
+          const remove = document.createElement('button');
+          remove.type = 'button';
+          remove.className = 'text-action';
+          remove.textContent = 'Delete';
+          remove.addEventListener('click', async () => { await deleteAnnotation(annotation.id); await render(); });
+          article.append(note, remove);
+          list.append(article);
+        }
+      } catch {
+        if (count) count.textContent = 'Local state unavailable';
+      }
+    }
+    const unsubscribe = subscribeLibraryState(() => { void render(); });
+    window.addEventListener('pagehide', unsubscribe, { once: true });
+    void render();
+  </script>
+</BaseLayout>

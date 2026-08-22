@@ -1,0 +1,42 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import WorkCard from '../components/WorkCard.astro';
+import { getWorks } from '../lib/content/repository';
+const works = await getWorks();
+---
+<BaseLayout title="Saved" description="Your browser-local saved Library works." noindex>
+  <div class="page">
+    <section class="section">
+      <div class="section-heading"><div><p class="eyebrow">Local / Saved</p><h1>My Library</h1></div><p class="micro" data-saved-count>Loading local state…</p></div>
+      <div class="work-list saved-list" data-saved-list>
+        {works.map((work, index) => <div class="saved-work" data-saved-work={work.id} hidden><WorkCard work={work} index={index + 1} /></div>)}
+      </div>
+      <div class="empty" data-saved-empty hidden><h2>Nothing saved yet.</h2><p>Save a publication from its Work page. The saved list stays in this browser and does not require an account.</p></div>
+    </section>
+  </div>
+  <script>
+    import { getFavoriteWorkIds, subscribeLibraryState } from '../lib/client/library-db';
+    const count = document.querySelector<HTMLElement>('[data-saved-count]');
+    const empty = document.querySelector<HTMLElement>('[data-saved-empty]');
+    const nodes = [...document.querySelectorAll<HTMLElement>('[data-saved-work]')];
+    async function render() {
+      try {
+        const ids = new Set(await getFavoriteWorkIds());
+        let visible = 0;
+        for (const node of nodes) {
+          const show = Boolean(node.dataset.savedWork && ids.has(node.dataset.savedWork));
+          node.hidden = !show;
+          if (show) visible++;
+        }
+        if (count) count.textContent = `${visible} saved`;
+        if (empty) empty.hidden = visible !== 0;
+      } catch {
+        if (count) count.textContent = 'Local state unavailable';
+        if (empty) { empty.hidden = false; empty.querySelector('p')!.textContent = 'This browser did not allow the local Library database to open.'; }
+      }
+    }
+    const unsubscribe = subscribeLibraryState(() => { void render(); });
+    window.addEventListener('pagehide', unsubscribe, { once: true });
+    void render();
+  </script>
+</BaseLayout>

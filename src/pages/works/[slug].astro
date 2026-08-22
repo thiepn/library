@@ -17,6 +17,7 @@ const year = new Date(String(work.publication.firstPublished)).getFullYear();
         <h1 data-pagefind-weight="10">{work.title}</h1>
         {work.subtitle && <p class="work-deck">{work.subtitle}</p>}
         <p class="work-description">{work.description}</p>
+        <div class="work-actions"><button class="secondary-action" type="button" data-save-work={work.id}>Save to my library</button></div>
         <div class="format-status" aria-label="Edition status">
           <span>Web · {work.webMaterialized ? 'available' : 'restoring'}</span>
           <span>PDF · restoring</span>
@@ -32,4 +33,22 @@ const year = new Date(String(work.publication.firstPublished)).getFullYear();
       <div><dt>Rights</dt><dd>{work.rights.status}</dd></div>
     </dl>
   </article>
+  <script>
+    import { isFavorite, toggleFavorite } from '../../lib/client/library-db';
+    const control = document.querySelector<HTMLButtonElement>('[data-save-work]');
+    const workId = control?.dataset.saveWork;
+    async function renderSavedState() {
+      if (!control || !workId) return;
+      const saved = await isFavorite(workId);
+      control.textContent = saved ? 'Remove from my library' : 'Save to my library';
+      control.setAttribute('aria-pressed', String(saved));
+    }
+    control?.addEventListener('click', async () => {
+      if (!control || !workId) return;
+      control.disabled = true;
+      try { await toggleFavorite(workId); await renderSavedState(); }
+      finally { control.disabled = false; }
+    });
+    void renderSavedState();
+  </script>
 </BaseLayout>
