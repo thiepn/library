@@ -1,6 +1,11 @@
 name: Bootstrap pnpm lockfile
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - package.json
+      - .github/workflows/bootstrap-lockfile.yml
   workflow_dispatch:
 
 permissions:

@@ -37,27 +37,30 @@ const pageTitle = title === 'Thiepn Library' ? title : `${title} — Thiepn Libr
       <span>v1.0.0-rc.1 recovery</span>
     </footer>
     <script>
+      type Appearance = 'system' | 'light' | 'dark';
+      interface LibrarySettings { appearance?: Appearance; [key: string]: unknown; }
       const key = 'thiepn.library.settings.v1';
       const root = document.documentElement;
-      const button = document.querySelector('[data-appearance-toggle]');
-      const valid = new Set(['system', 'light', 'dark']);
-      const read = () => {
-        try {
-          const value = JSON.parse(localStorage.getItem(key) ?? '{}');
-          return valid.has(value.appearance) ? value.appearance : 'system';
-        } catch { return 'system'; }
+      const button = document.querySelector<HTMLElement>('[data-appearance-toggle]');
+      const valid = new Set<Appearance>(['system', 'light', 'dark']);
+      const readSettings = (): LibrarySettings => {
+        try { return JSON.parse(localStorage.getItem(key) ?? '{}') as LibrarySettings; }
+        catch { return {}; }
       };
-      const apply = (appearance) => {
+      const read = (): Appearance => {
+        const value = readSettings().appearance;
+        return value && valid.has(value) ? value : 'system';
+      };
+      const apply = (appearance: Appearance) => {
         if (appearance === 'system') delete root.dataset.theme;
         else root.dataset.theme = appearance;
-        if (button) button.textContent = appearance === 'system' ? 'Theme' : appearance[0].toUpperCase() + appearance.slice(1);
+        if (button) button.textContent = appearance === 'system' ? 'Theme' : `${appearance.charAt(0).toUpperCase()}${appearance.slice(1)}`;
       };
-      let appearance = read();
+      let appearance: Appearance = read();
       apply(appearance);
       button?.addEventListener('click', () => {
         appearance = appearance === 'system' ? 'light' : appearance === 'light' ? 'dark' : 'system';
-        const current = (() => { try { return JSON.parse(localStorage.getItem(key) ?? '{}'); } catch { return {}; } })();
-        localStorage.setItem(key, JSON.stringify({ ...current, appearance }));
+        localStorage.setItem(key, JSON.stringify({ ...readSettings(), appearance }));
         apply(appearance);
       });
     </script>
