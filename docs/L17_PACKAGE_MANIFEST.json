@@ -1,0 +1,45 @@
+{
+  "phase": "L17",
+  "workId": "ai-for-the-kingdom",
+  "release": "1.0.0-rc4",
+  "status": "PUBLICATION_PACKAGE_VALIDATED_REPOSITORY_IMPORT_BLOCKED",
+  "package": {
+    "filename": "AI_for_the_Kingdom_L17_LIBRARY_PUBLICATION_PACKAGE.zip",
+    "bytes": 2034059,
+    "sha256": "1c6f831ca9c3a48031121dc6129d39cb66f5ad521d53c3e9f40153f8c9f776b7"
+  },
+  "nativeReader": {
+    "files": 57,
+    "parts": 8,
+    "numberedChapters": 41,
+    "conclusion": 1,
+    "footnoteRefs": 57,
+    "footnoteDefinitions": 57
+  },
+  "fidelity": {
+    "status": "PASS",
+    "mainReadingUnits": 42,
+    "minimumNormalizedRatio": 1.0,
+    "averageNormalizedRatio": 1.0
+  },
+  "assets": {
+    "pdf": {
+      "bytes": 1792545,
+      "sha256": "8aa58f8eb291c9c5abb4c0ebc633032ae2c4a3703c443e7c3779f38646c707bd"
+    },
+    "epub": {
+      "bytes": 568942,
+      "sha256": "8931f8578cbd7e09ccf31385047f8eb5d58ea5a74a683c79669a51d2b9e59e1f"
+    },
+    "cover": {
+      "bytes": 56752,
+      "sha256": "938830415749fff85b864248c7e302624f17d50bbe5336de1009538fe040df94"
+    }
+  },
+  "repositoryImport": {
+    "branch": "l17/ai-for-the-kingdom-publication",
+    "mainState": "bootstrap-only",
+    "blocker": "Cumulative L14+ Library application source is not materializable in this runtime; do not merge/deploy the publication into bootstrap-only main.",
+    "rule": "Import the validated package atomically into the recovered cumulative Library source, run validate:content and publication validation, then deploy."
+  }
+}
