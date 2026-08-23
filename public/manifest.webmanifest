@@ -1,7 +1,7 @@
 {
   "name": "Thiepn Library",
   "short_name": "Library",
-  "start_url": "/library",
+  "start_url": "/library/",
   "scope": "/library/",
   "display": "standalone",
   "background_color": "#F5F3EE",
