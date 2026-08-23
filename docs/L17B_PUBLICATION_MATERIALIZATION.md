@@ -38,11 +38,11 @@ The complete per-file identity/order/Part/reading-time manifest is source-contro
 
 ## Reader activation
 
-Astro 6 now loads native Markdown/MDX through `src/content.config.ts`. The public Reader routes are:
+Astro 6 loads native Markdown/MDX through `src/content.config.ts`. The public Reader routes are mounted under the Library base path:
 
 ```text
-/works/[slug]/read
-/works/[slug]/read/[chapter]
+/library/works/[slug]/read
+/library/works/[slug]/read/[chapter]
 ```
 
 A Work with a frozen recovery manifest is `webMaterialized` only when every expected reader filename exists. Partial imports therefore remain invisible to public Reader routing.
@@ -91,8 +91,75 @@ src/publications/releases/ai-for-the-kingdom/1.0.0-rc4.yaml
 
 This prevents a metadata-only recovery from creating broken download controls.
 
+## Exhaustive recovery audit — 2026-08-24
+
+The retained publication package was checked across every materializable source available to the release workflow.
+
+### ChatGPT File Library
+
+The File Library retains the package SHA-256 sidecar, L17 package manifest, validation report, fidelity audit, publication proofs and an EPUB reference. It does not expose the exact `AI_for_the_Kingdom_L17_LIBRARY_PUBLICATION_PACKAGE.zip` as transferable raw bytes to this runtime.
+
+The retained checksum sidecar records that the original package existed at `/mnt/data/AI_for_the_Kingdom_L17_LIBRARY_PUBLICATION_PACKAGE.zip` when L17 was produced. That original runtime path is not present in the current execution environment.
+
+### Google Drive / Dropbox
+
+Earlier exact-name and publication-title searches did not find a materializable copy of the L17 package.
+
+### Git repository history
+
+The legacy branch `l17/ai-for-the-kingdom-publication` was exhaustively scanned on a GitHub-hosted runner.
+
+Results:
+
+- 17 reachable commits;
+- 17 unique reachable blobs;
+- six staged recovery chunks only: `part00` through `part05`;
+- chunk sizes: 15,000 / 15,000 / 15,000 / 15,000 / 15,000 / 31,349 bytes;
+- combined encoded recovery data: 106,349 characters;
+- no alternate historical versions of any chunk;
+- no blob of 2,034,059 bytes;
+- no hidden/deleted reachable ZIP, XZ, Base64-XZ or other large payload blob;
+- the staged Base64/XZ stream ends mid-stream and cannot be completed from XZ footer invariants;
+- the largest actual commit-state payload is the same incomplete six-part stream.
+
+The audit terminated with:
+
+```text
+FROZEN_PACKAGE_NOT_FOUND_IN_REACHABLE_GIT_HISTORY
+```
+
+This means the exact rc4 package cannot be reconstructed from reachable Git history without inventing missing compressed bytes. The incomplete recovery chunks must not be treated as publication source.
+
+### Cloudflare publication runtime
+
+The GitHub Actions environment currently has no configured `CLOUDFLARE_API_TOKEN` or `CLOUDFLARE_ACCOUNT_ID`, so immutable R2 publication/upload verification cannot run yet.
+
+## Application readiness
+
+The Library application itself has completed a dependency-connected GitHub Actions build using the committed pnpm 11 lockfile. The verified build reported:
+
+```text
+astro check: 0 errors, 0 warnings, 0 hints
+content validation: pass with materialization warnings only
+Astro static build: pass
+Pagefind indexing: pass
+Cloudflare deploy preparation: pass
+```
+
+Source certification therefore has only two publication blockers:
+
+```text
+L17_READER_PAYLOAD — exact 57 native reader files unavailable
+L17_RELEASE_REGISTRY — canonical registry awaits immutable R2 verification
+```
+
 ## Current materialization boundary
 
-The retained ChatGPT File Library exposes validation metadata and extracted publication text, but not the raw L17 ZIP/Markdown/R2 bytes through this execution environment. The source therefore implements the complete activation and verification path without fabricating the missing bytes.
+The application/integration layer is complete and fail-closed. The remaining rc4 release work is external byte materialization, not further reconstruction of the application.
 
-`L17B` is complete at the application/integration layer and remains blocked at the byte-materialization gate until the frozen package or its exact 57 files and three binary assets are available to the repository/release runtime.
+To preserve publication fidelity, there are only two valid paths:
+
+1. supply the exact frozen package (or exact 57 Markdown files plus the three frozen binary assets) and verify it against the recorded hashes; or
+2. explicitly authorize a **new reconstructed edition** from retained EPUB/proof sources, with a new release identity rather than falsely presenting it as the frozen rc4 payload.
+
+Until one of those paths is chosen, Reader/PDF/EPUB activation must remain disabled for `AI for the Kingdom`.
