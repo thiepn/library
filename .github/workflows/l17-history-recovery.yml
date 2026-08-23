@@ -42,7 +42,7 @@ jobs:
           install: false
           cache: true
 
-      - name: Recover frozen package from Git history
+      - name: Recover frozen package from all reachable Git history
         shell: bash
         run: |
           set -euo pipefail
@@ -53,91 +53,193 @@ jobs:
           import hashlib
           import lzma
           import os
+          import re
           import subprocess
           from pathlib import Path
 
           legacy_ref = os.environ['LEGACY_REF']
+          ref = f'refs/remotes/origin/{legacy_ref}'
           package_path = Path(os.environ['PACKAGE'])
           expected_size = 2_034_059
           expected_sha = '1c6f831ca9c3a48031121dc6129d39cb66f5ad521d53c3e9f40153f8c9f776b7'
           xz_magic = bytes.fromhex('fd377a585a00')
+          zip_magic = b'PK\x03\x04'
+          part_re = re.compile(r'^recovery/l17b/part(\d+)$')
+          relevant_tokens = ('l17', 'kingdom', 'publication', 'payload', 'recovery', '.zip', '.xz', '.b64')
 
-          parts = []
-          for suffix in ('00', '01', '02', '03', '04', '05'):
-              raw = subprocess.check_output([
-                  'git', 'show',
-                  f'refs/remotes/origin/{legacy_ref}:recovery/l17b/part{suffix}',
-              ])
-              normalized = b''.join(raw.split())
-              if not normalized:
-                  raise SystemExit(f'part{suffix} is empty')
-              parts.append(normalized)
-              print(f'part{suffix}: encoded_bytes={len(normalized)}')
+          def git(*args):
+              return subprocess.check_output(['git', *args])
 
-          encoded = b''.join(parts)
-          print(f'combined: encoded_bytes={len(encoded)} mod4={len(encoded) % 4} tail={encoded[-8:].decode("ascii", "replace")}')
-          candidates = []
+          def blob(sha):
+              return git('cat-file', 'blob', sha)
 
-          try:
-              candidates.append(('concatenated-base64', base64.b64decode(encoded, validate=True)))
-          except Exception as exc:
-              print(f'concatenated-base64 rejected: {exc}')
-
-          # The historical split has five exact 15,000-character chunks and a final
-          # chunk whose total stream length is mod 4 == 1. XZ stream footers repeat
-          # the two header Stream Flags and terminate with the fixed magic bytes YZ.
-          # If exactly the final three Base64 characters were lost, reconstruct them
-          # from those format invariants, then still require the frozen package hash.
-          if len(encoded) % 4 == 1:
-              prefix_chars = encoded[:-1]
-              trailing_char = encoded[-1:]
-              try:
-                  prefix_bytes = base64.b64decode(prefix_chars, validate=True)
-                  if not prefix_bytes.startswith(xz_magic):
-                      raise ValueError('decoded prefix is not an XZ stream')
-                  stream_flags = prefix_bytes[6:8]
-                  if len(stream_flags) != 2:
-                      raise ValueError('XZ Stream Flags unavailable')
-                  if prefix_bytes[-1:] != stream_flags[:1]:
-                      raise ValueError(
-                          f'prefix footer byte {prefix_bytes[-1:].hex()} does not match first Stream Flag {stream_flags[:1].hex()}'
-                      )
-                  missing_three_bytes = stream_flags[1:2] + b'YZ'
-                  final_quartet = base64.b64encode(missing_three_bytes)
-                  if final_quartet[:1] != trailing_char:
-                      raise ValueError(
-                          f'partial final Base64 character {trailing_char!r} does not match XZ footer reconstruction {final_quartet[:1]!r}'
-                      )
-                  repaired_encoded = prefix_chars + final_quartet
-                  repaired_xz = base64.b64decode(repaired_encoded, validate=True)
-                  print(
-                      'xz-footer-repair: '
-                      f'flags={stream_flags.hex()} appended_base64={final_quartet[1:].decode()} '
-                      f'xz_bytes={len(repaired_xz)}'
-                  )
-                  candidates.append(('xz-footer-repaired', repaired_xz))
-              except Exception as exc:
-                  print(f'xz-footer-repair rejected: {exc}')
-
-          if not candidates:
-              raise SystemExit('No structurally valid XZ/Base64 reconstruction candidate')
-
-          for mode, xz_payload in candidates:
-              try:
-                  package = lzma.decompress(xz_payload, format=lzma.FORMAT_XZ)
-              except Exception as exc:
-                  print(f'{mode}: XZ rejected: {exc}')
-                  continue
-              digest = hashlib.sha256(package).hexdigest()
-              print(f'{mode}: zip_bytes={len(package)} sha256={digest}')
-              if len(package) == expected_size and digest == expected_sha:
-                  package_path.parent.mkdir(parents=True, exist_ok=True)
-                  package_path.write_bytes(package)
+          def accept_package(data, label, xz_payload=None):
+              digest = hashlib.sha256(data).hexdigest()
+              print(f'candidate {label}: bytes={len(data)} sha256={digest}')
+              if len(data) != expected_size or digest != expected_sha:
+                  return False
+              package_path.parent.mkdir(parents=True, exist_ok=True)
+              package_path.write_bytes(data)
+              if xz_payload is not None:
                   Path('.build/l17-history/payload.xz').write_bytes(xz_payload)
-                  print(f'FROZEN_PACKAGE_RECOVERED mode={mode}')
-                  break
-          else:
-              raise SystemExit('Recovered candidates did not match frozen package size and SHA-256')
+              print(f'FROZEN_PACKAGE_RECOVERED source={label}')
+              return True
+
+          def try_bytes(data, label):
+              if len(data) == expected_size and accept_package(data, f'{label}:raw'):
+                  return True
+              if data.startswith(xz_magic):
+                  try:
+                      unpacked = lzma.decompress(data, format=lzma.FORMAT_XZ)
+                  except Exception as exc:
+                      print(f'{label}: raw XZ incomplete/invalid: {exc}')
+                  else:
+                      if accept_package(unpacked, f'{label}:xz', data):
+                          return True
+              encoded = b''.join(data.split())
+              if encoded.startswith(b'/Td6WFo') and len(encoded) % 4 != 1:
+                  try:
+                      padded = encoded + b'=' * ((4 - len(encoded) % 4) % 4)
+                      decoded = base64.b64decode(padded, validate=True)
+                  except Exception as exc:
+                      print(f'{label}: Base64 invalid: {exc}')
+                  else:
+                      if decoded.startswith(xz_magic):
+                          try:
+                              unpacked = lzma.decompress(decoded, format=lzma.FORMAT_XZ)
+                          except Exception as exc:
+                              print(f'{label}: Base64 XZ incomplete/invalid: {exc}')
+                          else:
+                              if accept_package(unpacked, f'{label}:base64-xz', decoded):
+                                  return True
+              return False
+
+          commits = git('rev-list', '--reverse', ref).decode().splitlines()
+          print(f'legacy commits reachable: {len(commits)}')
+          for commit in commits:
+              message = git('show', '-s', '--format=%h %s', commit).decode().strip()
+              print(f'commit {message}')
+
+          seen_blobs = set()
+          relevant = []
+          part_versions = {}
+          exact_size_blobs = []
+
+          for commit in commits:
+              tree = git('ls-tree', '-r', '-l', commit).decode('utf-8', 'replace').splitlines()
+              for line in tree:
+                  if '\t' not in line:
+                      continue
+                  left, path = line.split('\t', 1)
+                  fields = left.split()
+                  if len(fields) < 4 or fields[1] != 'blob':
+                      continue
+                  sha = fields[2]
+                  try:
+                      size = int(fields[3])
+                  except ValueError:
+                      continue
+                  if sha in seen_blobs:
+                      continue
+                  seen_blobs.add(sha)
+                  lower = path.lower()
+                  if size == expected_size:
+                      exact_size_blobs.append((size, sha, path, commit))
+                  if any(token in lower for token in relevant_tokens) or size >= 500_000:
+                      relevant.append((size, sha, path, commit))
+                  match = part_re.match(path)
+                  if match:
+                      index = int(match.group(1))
+                      part_versions.setdefault(index, []).append((size, sha, path, commit))
+
+          print(f'unique reachable blobs: {len(seen_blobs)}')
+          print(f'historical recovery part indices: {sorted(part_versions)}')
+          for index in sorted(part_versions):
+              versions = sorted(part_versions[index], reverse=True)
+              print(f'part{index:02d} versions: ' + ', '.join(f'{size}B@{commit[:8]}' for size, _, _, commit in versions))
+
+          print('largest relevant historical blobs:')
+          for size, sha, path, commit in sorted(relevant, reverse=True)[:40]:
+              print(f'  {size:>9} {sha[:10]} {commit[:8]} {path}')
+
+          # First, test any blob whose byte size already matches the frozen ZIP.
+          for _, sha, path, commit in exact_size_blobs:
+              if try_bytes(blob(sha), f'exact-size-blob:{commit[:8]}:{path}'):
+                  raise SystemExit(0)
+
+          # Then test all plausibly relevant blobs directly as ZIP/XZ/Base64-XZ.
+          for size, sha, path, commit in sorted(relevant, reverse=True):
+              if size < 1_000:
+                  continue
+              data = blob(sha)
+              if data.startswith(zip_magic) or data.startswith(xz_magic) or b''.join(data[:64].split()).startswith(b'/Td6WFo'):
+                  if try_bytes(data, f'blob:{commit[:8]}:{path}'):
+                      raise SystemExit(0)
+
+          # Reassemble the largest historical version of every numbered part. This
+          # recovers files that may have existed in earlier commits and later been
+          # overwritten or deleted. Exact package SHA remains the acceptance gate.
+          if part_versions:
+              assembled = []
+              chosen = []
+              for index in sorted(part_versions):
+                  size, sha, path, commit = max(part_versions[index], key=lambda item: item[0])
+                  normalized = b''.join(blob(sha).split())
+                  assembled.append(normalized)
+                  chosen.append((index, len(normalized), commit[:8]))
+              encoded = b''.join(assembled)
+              print(f'largest-version assembly: parts={chosen} encoded_bytes={len(encoded)} mod4={len(encoded) % 4}')
+              if len(encoded) % 4 != 1:
+                  try:
+                      padded = encoded + b'=' * ((4 - len(encoded) % 4) % 4)
+                      xz_payload = base64.b64decode(padded, validate=True)
+                      unpacked = lzma.decompress(xz_payload, format=lzma.FORMAT_XZ)
+                  except Exception as exc:
+                      print(f'largest-version assembly invalid/incomplete: {exc}')
+                  else:
+                      if accept_package(unpacked, 'largest-historical-part-assembly', xz_payload):
+                          raise SystemExit(0)
+
+          # Finally, test every actual commit state. This avoids mixing incompatible
+          # part generations when the same part path changed across commits.
+          best_state = None
+          for commit in commits:
+              rows = git('ls-tree', '-r', '-l', commit, 'recovery/l17b').decode('utf-8', 'replace').splitlines()
+              state_parts = []
+              indices = []
+              for line in rows:
+                  if '\t' not in line:
+                      continue
+                  left, path = line.split('\t', 1)
+                  match = part_re.match(path)
+                  if not match:
+                      continue
+                  fields = left.split()
+                  if len(fields) < 4:
+                      continue
+                  sha = fields[2]
+                  index = int(match.group(1))
+                  state_parts.append((index, b''.join(blob(sha).split())))
+                  indices.append(index)
+              state_parts.sort(key=lambda item: item[0])
+              encoded = b''.join(data for _, data in state_parts)
+              if not best_state or len(encoded) > best_state[0]:
+                  best_state = (len(encoded), commit, list(indices))
+              if not encoded or len(encoded) % 4 == 1:
+                  continue
+              try:
+                  padded = encoded + b'=' * ((4 - len(encoded) % 4) % 4)
+                  xz_payload = base64.b64decode(padded, validate=True)
+                  unpacked = lzma.decompress(xz_payload, format=lzma.FORMAT_XZ)
+              except Exception:
+                  continue
+              if accept_package(unpacked, f'commit-state:{commit[:8]}', xz_payload):
+                  raise SystemExit(0)
+
+          if best_state:
+              print(f'largest commit-state recovery payload: encoded_bytes={best_state[0]} commit={best_state[1][:8]} indices={best_state[2]}')
+          print('FROZEN_PACKAGE_NOT_FOUND_IN_REACHABLE_GIT_HISTORY')
+          raise SystemExit(42)
           PY
           test "$(stat -c%s "$PACKAGE")" = '2034059'
           echo '1c6f831ca9c3a48031121dc6129d39cb66f5ad521d53c3e9f40153f8c9f776b7  '"$PACKAGE" | sha256sum --check --strict
