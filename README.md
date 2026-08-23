@@ -42,7 +42,7 @@ pnpm build
 pnpm certify:source
 ```
 
-Formal release certification additionally requires a committed `pnpm-lock.yaml`, the complete publication payload, a dependency-connected build, and production/runtime evidence. The recovery tree deliberately does not manufacture those results.
+A production deployment is deliberately fail-closed. `pnpm deploy` first runs the full release certification, and the GitHub deploy workflow remains skipped until the 57-file AI for the Kingdom payload, immutable release registry, and frozen pnpm lockfile are all present.
 
 ## Content
 
@@ -56,8 +56,10 @@ src/content/works/<work-id>/
 
 Large immutable public binaries do **not** belong in Git. Release records point to the R2 publication domain.
 
-## Recovery status
+## Current release gate
 
-The repository was originally bootstrapped without the cumulative L0–L16 source. The current tree restores the canonical Astro architecture and Archive Editorial runtime surface. The validated L17 metadata for **AI for the Kingdom** is registered, but its 57 native reader files and immutable PDF/EPUB/cover bytes have not been materialized into this repository/runtime yet, so reader/download controls remain intentionally unavailable instead of failing at runtime.
+The application shell, `/library` path deployment architecture, native reader, search, saved state, annotations surface, security headers, sitemap, release verifier, R2 verification pipeline, and production deployment workflow are implemented.
 
-See `docs/RECOVERY_STATUS.md`.
+The remaining hard publication gate is the original frozen `AI_for_the_Kingdom_L17_LIBRARY_PUBLICATION_PACKAGE.zip`. Until its exact bytes are supplied and verified, the reader/download release controls remain unavailable rather than exposing an unverifiable publication.
+
+See `docs/RECOVERY_STATUS.md` and `docs/L17B_PUBLICATION_MATERIALIZATION.md`.
