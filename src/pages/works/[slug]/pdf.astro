@@ -1,0 +1,26 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { getWorks, type ResolvedWork } from '../../../lib/content/repository';
+
+export async function getStaticPaths() {
+  return (await getWorks())
+    .filter((work) => Boolean(work.release?.artifacts.pdf))
+    .map((work) => ({ params: { slug: work.slug }, props: { work } }));
+}
+
+interface Props { work: ResolvedWork; }
+const { work } = Astro.props;
+const pdf = work.release?.artifacts.pdf;
+if (!pdf) throw new Error(`PDF release missing for ${work.id}`);
+---
+<BaseLayout title={`${work.title} — PDF`} description={`PDF edition of ${work.title}`} noindex>
+  <div class="document-shell">
+    <header class="document-bar">
+      <a href={`/works/${work.slug}`}>← {work.title}</a>
+      <a href={pdf.url} target="_blank" rel="noopener noreferrer">Open PDF directly</a>
+    </header>
+    <object class="pdf-object" data={pdf.url} type="application/pdf">
+      <div class="page"><div class="empty"><h2>This browser cannot embed the PDF.</h2><p><a href={pdf.url}>Open the verified PDF edition directly.</a></p></div></div>
+    </object>
+  </div>
+</BaseLayout>

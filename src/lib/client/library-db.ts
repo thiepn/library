@@ -17,6 +17,13 @@ export interface FavoriteRecord {
   savedAt: string;
 }
 
+export interface ProgressRecord {
+  workId: string;
+  chapterId: string;
+  percent: number;
+  updatedAt: string;
+}
+
 export interface AnnotationRecord {
   id: string;
   workId: string;
@@ -56,7 +63,7 @@ export function openLibraryDb(): Promise<IDBDatabase> {
     });
     open.addEventListener('success', () => resolve(open.result));
     open.addEventListener('error', () => reject(open.error ?? new Error('Unable to open Library state'));
-    open.addEventListener('blocked', () => reject(new Error('Library state upgrade is blocked by another tab')));
+    open.addEventListener('blocked', () => reject(new Error('Library state upgrade is blocked by another tab'));
   });
 }
 
@@ -109,6 +116,16 @@ export async function toggleFavorite(workId: string): Promise<boolean> {
   const next = !(await isFavorite(workId));
   await setFavorite(workId, next);
   return next;
+}
+
+export async function getProgress(workId: string): Promise<ProgressRecord | undefined> {
+  return withStore('progress', 'readonly', async (store) => request<ProgressRecord | undefined>(store.get(workId)));
+}
+
+export async function setProgress(workId: string, progress: ProgressRecord): Promise<void> {
+  if (progress.workId !== workId) throw new Error('Progress work identity mismatch');
+  await withStore('progress', 'readwrite', async (store) => { await request(store.put(progress)); });
+  broadcast('progress', workId);
 }
 
 export async function getAnnotations(): Promise<AnnotationRecord[]> {

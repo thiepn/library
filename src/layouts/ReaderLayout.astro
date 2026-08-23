@@ -1,0 +1,104 @@
+---
+import '../styles/global.css';
+import '../styles/reader.css';
+import type { ResolvedWork } from '../lib/content/repository';
+import type { ResolvedChapter } from '../lib/content/chapters';
+
+interface Props {
+  work: ResolvedWork;
+  chapters: ResolvedChapter[];
+  current: ResolvedChapter;
+}
+
+const { work, chapters, current } = Astro.props;
+const currentIndex = chapters.findIndex((chapter) => chapter.entry.data.id === current.entry.data.id);
+const previous = chapters[currentIndex - 1];
+const next = chapters[currentIndex + 1];
+---
+<!doctype html>
+<html lang={work.language}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#F5F3EE" />
+    <meta name="description" content={current.entry.data.description ?? `${current.entry.data.title} — ${work.title}`} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+    <link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400;7..72,600&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <title>{current.entry.data.title} — {work.title}</title>
+  </head>
+  <body class="reader-body">
+    <a class="skip-link" href="#reader-content">Skip to chapter</a>
+    <header class="reader-bar" data-pagefind-ignore="all">
+      <a class="reader-back" href={`/works/${work.slug}`}>← <span>{work.title}</span></a>
+      <div class="reader-tools" aria-label="Reading controls">
+        <button type="button" data-reader-action="smaller" aria-label="Decrease text size">A−</button>
+        <button type="button" data-reader-action="larger" aria-label="Increase text size">A+</button>
+        <button type="button" data-reader-action="measure" aria-label="Change line length">Measure</button>
+      </div>
+    </header>
+
+    <details class="reader-mobile-toc" data-pagefind-ignore="all">
+      <summary>Contents · {currentIndex + 1} / {chapters.length}</summary>
+      <ol>{chapters.map((chapter) => <li class:list={{ active: chapter.entry.data.id === current.entry.data.id }}><a href={`/works/${work.slug}/read/${chapter.entry.data.id}`}>{chapter.entry.data.title}</a></li>)}</ol>
+    </details>
+
+    <main class="reader-shell">
+      <aside class="reader-toc" data-pagefind-ignore="all" aria-label="Table of contents">
+        <p class="eyebrow">Contents</p>
+        <ol>{chapters.map((chapter) => <li class:list={{ active: chapter.entry.data.id === current.entry.data.id }}><a href={`/works/${work.slug}/read/${chapter.entry.data.id}`}>{chapter.entry.data.title}</a></li>)}</ol>
+      </aside>
+
+      <article id="reader-content" class="reader-document" data-pagefind-body data-work-id={work.id} data-chapter-id={current.entry.data.id} data-progress-percent={Math.round(((currentIndex + 1) / chapters.length) * 100)}>
+        <header class="chapter-header">
+          <p class="eyebrow">{current.entry.data.part ? work.parts.find((part) => part.id === current.entry.data.part)?.title ?? 'Publication' : 'Publication'}</p>
+          <h1 data-pagefind-meta="title">{current.entry.data.title}</h1>
+          {current.entry.data.estimatedMinutes && <p class="micro">~{current.entry.data.estimatedMinutes} min read</p>}
+        </header>
+        <div class="reader-prose"><slot /></div>
+        <nav class="reader-chapter-nav" aria-label="Chapter navigation" data-pagefind-ignore="all">
+          {previous ? <a href={`/works/${work.slug}/read/${previous.entry.data.id}`}><span>Previous</span><strong>{previous.entry.data.title}</strong></a> : <span></span>}
+          {next ? <a class="next" href={`/works/${work.slug}/read/${next.entry.data.id}`}><span>Next</span><strong>{next.entry.data.title}</strong></a> : <a class="next" href={`/works/${work.slug}`}><span>Finished</span><strong>Back to publication</strong></a>}
+        </nav>
+      </article>
+    </main>
+
+    <script>
+      import { setProgress } from '../lib/client/library-db';
+      type ReaderSettings = { scale: number; measure: number };
+      const SETTINGS_KEY = 'thiepn.library.reader.v1';
+      const root = document.documentElement;
+      const article = document.querySelector<HTMLElement>('[data-work-id][data-chapter-id]');
+      const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+      const readSettings = (): ReaderSettings => {
+        try {
+          const value = JSON.parse(localStorage.getItem(SETTINGS_KEY) ?? '{}') as Partial<ReaderSettings>;
+          return { scale: clamp(Number(value.scale) || 1, .85, 1.3), measure: clamp(Number(value.measure) || 68, 52, 82) };
+        } catch { return { scale: 1, measure: 68 }; }
+      };
+      let settings = readSettings();
+      const apply = () => {
+        root.style.setProperty('--reader-scale', String(settings.scale));
+        root.style.setProperty('--reader-measure', `${settings.measure}ch`);
+        localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+      };
+      apply();
+      document.querySelectorAll<HTMLButtonElement>('[data-reader-action]').forEach((button) => button.addEventListener('click', () => {
+        const action = button.dataset.readerAction;
+        if (action === 'smaller') settings.scale = clamp(settings.scale - .05, .85, 1.3);
+        if (action === 'larger') settings.scale = clamp(settings.scale + .05, .85, 1.3);
+        if (action === 'measure') settings.measure = settings.measure >= 78 ? 56 : settings.measure + 6;
+        apply();
+      }));
+      if (article?.dataset.workId && article.dataset.chapterId) {
+        void setProgress(article.dataset.workId, {
+          workId: article.dataset.workId,
+          chapterId: article.dataset.chapterId,
+          percent: Number(article.dataset.progressPercent ?? 0),
+          updatedAt: new Date().toISOString(),
+        });
+      }
+    </script>
+  </body>
+</html>

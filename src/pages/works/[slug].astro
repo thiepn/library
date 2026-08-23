@@ -7,6 +7,9 @@ export async function getStaticPaths() {
 interface Props { work: ResolvedWork; }
 const { work } = Astro.props;
 const year = new Date(String(work.publication.firstPublished)).getFullYear();
+const pdf = work.release?.artifacts.pdf;
+const epub = work.release?.artifacts.epub;
+const webStatus = work.webMaterialized ? 'available' : work.id === 'ai-for-the-kingdom' ? `restoring ${work.chapterCount}/57` : 'restoring';
 ---
 <BaseLayout title={work.title} description={work.shortDescription}>
   <article class="page" data-pagefind-body data-pagefind-meta={`work_id:${work.id}`}>
@@ -17,13 +20,18 @@ const year = new Date(String(work.publication.firstPublished)).getFullYear();
         <h1 data-pagefind-weight="10">{work.title}</h1>
         {work.subtitle && <p class="work-deck">{work.subtitle}</p>}
         <p class="work-description">{work.description}</p>
-        <div class="work-actions"><button class="secondary-action" type="button" data-save-work={work.id}>Save to my library</button></div>
-        <div class="format-status" aria-label="Edition status">
-          <span>Web · {work.webMaterialized ? 'available' : 'restoring'}</span>
-          <span>PDF · restoring</span>
-          <span>EPUB · restoring</span>
+        <div class="work-actions">
+          {work.webMaterialized && <a class="primary-action" href={`/works/${work.slug}/read`}>Start reading</a>}
+          {pdf && <a class="secondary-action" href={`/works/${work.slug}/pdf`}>Read PDF</a>}
+          {epub && <a class="secondary-action" href={epub.url}>Download EPUB</a>}
+          <button class="secondary-action" type="button" data-save-work={work.id}>Save to my library</button>
         </div>
-        {!work.webMaterialized && <p class="recovery-note"><strong>Edition restoration:</strong> the validated publication metadata is present, but the native reader files and immutable binary assets are not yet materialized in this deployment. Reading and download actions stay hidden until the real artifacts are restored.</p>}
+        <div class="format-status" aria-label="Edition status">
+          <span>Web · {webStatus}</span>
+          <span>PDF · {pdf ? 'available' : 'restoring'}</span>
+          <span>EPUB · {epub ? 'available' : 'restoring'}</span>
+        </div>
+        {(!work.webMaterialized || !work.releaseMaterialized) && <p class="recovery-note"><strong>Edition restoration:</strong> validated publication metadata is present, but reader and binary controls activate only after their exact payloads pass the materialization gates. Partial or unverified files are never exposed as a release.</p>}
       </div>
     </section>
     <dl class="meta-grid">

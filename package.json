@@ -4,9 +4,7 @@
   "private": true,
   "type": "module",
   "packageManager": "pnpm@11.21.0",
-  "engines": {
-    "node": ">=22.12.0"
-  },
+  "engines": { "node": ">=22.12.0" },
   "scripts": {
     "dev": "astro dev",
     "check": "astro check",
@@ -15,9 +13,10 @@
     "build:astro": "astro build",
     "index": "pagefind --site dist",
     "build": "pnpm validate && pnpm build:astro && pnpm index",
+    "l17b:verify": "tsx scripts/l17b-verify.ts",
     "certify:source": "node scripts/certification/source.mjs",
     "certify:postbuild": "node scripts/certification/post-build.mjs",
-    "release:certify": "pnpm certify:source && pnpm build && pnpm certify:postbuild",
+    "release:certify": "pnpm certify:source && pnpm l17b:verify && pnpm build && pnpm certify:postbuild",
     "deploy": "pnpm build && wrangler deploy"
   },
   "dependencies": {

@@ -2,31 +2,38 @@ import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import YAML from 'yaml';
 import { workSchema, type WorkManifest } from './schema';
+import { getChaptersForWork } from './chapters';
+import { getActiveRelease, type PublicationRelease } from './releases';
 
 export interface ResolvedWork extends WorkManifest {
   chapterCount: number;
   webMaterialized: boolean;
   releaseMaterialized: boolean;
+  release?: PublicationRelease;
+}
+
+interface ExpectedReaderManifest {
+  expectedReaderFiles: number;
+  records: Array<{ file: string }>;
 }
 
 const worksRoot = path.join(process.cwd(), 'src/content/works');
 
-async function chapterCount(workId: string) {
+async function readExpectedReaderManifest(workId: string): Promise<ExpectedReaderManifest | undefined> {
   try {
-    const entries = await readdir(path.join(worksRoot, workId, 'chapters'), { withFileTypes: true });
-    return entries.filter((entry) => entry.isFile() && /\.(md|mdx)$/i.test(entry.name)).length;
+    return JSON.parse(await readFile(path.join(worksRoot, workId, 'recovery', 'l17b-expected.json'), 'utf8')) as ExpectedReaderManifest;
   } catch {
-    return 0;
+    return undefined;
   }
 }
 
-async function hasActiveRelease(work: WorkManifest) {
-  try {
-    await readFile(path.join(worksRoot, work.id, 'releases', `${work.publication.activeRelease}.yaml`), 'utf8');
-    return true;
-  } catch {
-    return false;
-  }
+async function isWebPayloadComplete(work: WorkManifest, actualFiles: string[]) {
+  if (!work.formats.web.enabled || actualFiles.length === 0) return false;
+  const expected = await readExpectedReaderManifest(work.id);
+  if (!expected) return true;
+  if (actualFiles.length !== expected.expectedReaderFiles) return false;
+  const expectedFiles = new Set(expected.records.map((record) => record.file));
+  return actualFiles.every((file) => expectedFiles.has(file)) && expectedFiles.size === actualFiles.length;
 }
 
 export async function getWorks(): Promise<ResolvedWork[]> {
@@ -39,12 +46,15 @@ export async function getWorks(): Promise<ResolvedWork[]> {
       const raw = YAML.parse(await readFile(file, 'utf8'));
       const work = workSchema.parse(raw);
       if (work.visibility !== 'public' || !['published', 'archived'].includes(work.status)) continue;
-      const count = await chapterCount(work.id);
+      const chapters = await getChaptersForWork(work.id);
+      const actualFiles = chapters.map((chapter) => chapter.fileName);
+      const release = await getActiveRelease(work);
       works.push({
         ...work,
-        chapterCount: count,
-        webMaterialized: work.formats.web.enabled && count > 0,
-        releaseMaterialized: false && await hasActiveRelease(work),
+        chapterCount: chapters.length,
+        webMaterialized: await isWebPayloadComplete(work, actualFiles),
+        releaseMaterialized: Boolean(release),
+        ...(release ? { release } : {}),
       });
     } catch (error) {
       throw new Error(`Invalid work manifest: ${dir.name}/work.yaml`, { cause: error });

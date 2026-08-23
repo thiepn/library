@@ -1,0 +1,26 @@
+---
+import { render } from 'astro:content';
+import ReaderLayout from '../../../../layouts/ReaderLayout.astro';
+import { getWorks, type ResolvedWork } from '../../../../lib/content/repository';
+import { getChaptersForWork } from '../../../../lib/content/chapters';
+
+export async function getStaticPaths() {
+  const paths: Array<{ params: { slug: string; chapter: string }; props: { work: ResolvedWork; chapterId: string } }> = [];
+  for (const work of (await getWorks()).filter((entry) => entry.webMaterialized)) {
+    for (const chapter of await getChaptersForWork(work.id)) {
+      paths.push({ params: { slug: work.slug, chapter: chapter.entry.data.id }, props: { work, chapterId: chapter.entry.data.id } });
+    }
+  }
+  return paths;
+}
+
+interface Props { work: ResolvedWork; chapterId: string; }
+const { work, chapterId } = Astro.props;
+const chapters = await getChaptersForWork(work.id);
+const current = chapters.find((chapter) => chapter.entry.data.id === chapterId);
+if (!current) throw new Error(`Reader chapter not found: ${work.id}/${chapterId}`);
+const { Content } = await render(current.entry);
+---
+<ReaderLayout work={work} chapters={chapters} current={current}>
+  <Content />
+</ReaderLayout>
