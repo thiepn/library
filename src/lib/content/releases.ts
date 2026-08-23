@@ -40,7 +40,7 @@ function artifact(value: unknown, kind: 'pdf' | 'epub'): ReleaseArtifact | undef
   return {
     url: candidate.url,
     filename: candidate.filename,
-    mimeType: candidate.mimeType,
+    mimeType: expectedMime,
     sizeBytes: Number(candidate.sizeBytes),
     sha256: candidate.sha256.toLowerCase(),
   };
