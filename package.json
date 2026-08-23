@@ -11,7 +11,7 @@
     "validate:content": "tsx scripts/validate-content.ts",
     "validate": "pnpm check && pnpm validate:content",
     "build:astro": "astro build",
-    "index": "pagefind --site dist",
+    "index": "pagefind --site dist/library",
     "build": "pnpm validate && pnpm build:astro && pnpm index",
     "l17b:verify": "tsx scripts/l17b-verify.ts",
     "certify:source": "node scripts/certification/source.mjs",

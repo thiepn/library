@@ -3,6 +3,8 @@ import '../styles/global.css';
 interface Props { title?: string; description?: string; noindex?: boolean; }
 const { title = 'Thiepn Library', description = 'Books, research, and courses in durable digital editions.', noindex = false } = Astro.props;
 const pageTitle = title === 'Thiepn Library' ? title : `${title} — Thiepn Library`;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const href = (path = '') => `${base}${path}`;
 ---
 <!doctype html>
 <html lang="en">
@@ -12,8 +14,9 @@ const pageTitle = title === 'Thiepn Library' ? title : `${title} — Thiepn Libr
     <meta name="theme-color" content="#F5F3EE" />
     <meta name="description" content={description} />
     {noindex && <meta name="robots" content="noindex,nofollow" />}
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="canonical" href={Astro.url.href} />
+    <link rel="icon" href={href('/favicon.svg')} type="image/svg+xml" />
+    <link rel="manifest" href={href('/manifest.webmanifest')} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
     <link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400;7..72,600&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -22,19 +25,19 @@ const pageTitle = title === 'Thiepn Library' ? title : `${title} — Thiepn Libr
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
     <header class="site-header">
-      <a class="wordmark" href="/" aria-label="Thiepn Library home"><span>THIEPN</span><span>LIBRARY</span></a>
+      <a class="wordmark" href={href()} aria-label="Thiepn Library home"><span>THIEPN</span><span>LIBRARY</span></a>
       <nav aria-label="Primary">
-        <a href="/library">Library</a>
-        <a href="/saved">Saved</a>
-        <a href="/search">Search</a>
-        <a href="/about">About</a>
+        <a href={href()}>Library</a>
+        <a href={href('/saved')}>Saved</a>
+        <a href={href('/search')}>Search</a>
+        <a href={href('/about')}>About</a>
       </nav>
       <button class="appearance-toggle" type="button" data-appearance-toggle aria-label="Change appearance">Theme</button>
     </header>
     <main id="main"><slot /></main>
     <footer class="site-footer">
       <span>THIEPN / LIBRARY</span>
-      <nav aria-label="Footer"><a href="/privacy">Privacy</a><a href="/annotations">Annotations</a><a href="/about">About</a></nav>
+      <nav aria-label="Footer"><a href={href('/privacy')}>Privacy</a><a href={href('/annotations')}>Annotations</a><a href={href('/about')}>About</a></nav>
       <span>v1.0.0-rc.1 recovery</span>
     </footer>
     <script>

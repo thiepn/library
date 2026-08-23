@@ -1,10 +1,10 @@
 {
   "name": "Thiepn Library",
   "short_name": "Library",
-  "start_url": "/",
-  "scope": "/",
+  "start_url": "/library",
+  "scope": "/library/",
   "display": "standalone",
   "background_color": "#F5F3EE",
   "theme_color": "#F5F3EE",
-  "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+  "icons": [{ "src": "/library/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
 }

@@ -9,6 +9,7 @@ export async function getStaticPaths() {
 
 interface Props { work: ResolvedWork; }
 const { work } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const chapters = await getChaptersForWork(work.id);
 const first = chapters[0];
 const ids = chapters.map((chapter) => chapter.entry.data.id);
@@ -16,10 +17,10 @@ const ids = chapters.map((chapter) => chapter.entry.data.id);
 <BaseLayout title={`Read ${work.title}`} noindex>
   <div class="page">
     <section class="section">
-      <div class="empty" data-reader-launch data-work-id={work.id} data-work-slug={work.slug} data-first-chapter={first?.entry.data.id} data-chapter-ids={JSON.stringify(ids)}>
+      <div class="empty" data-reader-launch data-base={base} data-work-id={work.id} data-work-slug={work.slug} data-first-chapter={first?.entry.data.id} data-chapter-ids={JSON.stringify(ids)}>
         <p class="eyebrow">Reader</p>
         <h2>Opening {work.title}…</h2>
-        {first && <p><a href={`/works/${work.slug}/read/${first.entry.data.id}`}>Open the first section</a></p>}
+        {first && <p><a href={`${base}/works/${work.slug}/read/${first.entry.data.id}`}>Open the first section</a></p>}
       </div>
     </section>
   </div>
@@ -28,10 +29,11 @@ const ids = chapters.map((chapter) => chapter.entry.data.id);
     const launch = document.querySelector<HTMLElement>('[data-reader-launch]');
     if (launch?.dataset.workId && launch.dataset.workSlug && launch.dataset.firstChapter) {
       const ids = new Set<string>(JSON.parse(launch.dataset.chapterIds ?? '[]') as string[]);
+      const base = launch.dataset.base ?? '/library';
       void getProgress(launch.dataset.workId).then((progress) => {
         const chapter = progress?.chapterId && ids.has(progress.chapterId) ? progress.chapterId : launch.dataset.firstChapter;
-        location.replace(`/works/${launch.dataset.workSlug}/read/${chapter}`);
-      }).catch(() => location.replace(`/works/${launch.dataset.workSlug}/read/${launch.dataset.firstChapter}`));
+        location.replace(`${base}/works/${launch.dataset.workSlug}/read/${chapter}`);
+      }).catch(() => location.replace(`${base}/works/${launch.dataset.workSlug}/read/${launch.dataset.firstChapter}`));
     }
   </script>
 </BaseLayout>

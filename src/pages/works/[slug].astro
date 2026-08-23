@@ -6,6 +6,7 @@ export async function getStaticPaths() {
 }
 interface Props { work: ResolvedWork; }
 const { work } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const year = new Date(String(work.publication.firstPublished)).getFullYear();
 const pdf = work.release?.artifacts.pdf;
 const epub = work.release?.artifacts.epub;
@@ -21,8 +22,8 @@ const webStatus = work.webMaterialized ? 'available' : work.id === 'ai-for-the-k
         {work.subtitle && <p class="work-deck">{work.subtitle}</p>}
         <p class="work-description">{work.description}</p>
         <div class="work-actions">
-          {work.webMaterialized && <a class="primary-action" href={`/works/${work.slug}/read`}>Start reading</a>}
-          {pdf && <a class="secondary-action" href={`/works/${work.slug}/pdf`}>Read PDF</a>}
+          {work.webMaterialized && <a class="primary-action" href={`${base}/works/${work.slug}/read`}>Start reading</a>}
+          {pdf && <a class="secondary-action" href={`${base}/works/${work.slug}/pdf`}>Read PDF</a>}
           {epub && <a class="secondary-action" href={epub.url}>Download EPUB</a>}
           <button class="secondary-action" type="button" data-save-work={work.id}>Save to my library</button>
         </div>

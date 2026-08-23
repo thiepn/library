@@ -11,6 +11,7 @@ interface Props {
 }
 
 const { work, chapters, current } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const currentIndex = chapters.findIndex((chapter) => chapter.entry.data.id === current.entry.data.id);
 const previous = chapters[currentIndex - 1];
 const next = chapters[currentIndex + 1];
@@ -22,7 +23,8 @@ const next = chapters[currentIndex + 1];
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#F5F3EE" />
     <meta name="description" content={current.entry.data.description ?? `${current.entry.data.title} — ${work.title}`} />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="canonical" href={Astro.url.href} />
+    <link rel="icon" href={`${base}/favicon.svg`} type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
     <link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400;7..72,600&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -31,7 +33,7 @@ const next = chapters[currentIndex + 1];
   <body class="reader-body">
     <a class="skip-link" href="#reader-content">Skip to chapter</a>
     <header class="reader-bar" data-pagefind-ignore="all">
-      <a class="reader-back" href={`/works/${work.slug}`}>← <span>{work.title}</span></a>
+      <a class="reader-back" href={`${base}/works/${work.slug}`}>← <span>{work.title}</span></a>
       <div class="reader-tools" aria-label="Reading controls">
         <button type="button" data-reader-action="smaller" aria-label="Decrease text size">A−</button>
         <button type="button" data-reader-action="larger" aria-label="Increase text size">A+</button>
@@ -41,13 +43,13 @@ const next = chapters[currentIndex + 1];
 
     <details class="reader-mobile-toc" data-pagefind-ignore="all">
       <summary>Contents · {currentIndex + 1} / {chapters.length}</summary>
-      <ol>{chapters.map((chapter) => <li class:list={{ active: chapter.entry.data.id === current.entry.data.id }}><a href={`/works/${work.slug}/read/${chapter.entry.data.id}`}>{chapter.entry.data.title}</a></li>)}</ol>
+      <ol>{chapters.map((chapter) => <li class:list={{ active: chapter.entry.data.id === current.entry.data.id }}><a href={`${base}/works/${work.slug}/read/${chapter.entry.data.id}`}>{chapter.entry.data.title}</a></li>)}</ol>
     </details>
 
     <main class="reader-shell">
       <aside class="reader-toc" data-pagefind-ignore="all" aria-label="Table of contents">
         <p class="eyebrow">Contents</p>
-        <ol>{chapters.map((chapter) => <li class:list={{ active: chapter.entry.data.id === current.entry.data.id }}><a href={`/works/${work.slug}/read/${chapter.entry.data.id}`}>{chapter.entry.data.title}</a></li>)}</ol>
+        <ol>{chapters.map((chapter) => <li class:list={{ active: chapter.entry.data.id === current.entry.data.id }}><a href={`${base}/works/${work.slug}/read/${chapter.entry.data.id}`}>{chapter.entry.data.title}</a></li>)}</ol>
       </aside>
 
       <article id="reader-content" class="reader-document" data-pagefind-body data-work-id={work.id} data-chapter-id={current.entry.data.id} data-progress-percent={Math.round(((currentIndex + 1) / chapters.length) * 100)}>
@@ -58,8 +60,8 @@ const next = chapters[currentIndex + 1];
         </header>
         <div class="reader-prose"><slot /></div>
         <nav class="reader-chapter-nav" aria-label="Chapter navigation" data-pagefind-ignore="all">
-          {previous ? <a href={`/works/${work.slug}/read/${previous.entry.data.id}`}><span>Previous</span><strong>{previous.entry.data.title}</strong></a> : <span></span>}
-          {next ? <a class="next" href={`/works/${work.slug}/read/${next.entry.data.id}`}><span>Next</span><strong>{next.entry.data.title}</strong></a> : <a class="next" href={`/works/${work.slug}`}><span>Finished</span><strong>Back to publication</strong></a>}
+          {previous ? <a href={`${base}/works/${work.slug}/read/${previous.entry.data.id}`}><span>Previous</span><strong>{previous.entry.data.title}</strong></a> : <span></span>}
+          {next ? <a class="next" href={`${base}/works/${work.slug}/read/${next.entry.data.id}`}><span>Next</span><strong>{next.entry.data.title}</strong></a> : <a class="next" href={`${base}/works/${work.slug}`}><span>Finished</span><strong>Back to publication</strong></a>}
         </nav>
       </article>
     </main>

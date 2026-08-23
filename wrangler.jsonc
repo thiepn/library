@@ -1,7 +1,8 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "thiepn-library",
-  "compatibility_date": "2026-08-22",
+  "compatibility_date": "2026-08-23",
+  "workers_dev": false,
   "assets": {
     "directory": "./dist",
     "not_found_handling": "404-page",
@@ -9,8 +10,8 @@
   },
   "routes": [
     {
-      "pattern": "library.thiepn.dev",
-      "custom_domain": true
+      "pattern": "thiepn.dev/library*",
+      "zone_name": "thiepn.dev"
     }
   ]
 }

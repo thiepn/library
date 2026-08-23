@@ -10,14 +10,16 @@ The canonical runtime is:
 - native Archive Editorial CSS
 - build-time publication metadata and Markdown/MDX content
 - Pagefind for static full-text search
-- Cloudflare Workers Static Assets for the application
+- Cloudflare Workers Static Assets mounted only at `/library`
 - Cloudflare R2 for immutable PDF/EPUB publication binaries
 - browser-local reading state; no account is required for the public library
 - optional owner-authenticated AI as a separate Worker, never as a dependency of the static library
 
-Production application: `https://library.thiepn.dev`
+Production application: `https://thiepn.dev/library`
 
 Publication media: `https://media.library.thiepn.dev`
+
+The main `thiepn.dev` site remains the origin for every path outside `/library`; the Library Worker is configured as a Cloudflare path route, not as a standalone custom domain.
 
 ## Local development
 
@@ -29,6 +31,8 @@ corepack prepare pnpm@11.21.0 --activate
 pnpm install
 pnpm dev
 ```
+
+Astro serves the application under `/library` in development as well as production.
 
 ## Validation
 

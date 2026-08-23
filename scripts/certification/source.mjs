@@ -5,11 +5,15 @@ const pass = (id, ok, detail) => checks.push({ id, ok, detail });
 const exists = async (path) => { try { await access(path); return true; } catch { return false; } };
 const chapterDir = 'src/content/works/ai-for-the-kingdom/chapters';
 const chapterCount = await exists(chapterDir) ? (await readdir(chapterDir)).filter((name) => /\.(md|mdx)$/i.test(name)).length : 0;
+const astroConfig = await readFile('astro.config.mjs', 'utf8');
+const wranglerConfig = await readFile('wrangler.jsonc', 'utf8');
 
 pass('ASTRO_STACK', await exists('astro.config.mjs'), 'Astro configuration is present');
 pass('ASTRO6_CONTENT', await exists('src/content.config.ts'), 'Astro 6 Content Loader configuration is present');
+pass('PATH_MOUNT', astroConfig.includes("site: 'https://thiepn.dev'") && astroConfig.includes("base: '/library'") && astroConfig.includes("outDir: './dist/library'"), 'Production application is mounted at https://thiepn.dev/library');
+pass('CLOUDFLARE_PATH_ROUTE', wranglerConfig.includes('thiepn.dev/library*') && wranglerConfig.includes('zone_name'), 'Cloudflare Worker is scoped to the /library path instead of a standalone custom domain');
 pass('NO_REACT_RUNTIME', !(await exists('vite.config.ts')) && !(await exists('src/main.tsx')), 'Temporary React/Vite runtime is absent');
-pass('CLOUDFLARE_STATIC', (await readFile('wrangler.jsonc', 'utf8')).includes('404-page'), 'Cloudflare static 404 handling is configured');
+pass('CLOUDFLARE_STATIC', wranglerConfig.includes('404-page'), 'Cloudflare static 404 handling is configured');
 pass('SECURITY_HEADERS', (await readFile('public/_headers', 'utf8')).includes("script-src 'self'"), 'Static CSP rejects arbitrary inline executable script');
 pass('L17_METADATA', await exists('src/content/works/ai-for-the-kingdom/work.yaml'), 'Validated L17 Work metadata is registered');
 pass('L17B_EXPECTED', await exists('src/content/works/ai-for-the-kingdom/recovery/l17b-expected.json'), 'Frozen 57-file materialization manifest is registered');
