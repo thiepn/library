@@ -1,1 +1,2 @@
 Temporary trigger for exact frozen L17 payload recovery from legacy Git history.
+Retry with deterministic dual-mode Base64 reconstruction.
