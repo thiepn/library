@@ -1,6 +1,13 @@
 import { access, readdir } from 'node:fs/promises';
 const exists = async (path) => { try { await access(path); return true; } catch { return false; } };
-const required = ['pnpm-lock.yaml', 'dist/library/index.html', 'dist/library/search/index.html', 'dist/library/pagefind/pagefind.js'];
+const required = [
+  'pnpm-lock.yaml',
+  'dist/_headers',
+  'dist/library/index.html',
+  'dist/library/search/index.html',
+  'dist/library/sitemap.xml',
+  'dist/library/pagefind/pagefind.js',
+];
 const missing = [];
 for (const path of required) if (!(await exists(path))) missing.push(path);
 if (missing.length) {

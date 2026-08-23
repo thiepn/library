@@ -1,0 +1,58 @@
+name: Deploy Library
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: library-production
+  cancel-in-progress: true
+
+jobs:
+  readiness:
+    runs-on: ubuntu-latest
+    outputs:
+      ready: ${{ steps.gate.outputs.ready }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: gate
+        shell: bash
+        run: |
+          count=0
+          if test -d src/content/works/ai-for-the-kingdom/chapters; then
+            count=$(find src/content/works/ai-for-the-kingdom/chapters -maxdepth 1 -type f \( -name '*.md' -o -name '*.mdx' \) | wc -l | tr -d ' ')
+          fi
+          if test "$count" = '57' && test -f src/publications/releases/ai-for-the-kingdom/1.0.0-rc4.yaml && test -f pnpm-lock.yaml; then
+            echo 'ready=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'ready=false' >> "$GITHUB_OUTPUT"
+            echo "Publication gate not satisfied: chapters=$count registry=$(test -f src/publications/releases/ai-for-the-kingdom/1.0.0-rc4.yaml && echo yes || echo no) lockfile=$(test -f pnpm-lock.yaml && echo yes || echo no)"
+          fi
+
+  deploy:
+    needs: readiness
+    if: needs.readiness.outputs.ready == 'true'
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.12.0
+      - run: corepack enable
+      - run: corepack prepare pnpm@11.21.0 --activate
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm release:certify
+      - name: Deploy certified static assets
+        run: pnpm exec wrangler deploy
+      - name: Production smoke test
+        run: |
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 https://thiepn.dev/library >/dev/null
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 https://thiepn.dev/library/search >/dev/null
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 https://thiepn.dev/library/works/ai-for-the-kingdom >/dev/null

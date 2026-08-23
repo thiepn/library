@@ -5,6 +5,7 @@ const { title = 'Thiepn Library', description = 'Books, research, and courses in
 const pageTitle = title === 'Thiepn Library' ? title : `${title} — Thiepn Library`;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const href = (path = '') => `${base}${path}`;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).href;
 ---
 <!doctype html>
 <html lang="en">
@@ -14,7 +15,12 @@ const href = (path = '') => `${base}${path}`;
     <meta name="theme-color" content="#F5F3EE" />
     <meta name="description" content={description} />
     {noindex && <meta name="robots" content="noindex,nofollow" />}
-    <link rel="canonical" href={Astro.url.href} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:site_name" content="Thiepn Library" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
     <link rel="icon" href={href('/favicon.svg')} type="image/svg+xml" />
     <link rel="manifest" href={href('/manifest.webmanifest')} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -38,7 +44,7 @@ const href = (path = '') => `${base}${path}`;
     <footer class="site-footer">
       <span>THIEPN / LIBRARY</span>
       <nav aria-label="Footer"><a href={href('/privacy')}>Privacy</a><a href={href('/annotations')}>Annotations</a><a href={href('/about')}>About</a></nav>
-      <span>v1.0.0-rc.1 recovery</span>
+      <span>v1.0.0-rc.1</span>
     </footer>
     <script>
       type Appearance = 'system' | 'light' | 'dark';

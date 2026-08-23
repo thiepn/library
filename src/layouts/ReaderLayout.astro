@@ -15,6 +15,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const currentIndex = chapters.findIndex((chapter) => chapter.entry.data.id === current.entry.data.id);
 const previous = chapters[currentIndex - 1];
 const next = chapters[currentIndex + 1];
+const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).href;
 ---
 <!doctype html>
 <html lang={work.language}>
@@ -23,7 +24,11 @@ const next = chapters[currentIndex + 1];
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#F5F3EE" />
     <meta name="description" content={current.entry.data.description ?? `${current.entry.data.title} — ${work.title}`} />
-    <link rel="canonical" href={Astro.url.href} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:site_name" content="Thiepn Library" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content={`${current.entry.data.title} — ${work.title}`} />
+    <meta property="og:url" content={canonical} />
     <link rel="icon" href={`${base}/favicon.svg`} type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
@@ -52,7 +57,7 @@ const next = chapters[currentIndex + 1];
         <ol>{chapters.map((chapter) => <li class:list={{ active: chapter.entry.data.id === current.entry.data.id }}><a href={`${base}/works/${work.slug}/read/${chapter.entry.data.id}`}>{chapter.entry.data.title}</a></li>)}</ol>
       </aside>
 
-      <article id="reader-content" class="reader-document" data-pagefind-body data-work-id={work.id} data-chapter-id={current.entry.data.id} data-progress-percent={Math.round(((currentIndex + 1) / chapters.length) * 100)}>
+      <article id="reader-content" class="reader-document" data-pagefind-body data-work-id={work.id} data-chapter-id={current.entry.data.id} data-chapter-index={currentIndex} data-chapter-count={chapters.length}>
         <header class="chapter-header">
           <p class="eyebrow">{current.entry.data.part ? work.parts.find((part) => part.id === current.entry.data.part)?.title ?? 'Publication' : 'Publication'}</p>
           <h1 data-pagefind-meta="title">{current.entry.data.title}</h1>
@@ -93,14 +98,34 @@ const next = chapters[currentIndex + 1];
         if (action === 'measure') settings.measure = settings.measure >= 78 ? 56 : settings.measure + 6;
         apply();
       }));
-      if (article?.dataset.workId && article.dataset.chapterId) {
+
+      let saveTimer: number | undefined;
+      const persistProgress = () => {
+        if (!article?.dataset.workId || !article.dataset.chapterId) return;
+        const chapterIndex = Number(article.dataset.chapterIndex ?? 0);
+        const chapterCount = Math.max(1, Number(article.dataset.chapterCount ?? 1));
+        const rect = article.getBoundingClientRect();
+        const articleTop = window.scrollY + rect.top;
+        const readableDistance = Math.max(1, article.offsetHeight - window.innerHeight * 0.55);
+        const readY = window.scrollY + window.innerHeight * 0.35 - articleTop;
+        const chapterFraction = clamp(readY / readableDistance, 0, 1);
+        const percent = ((chapterIndex + chapterFraction) / chapterCount) * 100;
         void setProgress(article.dataset.workId, {
           workId: article.dataset.workId,
           chapterId: article.dataset.chapterId,
-          percent: Number(article.dataset.progressPercent ?? 0),
+          percent,
           updatedAt: new Date().toISOString(),
         });
-      }
+      };
+      const scheduleProgress = () => {
+        if (saveTimer !== undefined) window.clearTimeout(saveTimer);
+        saveTimer = window.setTimeout(persistProgress, 250);
+      };
+      window.addEventListener('scroll', scheduleProgress, { passive: true });
+      window.addEventListener('resize', scheduleProgress, { passive: true });
+      document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') persistProgress(); });
+      window.addEventListener('pagehide', persistProgress);
+      window.setTimeout(persistProgress, 1000);
     </script>
   </body>
 </html>

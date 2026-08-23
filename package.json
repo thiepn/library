@@ -12,12 +12,13 @@
     "validate": "pnpm check && pnpm validate:content",
     "build:astro": "astro build",
     "index": "pagefind --site dist/library",
-    "build": "pnpm validate && pnpm build:astro && pnpm index",
+    "prepare:deploy": "node scripts/prepare-deploy.mjs",
+    "build": "pnpm validate && pnpm build:astro && pnpm index && pnpm prepare:deploy",
     "l17b:verify": "tsx scripts/l17b-verify.ts",
     "certify:source": "node scripts/certification/source.mjs",
     "certify:postbuild": "node scripts/certification/post-build.mjs",
     "release:certify": "pnpm certify:source && pnpm l17b:verify && pnpm build && pnpm certify:postbuild",
-    "deploy": "pnpm build && wrangler deploy"
+    "deploy": "pnpm release:certify && wrangler deploy"
   },
   "dependencies": {
     "astro": "^6.0.0",

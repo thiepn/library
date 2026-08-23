@@ -62,8 +62,8 @@ export function openLibraryDb(): Promise<IDBDatabase> {
       }
     });
     open.addEventListener('success', () => resolve(open.result));
-    open.addEventListener('error', () => reject(open.error ?? new Error('Unable to open Library state'));
-    open.addEventListener('blocked', () => reject(new Error('Library state upgrade is blocked by another tab'));
+    open.addEventListener('error', () => reject(open.error ?? new Error('Unable to open Library state')));
+    open.addEventListener('blocked', () => reject(new Error('Library state upgrade is blocked by another tab')));
   });
 }
 
@@ -124,8 +124,18 @@ export async function getProgress(workId: string): Promise<ProgressRecord | unde
 
 export async function setProgress(workId: string, progress: ProgressRecord): Promise<void> {
   if (progress.workId !== workId) throw new Error('Progress work identity mismatch');
-  await withStore('progress', 'readwrite', async (store) => { await request(store.put(progress)); });
-  broadcast('progress', workId);
+  const next: ProgressRecord = {
+    ...progress,
+    percent: Math.min(100, Math.max(0, Number.isFinite(progress.percent) ? progress.percent : 0)),
+  };
+  let changed = false;
+  await withStore('progress', 'readwrite', async (store) => {
+    const existing = await request<ProgressRecord | undefined>(store.get(workId));
+    if (existing && existing.percent > next.percent) return;
+    await request(store.put(next));
+    changed = true;
+  });
+  if (changed) broadcast('progress', workId);
 }
 
 export async function getAnnotations(): Promise<AnnotationRecord[]> {

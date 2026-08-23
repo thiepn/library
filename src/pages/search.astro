@@ -6,7 +6,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     <section class="section">
       <div class="section-heading"><div><p class="eyebrow">02 / Search</p><h1>Search</h1></div></div>
       <form class="search-form" role="search" data-search-form><input type="search" name="q" aria-label="Search Library" placeholder="Search titles, chapters, topics…" autocomplete="off" /><button type="submit">Search</button></form>
-      <p class="micro" data-search-status>Search loads only when you use it.</p>
+      <p class="micro" data-search-status aria-live="polite">Search loads only when you use it.</p>
       <div class="search-results" data-search-results></div>
     </section>
   </div>
@@ -25,9 +25,19 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     if (input) input.value = initial;
 
+    const libraryResultUrl = (value: string) => {
+      if (value === base || value.startsWith(`${base}/`)) return value;
+      return `${base}${value.startsWith('/') ? value : `/${value}`}`;
+    };
+
     async function run(rawQuery: string) {
       const query = rawQuery.trim();
-      if (!query || !results || !status) return;
+      if (!results || !status) return;
+      if (!query) {
+        results.replaceChildren();
+        status.textContent = 'Enter a title, chapter, or topic.';
+        return;
+      }
       status.textContent = 'Searching…';
       results.replaceChildren();
       try {
@@ -42,7 +52,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           const article = document.createElement('article');
           const heading = document.createElement('h2');
           const link = document.createElement('a');
-          link.href = item.url;
+          link.href = libraryResultUrl(item.url);
           link.textContent = item.meta?.title ?? item.url;
           heading.append(link);
           const excerpt = document.createElement('p');
