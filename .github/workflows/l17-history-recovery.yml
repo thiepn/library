@@ -1,0 +1,115 @@
+name: L17 Frozen Payload History Recovery
+
+on:
+  push:
+    branches: [ci/l17-history-recovery]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: l17-history-recovery-${{ github.event_name == 'pull_request' && github.head_ref || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  recover:
+    if: github.event_name != 'pull_request' || github.head_ref == 'ci/l17-history-recovery'
+    runs-on: ubuntu-latest
+    env:
+      TARGET_BRANCH: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
+      LEGACY_REF: l17/ai-for-the-kingdom-publication
+      PACKAGE: .build/l17-history/AI_for_the_Kingdom_L17_LIBRARY_PUBLICATION_PACKAGE.zip
+      MEDIA_DIR: .build/l17b-media
+      R2_VERIFY_DIR: .build/l17b-r2-verify
+      R2_BUCKET: thiepn-library-publications
+      R2_PREFIX: works/ai-for-the-kingdom/editions/1.0.0-rc4
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_BRANCH }}
+          fetch-depth: 0
+
+      - name: Setup pnpm and Node
+        uses: pnpm/setup@v2
+        with:
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+          cache: true
+
+      - name: Recover frozen package from Git history
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .build/l17-history
+          git fetch --no-tags origin "$LEGACY_REF:refs/remotes/origin/$LEGACY_REF"
+          : > .build/l17-history/payload.b64
+          for part in 00 01 02 03 04 05; do
+            git show "refs/remotes/origin/$LEGACY_REF:recovery/l17b/part${part}" >> .build/l17-history/payload.b64
+          done
+          tr -d '\r\n' < .build/l17-history/payload.b64 | base64 --decode > .build/l17-history/payload.xz
+          xz --decompress --stdout .build/l17-history/payload.xz > "$PACKAGE"
+          test "$(stat -c%s "$PACKAGE")" = '2034059'
+          echo '1c6f831ca9c3a48031121dc6129d39cb66f5ad521d53c3e9f40153f8c9f776b7  '"$PACKAGE" | sha256sum --check --strict
+
+      - name: Install frozen dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Inject and verify exact publication payload
+        run: |
+          node scripts/l17b-inject-package.mjs "$PACKAGE"
+          L17B_PACKAGE="$PACKAGE" L17B_MEDIA_DIR="$MEDIA_DIR" pnpm l17b:verify
+
+      - name: Upload and read back immutable R2 objects when credentials exist
+        id: r2
+        shell: bash
+        run: |
+          set -euo pipefail
+          if test -z "${CLOUDFLARE_API_TOKEN:-}" || test -z "${CLOUDFLARE_ACCOUNT_ID:-}"; then
+            echo 'ready=false' >> "$GITHUB_OUTPUT"
+            echo 'Cloudflare repository secrets are not configured; verified source recovery will still be committed.'
+            exit 0
+          fi
+          pnpm exec wrangler r2 object put "$R2_BUCKET/$R2_PREFIX/AI_for_the_Kingdom_ONLINE_EDITION.pdf" --file="$MEDIA_DIR/AI_for_the_Kingdom_ONLINE_EDITION.pdf" --content-type='application/pdf' --cache-control='public, max-age=31536000, immutable' --remote
+          pnpm exec wrangler r2 object put "$R2_BUCKET/$R2_PREFIX/AI_for_the_Kingdom.epub" --file="$MEDIA_DIR/AI_for_the_Kingdom.epub" --content-type='application/epub+zip' --content-disposition='attachment; filename="AI_for_the_Kingdom.epub"' --cache-control='public, max-age=31536000, immutable' --remote
+          pnpm exec wrangler r2 object put "$R2_BUCKET/$R2_PREFIX/ai-for-the-kingdom.webp" --file="$MEDIA_DIR/ai-for-the-kingdom.webp" --content-type='image/webp' --cache-control='public, max-age=31536000, immutable' --remote
+          rm -rf "$R2_VERIFY_DIR" && mkdir -p "$R2_VERIFY_DIR"
+          pnpm exec wrangler r2 object get "$R2_BUCKET/$R2_PREFIX/AI_for_the_Kingdom_ONLINE_EDITION.pdf" --file="$R2_VERIFY_DIR/AI_for_the_Kingdom_ONLINE_EDITION.pdf" --remote
+          pnpm exec wrangler r2 object get "$R2_BUCKET/$R2_PREFIX/AI_for_the_Kingdom.epub" --file="$R2_VERIFY_DIR/AI_for_the_Kingdom.epub" --remote
+          pnpm exec wrangler r2 object get "$R2_BUCKET/$R2_PREFIX/ai-for-the-kingdom.webp" --file="$R2_VERIFY_DIR/ai-for-the-kingdom.webp" --remote
+          L17B_MEDIA_DIR="$R2_VERIFY_DIR" pnpm l17b:verify
+          node scripts/l17b-write-release.mjs
+          echo 'ready=true' >> "$GITHUB_OUTPUT"
+
+      - name: Commit verified recovered source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/content/works/ai-for-the-kingdom/chapters
+          if test -f src/publications/releases/ai-for-the-kingdom/1.0.0-rc4.yaml; then
+            git add src/publications/releases/ai-for-the-kingdom/1.0.0-rc4.yaml
+          fi
+          git diff --cached --quiet && exit 0
+          git commit -m 'Recover verified frozen AI for the Kingdom payload from Git history'
+          git pull --rebase origin "$TARGET_BRANCH"
+          git push origin HEAD:"$TARGET_BRANCH"
+
+      - name: Upload immutable recovery evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: l17-history-recovery-evidence
+          path: |
+            .build/l17-history/AI_for_the_Kingdom_L17_LIBRARY_PUBLICATION_PACKAGE.zip
+            .build/l17b-media
+            .build/l17b-r2-verify
+            src/publications/releases/ai-for-the-kingdom/1.0.0-rc4.yaml
+          if-no-files-found: ignore
+          retention-days: 30
