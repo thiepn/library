@@ -1,0 +1,81 @@
+name: L17B Final Materialize
+
+on:
+  push:
+    branches: [l17b/canonical-source-import]
+    paths:
+      - .recovery/source-url.txt
+
+permissions:
+  contents: write
+
+concurrency:
+  group: l17b-final-materialize
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout recovery branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download canonical source exactly once
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s .recovery/source-url.txt
+          url="$(cat .recovery/source-url.txt)"
+          curl --fail --location --silent --show-error "$url" --output /tmp/l17b-source.tar.xz
+          echo "d6289528ea1b4eb97a86fc585f779bb856631e95acc023ba04bb55ed647ea40e  /tmp/l17b-source.tar.xz" | sha256sum -c -
+          mkdir /tmp/l17b-source
+          tar -xJf /tmp/l17b-source.tar.xz -C /tmp/l17b-source
+          count="$(find /tmp/l17b-source -type f | wc -l | tr -d ' ')"
+          test "$count" = "469"
+          test -f /tmp/l17b-source/package.json
+          test -f /tmp/l17b-source/src/content/works/ai-for-the-kingdom/work.yaml
+          test "$(find /tmp/l17b-source/src/content/works/ai-for-the-kingdom/chapters -type f \( -name '*.md' -o -name '*.mdx' \) | wc -l | tr -d ' ')" = "57"
+
+      - name: Replace recovery tree with canonical source
+        shell: bash
+        run: |
+          set -euo pipefail
+          find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          cp -a /tmp/l17b-source/. .
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.21.0
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Generate frozen dependency graph
+        run: pnpm install
+
+      - name: Verify imported publication structure
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(find src/content/works/ai-for-the-kingdom/chapters -type f \( -name '*.md' -o -name '*.mdx' \) | wc -l | tr -d ' ')" = "57"
+          node -e "const x=require('./docs/L17B_IMPORT_VALIDATION.json'); if(x.status!=='PASS'||x.counts.reader_files!==57||!x.fidelity.all_57_reader_files_byte_identical_to_validated_L17_source) process.exit(1)"
+
+      - name: Run production certification
+        run: pnpm release:certify
+
+      - name: Commit certified source and lockfile
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -A
+          git commit -m "L17B Final: materialize canonical source and certify" || true
+          git push origin HEAD:l17b/canonical-source-import
