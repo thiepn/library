@@ -1,0 +1,114 @@
+name: L17B-2 Frozen Payload Injection
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: GitHub release tag containing the frozen package ZIP
+        required: true
+        default: l17b-frozen-payload
+      publish_r2:
+        description: Upload and verify immutable R2 objects
+        required: true
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: l17b-frozen-payload
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    env:
+      PACKAGE: incoming/AI_for_the_Kingdom_L17_LIBRARY_PUBLICATION_PACKAGE.zip
+      MEDIA_DIR: .build/l17b-media
+      R2_BUCKET: thiepn-library-publications
+      R2_PREFIX: works/ai-for-the-kingdom/editions/1.0.0-rc4
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.12.0
+
+      - name: Enable pnpm 11.21.0
+        run: |
+          corepack enable
+          corepack prepare pnpm@11.21.0 --activate
+
+      - name: Obtain exact frozen package from GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p incoming
+          gh release download "${{ inputs.release_tag }}" --repo "$GITHUB_REPOSITORY" --pattern 'AI_for_the_Kingdom_L17_LIBRARY_PUBLICATION_PACKAGE.zip' --dir incoming
+          test -f "$PACKAGE"
+
+      - name: Install dependencies and materialize lockfile if needed
+        run: |
+          if test -f pnpm-lock.yaml; then
+            pnpm install --frozen-lockfile
+          else
+            pnpm install
+          fi
+
+      - name: Inject frozen package
+        run: node scripts/l17b-inject-package.mjs "$PACKAGE"
+
+      - name: Verify package, reader and local binaries
+        run: L17B_PACKAGE="$PACKAGE" L17B_MEDIA_DIR="$MEDIA_DIR" pnpm l17b:verify
+
+      - name: Upload immutable R2 objects
+        if: ${{ inputs.publish_r2 }}
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN"
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          pnpm exec wrangler r2 object put "$R2_BUCKET/$R2_PREFIX/AI_for_the_Kingdom_ONLINE_EDITION.pdf" --file="$MEDIA_DIR/AI_for_the_Kingdom_ONLINE_EDITION.pdf" --content-type='application/pdf' --cache-control='public, max-age=31536000, immutable' --remote
+          pnpm exec wrangler r2 object put "$R2_BUCKET/$R2_PREFIX/AI_for_the_Kingdom.epub" --file="$MEDIA_DIR/AI_for_the_Kingdom.epub" --content-type='application/epub+zip' --content-disposition='attachment; filename="AI_for_the_Kingdom.epub"' --cache-control='public, max-age=31536000, immutable' --remote
+          pnpm exec wrangler r2 object put "$R2_BUCKET/$R2_PREFIX/ai-for-the-kingdom.webp" --file="$MEDIA_DIR/ai-for-the-kingdom.webp" --content-type='image/webp' --cache-control='public, max-age=31536000, immutable' --remote
+
+      - name: Download R2 objects back and verify exact hashes
+        if: ${{ inputs.publish_r2 }}
+        run: |
+          rm -rf .build/l17b-r2-verify && mkdir -p .build/l17b-r2-verify
+          pnpm exec wrangler r2 object get "$R2_BUCKET/$R2_PREFIX/AI_for_the_Kingdom_ONLINE_EDITION.pdf" --file=.build/l17b-r2-verify/AI_for_the_Kingdom_ONLINE_EDITION.pdf --remote
+          pnpm exec wrangler r2 object get "$R2_BUCKET/$R2_PREFIX/AI_for_the_Kingdom.epub" --file=.build/l17b-r2-verify/AI_for_the_Kingdom.epub --remote
+          pnpm exec wrangler r2 object get "$R2_BUCKET/$R2_PREFIX/ai-for-the-kingdom.webp" --file=.build/l17b-r2-verify/ai-for-the-kingdom.webp --remote
+          L17B_MEDIA_DIR=.build/l17b-r2-verify pnpm l17b:verify
+
+      - name: Write canonical release registry
+        if: ${{ inputs.publish_r2 }}
+        run: node scripts/l17b-write-release.mjs
+
+      - name: Full release certification
+        if: ${{ inputs.publish_r2 }}
+        run: L17B_PACKAGE="$PACKAGE" L17B_MEDIA_DIR=.build/l17b-r2-verify pnpm release:certify
+
+      - name: Commit verified materialization
+        if: ${{ inputs.publish_r2 }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add pnpm-lock.yaml src/content/works/ai-for-the-kingdom/chapters src/publications/releases/ai-for-the-kingdom/1.0.0-rc4.yaml
+          git diff --cached --quiet && exit 0
+          git commit -m 'Materialize verified AI for the Kingdom publication payload'
+          git push origin HEAD:main
+
+      - name: Upload certification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: l17b-2-certification-evidence
+          path: |
+            .build/certification
+            src/publications/releases/ai-for-the-kingdom/1.0.0-rc4.yaml
+          if-no-files-found: ignore
+          retention-days: 30
