@@ -6,22 +6,26 @@ on:
     paths:
       - package.json
       - .github/workflows/bootstrap-lockfile.yml
+  pull_request:
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: bootstrap-pnpm-lockfile
+  group: bootstrap-pnpm-lockfile-${{ github.event_name == 'pull_request' && github.head_ref || github.ref }}
   cancel-in-progress: false
 
 jobs:
   lockfile:
-    if: github.ref == 'refs/heads/main'
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
+    env:
+      TARGET_BRANCH: ${{ github.event_name == 'pull_request' && github.head_ref || 'main' }}
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ env.TARGET_BRANCH }}
           fetch-depth: 0
       - name: Setup pnpm and Node
         uses: pnpm/setup@v2
@@ -40,5 +44,5 @@ jobs:
           git add pnpm-lock.yaml
           git diff --cached --quiet && exit 0
           git commit -m "Generate pnpm lockfile"
-          git pull --rebase origin main
-          git push origin HEAD:main
+          git pull --rebase origin "$TARGET_BRANCH"
+          git push origin HEAD:"$TARGET_BRANCH"
