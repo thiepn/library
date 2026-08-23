@@ -37,22 +37,33 @@ jobs:
     needs: readiness
     if: needs.readiness.outputs.ready == 'true'
     runs-on: ubuntu-latest
+    environment: production
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Setup pnpm and Node
+        uses: pnpm/setup@v2
         with:
-          node-version: 22.12.0
-      - run: corepack enable
-      - run: corepack prepare pnpm@11.21.0 --activate
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm release:certify
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+          cache: true
+      - name: Install frozen dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Certify release
+        run: pnpm release:certify
+      - name: Verify Cloudflare credentials
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN"
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
       - name: Deploy certified static assets
         run: pnpm exec wrangler deploy
       - name: Production smoke test
         run: |
           curl --fail --silent --show-error --location --retry 5 --retry-delay 2 https://thiepn.dev/library >/dev/null
           curl --fail --silent --show-error --location --retry 5 --retry-delay 2 https://thiepn.dev/library/search >/dev/null
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 https://thiepn.dev/library/subjects >/dev/null
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 https://thiepn.dev/library/collections >/dev/null
           curl --fail --silent --show-error --location --retry 5 --retry-delay 2 https://thiepn.dev/library/works/ai-for-the-kingdom >/dev/null

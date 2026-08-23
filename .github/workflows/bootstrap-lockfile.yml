@@ -11,18 +11,28 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: bootstrap-pnpm-lockfile
+  cancel-in-progress: false
+
 jobs:
   lockfile:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
         with:
-          node-version: 22.12.0
-      - run: corepack enable
-      - run: corepack prepare pnpm@11.21.0 --activate
-      - run: pnpm install --lockfile-only
+          fetch-depth: 0
+      - name: Setup pnpm and Node
+        uses: pnpm/setup@v2
+        with:
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+      - name: Generate lockfile
+        run: pnpm install --lockfile-only
+      - name: Verify frozen install resolves
+        run: pnpm install --frozen-lockfile
       - name: Commit lockfile
         run: |
           git config user.name "github-actions[bot]"
@@ -30,4 +40,5 @@ jobs:
           git add pnpm-lock.yaml
           git diff --cached --quiet && exit 0
           git commit -m "Generate pnpm lockfile"
-          git push
+          git pull --rebase origin main
+          git push origin HEAD:main

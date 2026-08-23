@@ -35,14 +35,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-node@v4
+      - name: Setup pnpm and Node
+        uses: pnpm/setup@v2
         with:
-          node-version: 22.12.0
-
-      - name: Enable pnpm 11.21.0
-        run: |
-          corepack enable
-          corepack prepare pnpm@11.21.0 --activate
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+          cache: true
 
       - name: Obtain exact frozen package from GitHub Release
         env:
@@ -66,11 +65,15 @@ jobs:
       - name: Verify package, reader and local binaries
         run: L17B_PACKAGE="$PACKAGE" L17B_MEDIA_DIR="$MEDIA_DIR" pnpm l17b:verify
 
-      - name: Upload immutable R2 objects
+      - name: Verify Cloudflare credentials
         if: ${{ inputs.publish_r2 }}
         run: |
           test -n "$CLOUDFLARE_API_TOKEN"
           test -n "$CLOUDFLARE_ACCOUNT_ID"
+
+      - name: Upload immutable R2 objects
+        if: ${{ inputs.publish_r2 }}
+        run: |
           pnpm exec wrangler r2 object put "$R2_BUCKET/$R2_PREFIX/AI_for_the_Kingdom_ONLINE_EDITION.pdf" --file="$MEDIA_DIR/AI_for_the_Kingdom_ONLINE_EDITION.pdf" --content-type='application/pdf' --cache-control='public, max-age=31536000, immutable' --remote
           pnpm exec wrangler r2 object put "$R2_BUCKET/$R2_PREFIX/AI_for_the_Kingdom.epub" --file="$MEDIA_DIR/AI_for_the_Kingdom.epub" --content-type='application/epub+zip' --content-disposition='attachment; filename="AI_for_the_Kingdom.epub"' --cache-control='public, max-age=31536000, immutable' --remote
           pnpm exec wrangler r2 object put "$R2_BUCKET/$R2_PREFIX/ai-for-the-kingdom.webp" --file="$MEDIA_DIR/ai-for-the-kingdom.webp" --content-type='image/webp' --cache-control='public, max-age=31536000, immutable' --remote
@@ -100,6 +103,7 @@ jobs:
           git add pnpm-lock.yaml src/content/works/ai-for-the-kingdom/chapters src/publications/releases/ai-for-the-kingdom/1.0.0-rc4.yaml
           git diff --cached --quiet && exit 0
           git commit -m 'Materialize verified AI for the Kingdom publication payload'
+          git pull --rebase origin main
           git push origin HEAD:main
 
       - name: Upload certification evidence

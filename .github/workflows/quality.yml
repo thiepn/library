@@ -9,18 +9,27 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: quality-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   quality:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Setup pnpm and Node
+        uses: pnpm/setup@v2
         with:
-          node-version: 22.12.0
-      - run: corepack enable
-      - run: corepack prepare pnpm@11.21.0 --activate
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+          cache: true
       - name: Require frozen lockfile
         run: test -f pnpm-lock.yaml
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm certify:source
-      - run: pnpm build
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Source certification
+        run: pnpm certify:source
+      - name: Validate and build launch shell
+        run: pnpm build
