@@ -60,6 +60,7 @@ jobs:
           package_path = Path(os.environ['PACKAGE'])
           expected_size = 2_034_059
           expected_sha = '1c6f831ca9c3a48031121dc6129d39cb66f5ad521d53c3e9f40153f8c9f776b7'
+          xz_magic = bytes.fromhex('fd377a585a00')
 
           parts = []
           for suffix in ('00', '01', '02', '03', '04', '05'):
@@ -73,19 +74,53 @@ jobs:
               parts.append(normalized)
               print(f'part{suffix}: encoded_bytes={len(normalized)}')
 
+          encoded = b''.join(parts)
+          print(f'combined: encoded_bytes={len(encoded)} mod4={len(encoded) % 4} tail={encoded[-8:].decode("ascii", "replace")}')
           candidates = []
+
           try:
-              candidates.append(('concatenated-base64', base64.b64decode(b''.join(parts), validate=True)))
+              candidates.append(('concatenated-base64', base64.b64decode(encoded, validate=True)))
           except Exception as exc:
               print(f'concatenated-base64 rejected: {exc}')
 
-          try:
-              candidates.append(('independent-base64-parts', b''.join(base64.b64decode(part, validate=True) for part in parts)))
-          except Exception as exc:
-              print(f'independent-base64-parts rejected: {exc}')
+          # The historical split has five exact 15,000-character chunks and a final
+          # chunk whose total stream length is mod 4 == 1. XZ stream footers repeat
+          # the two header Stream Flags and terminate with the fixed magic bytes YZ.
+          # If exactly the final three Base64 characters were lost, reconstruct them
+          # from those format invariants, then still require the frozen package hash.
+          if len(encoded) % 4 == 1:
+              prefix_chars = encoded[:-1]
+              trailing_char = encoded[-1:]
+              try:
+                  prefix_bytes = base64.b64decode(prefix_chars, validate=True)
+                  if not prefix_bytes.startswith(xz_magic):
+                      raise ValueError('decoded prefix is not an XZ stream')
+                  stream_flags = prefix_bytes[6:8]
+                  if len(stream_flags) != 2:
+                      raise ValueError('XZ Stream Flags unavailable')
+                  if prefix_bytes[-1:] != stream_flags[:1]:
+                      raise ValueError(
+                          f'prefix footer byte {prefix_bytes[-1:].hex()} does not match first Stream Flag {stream_flags[:1].hex()}'
+                      )
+                  missing_three_bytes = stream_flags[1:2] + b'YZ'
+                  final_quartet = base64.b64encode(missing_three_bytes)
+                  if final_quartet[:1] != trailing_char:
+                      raise ValueError(
+                          f'partial final Base64 character {trailing_char!r} does not match XZ footer reconstruction {final_quartet[:1]!r}'
+                      )
+                  repaired_encoded = prefix_chars + final_quartet
+                  repaired_xz = base64.b64decode(repaired_encoded, validate=True)
+                  print(
+                      'xz-footer-repair: '
+                      f'flags={stream_flags.hex()} appended_base64={final_quartet[1:].decode()} '
+                      f'xz_bytes={len(repaired_xz)}'
+                  )
+                  candidates.append(('xz-footer-repaired', repaired_xz))
+              except Exception as exc:
+                  print(f'xz-footer-repair rejected: {exc}')
 
           if not candidates:
-              raise SystemExit('No valid Base64 reconstruction mode')
+              raise SystemExit('No structurally valid XZ/Base64 reconstruction candidate')
 
           for mode, xz_payload in candidates:
               try:
