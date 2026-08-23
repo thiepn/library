@@ -3,6 +3,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import WorkCard from '../components/WorkCard.astro';
 import { getWorks } from '../lib/content/repository';
 const works = await getWorks();
+const readableWorks = works.filter((work) => work.webMaterialized);
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 <BaseLayout>
   <div class="page">
@@ -10,9 +12,52 @@ const works = await getWorks();
       <div><p class="eyebrow">00 / Library</p><h1>Read deeply. Keep what matters.</h1></div>
       <p class="hero-copy">A durable home for books, research editions, courses, and long-form work—designed around reading rather than feeds, dashboards, or disposable content.</p>
     </section>
+
+    {readableWorks.length > 0 && <section class="section" data-continue-section hidden>
+      <div class="section-heading"><div><p class="eyebrow">01 / Resume</p><h2>Continue reading</h2></div><a href={`${base}/saved`}>My Library →</a></div>
+      <div class="continue-list" data-continue-list>
+        {readableWorks.map((work) => <a class="continue-item" href={`${base}/works/${work.slug}/read`} data-continue-work={work.id} hidden><span><strong>{work.title}</strong>{work.subtitle && <small>{work.subtitle}</small>}</span><span class="micro" data-continue-progress>Resume</span></a>)}
+      </div>
+    </section>}
+
     <section class="section" id="publications">
-      <div class="section-heading"><div><p class="eyebrow">01 / Publications</p><h2>Library</h2></div><p class="micro">{works.length} publication{works.length === 1 ? '' : 's'}</p></div>
-      {works.length ? <div class="work-list">{works.map((work, index) => <WorkCard work={work} index={index + 1} />)}</div> : <div class="empty"><h2>The shelves are being prepared.</h2><p>No complete publication payload is available in this deployment yet.</p></div>}
+      <div class="section-heading"><div><p class="eyebrow">02 / Publications</p><h2>Library</h2></div><p class="micro">{works.length} publication{works.length === 1 ? '' : 's'}</p></div>
+      {works.length ? <div class="work-list">{works.map((work, index) => <WorkCard work={work} index={index + 1} />)}</div> : <div class="empty"><h2>The shelves are being prepared.</h2><p>No public publication is available yet.</p></div>}
+    </section>
+
+    <section class="section">
+      <div class="section-heading"><div><p class="eyebrow">03 / Browse</p><h2>Explore the catalog</h2></div></div>
+      <div class="taxonomy-grid">
+        <a class="taxonomy-card" href={`${base}/subjects`}><span class="micro">Topics and disciplines</span><strong>Subjects</strong></a>
+        <a class="taxonomy-card" href={`${base}/collections`}><span class="micro">Curated shelves</span><strong>Collections</strong></a>
+        <a class="taxonomy-card" href={`${base}/search`}><span class="micro">Full-text discovery</span><strong>Search</strong></a>
+      </div>
     </section>
   </div>
+  <script>
+    import { getProgress, subscribeLibraryState } from '../lib/client/library-db';
+    const section = document.querySelector<HTMLElement>('[data-continue-section]');
+    const nodes = [...document.querySelectorAll<HTMLAnchorElement>('[data-continue-work]')];
+    async function renderContinue() {
+      let visible = 0;
+      for (const node of nodes) {
+        const workId = node.dataset.continueWork;
+        if (!workId) continue;
+        try {
+          const progress = await getProgress(workId);
+          const show = Boolean(progress && progress.percent > 0 && progress.percent < 99.5);
+          node.hidden = !show;
+          if (show) {
+            visible++;
+            const label = node.querySelector<HTMLElement>('[data-continue-progress]');
+            if (label && progress) label.textContent = `${Math.max(1, Math.round(progress.percent))}% · Resume`;
+          }
+        } catch { node.hidden = true; }
+      }
+      if (section) section.hidden = visible === 0;
+    }
+    const unsubscribe = subscribeLibraryState(() => { void renderContinue(); });
+    window.addEventListener('pagehide', unsubscribe, { once: true });
+    void renderContinue();
+  </script>
 </BaseLayout>

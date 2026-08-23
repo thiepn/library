@@ -1,0 +1,18 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import WorkCard from '../../components/WorkCard.astro';
+import { getWorks, type ResolvedWork } from '../../lib/content/repository';
+import { getTaxonomyItems, taxonomyLabel } from '../../lib/content/taxonomy';
+export async function getStaticPaths() {
+  const works = await getWorks();
+  return getTaxonomyItems(works, 'collections').map((collection) => ({ params: { slug: collection.slug }, props: { collection: collection.slug, works: works.filter((work) => work.classification.collections.includes(collection.slug)) } }));
+}
+interface Props { collection: string; works: ResolvedWork[]; }
+const { collection, works } = Astro.props;
+---
+<BaseLayout title={`${taxonomyLabel(collection)} Collection`} description={`Publications in the ${taxonomyLabel(collection)} collection.`}>
+  <div class="page"><section class="section">
+    <div class="section-heading"><div><p class="eyebrow">Collection</p><h1>{taxonomyLabel(collection)}</h1></div><p class="micro">{works.length} publication{works.length === 1 ? '' : 's'}</p></div>
+    <div class="work-list">{works.map((work, index) => <WorkCard work={work} index={index + 1} />)}</div>
+  </section></div>
+</BaseLayout>

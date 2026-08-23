@@ -1,0 +1,18 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getWorks } from '../../lib/content/repository';
+import { getTaxonomyItems } from '../../lib/content/taxonomy';
+const works = await getWorks();
+const collections = getTaxonomyItems(works, 'collections');
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+<BaseLayout title="Collections" description="Curated groups of Library publications.">
+  <div class="page">
+    <section class="section">
+      <div class="section-heading"><div><p class="eyebrow">Browse / Collections</p><h1>Collections</h1></div><a href={`${base}/subjects`}>Subjects →</a></div>
+      <div class="taxonomy-grid">
+        {collections.map((collection) => <a class="taxonomy-card" href={`${base}/collections/${collection.slug}`}><span class="micro">{collection.count} publication{collection.count === 1 ? '' : 's'}</span><strong>{collection.label}</strong></a>)}
+      </div>
+    </section>
+  </div>
+</BaseLayout>

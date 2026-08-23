@@ -1,0 +1,18 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getWorks } from '../../lib/content/repository';
+import { getTaxonomyItems } from '../../lib/content/taxonomy';
+const works = await getWorks();
+const subjects = getTaxonomyItems(works, 'subjects');
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+<BaseLayout title="Subjects" description="Browse Library publications by subject.">
+  <div class="page">
+    <section class="section">
+      <div class="section-heading"><div><p class="eyebrow">Browse / Subjects</p><h1>Subjects</h1></div><a href={`${base}/collections`}>Collections →</a></div>
+      <div class="taxonomy-grid">
+        {subjects.map((subject) => <a class="taxonomy-card" href={`${base}/subjects/${subject.slug}`}><span class="micro">{subject.count} publication{subject.count === 1 ? '' : 's'}</span><strong>{subject.label}</strong></a>)}
+      </div>
+    </section>
+  </div>
+</BaseLayout>

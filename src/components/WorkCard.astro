@@ -1,5 +1,6 @@
 ---
 import type { ResolvedWork } from '../lib/content/repository';
+import { taxonomyLabel } from '../lib/content/taxonomy';
 interface Props { work: ResolvedWork; index?: number; }
 const { work, index = 1 } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
@@ -13,7 +14,7 @@ const workUrl = `${base}/works/${work.slug}`;
     <span class="cover-type">{work.type}</span>
   </a>
   <div class="work-card-copy">
-    <p class="eyebrow">{work.classification.subjects.slice(0, 3).join(' · ')}</p>
+    <p class="eyebrow taxonomy-inline">{work.classification.subjects.slice(0, 3).map((subject, subjectIndex) => <><a href={`${base}/subjects/${subject}`}>{taxonomyLabel(subject)}</a>{subjectIndex < Math.min(3, work.classification.subjects.length) - 1 && <span> · </span>}</>)}</p>
     <h2><a href={workUrl}>{work.title}</a></h2>
     {work.subtitle && <p class="work-subtitle">{work.subtitle}</p>}
     <p class="muted">{work.shortDescription}</p>

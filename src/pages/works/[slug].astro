@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getWorks, type ResolvedWork } from '../../lib/content/repository';
+import { taxonomyLabel } from '../../lib/content/taxonomy';
 export async function getStaticPaths() {
   return (await getWorks()).map((work) => ({ params: { slug: work.slug }, props: { work } }));
 }
@@ -38,7 +39,8 @@ const webStatus = work.webMaterialized ? 'available' : work.id === 'ai-for-the-k
     <dl class="meta-grid">
       <div><dt>Release</dt><dd>{work.publication.version}</dd></div>
       <div><dt>Language</dt><dd>{work.language}</dd></div>
-      <div><dt>Subjects</dt><dd>{work.classification.subjects.join(', ')}</dd></div>
+      <div><dt>Subjects</dt><dd class="taxonomy-inline">{work.classification.subjects.map((subject, index) => <><a href={`${base}/subjects/${subject}`}>{taxonomyLabel(subject)}</a>{index < work.classification.subjects.length - 1 && <span>, </span>}</>)}</dd></div>
+      <div><dt>Collections</dt><dd class="taxonomy-inline">{work.classification.collections.length ? work.classification.collections.map((collection, index) => <><a href={`${base}/collections/${collection}`}>{taxonomyLabel(collection)}</a>{index < work.classification.collections.length - 1 && <span>, </span>}</>) : '—'}</dd></div>
       <div><dt>Rights</dt><dd>{work.rights.status}</dd></div>
     </dl>
   </article>
