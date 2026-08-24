@@ -52,7 +52,8 @@ jobs:
           install: false
           cache: true
 
-      - name: Obtain exact frozen package from GitHub Release
+      - id: package
+        name: Obtain exact frozen package from GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -62,29 +63,35 @@ jobs:
           test "$(stat -c %s "$PACKAGE")" = '2034059'
           echo '1c6f831ca9c3a48031121dc6129d39cb66f5ad521d53c3e9f40153f8c9f776b7  incoming/AI_for_the_Kingdom_L17_LIBRARY_PUBLICATION_PACKAGE.zip' | sha256sum -c -
 
-      - name: Install frozen dependencies
+      - id: install
+        name: Install frozen dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Inject frozen package
+      - id: inject
+        name: Inject frozen package
         run: node scripts/l17b-inject-package.mjs "$PACKAGE"
 
-      - name: Verify package, reader and local binaries
+      - id: verify
+        name: Verify package, reader and local binaries
         run: L17B_PACKAGE="$PACKAGE" L17B_MEDIA_DIR="$MEDIA_DIR" pnpm l17b:verify
 
-      - name: Verify Cloudflare credentials
+      - id: creds
+        name: Verify Cloudflare credentials
         if: ${{ github.event_name == 'release' || github.event_name == 'push' || inputs.publish_r2 }}
         run: |
           test -n "$CLOUDFLARE_API_TOKEN"
           test -n "$CLOUDFLARE_ACCOUNT_ID"
 
-      - name: Upload immutable R2 objects
+      - id: upload
+        name: Upload immutable R2 objects
         if: ${{ github.event_name == 'release' || github.event_name == 'push' || inputs.publish_r2 }}
         run: |
           pnpm exec wrangler r2 object put "$R2_BUCKET/$R2_PREFIX/AI_for_the_Kingdom_ONLINE_EDITION.pdf" --file="$MEDIA_DIR/AI_for_the_Kingdom_ONLINE_EDITION.pdf" --content-type='application/pdf' --cache-control='public, max-age=31536000, immutable' --remote
           pnpm exec wrangler r2 object put "$R2_BUCKET/$R2_PREFIX/AI_for_the_Kingdom.epub" --file="$MEDIA_DIR/AI_for_the_Kingdom.epub" --content-type='application/epub+zip' --content-disposition='attachment; filename="AI_for_the_Kingdom.epub"' --cache-control='public, max-age=31536000, immutable' --remote
           pnpm exec wrangler r2 object put "$R2_BUCKET/$R2_PREFIX/ai-for-the-kingdom.webp" --file="$MEDIA_DIR/ai-for-the-kingdom.webp" --content-type='image/webp' --cache-control='public, max-age=31536000, immutable' --remote
 
-      - name: Download R2 objects back and verify exact hashes
+      - id: readback
+        name: Download R2 objects back and verify exact hashes
         if: ${{ github.event_name == 'release' || github.event_name == 'push' || inputs.publish_r2 }}
         run: |
           rm -rf "$R2_VERIFY_DIR" && mkdir -p "$R2_VERIFY_DIR"
@@ -94,15 +101,18 @@ jobs:
           L17B_MEDIA_DIR="$R2_VERIFY_DIR" pnpm l17b:verify
           printf 'R2 readback verified against frozen L17 hashes\n' > "$R2_VERIFY_DIR/.r2-verified"
 
-      - name: Write canonical release registry
+      - id: registry
+        name: Write canonical release registry
         if: ${{ github.event_name == 'release' || github.event_name == 'push' || inputs.publish_r2 }}
         run: L17B_R2_MEDIA_DIR="$R2_VERIFY_DIR" node scripts/l17b-write-release.mjs
 
-      - name: Full release certification
+      - id: certify
+        name: Full release certification
         if: ${{ github.event_name == 'release' || github.event_name == 'push' || inputs.publish_r2 }}
         run: L17B_PACKAGE="$PACKAGE" L17B_MEDIA_DIR="$R2_VERIFY_DIR" pnpm release:certify
 
-      - name: Commit verified materialization
+      - id: promote
+        name: Commit verified materialization
         if: ${{ github.event_name == 'release' || github.event_name == 'push' || inputs.publish_r2 }}
         run: |
           git config user.name 'github-actions[bot]'
@@ -111,6 +121,51 @@ jobs:
           git diff --cached --quiet && exit 0
           git commit -m 'Materialize verified AI for the Kingdom publication payload'
           git pull --rebase origin main
+          git push origin HEAD:main
+
+      - name: Record L17B run outcome
+        if: always()
+        env:
+          PACKAGE_OUTCOME: ${{ steps.package.outcome }}
+          INSTALL_OUTCOME: ${{ steps.install.outcome }}
+          INJECT_OUTCOME: ${{ steps.inject.outcome }}
+          VERIFY_OUTCOME: ${{ steps.verify.outcome }}
+          CREDS_OUTCOME: ${{ steps.creds.outcome }}
+          UPLOAD_OUTCOME: ${{ steps.upload.outcome }}
+          READBACK_OUTCOME: ${{ steps.readback.outcome }}
+          REGISTRY_OUTCOME: ${{ steps.registry.outcome }}
+          CERTIFY_OUTCOME: ${{ steps.certify.outcome }}
+          PROMOTE_OUTCOME: ${{ steps.promote.outcome }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git fetch origin main
+          git checkout -B l17b-run-status origin/main
+          mkdir -p docs
+          cat > docs/L17B_RUN_STATUS.md <<EOF
+          # L17B latest run status
+
+          Trigger: ${GITHUB_EVENT_NAME}
+          Run: ${GITHUB_RUN_ID}
+          Source SHA: ${GITHUB_SHA}
+          Release tag: ${RELEASE_TAG}
+
+          | Stage | Outcome |
+          | --- | --- |
+          | package | ${PACKAGE_OUTCOME} |
+          | install | ${INSTALL_OUTCOME} |
+          | inject | ${INJECT_OUTCOME} |
+          | verify | ${VERIFY_OUTCOME} |
+          | credentials | ${CREDS_OUTCOME} |
+          | R2 upload | ${UPLOAD_OUTCOME} |
+          | R2 readback | ${READBACK_OUTCOME} |
+          | registry | ${REGISTRY_OUTCOME} |
+          | certification | ${CERTIFY_OUTCOME} |
+          | promotion | ${PROMOTE_OUTCOME} |
+          EOF
+          git add docs/L17B_RUN_STATUS.md
+          git diff --cached --quiet && exit 0
+          git commit -m 'Record L17B publication run outcome'
           git push origin HEAD:main
 
       - name: Upload certification evidence
