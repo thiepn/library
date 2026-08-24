@@ -12,6 +12,8 @@ on:
         required: true
         type: boolean
         default: true
+  release:
+    types: [published]
 
 permissions:
   contents: write
@@ -22,6 +24,7 @@ concurrency:
 
 jobs:
   materialize:
+    if: github.event_name == 'workflow_dispatch' || github.event.release.tag_name == 'l17b-frozen-payload'
     runs-on: ubuntu-latest
     env:
       PACKAGE: incoming/AI_for_the_Kingdom_L17_LIBRARY_PUBLICATION_PACKAGE.zip
@@ -29,6 +32,7 @@ jobs:
       R2_VERIFY_DIR: .build/l17b-r2-verify
       R2_BUCKET: thiepn-library-publications
       R2_PREFIX: works/ai-for-the-kingdom/editions/1.0.0-rc4
+      RELEASE_TAG: ${{ github.event_name == 'release' && github.event.release.tag_name || inputs.release_tag }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
@@ -49,8 +53,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           mkdir -p incoming
-          gh release download "${{ inputs.release_tag }}" --repo "$GITHUB_REPOSITORY" --pattern 'AI_for_the_Kingdom_L17_LIBRARY_PUBLICATION_PACKAGE.zip' --dir incoming
+          gh release download "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --pattern 'AI_for_the_Kingdom_L17_LIBRARY_PUBLICATION_PACKAGE.zip' --dir incoming
           test -f "$PACKAGE"
+          test "$(stat -c %s "$PACKAGE")" = '2034059'
+          echo '1c6f831ca9c3a48031121dc6129d39cb66f5ad521d53c3e9f40153f8c9f776b7  incoming/AI_for_the_Kingdom_L17_LIBRARY_PUBLICATION_PACKAGE.zip' | sha256sum -c -
 
       - name: Install frozen dependencies
         run: pnpm install --frozen-lockfile
@@ -62,20 +68,20 @@ jobs:
         run: L17B_PACKAGE="$PACKAGE" L17B_MEDIA_DIR="$MEDIA_DIR" pnpm l17b:verify
 
       - name: Verify Cloudflare credentials
-        if: ${{ inputs.publish_r2 }}
+        if: ${{ github.event_name == 'release' || inputs.publish_r2 }}
         run: |
           test -n "$CLOUDFLARE_API_TOKEN"
           test -n "$CLOUDFLARE_ACCOUNT_ID"
 
       - name: Upload immutable R2 objects
-        if: ${{ inputs.publish_r2 }}
+        if: ${{ github.event_name == 'release' || inputs.publish_r2 }}
         run: |
           pnpm exec wrangler r2 object put "$R2_BUCKET/$R2_PREFIX/AI_for_the_Kingdom_ONLINE_EDITION.pdf" --file="$MEDIA_DIR/AI_for_the_Kingdom_ONLINE_EDITION.pdf" --content-type='application/pdf' --cache-control='public, max-age=31536000, immutable' --remote
           pnpm exec wrangler r2 object put "$R2_BUCKET/$R2_PREFIX/AI_for_the_Kingdom.epub" --file="$MEDIA_DIR/AI_for_the_Kingdom.epub" --content-type='application/epub+zip' --content-disposition='attachment; filename="AI_for_the_Kingdom.epub"' --cache-control='public, max-age=31536000, immutable' --remote
           pnpm exec wrangler r2 object put "$R2_BUCKET/$R2_PREFIX/ai-for-the-kingdom.webp" --file="$MEDIA_DIR/ai-for-the-kingdom.webp" --content-type='image/webp' --cache-control='public, max-age=31536000, immutable' --remote
 
       - name: Download R2 objects back and verify exact hashes
-        if: ${{ inputs.publish_r2 }}
+        if: ${{ github.event_name == 'release' || inputs.publish_r2 }}
         run: |
           rm -rf "$R2_VERIFY_DIR" && mkdir -p "$R2_VERIFY_DIR"
           pnpm exec wrangler r2 object get "$R2_BUCKET/$R2_PREFIX/AI_for_the_Kingdom_ONLINE_EDITION.pdf" --file="$R2_VERIFY_DIR/AI_for_the_Kingdom_ONLINE_EDITION.pdf" --remote
@@ -85,15 +91,15 @@ jobs:
           printf 'R2 readback verified against frozen L17 hashes\n' > "$R2_VERIFY_DIR/.r2-verified"
 
       - name: Write canonical release registry
-        if: ${{ inputs.publish_r2 }}
+        if: ${{ github.event_name == 'release' || inputs.publish_r2 }}
         run: L17B_R2_MEDIA_DIR="$R2_VERIFY_DIR" node scripts/l17b-write-release.mjs
 
       - name: Full release certification
-        if: ${{ inputs.publish_r2 }}
+        if: ${{ github.event_name == 'release' || inputs.publish_r2 }}
         run: L17B_PACKAGE="$PACKAGE" L17B_MEDIA_DIR="$R2_VERIFY_DIR" pnpm release:certify
 
       - name: Commit verified materialization
-        if: ${{ inputs.publish_r2 }}
+        if: ${{ github.event_name == 'release' || inputs.publish_r2 }}
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
