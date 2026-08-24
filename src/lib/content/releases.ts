@@ -25,7 +25,7 @@ export interface PublicationRelease {
 }
 
 const releasesRoot = path.join(process.cwd(), 'src/publications/releases');
-const mediaOrigin = 'https://media.library.thiepn.dev/';
+const mediaOrigin = 'https://thiepn.dev/library/media/';
 const sha256 = /^[a-f0-9]{64}$/i;
 
 function artifact(value: unknown, kind: 'pdf' | 'epub'): ReleaseArtifact | undefined {
