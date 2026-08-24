@@ -2,16 +2,16 @@
 import type { ResolvedWork } from '../lib/content/repository';
 import { taxonomyLabel } from '../lib/content/taxonomy';
 interface Props { work: ResolvedWork; index?: number; }
-const { work, index = 1 } = Astro.props;
+const { work } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const workUrl = `${base}/works/${work.slug}`;
+const coverUrl = /^https?:\/\//i.test(work.cover.src)
+  ? work.cover.src
+  : `${base}${work.cover.src.startsWith('/') ? work.cover.src : `/${work.cover.src}`}`;
 ---
 <article class="work-card" data-pagefind-ignore="all">
-  <a class="cover" href={workUrl} aria-label={`Open ${work.title}`}>
-    <span class="cover-index">{String(index).padStart(2, '0')}</span>
-    <span class="cover-title">{work.title}</span>
-    <span class="cover-rule"></span>
-    <span class="cover-type">{work.type}</span>
+  <a class="publication-cover-link" href={workUrl} aria-label={`Open ${work.title}`}>
+    <img class="publication-cover" src={coverUrl} alt={work.cover.alt} loading="lazy" decoding="async" />
   </a>
   <div class="work-card-copy">
     <p class="eyebrow taxonomy-inline">{work.classification.subjects.slice(0, 3).map((subject, subjectIndex) => <><a href={`${base}/subjects/${subject}`}>{taxonomyLabel(subject)}</a>{subjectIndex < Math.min(3, work.classification.subjects.length) - 1 && <span> · </span>}</>)}</p>
