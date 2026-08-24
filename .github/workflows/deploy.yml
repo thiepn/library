@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: library-production
@@ -14,6 +14,7 @@ concurrency:
 
 jobs:
   readiness:
+    if: github.event_name != 'push' || !startsWith(github.event.head_commit.message, 'Record production deployment outcome')
     runs-on: ubuntu-latest
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -73,10 +74,54 @@ jobs:
         run: pnpm release:certify
       - name: Deploy certified static assets
         run: pnpm exec wrangler deploy
-      - name: Production smoke test
+      - name: Production application smoke test
         run: |
           curl --fail --silent --show-error --location --retry 5 --retry-delay 2 https://thiepn.dev/library >/dev/null
           curl --fail --silent --show-error --location --retry 5 --retry-delay 2 https://thiepn.dev/library/search >/dev/null
           curl --fail --silent --show-error --location --retry 5 --retry-delay 2 https://thiepn.dev/library/subjects >/dev/null
           curl --fail --silent --show-error --location --retry 5 --retry-delay 2 https://thiepn.dev/library/collections >/dev/null
           curl --fail --silent --show-error --location --retry 5 --retry-delay 2 https://thiepn.dev/library/works/ai-for-the-kingdom >/dev/null
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 https://thiepn.dev/library/works/ai-for-the-kingdom/read >/dev/null
+      - name: Production publication media smoke test
+        run: |
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 --range 0-0 https://media.library.thiepn.dev/works/ai-for-the-kingdom/editions/1.0.0-rc4/AI_for_the_Kingdom_ONLINE_EDITION.pdf >/dev/null
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 --range 0-0 https://media.library.thiepn.dev/works/ai-for-the-kingdom/editions/1.0.0-rc4/AI_for_the_Kingdom.epub >/dev/null
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 --range 0-0 https://media.library.thiepn.dev/works/ai-for-the-kingdom/editions/1.0.0-rc4/ai-for-the-kingdom.webp >/dev/null
+
+  report:
+    needs: [readiness, deploy]
+    if: always() && (github.event_name != 'push' || !startsWith(github.event.head_commit.message, 'Record production deployment outcome'))
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Record production deployment outcome
+        env:
+          READINESS_RESULT: ${{ needs.readiness.result }}
+          READY: ${{ needs.readiness.outputs.ready }}
+          BLOCKERS: ${{ needs.readiness.outputs.blockers }}
+          DEPLOY_RESULT: ${{ needs.deploy.result }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git fetch origin main
+          git checkout -B deploy-status origin/main
+          mkdir -p docs
+          cat > docs/PRODUCTION_DEPLOY_STATUS.md <<EOF
+          # Library production deployment status
+
+          Run: ${GITHUB_RUN_ID}
+          Source SHA: ${GITHUB_SHA}
+
+          | Stage | Outcome |
+          | --- | --- |
+          | readiness job | ${READINESS_RESULT} |
+          | production gate | ${READY:-false} |
+          | blockers | ${BLOCKERS:-none} |
+          | deploy + application/media smoke tests | ${DEPLOY_RESULT} |
+          EOF
+          git add docs/PRODUCTION_DEPLOY_STATUS.md
+          git diff --cached --quiet && exit 0
+          git commit -m 'Record production deployment outcome'
+          git push origin HEAD:main
