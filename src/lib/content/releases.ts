@@ -21,6 +21,7 @@ export interface PublicationRelease {
   artifacts: {
     pdf?: ReleaseArtifact;
     epub?: ReleaseArtifact;
+    cover?: ReleaseArtifact;
   };
 }
 
@@ -28,19 +29,23 @@ const releasesRoot = path.join(process.cwd(), 'src/publications/releases');
 const mediaOrigin = 'https://thiepn.dev/library/media/';
 const sha256 = /^[a-f0-9]{64}$/i;
 
-function artifact(value: unknown, kind: 'pdf' | 'epub'): ReleaseArtifact | undefined {
+function artifact(value: unknown, kind: 'pdf' | 'epub' | 'cover'): ReleaseArtifact | undefined {
   if (!value || typeof value !== 'object') return undefined;
   const candidate = value as Record<string, unknown>;
-  const expectedMime = kind === 'pdf' ? 'application/pdf' : 'application/epub+zip';
+  const validMimes = kind === 'pdf'
+    ? ['application/pdf']
+    : kind === 'epub'
+      ? ['application/epub+zip']
+      : ['image/jpeg', 'image/png', 'image/webp'];
   if (typeof candidate.url !== 'string' || !candidate.url.startsWith(mediaOrigin)) return undefined;
   if (typeof candidate.filename !== 'string' || candidate.filename.trim() === '') return undefined;
-  if (candidate.mimeType !== expectedMime) return undefined;
+  if (typeof candidate.mimeType !== 'string' || !validMimes.includes(candidate.mimeType)) return undefined;
   if (!Number.isInteger(candidate.sizeBytes) || Number(candidate.sizeBytes) <= 0) return undefined;
   if (typeof candidate.sha256 !== 'string' || !sha256.test(candidate.sha256)) return undefined;
   return {
     url: candidate.url,
     filename: candidate.filename,
-    mimeType: expectedMime,
+    mimeType: candidate.mimeType,
     sizeBytes: Number(candidate.sizeBytes),
     sha256: candidate.sha256.toLowerCase(),
   };
@@ -55,6 +60,7 @@ export async function getActiveRelease(work: WorkManifest): Promise<PublicationR
     const artifactsRaw = raw.artifacts && typeof raw.artifacts === 'object' ? raw.artifacts as Record<string, unknown> : {};
     const pdf = work.formats.pdf.enabled ? artifact(artifactsRaw.pdf, 'pdf') : undefined;
     const epub = work.formats.epub.enabled ? artifact(artifactsRaw.epub, 'epub') : undefined;
+    const cover = artifact(artifactsRaw.cover, 'cover');
     if (work.formats.pdf.enabled && !pdf) return undefined;
     if (work.formats.epub.enabled && !epub) return undefined;
     const releasedAt = typeof raw.releasedAt === 'string' ? raw.releasedAt : '';
@@ -66,7 +72,7 @@ export async function getActiveRelease(work: WorkManifest): Promise<PublicationR
       edition: work.publication.edition,
       releasedAt,
       ...(typeof raw.sourceHash === 'string' && sha256.test(raw.sourceHash) ? { sourceHash: raw.sourceHash.toLowerCase() } : {}),
-      artifacts: { ...(pdf ? { pdf } : {}), ...(epub ? { epub } : {}) },
+      artifacts: { ...(pdf ? { pdf } : {}), ...(epub ? { epub } : {}), ...(cover ? { cover } : {}) },
     };
   } catch {
     return undefined;
