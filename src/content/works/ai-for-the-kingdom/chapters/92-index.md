@@ -1,60 +1,211 @@
 ---
 id: index
-title: Index
 order: 9020
-part: null
+title: "Index"
 status: published
+description: "Index"
 estimatedMinutes: 2
 ---
+*Page references in this index refer to the print edition. In a reflowable ebook, use the table of contents and search for direct navigation.*
 
-# Index
+AI agents, 132–134, 140–145, 157–159
 
-**AI agents** — autonomy; permissions; action systems; governance.
+AI companions, 126–128
 
-**AI literacy** — critical use; missionary training; source verification.
+AI literacy, 99–103, 149–151
 
-**apologetics** — generated arguments; honesty; role-play; source checking.
+AI pastors, 126–128
 
-**Babel** — centralization; language; human power.
+apologetics, 91–94
 
-**Bible translation** — AI drafts; checking; community review; terminology.
+artificial intelligence, technical foundations, 42–47
 
-**bias** — cultural representation; dominant languages; digital colonialism.
+authority
 
-**Church** — authority; discipleship; mission; pastoral responsibility.
+> ecclesial, 35–41, 178–181
+>
+> pastoral, 126–128
+>
+> synthetic, 126–128
 
-**data** — minimization; privacy; research; surveillance.
+automation, 104–119, 140–151
 
-**deepfakes** — deception; synthetic media; trust.
+Babel, 25–29
 
-**discipleship** — community; teaching; personalization; human example.
+Bible teaching, 95–98
 
-**Great Commission** — continuity; obedience; technology as servant.
+Bible translation, 76–90
 
-**human dignity** — embodiment; image of God; productivity; personhood.
+> AI drafting and Draft 0, 81–85
+>
+> community and consultant review, 81–90
+>
+> first-draft dispute, 81–85
+>
+> oral translation, 83–90
 
-**language learning** — AI tutors; cultural immersion; local speakers.
+CELAM, 135–139, 175–177
 
-**local leaders** — capability building; local ownership; sustainability.
+Christian Methodist Episcopal Church (CME), 91–94
 
-**localization** — culture; adaptation; translation.
+Church
 
-**low-resource languages** — community ownership; missionary opportunity; speech technology.
+> local churches and AI governance, 35–41, 140–151
+>
+> mission belongs to, 35–41
+>
+> universal Church, 30–41, 178–181
 
-**mission research** — data; uncertainty; strategy; surveillance.
+Church of God of Prophecy, 146–151, 172–174
 
-**pastoral care** — accountability; synthetic authority; relationship.
+Ciyawo, 83–90
 
-**Pentecost** — language; witness; nations.
+cloud AI, 160–163
 
-**privacy** — external providers; persecution; sensitive ministry data.
+cognitive offloading, 120–125
 
-**software** — ministry tools; maintainability; security.
+competence, 120–125, 149–151, 170–171
 
-**synthetic media** — disclosure; integrity; voice cloning.
+confabulation, 48–52
 
-**translation** — localization; machine assistance; review.
+contextualization, 66–70, 135–139
 
-**truth** — hallucination; verification; Christian integrity.
+data classification (D1–D5), 132–145
 
-**wisdom** — discernment; intelligence; moral responsibility.
+data minimization, 132–134
+
+Daystar University, 99–103, 172–174
+
+Deaf communities, 86–90
+
+deepfakes, 129–131
+
+delegation, 140–145
+
+> Delegation Ladder (L0–L4), 140–145
+
+digital colonialism, 135–139
+
+discipleship, 95–98
+
+embodiment, 14–19, 123–128
+
+evangelism, 91–94
+
+formation, 95–103, 120–128, 149–151, 170–171
+
+Great Commission, 30–34
+
+Guinea-Bissau Creole (Kiriol), 76–80, 154–156
+
+human dignity, 14–19
+
+human handoff, 91–98, 126–128, 140–145
+
+imago Dei, 14–19
+
+International Mission Board (IMB), 164–169
+
+Joshua Project, 116–119, 164–169
+
+Kingdom of God, 175–177
+
+language learning, 71–75
+
+least privilege, 132–134, 157–159
+
+Leslie Taylor, 1–6, 71–75
+
+local agency, 35–41, 135–139, 154–156, 175–177
+
+local AI, 132–134, 160–163
+
+low-resource languages, 76–90, 154–156
+
+Mission AI Discernment Framework, 58–64
+
+Mission Bible Class, 76–80
+
+mission data, 116–119, 164–169
+
+mission research, 116–119
+
+missionary calling, 170–181
+
+*missio Dei*, 30–34
+
+multimodal AI, 42–47
+
+NIST, 48–64, 140–159
+
+obedience, 164–181
+
+Open Doors, 164–169
+
+orality, 86–90
+
+organizational AI maturity, 172–174
+
+pastoral care, 126–128
+
+Pattern Platform, 107–109, 132–134, 160–163
+
+Pentecost, 25–29
+
+people groups, 116–119, 164–169
+
+prayer, 123–125, 164–169, 178–181
+
+privacy, 132–134
+
+prompt injection, 157–159
+
+protected responsibilities, 140–145
+
+provenance, 53–57, 129–131
+
+resilient mission technology, 160–163
+
+retrieval-augmented generation (RAG), 42–47, 95–103
+
+risk, 58–64, 140–145
+
+> Critical Overrides, 140–145
+>
+> qualitative Risk Matrix, 140–145
+
+safeguarding, 126–128, 140–145
+
+Scripture Forge, 81–85
+
+security, 132–134, 157–163
+
+sign languages, 86–90
+
+suffering, 164–169, 178–181
+
+synthetic authority, 126–128
+
+synthetic media, 129–131
+
+Taeho Jang, 81–85
+
+Tetun, 154–156
+
+theological education, 99–103
+
+translation and localization, 76–80
+
+unreached peoples, 116–119, 164–169
+
+verification, 48–64, 140–151
+
+> Verification Levels (V0–V5), 140–145
+
+wisdom, 20–24
+
+witness, 30–41, 91–94, 164–169, 178–181
+
+Wycliffe, 81–90, 164–169
+
+Character → Competence → Community → Technology, 170–171

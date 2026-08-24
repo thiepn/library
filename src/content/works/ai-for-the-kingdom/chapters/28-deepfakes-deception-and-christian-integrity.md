@@ -1,58 +1,60 @@
 ---
 id: deepfakes-deception-and-christian-integrity
-title: Deepfakes, Deception, and Christian Integrity
 order: 5040
+title: "Deepfakes, Deception, and Christian Integrity"
 part: when-ai-becomes-dangerous
 status: published
+description: "Chapter 28: Deepfakes, Deception, and Christian Integrity."
 estimatedMinutes: 3
 ---
+Chapter 10 established the Christian duty of truthfulness. This chapter owns a narrower problem: synthetic identity and documentary appearance.
 
-# Deepfakes, Deception, and Christian Integrity
+AI can create faces, voices, photographs, video, and reconstructed scenes that look evidential.
 
-Synthetic media will make trust harder.
+The ethical question is what the audience reasonably believes it is seeing or hearing.
 
-Images can depict events that never occurred.
+## Synthetic Media Borrow Authority[^1] {#synthetic-media-borrow-authority}
 
-Voices can say words their owners never spoke.
+A generated illustration of a biblical landscape is obviously illustrative in the right context.
 
-Video can imitate public figures.
+A generated image presented inside a mission report may be interpreted as documentary evidence of a real family or event.
 
-Documents can be fabricated instantly.
+The pixels are not the whole ethical issue. The surrounding claim is. Mission organizations have long used photography and testimony to establish credibility. Synthetic media changes the evidentiary environment in which those traditions operate.
 
-Mission organizations must prepare for this environment.
+The old assumption that “a photograph proves someone was there” is weakening. Organizations should preserve original files, captions, dates, consent records, and provenance for important documentary material.
 
-A fake video of a missionary insulting a local religion could provoke violence.
+There are legitimate reasons to reconstruct an event visually: security, lack of photography, historical storytelling.
 
-A cloned voice could request emergency money from supporters.
+A reconstruction should be identified in a way appropriate to the context. The audience should not reasonably mistake it for original documentary footage.
 
-A synthetic government notice could mislead field workers.
+## Identity, Voice, and Testimony {#identity-voice-and-testimony}
 
-A fabricated testimony could spread through churches before anyone verifies it.
+Mission communication often depends on testimony: this happened; this person said this; this church experienced this.
 
-Security training should therefore include synthetic-media awareness.
+Synthetic media can create the appearance of testimony without the underlying event. Organizations should know whether material is documentary, illustrative, composite, reconstruction, or synthetic. Synthetic voice can allow a speaker's message to be rendered in another language while preserving aspects of tone.
 
-Staff should verify unusual requests through independent channels.
+Consent should distinguish translation from generation of new speech. A ministry should not use a person's cloned voice to say words they never approved.
 
-Organizations should establish authentication procedures for financial and crisis communication.
+Consent to record a person does not automatically include consent to synthesize new statements in their voice or image. The long-term test is what grows around the tool. The ministry may gain speed while losing understanding, or it may use speed to create margin for better judgment and relationship. Success should therefore be evaluated over time through competence, accountability, resilience, and service rather than through the first impressive demonstration.
 
-Public media should preserve original files when possible.
+## Provenance Is a Ministry Discipline {#provenance-is-a-ministry-discipline}
 
-Christians must also refuse deceptive uses themselves.
+Technical approaches increasingly emphasize provenance, authentication, metadata, watermarking, and auditing because perfect detection cannot be assumed.
 
-A ministry should not justify a fake image because it illustrates a true concept.
+The mature question is not only, “Can we detect whether this is fake?”
 
-Documentary claims require documentary truth.
+It is, “Where did this media come from, who approved it, and what claim is it making?”
 
-When synthetic media are used creatively, the audience should not be misled about what they are seeing.
+Fundraising deserves strict treatment. Synthetic emotional imagery should not create the impression that donors are seeing a particular suffering person when no such documented person exists.
 
-The cultural opportunity is significant.
+Urgency does not remove truthfulness. Large organizations need internal metadata categories even when public disclosure remains simple. Documentary. Illustrative. Composite. Synthetic. Reconstruction. This prevents assets from losing their history as they move among teams. Deepfake detection will remain an arms race. Ministries should not build truthfulness policy on the assumption that software will always determine authenticity. Provenance and accountable source chains are more durable.
 
-As trust declines, institutions known for careful truthfulness become more valuable.
+## Legitimate Uses Still Need Boundaries {#legitimate-uses-still-need-boundaries}
 
-Christian integrity may therefore become a form of public witness.
+Voice cloning and realistic video create legitimate uses: translation, accessibility, anonymization, reconstruction. They also make impersonation cheap. Permission to record someone's voice is not automatically permission to generate new statements in that person's voice.
 
-The Church cannot control the synthetic information environment.
+Synthetic media can protect identities, localize material, create illustrations where photography is dangerous, and reduce production cost.
 
-It can control whether it contributes to deception.
+The standard is not no synthetic media. It is this: Do not allow synthetic media to borrow documentary authority it has not earned.
 
-[^1]: Deepfake threats include both technical forgery and the broader “liar's dividend,” in which real evidence can be dismissed as synthetic because forgery is widely possible.
+[^1]: For generative-AI risk treatment relevant to synthetic content, provenance, and information integrity, see Autio et al., *Artificial Intelligence Risk Management Framework: Generative Artificial Intelligence Profile*

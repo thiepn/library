@@ -1,14 +1,19 @@
 ---
 id: copyright-and-publication-information
-title: Copyright and Publication Information
 order: 10
-part: null
+title: "Copyright and Publication Information"
 status: published
+description: "Copyright and Publication Information"
 estimatedMinutes: 1
 ---
+AI for the Kingdom: Stewarding Artificial Intelligence for the Great Commission
 
 Copyright © 2026. All rights reserved.
 
-No part of this publication may be reproduced, stored, or transmitted in any form or by any means without prior written permission of the copyright holder, except for brief quotations used in reviews, teaching, scholarship, or other uses permitted by law.
+All rights reserved.
 
-Scripture quotations are identified where relevant in the text. Unless otherwise indicated, biblical references are provided for study and reflection rather than as a claim of exclusive translation wording.
+Unless otherwise indicated, Scripture quotations are from the Berean Standard Bible (BSB). The Berean Standard Bible has been dedicated to the public domain.
+
+This book contains general theological, missiological, technological, organizational, and ethical analysis. It is not a substitute for qualified legal, cybersecurity, safeguarding, medical, mental-health, or other professional advice.
+
+First edition, 2026.

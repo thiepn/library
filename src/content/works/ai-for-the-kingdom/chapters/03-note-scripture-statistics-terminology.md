@@ -1,12 +1,11 @@
 ---
 id: note-scripture-statistics-terminology
-title: A Note on Scripture, Statistics, and Terminology
 order: 40
-part: null
+title: "A Note on Scripture, Statistics, and Terminology"
 status: published
+description: "A Note on Scripture, Statistics, and Terminology"
 estimatedMinutes: 1
 ---
+Unless otherwise indicated, Scripture quotations are from the Berean Standard Bible. Contemporary mission statistics are attributed to their source and methodology where material. The phrase *low-resource language* refers to the availability of digital or computational resources for a particular task, not to the value or sophistication of a language. *Church* is capitalized when referring to the universal Church in a theological sense and lowercased for local churches or churches generally.
 
-Biblical quotations and references are used throughout this work to ground theological reflection. Mission statistics, people-group counts, language counts, and technology adoption figures change over time and differ according to methodology.
-
-Terms such as *unreached*, *unengaged*, *people group*, *language*, *AI*, and *model* can carry different technical definitions depending on the organization or discipline using them. Readers should therefore consult the methodology of the relevant source when precise classification matters.
+PART I

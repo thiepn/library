@@ -1,236 +1,194 @@
 ---
 id: a-framework-for-christian-ai-discernment
-title: A Framework for Christian AI Discernment
 order: 2040
+title: "A Framework for Christian AI Discernment"
 part: understanding-and-discerning-ai
 status: published
+description: "Chapter 11: A Framework for Christian AI Discernment."
 estimatedMinutes: 8
 ---
+Rules are useful when situations repeat. Artificial intelligence creates too many contexts for one universal list.
 
-# A Framework for Christian AI Discernment
+“Never use AI for ministry” is too broad. “Use AI as long as a human reviews it” is too vague. A spelling suggestion and an automated pastoral counselor both involve a human somewhere, but they do not deserve the same analysis.
 
-Christians need more than lists of approved and forbidden AI uses.
+Christians need a framework that helps them ask the right questions before deciding how much AI involvement a task should receive.
 
-Technology changes too quickly.
+The Mission AI Discernment framework uses five lenses—Task, Authority, Truth, Relationship, and Data—with Formation running across all five. It is a normative decision aid developed in this book, not an empirically validated scoring instrument. Its purpose is to structure judgment, not replace it.
 
-Specific tools that seem important today may disappear in a few years.
+## The Decision Before the Tool {#the-decision-before-the-tool}
 
-New capabilities will emerge that current policies do not anticipate.
+The Mission AI Discernment framework is intentionally prior to policy. Policies answer recurring organizational questions. Discernment helps Christians understand novel situations for which no policy paragraph yet exists.
 
-The Church therefore needs principles that can travel across technologies.
+This matters because AI capabilities change faster than organizational documents. A church may write a policy about chatbots and soon encounter agents, generated video, local models, or integrated assistants. If staff know only the rule, novelty creates confusion. If they understand Task, Authority, Truth, Relationship, Data, and Formation, they can reason through the new case.
 
-A useful discernment framework can be built around seven questions.
+The framework also gives small ministries a way to govern without enterprise bureaucracy. A volunteer team can ask the five questions in a few minutes. Formal documentation becomes necessary only when consequence rises.
 
-## 1. What is the task?
+## Five Lenses of Discernment[^1] {#five-lenses-of-discernment}
 
-Begin with the actual work rather than the technology.
+What is actually being delegated? This sounds obvious, yet many AI policies begin with tools instead of work. “May staff use ChatGPT?” is a poor starting question because the same system can be used to brainstorm a public event name or process a confidential pastoral report.
 
-Are you translating?
+Define the task at the smallest meaningful level. “Translation” is too broad. Translating an internal logistics message and approving a Bible translation are not the same task.
 
-Teaching?
+“Pastoral care” is too broad. Retrieving church office hours and advising someone in an abuse situation are not the same task.
 
-Researching?
+“Research” is too broad. Generating search terms and deciding missionary priorities are not the same task.
 
-Counseling?
+Task clarity makes every later question easier. What power is the system receiving? An AI can suggest, draft, recommend, publish, send, modify, purchase, or decide. These are different levels of delegated authority.
 
-Writing software?
+A system that drafts an email for approval has little external authority. An agent that selects recipients and sends messages without review has much more.
 
-Analyzing data?
+Authority is therefore not identical to capability. The same model can be safely used at a low authority level and dangerously used at a high one.
 
-Creating media?
+The later Delegation Ladder formalizes this progression from L0 No AI to L4 Delegated Agency. Here the essential question is simply: what can the system cause to happen without a person intervening first?
 
-Making a decision?
+What kind of error would matter? Some tasks tolerate variation. Brainstorming does not require each suggestion to be factual. Public teaching, legal summaries, mission statistics, historical claims, and quotations do.
 
-The same AI system may be appropriate for one task and inappropriate for another.
+Truth analysis includes both factual accuracy and faithful representation. A synthetic image may be technically excellent and still mislead. A translation may be literal and still wrong in context. A statistic may be accurately copied and methodologically overinterpreted.
 
-Generating ten headline options is very different from deciding whether someone should receive pastoral discipline.
+The more consequential the truth claim, the stronger the verification requirement. What human relationship is involved, and what would automation change? A scheduling assistant may improve a relationship by removing clerical friction. A pastoral chatbot may provide useful low-risk support while also encouraging users to disclose information they assume is confidential. A language tutor may increase confidence before real conversations or become a convenient substitute for them.
 
-Task clarity prevents the vague assumption that "AI is good" or "AI is bad."
+The question is not whether technology mediates relationship. Human relationships have long been mediated by letters, phones, books, and screens. The question is what good the relationship is supposed to carry and whether the workflow strengthens or displaces that good.
 
-## 2. What responsibility is being delegated?
+Relationship analysis becomes especially important around vulnerable people, discipleship, pastoral authority, conflict, and church discipline.
 
-Some tasks can be delegated without surrendering responsibility.
+What information enters the system? Data can change the risk category even when the task sounds harmless. “Summarize this meeting” may be low risk when the meeting discusses a public event and high risk when it includes personnel conflict, donor details, or the identities of Christians in a restricted environment.
 
-A calculator performs arithmetic.
+The data lens therefore asks what is public, internal, confidential, sensitive ministry information, or high risk. Later chapters formalize these categories as D1 through D5.
 
-A translation tool suggests phrasing.
+Data minimization should occur before tool selection. If names are unnecessary, omit them. If exact locations are unnecessary, generalize them. If identifiable material can be processed locally or avoided entirely, do not transmit it merely because the workflow is convenient.
 
-A model summarizes documents.
+> • After working through the lenses, the user should be able to state:
+>
+> • What AI is doing
+>
+> • What authority it receives
+>
+> • What verification is required
+>
+> • What relationship should remain human
+>
+> • What data may enter
+>
+> • What competence or practice should be preserved.
 
-The human user remains accountable for the result.
+Those answers can then be translated into concrete delegation levels, policies, technical controls, and training.
 
-Other responsibilities should not be delegated because the responsibility itself belongs to a person or community.
+A good framework should eventually become boring. The purpose is not to make every AI interaction feel ethically dramatic. It is to help Christians develop habits of judgment until ordinary low-risk uses become ordinary and high-risk uses are recognized early.
 
-A pastor cannot delegate moral accountability for teaching.
+Artificial intelligence will keep changing. The five lenses are designed to survive those changes because they do not depend on one model, vendor, or interface.
 
-A mission leader cannot delegate responsibility for protecting sensitive people.
+The task changes. Authority changes. Truth requirements change. Relationships change. Data changes. Formation changes.
 
-A church cannot delegate the spiritual care of its members to a chatbot.
+Those are the things Christians need to see. The lenses can point in different directions. A pastoral assistant may score well on truth because it retrieves approved material, yet poorly on relationship because users begin treating it as an intimate spiritual guide.
 
-Ask not only, "Can the AI do this?"
+A local language tool may have low relationship risk and high data-governance concern because its corpus contains community recordings collected for another purpose.
 
-Ask, "Who remains responsible if it is wrong?"
+An administrative agent may use only public data but have high authority because it can publish externally.
 
-## 3. What is the cost of error?
+These tensions are why one additive number would be misleading. The framework surfaces trade-offs rather than hiding them in arithmetic.
 
-Risk varies dramatically.
+**Figure 11.1.** *Mission AI Discernment*
 
-If AI generates a bad logo, the cost may be small.
+| TASK                | AUTHORITY       | TRUTH              | RELATIONSHIP                 | DATA                         |
+|---------------------|-----------------|--------------------|------------------------------|------------------------------|
+| What is being done? | Who may decide? | What must be true? | What human presence matters? | What information is exposed? |
 
-If AI mistranslates a doctrinal statement, the cost may be significant.
+> FORMATION runs across all five lenses: does the workflow strengthen competence and faithfulness, or bypass them?
 
-If AI exposes the location of a persecuted believer, the cost may be catastrophic.
+## Formation Runs Through Everything {#formation-runs-through-everything}
 
-The level of human verification should rise with the cost of error.
+Formation runs across the other five lenses because a task can be safe, accurate, and efficient while still changing the person performing it.
 
-A simple risk ladder can help:
+Does AI remove needless friction or necessary formation? A missionary may use AI translation so frequently that language retrieval weakens. A student may use generated explanations before attempting interpretation. A pastor may delegate the difficult first work of sermon study until supervisory competence erodes.
 
-Low risk: brainstorming, formatting, generic drafting.
+The opposite danger also exists. Christians can romanticize difficulty. Manual formatting does not form holiness merely because it is tedious. Repetitive clerical work may be exactly the kind of friction technology should remove.
 
-Moderate risk: research summaries, educational material, translation drafts.
+Formation asks whether the difficulty is part of acquiring or exercising a responsibility the person still needs.
 
-High risk: theology, public factual claims, legal or medical information, security decisions.
+Formation is not simply a sixth box because it asks how repeated use changes the human across every domain.
 
-Critical risk: decisions affecting safety, identity exposure, coercive authority, or irreversible harm.
+> • Task: does delegation weaken core competence?
+>
+> • Authority: does automation erode the habit of owning decisions?
+>
+> • Truth: does the user stop checking because the system is usually right?
+>
+> • Relationship: does convenience reduce meaningful human contact?
+>
+> • Data: does constant sharing normalize disclosure?
 
-The higher the risk, the less appropriate autonomous AI action becomes.
+This overlay makes the framework distinctively Christian without requiring every use to become a theological meditation.
 
-## 4. What data are involved?
+## Putting the Framework to Work {#putting-the-framework-to-work}
 
-Every AI use has an information boundary.
+Suppose a missionary wants to use an AI voice tutor before moving to a new country.
 
-What data are being sent?
+> • Task: conversational rehearsal and correction.
+>
+> • Authority: low. The system is not acting externally.
+>
+> • Truth: errors matter but are usually reversible; native-speaker feedback can correct them.
 
-Who owns the data?
+Relationship: the tool should prepare the missionary for real conversation rather than become the destination.
 
-Where are they stored?
+Data: ordinary practice sentences are low sensitivity. Formation: strong positive potential if the system increases active practice, but negative potential if instant translation replaces retrieval.
 
-Can the provider use them for training?
+The result is not “AI approved.” It is a design: use the tutor heavily for rehearsal, verify recurring language patterns with qualified speakers, and build regular real-world conversation into the loop.
 
-Could they identify individuals?
+Task: answer routine questions from approved church materials. Authority: moderate if the chatbot speaks publicly in the church's name. Truth: theological error can matter, so retrieval should be restricted to reviewed sources and uncertain questions should be escalated.
 
-Could they reveal church networks, missionary locations, political activity, or vulnerable communities?
+Relationship: users may treat the system as more pastorally authoritative than intended. Data: the system should avoid soliciting sensitive disclosures. Formation: the chatbot should connect people toward Scripture, teachers, and community rather than making itself the permanent first interpreter of every question.
 
-Mission organizations often hold sensitive information.
+The resulting architecture might permit routine informational answers while routing consequential pastoral or doctrinal questions to people.
 
-Prayer letters may contain names and locations.
+> • Task: identify underserved populations from multiple datasets.
+>
+> • Authority: the system may analyze but not decide sending priorities.
+>
+> • Truth: underlying datasets contain estimates and methodological differences.
+>
+> • Relationship: local churches and field workers possess knowledge global data lacks.
 
-Discipleship databases may reveal religious affiliation.
+Data: public demographic data may be low sensitivity; field reports may not be.
 
-Translation projects may involve recordings from minority communities.
+Formation: strategy teams should retain the ability to understand the datasets they supervise.
 
-Field reports may identify local leaders.
+The workflow becomes data, analysis, local validation, discernment, decision—not “ask AI where missionaries should go.”
 
-Convenience should never override protection.
+For high-risk uses, the framework works best when several roles participate. A technologist notices permissions. A pastor notices relational authority. A local leader notices cultural implications. A security specialist notices exposure. A theologian notices doctrinal consequence.
 
-## 5. Does the use strengthen or weaken human capability?
+> • No one person needs to master every dimension.
+>
+> • The framework therefore supports distributed responsibility rather than heroic individual judgment.
+>
+> • Imagine an organization proposing an AI companion for isolated missionaries.
+>
+> • Task: emotional support and conversation.
+>
+> • Authority: low in external action but potentially high in personal influence.
+>
+> • Truth: moderate; bad advice may matter.
+>
+> • Relationship: high significance because substitution is plausible.
+>
+> • Data: likely confidential or sensitive.
+>
+> • Formation: possible dependence.
 
-Good tools often strengthen people.
+The correct conclusion may be to reject a companion architecture while still building a lower-risk tool for check-ins, resources, scheduling human peer contact, or crisis escalation.
 
-They help users learn, understand, create, and make better decisions.
+Discernment does not merely choose yes or no. It can redesign the task.
 
-Bad use patterns can weaken capability through dependence.
+## What the Framework Cannot Decide {#what-the-framework-cannot-decide}
 
-If missionaries use AI to practice a language but still learn the language, the tool strengthens them.
+It would be convenient to assign each lens a number and produce one risk score. This book deliberately rejects that approach.
 
-If they stop learning because the machine can translate everything, the tool may weaken them.
+A safeguarding case cannot be averaged down because the data is public. A D5 identity cannot be neutralized by the fact that the output is easily reversible. Some conditions override ordinary trade-offs.
 
-If pastors use AI to organize research but continue studying Scripture deeply, the tool may help.
+Christian judgment also includes goods not commensurable on one numerical scale. Theological authority and server cost are both relevant, but they are not simply two quantities to add together.
 
-If they stop thinking because the model drafts sermons, the tool may hollow out ministry.
+The framework therefore structures a conversation. It helps a missionary, pastor, technologist, or organization notice dimensions that convenience can hide. It does not calculate faithfulness.
 
-The question is not merely whether AI saves time.
+PART III
 
-It is what happens to the human worker over time.
-
-## 6. Does the use preserve human relationship where relationship matters?
-
-Some tasks do not require relationship.
-
-Formatting a spreadsheet does not need pastoral presence.
-
-Other tasks are fundamentally relational.
-
-Counseling, discipleship, leadership, conflict resolution, friendship, and pastoral care involve mutual human presence.
-
-AI can support these relationships.
-
-It should not quietly replace them.
-
-A useful question is:
-
-If this interaction were fully automated, what human good would disappear?
-
-If the answer includes trust, accountability, empathy, embodiment, sacrifice, or mutuality, automation should be approached carefully.
-
-## 7. Does this use serve love of God and neighbor?
-
-This final question gathers the others.
-
-Christian ethics is not merely about risk management.
-
-It is about love.
-
-Does the technology help us serve people?
-
-Does it expand access for the marginalized?
-
-Does it protect dignity?
-
-Does it promote truth?
-
-Does it help Christians obey their calling?
-
-Or does it primarily increase convenience, prestige, control, or scale at the expense of people?
-
-Technology can be efficient and still unloving.
-
-A ministry may automate communication so aggressively that people feel unseen.
-
-A mission organization may collect detailed data about communities without meaningful consent because the data improve strategy.
-
-A church may replace human interaction with digital systems because it reduces staffing costs.
-
-Love asks different questions.
-
-This seven-question framework can be summarized as:
-
-Task.
-
-Responsibility.
-
-Risk.
-
-Data.
-
-Capability.
-
-Relationship.
-
-Love.
-
-The framework does not produce automatic answers.
-
-That is intentional.
-
-Discernment cannot itself be automated.
-
-Christians must apply wisdom in concrete situations.
-
-But a framework creates consistency.
-
-It helps churches and ministries move beyond reactive opinions.
-
-It also encourages a mature posture toward innovation.
-
-The Church does not need to fear every new tool.
-
-Nor should it adopt every tool.
-
-It should evaluate technologies according to faithful purposes.
-
-The goal is neither maximum automation nor minimum technology.
-
-The goal is wise stewardship.
-
-[^1]: This framework is designed as a practical synthesis of Christian ethical concerns rather than as a claim that every AI decision can be reduced to seven independent variables.
+[^1]: The Mission AI Discernment framework is the author’s normative synthesis, not an empirically validated assessment instrument. It is informed in part by contextual risk-management approaches such as Tabassi, *Artificial Intelligence Risk Management Framework (AI RMF 1.0).*

@@ -1,12 +1,11 @@
 ---
 id: part-vi
-title: Governing AI Faithfully
 order: 6000
+title: "Governing AI Faithfully"
+shortTitle: "Part VI"
 part: governing-ai-faithfully
 status: published
+description: "Part VI introduction: Governing AI Faithfully."
 estimatedMinutes: 1
 ---
-
-# Part VI — Governing AI Faithfully
-
-The question is not whether AI is allowed, but what should be delegated, under what safeguards, and with whose accountability.
+Discernment becomes useful when it can govern ordinary work. The next three chapters turn the book's principles into proportionate decisions about delegation, risk, data, verification, policy, and competence—strong enough for consequential ministry without turning every AI use into bureaucracy.

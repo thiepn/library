@@ -1,192 +1,111 @@
 ---
 id: what-ai-actually-does
-title: What AI Actually Does
 order: 2010
+title: "What AI Actually Does"
 part: understanding-and-discerning-ai
 status: published
+description: "Chapter 8: What AI Actually Does."
 estimatedMinutes: 9
 ---
+Artificial intelligence is easier to use than to describe. A person opens a chat window, asks a question, and receives something that looks like an answer. The conversational surface makes a complicated technical system feel like a single intelligent partner.
 
-# What AI Actually Does
+For Christian discernment, that surface is not enough. Users do not need to become machine-learning engineers, but they do need a mental model accurate enough to predict common strengths and failures.
 
-Artificial intelligence is often described with language that obscures more than it explains.
+Modern generative language systems are built from models trained to learn statistical patterns in large collections of language. Transformer architectures made it possible to model relationships across sequences with unusual effectiveness, and subsequent scaling, instruction tuning, reinforcement methods, retrieval systems, and tool integration produced systems that can perform many tasks through ordinary language.[^1]
 
-Systems are said to think, understand, reason, know, imagine, remember, or decide.
+At the user level, the most important fact is simple: a language model generates likely continuations conditioned on the information available to it. It does not retrieve a fully formed answer from an internal encyclopedia. Nor does every sentence correspond to a stored sentence in training data. The model constructs an output from learned patterns.
 
-Some of these words are useful shorthand.
+This helps explain both capability and failure. Language contains enormous amounts of encoded human knowledge. A model that becomes good at predicting language can also become useful at summarizing, explaining, translating, classifying, drafting, coding, and reasoning through many structured problems. But the same generative process can produce plausible statements for which no real evidence exists.
 
-But Christians should understand enough about the technology to avoid being misled by metaphor.
+The model itself is only one component of many contemporary AI systems. Retrieval systems add external information. Instead of relying entirely on patterns learned during training, the system searches a specified collection, fetches relevant material, and supplies it to the model. This can dramatically improve usefulness for church policies, theological libraries, organizational documentation, or current information.
 
-At a practical level, contemporary AI systems are statistical computational systems trained on large amounts of data to perform tasks such as prediction, classification, generation, recognition, and transformation.
+Retrieval does not guarantee truth. The wrong document can be retrieved. A passage can be interpreted badly. A correct quotation can be connected to an unsupported conclusion. Users should therefore distinguish retrieval from verification.
 
-A language model processes patterns in text.
+Tools add another layer. A model may be connected to a calculator, code interpreter, search engine, database, email system, calendar, or file store. Tool use allows the system to perform operations it would otherwise approximate in language.
 
-During training, it learns statistical relationships between tokens, concepts, structures, and contexts.
+This distinction matters practically. Asking a model, “What is 7,834 multiplied by 6,219?” and asking a system that invokes a calculator are not identical workflows. One relies on the model's generated answer. The other can execute a deterministic operation. The interface may look the same.
 
-When a user provides a prompt, the model generates a response by predicting sequences that fit the learned patterns and current context.
+Agents combine models with goals, tools, memory or state, and repeated decision loops. Instead of responding once, an agent may plan several steps, call tools, inspect the result, revise the plan, and take another action. The relevant governance question then shifts from answer quality toward authority and permissions.[^2]
 
-This simple description does not capture every technical detail.
+Multimodal systems extend these capabilities beyond text. They can process images, audio, speech, and video; generate media; transcribe recordings; describe scenes; and combine modalities in a single workflow. For mission, this is especially important because many communities are more oral than text-centered and because accessibility cannot be reduced to written translation.
 
-But it reveals an important principle:
+Users should also distinguish training knowledge from current information. A model trained on past data does not automatically know what happened yesterday. Current information may be supplied through search, retrieval, connected systems, or later training. This is why a fluent answer about a current law, mission statistic, product capability, or political event requires current verification even when the system sounds certain.
 
-AI output is generated, not retrieved from a mind that possesses human understanding.
+Context is another practical concept. A system answers using the information made available in the current interaction: system instructions, user messages, uploaded documents, retrieved text, tool outputs, and possibly stored memory. The model does not possess unlimited access to everything a user has ever said or every file the organization owns unless the surrounding system provides that access.
 
-This explains several characteristics of modern AI.
+This is good news for governance. AI capability is partly architectural. A church does not need to ask only, “How smart is the model?” It can ask, “What documents can this system retrieve? What tools can it call? What data can it see? What actions can it take?” Those are often more actionable questions.
 
-First, AI can produce fluent answers without possessing reliable truth tracking.
+The distinction between model and system also prevents anthropomorphic confusion. A model can be improved without changing the application around it. The same model can be placed inside a tightly constrained Bible-study assistant, an open-ended companion app, an internal translation tool, or an agent with permission to send email. The risks differ radically because the system differs.
 
-The model is optimized to produce plausible continuations according to learned patterns.
+Another important concept is probabilistic output. Generative systems can produce different responses to similar prompts. Variation is useful for brainstorming, drafting, and creative work. It complicates auditing and reproducibility. A ministry relying on consistent classification or high-stakes decision support should test behavior across many representative cases rather than assuming one successful demonstration establishes reliability.
 
-In many situations, plausible language and true language overlap.
+AI systems also reflect the data and evaluation environments from which they are built. High-resource languages tend to receive more training data, better benchmarks, more user feedback, and stronger commercial attention. The result is uneven capability. A system described as multilingual may perform extremely well in English, adequately in a major regional language, and poorly in a low-resource language or dialect.
 
-This is why AI can answer many questions correctly.
+This is why benchmark headlines need context. A score on a general English reasoning test tells a missionary little about theological translation into a minority language. A coding benchmark tells little about maintaining a sensitive offline ministry application. Performance is task-specific.
 
-But the system can also generate false information that looks perfectly natural.
+The same applies to intelligence language. A model may exceed most humans at a narrow benchmark while lacking stable competence in a related real-world workflow. It may produce an excellent explanation and then fabricate a citation. It may reason through a difficult abstract problem and mishandle a simple instruction because the context changed.
 
-This behavior is often called hallucination.
+Christians therefore do not need either mystical or dismissive language. AI is not “just autocomplete” if that phrase is used to deny the substantial capabilities emerging from learned language patterns, tools, and planning. Nor is it a digital mind whose every fluent statement should be treated as testimony from an informed person.
 
-The term can be misleading because the model is not literally experiencing a hallucination.
+A useful mental model is layered. At the base is the model: pattern-based generation and prediction. Around it may sit retrieval: external information. Then tools: deterministic or connected operations. Then orchestration: instructions, policies, memory, and workflow. Then permissions: what the system may access and do. Finally there is the human and organizational environment: who uses it, who reviews it, what consequences matter, and who bears responsibility.
 
-It is generating an incorrect output that fits the pattern of a plausible answer.
+Most ministry failures will not be explained by one layer alone. A fabricated statistic may be a model problem, a missing-retrieval problem, or a verification problem. A data exposure may involve permissions, architecture, or user behavior. An unhealthy pastoral interaction may involve the model's language, the product's relational design, the absence of handoff, and a vulnerable user's circumstances.
 
-Second, AI performance depends heavily on training data.
+This layered understanding is enough for ordinary Christian AI literacy. Users do not need to know how to train a transformer from scratch. They do need to know that generation is not verification, retrieval is not authority, tool use changes reliability, agentic permissions change consequence, and capability varies sharply by task and language.
 
-If a language, topic, culture, or technical field appears abundantly in the data, the system may perform well.
+Once those distinctions are clear, the next problem becomes easier to name. A system can produce language that is fluent, relevant, and wrong.
 
-If the relevant information is rare, inconsistent, biased, or absent, performance may decline.
+## From Models to Systems {#from-models-to-systems}
 
-This matters greatly for mission.
+Large language models do not simply store more phrases as they grow. Training at scale can produce capacities not easily predicted from small examples: stronger in-context learning, code generation, cross-lingual transfer, planning behavior, and structured reasoning under certain prompts.
 
-English is heavily represented online.
+Users do not need a technical theory of emergence to draw a practical conclusion. Capability profiles can change discontinuously enough that old assumptions become stale quickly.
 
-Many minority languages are not.
+A ministry that evaluated AI in 2023 and concluded it was useless for translation or coding should not assume that judgment remains current. A ministry that found a model reliable in 2026 should not assume future versions will preserve the same behavior either.
 
-A model may therefore appear remarkably intelligent in English while producing poor or unstable results in a low-resource language.
+Governance should be stable at the level of principles and flexible at the level of capability assumptions.
 
-Christians should not assume uniform capability across languages.
+**Table 8.1.** *What Different AI Components Actually Do*
 
-Third, AI systems can combine patterns in novel ways.
+| **Component** | **Primary function**                         | **Human responsibility**            |
+|---------------|----------------------------------------------|-------------------------------------|
+| Model         | Generates or predicts from learned patterns  | Define purpose; evaluate output     |
+| Retrieval     | Fetches external information for context     | Choose sources; verify relevance    |
+| Tools         | Connects the system to external functions    | Limit permissions; review actions   |
+| Agent         | Pursues multi-step goals through tools       | Set boundaries, approvals, logs     |
+| Human role    | Provides judgment, authority, accountability | Retain consequential responsibility |
 
-This is why they are useful for creative tasks.
+## Generation, Retrieval, and Tools {#generation-retrieval-and-tools}
 
-A model can generate a lesson plan, summarize a theological argument, produce sample code, rewrite a paragraph for children, or create practice sentences in another language.
+Retrieval-augmented systems are particularly attractive for churches because they offer a way to constrain answers toward reviewed materials.
 
-The output may never have existed before.
+A church can index its doctrinal statement, sermon archive, membership information, policies, and public resources. A theological school can index assigned readings. A mission organization can index operational documentation.
 
-But novelty does not mean independence from training.
+The advantages are significant: traceable source material, current organizational information, and reduced dependence on the model's generalized training knowledge.
 
-The model's capabilities emerge from patterns learned through large-scale data and optimization.
+The limitations are equally important. Retrieval quality depends on document preparation, chunking, search, permissions, and query interpretation. A relevant paragraph can be missed. An irrelevant one can be ranked first. A model can overstate what a retrieved source implies.
 
-Fourth, AI systems can be guided through context.
+Retrieval is an epistemic aid, not a transfer of authority. Users often treat every customization method as “training the AI.” The distinctions matter.
 
-Users can provide instructions, examples, documents, or tools.
+Prompting changes current instructions and context. Retrieval supplies external information. Fine-tuning adjusts model behavior through additional training examples. Tool integration gives the system external capabilities. These mechanisms have different governance implications. A ministry can update a retrieval library quickly when policy changes. A fine-tuned model may require a new training cycle. Tool permissions create action risks no prompt alone creates. Clear vocabulary helps leaders ask the right questions without becoming engineers.
 
-A model connected to a search engine can retrieve recent information.
+## Context, Memory, and Multimodality {#context-memory-and-multimodality}
 
-A model connected to a database can query structured data.
+Multimodal systems are especially relevant to mission because many ministries work with photographs, scanned documents, speech, video, and handwritten or low-quality source material.
 
-A model connected to software tools can execute actions.
+Vision can assist OCR, image description, and document analysis. Speech systems can support transcription and translation. Video generation can reduce production cost.
 
-This is where AI begins to move from simple content generation toward agent-like behavior.
+Each modality also introduces distinct error and consent issues. A speech transcript can mishear names. OCR can corrupt Scripture text. Image analysis can infer sensitive location or identity information. Synthetic video can blur documentary expectations. “AI” is therefore not one risk category. The workflow matters.
 
-The model becomes part of a larger system capable of planning and acting.
+## Evaluation in a Moving Field {#evaluation-in-a-moving-field}
 
-This increases usefulness.
+Organizations deploying recurring AI workflows should build small representative test sets. A translation team can collect difficult sentences. A church chatbot can collect common doctrinal questions and high-risk edge cases. An agent can be tested against hostile or ambiguous inputs.
 
-It also increases risk.
+Evaluation sets make reliability concrete. They also allow teams to compare model or provider changes without relying on impressions.
 
-A chatbot that produces a wrong answer may inconvenience someone.
+A church does not need a research laboratory to practice disciplined evaluation. Twenty well-chosen cases can be more useful than one dazzling demo.
 
-An automated agent with permission to send messages, modify records, purchase services, or deploy software can produce real-world consequences.
+Recurring ministry workflows should be tested on representative cases rather than judged by one successful demonstration. The long-term test is what grows around the tool. The ministry may gain speed while losing understanding, or it may use speed to create margin for better judgment and relationship. Success should therefore be evaluated over time through competence, accountability, resilience, and service rather than through the first impressive demonstration.
 
-Mission organizations should therefore distinguish between AI that advises and AI that acts.
-
-The level of oversight should increase with the level of agency.
-
-Fifth, AI behavior depends on system design.
-
-The model itself is only one component.
-
-Developers choose prompts, filters, retrieval systems, memory mechanisms, tool access, user interfaces, and moderation policies.
-
-Two applications using the same underlying model may behave very differently.
-
-This matters when evaluating Christian AI tools.
-
-A ministry should not ask only, "Which model does this use?"
-
-It should also ask:
-
-What data are being sent?
-
-What instructions shape the output?
-
-Are conversations stored?
-
-Can the system search the internet?
-
-What tools can it access?
-
-How are sensitive topics handled?
-
-Can the user verify sources?
-
-Who controls the application?
-
-AI is a system, not merely a model.
-
-Sixth, AI capability is uneven.
-
-A model may perform impressively on difficult tasks and fail embarrassingly on simple ones.
-
-This inconsistency confuses users because human competence tends to be more coherent.
-
-If a person can explain advanced physics, we assume that person can count letters in a word.
-
-AI systems do not always follow such intuitive patterns.
-
-They may excel at complex summarization while making simple factual mistakes.
-
-This is another reason Christians should avoid anthropomorphic assumptions.
-
-Human-like language does not guarantee human-like competence.
-
-Seventh, AI is becoming multimodal.
-
-Modern systems increasingly process text, images, audio, video, and structured data together.
-
-This expands missionary applications.
-
-A system might transcribe a sermon, translate it, generate subtitles, summarize it, extract discussion questions, and create an audio version in another language.
-
-A missionary could photograph a page of handwritten notes and convert it into searchable text.
-
-An oral language project could combine speech recognition, translation, and synthetic voice.
-
-These capabilities may reduce barriers to content production dramatically.
-
-But the underlying limitations remain.
-
-Generated output still requires verification.
-
-Data still require protection.
-
-Cultural interpretation still requires human judgment.
-
-Technical capability still does not equal spiritual authority.
-
-Understanding AI at this practical level helps Christians avoid two extremes.
-
-We do not need to pretend the technology is magic.
-
-And we do not need to dismiss it as merely autocomplete.
-
-Modern AI systems are genuinely powerful pattern-processing tools capable of performing many complex tasks.
-
-Their capabilities are real.
-
-Their limitations are also real.
-
-Good stewardship begins by understanding both.
-
-[^1]: This chapter intentionally simplifies a fast-moving technical field. Readers needing precise architectural details should consult current machine-learning literature and vendor documentation rather than treating this overview as a technical specification.
+[^1]: Vaswani et al., “Attention Is All You Need.”; Autio et al., *Artificial Intelligence Risk Management Framework: Generative Artificial Intelligence Profile*
+[^2]: National Institute of Standards and Technology, “Announcing the ‘AI Agent Standards Initiative’ for Interoperable and Secure Innovation.”

@@ -1,12 +1,11 @@
 ---
 id: part-vii
-title: The Strategic Frontier
 order: 7000
+title: "The Strategic Frontier"
+shortTitle: "Part VII"
 part: the-strategic-frontier
 status: published
+description: "Part VII introduction: The Strategic Frontier."
 estimatedMinutes: 1
 ---
-
-# Part VII — The Strategic Frontier
-
-The greatest missionary value of AI may emerge where markets are weak, languages are underserved, and mission requires resilient infrastructure.
+The horizon widens again. Low-resource languages, increasingly agentic systems, fragile infrastructure, and the unfinished missionary task show why AI cannot be evaluated only from well-connected, well-resourced contexts. The strategic question is where new capability can remove genuine barriers without exporting new forms of dependency.

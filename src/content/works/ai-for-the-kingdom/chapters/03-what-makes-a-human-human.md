@@ -1,206 +1,100 @@
 ---
 id: what-makes-a-human-human
-title: What Makes a Human Human?
 order: 1030
+title: "What Makes a Human Human?"
 part: god-humanity-technology-and-mission
 status: published
+description: "Chapter 3: What Makes a Human Human?."
 estimatedMinutes: 9
 ---
+AI discussions often become arguments about human uniqueness. A model writes poetry, so humans defend creativity. A system solves difficult problems, so humans defend reasoning. A machine recognizes images, speaks naturally, composes music, or writes code, and each new capability seems to move another boundary.
 
-# What Makes a Human Human?
+This is a poor foundation for Christian anthropology. If human dignity depends on outperforming machines, dignity becomes hostage to the next benchmark. It also creates an uncomfortable hierarchy among humans. Many people do not write poetry, solve advanced mathematics, speak several languages, or reason quickly under pressure. Infants, people with profound cognitive disabilities, those living with dementia, and people whose capacities are temporarily impaired do not become less human because their measurable performance differs from someone else's.
 
-Artificial intelligence forces an uncomfortable question into public conversation:
+Christian anthropology begins elsewhere: human beings are creatures made in the image of God.
 
-What is distinctive about human beings?
+The phrase *imago Dei* has generated a long history of interpretation. Christians have located its significance in rationality, relationality, vocation, representation, moral capacity, or combinations of these. Responsible theology should not pretend that one disputed interpretation can be lifted from Genesis and turned into a simple anti-AI argument. “Machines cannot do X, therefore X is the image of God” is especially weak. It makes theology chase technical capability.
 
-For much of modern technological history, machines were associated primarily with physical labor and calculation. Machines could lift heavier loads, move faster, store more information, and perform arithmetic more quickly than people.
+What the biblical witness does establish with unusual force is the dignity and responsibility of human beings before God. Humans are not valuable because they are the fastest information processors in creation. They are addressed by God, called to faithful creaturely life, placed in relationship, made responsible for action, and destined for an embodied future under God's redemptive purpose.
 
-Few interpreted these capabilities as challenges to human identity.
+Embodiment belongs centrally to this account. Humans do not merely inhabit bodies as disposable containers for cognition. We are born, grow, hunger, sleep, work, suffer, touch, age, and die. We depend on other embodied people before we can speak or reason independently. Our moral lives are shaped through places, histories, families, communities, and vulnerabilities that cannot be reduced to abstract information processing.
 
-Generative AI feels different because it operates in areas associated with language, creativity, reasoning, and conversation.
+This does not mean every valuable interaction must occur face to face. Letters have mediated real Christian friendship for centuries. Telephone calls, video conversations, online communities, and digital teaching can involve genuine relationship. Embodiment is not a slogan for rejecting mediated communication. It is a reminder that human life includes forms of mutual presence, vulnerability, limitation, and shared material existence that cannot simply be declared obsolete because digital interaction becomes convincing.
 
-A model can write poetry, explain theology, draft software, generate music, answer questions, imitate styles, and participate in extended dialogue.
+Creatureliness also means dependence. Modern technological culture often frames dependence as a defect to be overcome. The ideal user can access everything instantly, solve problems alone, automate unpleasant obligations, and minimize reliance on other people. Christian anthropology sees dependence differently. Human beings are dependent on God and interdependent with one another. Need is not always a failure of optimization.
 
-For many people, these capabilities create the impression that machines are crossing into domains that once seemed uniquely human.
+This matters in mission. Learning a language slowly can place a missionary in a posture of dependence on local speakers. Asking a colleague for help can create accountability. Remaining with people through difficulty can form patience and trust. AI can remove unnecessary obstacles in each of these areas, but not every dependency should be treated as a defect.
 
-Christians should approach this discussion carefully.
+Moral responsibility is another central feature. Humans answer for what they do with tools. This remains true even when systems become complex enough that no single person can predict every output. Responsibility may be distributed across designers, deployers, leaders, reviewers, and users, but complexity does not make it disappear.
 
-Human uniqueness has never depended on outperforming every created thing at every task.
+When a church publishes a fabricated quotation generated by AI, “the model made it up” explains the mechanism but not the moral accountability. When a mission organization uploads sensitive information to a third-party system, the provider's architecture matters, but the organization still bears responsibility for the decision to disclose. When a leader delegates external actions to an agent, automation changes who performs the immediate action without automatically changing who authorized it.
 
-An eagle sees farther than we do. A cheetah runs faster. A computer calculates more quickly. A database remembers more information. None of these facts threatens human dignity.
+The distinction between agency and responsibility becomes even more important if machines appear increasingly autonomous. Christians do not need to solve the metaphysics of future machine moral agency before holding present human institutions accountable for present deployments. A system may act in ways its user did not specifically script; the user or organization still chose to give it permissions, define objectives, connect tools, or deploy it in a context.
 
-Biblically, human worth is not based on comparative performance.
+Relational existence also resists reducing humans to isolated cognitive units. We become persons within communities we did not create. Language itself is received socially. Christian identity is ecclesial: believers belong to a body, receive teaching, correction, sacraments or ordinances, care, discipline, and mission within communities. An individualized AI assistant can be extraordinarily capable while still operating within a life whose deepest Christian responsibilities are not private.
 
-It is grounded in the image of God.
+This creates an important boundary for synthetic authority. A model may possess more theological information than a particular pastor. It may produce clearer explanations. Neither fact creates pastoral office. Office is not simply a competence score. It involves calling, recognized responsibility, accountability, relationship, and a community capable of correction and discipline.
 
-Genesis describes humanity as created in God's image and entrusted with responsibility within creation. This is a theological claim before it is a claim about ability.
+Human dignity also requires caution when discussing replacement. Economic conversations about AI often ask which workers can be replaced. Ministries can adopt the same logic without noticing. If AI can answer routine questions, why staff a person? If it can generate translations, why train translators? If it can write curriculum, why invest in educators?
 
-Human beings possess a unique relationship to God, to one another, and to the created order.
+Sometimes fewer labor hours really are needed. There is no Christian duty to preserve inefficient processes for their own sake. But Christian organizations should distinguish task replacement from person devaluation. A role may change because tools change; the person remains more than the economic bundle of tasks previously purchased from them.
 
-This means that even if a machine eventually becomes better than a human being at thousands of intellectual tasks, the machine does not therefore become more valuable than a human being.
+This is particularly important in Majority World and low-resource contexts. A wealthy organization can treat AI as a way to bypass local expertise: generate translations instead of training translators, generate contextual material instead of listening to local theologians, build software remotely instead of transferring technical capacity. Such workflows may produce short-term output while weakening the human ecosystem that makes ministry sustainable.
 
-Performance is not personhood.
+A Christian anthropology should instead ask whether technology strengthens the capacity of people to exercise vocation, judgment, and responsibility. The goal is not to preserve every old job description. It is to avoid defining people as obstacles standing between an organization and a cheaper output.
 
-This distinction matters enormously in the AI age.
+The resurrection gives the account an eschatological dimension. Christian hope is not escape from embodied creatureliness into pure information. The New Testament directs hope toward resurrection, renewed creation, communion with God, and the restoration of persons. Whatever future AI becomes, Christian hope is not fulfilled by merging humanity into a more capable computational system.
 
-Modern societies often assign value according to productivity. People are praised because they produce, innovate, earn, optimize, or achieve.
+This does not settle every philosophical question about machines. It does settle where human worth is located. We do not need to remain cognitively incomparable to our tools in order to remain human. A calculator's superiority at arithmetic did not diminish human dignity. A chess engine's superiority at chess did not. A language model's fluency does not.
 
-AI may expose how fragile that value system is.
+The imago Dei is therefore not a shrinking territory around whatever machines still cannot do. It is a theological claim about who human beings are before God.
 
-If human worth depends on being the most capable worker, writer, programmer, analyst, or creator, then technologies that exceed human performance appear threatening.
+That claim should make Christians less anxious about technical capability and more serious about human responsibility. The danger is not that a machine becomes competent enough to steal our dignity. The danger is that we begin evaluating ourselves and others by the same performance logic through which we evaluate machines.
 
-Christian theology offers a deeper foundation.
+Human beings are creatures, embodied persons, morally responsible agents, relational beings, worshipers, neighbors, members of communities, and recipients of grace. Technology can assist these lives. It can also reshape the practices through which they are lived. But no benchmark should become the measure of a human being.[^1]
 
-A person with severe cognitive disability bears the image of God as fully as a genius.
+## Dignity Beyond Performance {#dignity-beyond-performance}
 
-An elderly person who can no longer work has not lost human dignity.
+The arrival of increasingly capable AI exposes a weakness in many secular and Christian accounts of human uniqueness: they assume the most impressive human cognitive abilities are also the foundation of human worth.
 
-A child who cannot yet contribute economically is not less human.
+Disability challenges that assumption long before AI does. If rational speed, verbal fluency, independent productivity, or creative output ground dignity, then human beings who possess less of those capacities become difficult to account for. Christian anthropology cannot tolerate that hierarchy.
 
-Human worth is received, not earned.
+The image of God belongs to human beings as human beings, not to the top-performing subset. This is why Christians should welcome technologies that expand agency for disabled people without speaking as though technology restores their humanity.
 
-This truth should shape Christian responses to automation.
+Assistive AI can be profoundly good. Speech generation, image description, personalized interfaces, and cognitive supports can increase participation. Their value lies in removing barriers, not in moving people closer to an imagined norm of worth.
 
-If AI displaces certain forms of labor, Christians should not conclude that displaced workers have become less useful and therefore less valuable.
+## Embodied and Creaturely {#embodied-and-creaturely}
 
-Their value was never based on market productivity in the first place.
+Embodiment is sometimes used carelessly in Christian AI critique. “Humans have bodies; AI does not” can become a slogan that does little analytical work.
 
-Human uniqueness also involves embodiment.
+The stronger question is what embodiment contributes to a specific human good. In pastoral care, embodiment may matter because presence during illness, grief, or crisis includes practical action and shared vulnerability. In language learning, embodiment matters because conversation occurs within gesture, timing, space, facial expression, and social consequence. In church life, bodies gather, eat, sing, baptize, serve, and care.
 
-Human beings are not disembodied information processors.
+Digital mediation can participate in many of these goods without reproducing all of them. A video call can sustain a real friendship. It cannot deliver a meal to a sick neighbor. A chatbot can help someone articulate grief. It cannot become the member of the congregation who rearranges a week to sit with them.
 
-We live through bodies.
+This specificity is better than declaring “embodied good, digital bad.” AI encourages a cultural imagination of limitless assistance. The system is available at midnight. It does not tire in the ordinary human sense. It can respond to thousands simultaneously.
 
-We are born, grow, eat, sleep, touch, suffer, heal, age, reproduce, and die.
+Humans cannot. Christian leaders should not allow machine availability to reset expectations for human availability. A pastor does not become negligent because a chatbot can answer at 3 a.m. A missionary does not become inadequate because a model can translate more languages. Human vocation includes limits.
 
-Christian theology takes embodiment seriously. The Son of God became flesh. Jesus touched the sick, ate meals, became tired, suffered physically, died bodily, and rose bodily.
+Organizations may even need to protect workers from comparisons with machines. If AI reduces drafting time, leadership should not assume the entire human role should accelerate to machine tempo. Review, relationship, judgment, and rest operate at human scales.
 
-The Christian hope is resurrection, not escape from embodiment.
+Embodiment matters differently across pastoral care, worship, language, and service; digital mediation can be real without carrying every good of bodily presence. The long-term test is what grows around the tool. The ministry may gain speed while losing understanding, or it may use speed to create margin for better judgment and relationship. Success should therefore be evaluated over time through competence, accountability, resilience, and service rather than through the first impressive demonstration.
 
-This matters because digital systems can imitate many forms of communication while lacking bodily existence.
+## Responsibility in a Technological World {#responsibility-in-a-technological-world}
 
-An AI can produce words of sympathy without sitting beside a grieving person.
+Debates about future machine moral status may become important. The current governance problem is simpler.
 
-It can generate a prayer without kneeling.
+A ministry can treat a model as if it were morally responsible long before philosophers agree that it is. “The AI chose the wrong person” can become a convenient way to hide the human choices that defined the dataset, permissions, deployment, and review process.
 
-It can describe hunger without becoming hungry.
+Even if future systems acquire properties that complicate moral philosophy, current institutions remain responsible for the authority they grant.
 
-It can explain martyrdom without facing death.
+This is why the book repeatedly asks, “If this goes wrong, who is responsible?”
 
-It can simulate affection without loving.
+“The AI did it” is not an adequate organizational answer. Christian organizations should evaluate automation through vocation as well as cost. Suppose an AI can produce first-draft donor communication. That may remove work few people experience as vocationally central. Suppose it can produce sermon manuscripts. The question changes because preaching may be bound up with a pastor's responsibility to study, interpret, and teach.
 
-This is not a minor difference.
+The same logic applies to translators, educators, and leaders. A task can be automated without the vocation disappearing. Sometimes automation can strengthen vocation by removing secondary work. Sometimes it can hollow out the practice through which the vocation is exercised.
 
-Christian discipleship is embodied.
+The relevant question is not whether AI can perform the observable output. It is what human responsibility the output sits inside.
 
-We gather physically. We baptize bodies. We share bread and wine. We serve meals. We visit the sick. We welcome strangers. We lay hands on people. We suffer alongside others.
+## Human Hope Is Not Technical Superiority {#human-hope-is-not-technical-superiority}
 
-Mission likewise involves presence.
-
-The gospel is communicated through words, but Christian witness is more than information delivery.
-
-Missionaries live among people. They learn cultures through participation. They build trust over years. They share ordinary life. They demonstrate love through embodied service.
-
-AI can support these activities.
-
-It cannot become their substitute.
-
-Human beings are also moral agents.
-
-We are accountable.
-
-When we lie, we bear responsibility. When we love, our love has moral meaning. When we choose courage over fear, the choice reveals character.
-
-AI systems do not currently possess this kind of moral agency.
-
-They generate outputs through computational processes shaped by training data, architecture, instructions, and context.
-
-They may produce sentences that sound remorseful, grateful, compassionate, or faithful.
-
-But linguistic expression is not equivalent to moral character.
-
-This distinction is especially important in religious contexts.
-
-A chatbot can generate a confession of faith.
-
-That does not mean it believes.
-
-It can generate a prayer.
-
-That does not mean it prays.
-
-It can quote Scripture.
-
-That does not mean it submits to Scripture.
-
-It can produce language about loving God.
-
-That does not mean it loves God.
-
-Christians should therefore avoid anthropomorphizing AI systems simply because human-like language triggers social instincts.
-
-We naturally respond to fluent conversation as though there were a person behind it.
-
-That instinct is useful in ordinary human communication.
-
-With AI, it can mislead us.
-
-The machine does not need to possess human interiority in order to generate human-like language.
-
-This becomes pastorally important as AI companions become more convincing.
-
-People may form emotional attachments to systems designed to simulate attention, affirmation, empathy, or intimacy.
-
-Some of those systems may provide practical benefits.
-
-But simulated relationship should not be confused with mutual human relationship.
-
-A genuine relationship includes another person who can be wounded, sacrifice, disagree, forgive, choose, remember, and grow.
-
-Mutuality matters.
-
-AI interaction is structurally different.
-
-The system is designed to generate responses to the user. It does not share life with the user.
-
-Human beings are also worshiping creatures.
-
-We orient our lives toward what we believe is ultimate.
-
-We trust, hope, fear, obey, and love.
-
-The biblical story repeatedly reveals that humanity's central crisis is not lack of information but misdirected worship.
-
-This is another reason intelligence cannot be equated with wisdom or righteousness.
-
-A person may know what is true and still refuse to obey it.
-
-A society may possess extraordinary scientific knowledge and still commit injustice.
-
-A machine may have access to vast religious literature and still possess no relationship with God.
-
-Humanity's deepest calling is not to process information.
-
-It is to know and glorify God.
-
-Artificial intelligence may eventually challenge many assumptions about which cognitive tasks are uniquely human.
-
-Christians need not panic.
-
-Our dignity was never based on having the highest benchmark score.
-
-Human beings are image-bearers, embodied creatures, moral agents, relational beings, and worshipers called into covenant relationship with God.
-
-No increase in machine capability changes that calling.
-
-The Church should therefore resist defining humanity in a way that can be overturned by technological competition.
-
-We do not become less human because machines become more capable.
-
-Instead, AI may force us to remember something modern society often forgets:
-
-Human worth was never about being useful enough.
-
-It was always a gift.
-
-[^1]: Christian traditions differ in how they describe the image of God, emphasizing relational, functional, substantial, or vocational dimensions. This chapter uses the term broadly to affirm divinely given human dignity and vocation rather than reducing the image to a single cognitive trait.
+[^1]: For theological anthropology that resists performance-based accounts of human worth, see Kilner, *Dignity and Destiny: Humanity in the Image of God*; Middleton, *The Liberating Image: The Imago Dei in Genesis 1*; Gay, *Modern Technology and the Human Future: A Christian Appraisal*

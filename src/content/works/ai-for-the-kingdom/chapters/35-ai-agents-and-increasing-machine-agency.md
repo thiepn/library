@@ -1,60 +1,91 @@
 ---
 id: ai-agents-and-increasing-machine-agency
-title: AI Agents and Increasing Machine Agency
 order: 7020
+title: "AI Agents and Increasing Machine Agency"
 part: the-strategic-frontier
 status: published
+description: "Chapter 35: AI Agents and Increasing Machine Agency."
 estimatedMinutes: 3
 ---
+> • For most early generative AI, the user asked and the system answered.
+>
+> • Agents change the verb.
+>
+> • The system can act.
+>
+> • That is a larger governance change than another increase in model fluency.
 
-# AI Agents and Increasing Machine Agency
+## Action Changes the Governance Problem {#action-changes-the-governance-problem}
 
-AI is moving from answering questions toward performing actions.
+Tool-using agents can already code, manage messages or calendars, search files, call services, and perform multi-step digital tasks under varying levels of autonomy.
 
-Agent systems can plan steps, call tools, browse information, create files, modify databases, send messages, and interact with software.
+This is current capability, not AGI speculation. Agents may read websites, emails, or documents containing instructions designed to manipulate them.
 
-This changes the risk profile.
+When the system only generates text, the result may be a bad answer.
 
-An incorrect chatbot answer remains text until a person acts on it.
+When it controls tools, manipulation can become an action. This is why prompt injection becomes a security problem rather than merely a quality problem.
 
-An incorrect agent can act directly.
+A system that plans, retrieves, communicates, and acts may resemble an organizational worker functionally.
 
-Mission organizations should therefore separate advisory systems from action systems.
+Operational agency does not create ecclesial authority. The agent can act on behalf of a church without becoming the church.
 
-An AI assistant may draft an email.
+An agent can be permitted to draft but not send, schedule but not cancel, propose a purchase but not execute it.
 
-An AI agent may send it.
+Fine-grained permissions often capture most automation benefits while preserving human control over irreversible steps.
 
-An assistant may suggest a financial transfer.
+## Current, Emerging, Plausible, Speculative {#current-emerging-plausible-speculative}
 
-An agent may initiate one.
+Bounded organizational agents are becoming more useful for repeated workflows: metadata maintenance, internal knowledge retrieval, scheduling, public inquiry classification, routine non-sensitive processing.
 
-An assistant may recommend a database update.
+The key is boundedness. Which tools? Which data? Which actions? Which escalation conditions?
 
-An agent may alter the record.
+Mission-specific agents could combine existing capabilities. A seeker assistant might identify language, retrieve vetted material, answer, recognize a request for human contact, and route the person appropriately.
 
-Every additional permission creates potential consequence.
+A translation agent might prepare candidates, compare terminology, flag consistency, package review material, and escalate unresolved issues.
 
-Christian organizations should apply the principle of least privilege.
+These workflows are technically plausible. Plausibility is not evidence of missionary fruit. Fully autonomous missionary agents, machine-run churches, or AI “finishing” the Great Commission belong in the speculative category.
 
-Give AI systems only the access needed for the task.
+The present book does not depend on them. Several agents can divide tasks: research, review, execution. This does not automatically create independent verification if all agents rely on similar models and assumptions. Diversity of system roles should not be mistaken for diversity of evidence.
 
-Use spending limits.
+**Table 35.1.** *Agent Horizon*
 
-Require human approval for irreversible actions.
+| **Horizon** | **Meaning**                                              | **Mission posture**                      |
+|-------------|----------------------------------------------------------|------------------------------------------|
+| Current     | Tool-using systems capable of bounded actions            | Govern permissions now                   |
+| Emerging    | More integrated multi-tool organizational workflows      | Pilot with tight boundaries              |
+| Plausible   | Mission-specific agentic workflows with broader autonomy | Design safeguards before deployment      |
+| Speculative | Autonomous missionary or ecclesial systems               | Do not build strategy on this assumption |
 
-Keep audit logs.
+## Permission Matters More Than Prompting {#permission-matters-more-than-prompting}
 
-Separate sensitive systems.
+As agency increases, the central governance question becomes what the system can access and do.
 
-Test failure cases.
+> • Can it read email?
+>
+> • Pastoral files?
+>
+> • Donor records?
+>
+> • Can it send, delete, publish, purchase, or modify?
+>
+> • A perfect prompt does not compensate for excessive permissions.
+>
+> • Give agents only the access needed for the task.
 
-Agent systems may eventually become extremely useful for repetitive administration, software maintenance, research, and logistics.
+A scheduling agent does not need counseling records. A translation agent does not need financial systems. A public chatbot does not need internal personnel data.
 
-But capability should not automatically produce authority.
+As agents interact with services and with one another, systems need ways to establish what the agent is authorized to represent.
 
-A machine that can act still needs governance.
+A church agent sending email should not appear indistinguishable from a pastor unless the role is explicit.
 
-The more agency technology receives, the more explicit human accountability must become.
+Identity and authorization become both technical and truthfulness issues. Untrusted content can manipulate agents, turning ordinary information ingestion into a security boundary. The long-term test is what grows around the tool. The ministry may gain speed while losing understanding, or it may use speed to create margin for better judgment and relationship. Success should therefore be evaluated over time through competence, accountability, resilience, and service rather than through the first impressive demonstration.
 
-[^1]: “Agent” is used here broadly for systems that combine model outputs with tools, state, and action loops; implementations differ substantially in autonomy and reliability.
+## Memory, Auditability, and Graceful Failure {#memory-auditability-and-graceful-failure}
+
+Start automation with actions that can be undone. Keep logs that allow the organization to reconstruct what happened, what tool was called, what information was accessed, and under whose permission.
+
+Automation changes who performs the immediate action. It does not automatically change who is accountable for authorizing it.
+
+Persistent agent memory can improve continuity and create privacy risk. Organizations should decide what is remembered, for how long, who can inspect it, and whether users can correct or delete it.
+
+A mature agent knows when to stop. Timeouts, uncertainty thresholds, missing permissions, conflicting instructions, and high-risk content should trigger handoff rather than improvisation. The ability to refuse action is part of agent competence.

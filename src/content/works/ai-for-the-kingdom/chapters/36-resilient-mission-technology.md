@@ -1,78 +1,99 @@
 ---
 id: resilient-mission-technology
-title: Resilient Mission Technology
 order: 7030
+title: "Resilient Mission Technology"
 part: the-strategic-frontier
 status: published
+description: "Chapter 36: Resilient Mission Technology."
 estimatedMinutes: 4
 ---
+The most capable AI system in the world is useless when the ministry cannot reach it.
 
-# Resilient Mission Technology
+Global internet connectivity is extensive and profoundly unequal. Billions are online; billions or large minorities in low-income settings remain offline or depend on intermittent, expensive, weak connections.[^1]
 
-Mission often happens under unstable conditions.
+Mission technology should be designed for the connection users actually possess, not the connection developers assume.
 
-Internet access fails.
+## Connectivity Is a Spectrum {#connectivity-is-a-spectrum}
 
-Governments block services.
+A person may be technically online and still have only intermittent mobile data, old hardware, expensive bandwidth, unreliable electricity, or access at specific locations.
 
-Electricity is unreliable.
+The question is not whether the country has internet. It is what the user can reliably depend upon. Pattern Platform allows phone-to-phone application transfer without internet in sensitive settings. It deliberately omits features that could increase risk.[^2]
 
-Organizations lose funding.
+Pattern matters here not because it is an AI system, but because it demonstrates infrastructure realism.
 
-Commercial platforms shut down.
+> • Connectivity: what network can users rely on?
+>
+> • Sensitivity: what information is processed?
+>
+> • Cost: what is the real long-term cost?
+>
+> • Maintenance: who keeps the system working?
+>
+> • Ownership: who controls data, migration, and continuation?
+>
+> • These produce four broad architectures: cloud-first, hybrid, local-first, and no AI.
 
-Political crises interrupt infrastructure.
+Offline-first design changes how applications store state, synchronize later, and communicate errors. It cannot be added trivially after a cloud-dependent architecture is complete. Mission teams expecting weak connectivity should make the decision early.
 
-Technology designed for mission should therefore value resilience.
+## Cloud, Local, Hybrid—or No AI {#cloud-local-hybrid-or-no-ai}
 
-AI systems frequently move in the opposite direction.
+Cloud systems offer strong models, easy updates, scalable compute, and little local setup.
 
-They depend on large cloud providers, continuous connectivity, expensive computation, centralized accounts, and subscription services.
+For public low-risk information in a well-connected church, cloud-first may be the best architecture.
 
-Mission organizations should examine these dependencies.
+Resilience does not mean rejecting cloud systems. It means understanding the dependency created by them.
 
-What happens if the provider disappears?
+On-device or locally hosted systems can improve privacy, latency, and availability under weak connectivity.
 
-Can data be exported?
+They introduce constraints: hardware, memory, energy, thermal limits, updates, maintenance, and sometimes lower model capability.
 
-Can the ministry continue without the AI feature?
+Local is a trade-off, not a moral label. Many mission systems may work best with local routine capability and cloud escalation when connectivity exists, the information is safe to transmit, and stronger capability justifies it.
 
-Does the application work offline?
+Some tasks gain little from AI. A resilient architecture diagram should contain a path where the correct decision is not to deploy it.
 
-Can local staff maintain it?
+**Figure 36.1.** *Resilient Mission Technology Decision*
 
-Are open standards used?
+| CONNECTIVITY | SENSITIVITY | COST | MAINTENANCE | OWNERSHIP |
+|--------------|-------------|------|-------------|-----------|
 
-Could another model replace the current one?
+> Use these five questions to select the architecture rather than assuming cloud or local is always best.
 
-A resilient system degrades gracefully.
+| CLOUD-FIRST | Reliable connection / lower sensitivity |
+|-------------|-----------------------------------------|
+| HYBRID      | Mixed constraints                       |
+| LOCAL-FIRST | Sensitive / intermittent / controllable |
+| NO AI       | Risk or burden outweighs value          |
 
-If AI becomes unavailable, core ministry should continue.
+**Table 36.1.** *Cloud, Hybrid, Local, and No-AI Architectures*
 
-A Bible reader should still display Scripture.
+| **Architecture** | **Strength**                                    | **Main constraint**                    |
+|------------------|-------------------------------------------------|----------------------------------------|
+| Cloud-first      | Powerful models; easy updates                   | Connectivity, provider/data dependence |
+| Hybrid           | Balances cloud capability with local resilience | More operational complexity            |
+| Local-first      | Control, offline use, sensitive workflows       | Hardware, maintenance, smaller models  |
+| No AI            | Avoids unnecessary exposure or burden           | Foregoes AI-specific capability        |
 
-A training library should still open documents.
+## Maintenance Is a Mission Constraint {#maintenance-is-a-mission-constraint}
 
-A church database should still contain records.
+Cloud systems create recurring costs. Local systems require hardware and maintenance. Open-source systems may reduce licensing while increasing support burden.
 
-A missionary should still know the language.
+Evaluate the whole lifecycle, not the cheap pilot. Who will maintain this in three years? Mission technology frequently fails after the original builder leaves. Dependencies break, operating systems change, accounts expire, documentation disappears.
 
-AI should enhance the system without becoming a single point of failure.
+Maintenance belongs in the architecture before launch. Local AI consumes device resources. Battery life, heat, storage, and memory can determine whether a theoretically offline system is usable.
 
-Local models may eventually help in restricted environments.
+Field testing should use representative hardware rather than the developer's laptop. The most resilient system often has someone nearby who can troubleshoot it. Training administrators, writing plain-language documentation, and creating recovery procedures may contribute more to uptime than another model upgrade.
 
-Smaller systems can run on laptops, phones, or local servers.
+## Portability and Fallback {#portability-and-fallback}
 
-They may provide translation, search, or document assistance without sending data to external providers.
+Can the ministry export its data, migrate providers, preserve content, and transfer administration?
 
-This could be valuable for privacy and resilience.
+A successful platform can create capacity and dependency simultaneously. The best system is not the most advanced one. It is the one people can reliably use, govern, maintain, and eventually own.
 
-The performance may be lower than large cloud models.
+Cloud resilience includes a provider-exit plan. Can prompts, knowledge bases, data, and workflow definitions be migrated? Does the organization own essential content in standard formats?
 
-In mission settings, sovereignty and reliability may matter more than benchmark leadership.
+Portability reduces institutional vulnerability. A mission workflow should identify what happens when AI is unavailable. If the ministry cannot perform a critical function during an outage, the technology has become a single point of failure.
 
-The best missionary technology is not necessarily the most advanced.
+High-consequence processes need fallbacks. Critical ministry processes should have a path that still functions when AI, internet access, or a provider is unavailable. The long-term test is what grows around the tool. The ministry may gain speed while losing understanding, or it may use speed to create margin for better judgment and relationship. Success should therefore be evaluated over time through competence, accountability, resilience, and service rather than through the first impressive demonstration.
 
-It is the technology that continues serving when conditions become difficult.
-
-[^1]: Resilience includes operational, financial, political, technical, and vendor-dependency risks rather than uptime alone.
+[^1]: International Telecommunication Union, *Facts and Figures 2025*
+[^2]: Hartenberg, “Patterned for Discipleship.”

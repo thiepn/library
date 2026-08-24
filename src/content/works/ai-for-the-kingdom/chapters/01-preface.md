@@ -1,18 +1,17 @@
 ---
 id: preface
-title: Preface
 order: 20
-part: null
+title: "Preface"
 status: published
+description: "Preface"
 estimatedMinutes: 1
 ---
+Artificial intelligence entered public life with unusual speed. Within a few years, ordinary users gained access to systems that could translate, write, summarize, teach, generate images, analyze information, assist with software, imitate conversation, and increasingly act through external tools. Capabilities that once required specialists began appearing inside an ordinary text box.
 
-Artificial intelligence has become one of the defining technological developments of our time. It is changing how people search for information, translate languages, create software, write, teach, analyze data, produce media, and coordinate work. These changes are already reaching churches, ministries, mission agencies, and missionaries.
+For Christians concerned with global mission, this creates an obvious opportunity. Mission has always encountered barriers of language, distance, knowledge, training, money, infrastructure, and specialized expertise. Artificial intelligence can reduce some of those barriers substantially. In communities and languages that have historically received little technological investment, that possibility may matter even more than it does in already well-resourced ministries.
 
-This book is not an argument that AI will solve the missionary task. It will not. The Great Commission is a command given to the Church, not to machines. The gospel is entrusted to human witnesses who love God, love people, suffer, pray, obey, teach, disciple, and serve.
+But capability alone does not tell the Church what faithfulness requires. A system can produce a translation without possessing responsibility for the translation. It can answer theological questions without receiving theological authority. It can communicate Christian teaching without becoming a Christian witness. It can automate ministry workflows without determining whether those workflows should have been automated.
 
-But tools matter. Printing presses mattered. Radio mattered. Aviation mattered. Computers and the internet mattered. Translation software matters. Communication infrastructure matters. Artificial intelligence will matter too.
+*AI for the Kingdom* is not an argument for technological enthusiasm, nor is it a warning against artificial intelligence as such. It asks a narrower question: **How should Christians, churches, missionaries, and mission organizations steward artificial intelligence in obedience to Christ and in service of God's mission among the nations?**
 
-The central question is therefore not whether Christians should pay attention to AI. The question is how we should understand it, discern its limitations, use it responsibly, resist its dangers, and steward its capabilities for the glory of God and the good of the nations.
-
-This book is an attempt to offer a theological, missiological, and practical framework for doing that.
+The book moves from theology to practice, from practice to infrastructure, from infrastructure to risk and governance, and finally from technological capability back to Christian obedience. Artificial intelligence may change what missionaries can do. It does not change whom Christians follow.

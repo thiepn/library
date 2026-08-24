@@ -1,128 +1,100 @@
 ---
 id: the-church-enters-the-ai-age
-title: The Church Enters the AI Age
 order: 1010
+title: "The Church Enters the AI Age"
 part: god-humanity-technology-and-mission
 status: published
+description: "Chapter 1: The Church Enters the AI Age."
 estimatedMinutes: 10
 ---
+Leslie Taylor prepares sermons in Japanese for a bilingual congregation in Matsudo, outside Tokyo. Japanese is not simply a language she passes through on the way to ministry; it is part of the ministry itself. Years of study have given her enough competence to notice the difference between a sentence that is grammatically plausible and one that actually sounds right to the people who will hear it. When generative AI became widely available, Taylor found that it could help with difficult sentence structures, alternative phrasings, and nuances that might otherwise consume significant preparation time. She also found that it could be wrong in ways a less competent speaker might not recognize.[^1]
 
-# The Church Enters the AI Age
+That small fact contains much of the argument of this book. Artificial intelligence can be genuinely useful before it is reliable enough to deserve independent authority. Its usefulness often grows when a capable human can evaluate it. And the very existence of a powerful tool does not settle who remains responsible for the result.
 
-Artificial intelligence is not waiting for the Church to decide whether it is comfortable with it.
+The Church has entered an age in which capabilities once restricted by money, geography, or specialized training are moving toward ordinary users. A missionary can rehearse a difficult conversation in another language at midnight. A small church can draft a policy, summarize a long report, generate accessible versions of teaching material, or build a simple software prototype without hiring a specialist for every step. A translation team can compare terminology across a corpus. A theological educator can prepare exercises for students with widely different levels of prior knowledge. A mission researcher can interrogate multiple datasets in ways that previously required significant technical assistance.
 
-It is already entering homes, schools, businesses, governments, universities, churches, mission agencies, and the daily routines of ordinary people. It is answering questions, translating languages, creating software, drafting documents, generating images, summarizing research, simulating conversation, transcribing speech, producing video, and assisting with decisions.
+It would be easy to describe this only as a productivity revolution. That would be too small. The more important change is a redistribution of capability. The people who can attempt a task are no longer identical to the people who could afford or recruit the specialist labor required to attempt it before. In some settings, AI makes an existing workflow faster. In others, it moves a project from impossible to possible.
 
-For Christians, this creates both opportunity and responsibility.
+That possibility matters for Christian mission because missionary work often attends to needs commercial markets have little reason to prioritize. A low-resource language may represent a small addressable market. A church in a restricted context may need offline software designed around security assumptions very different from those of a consumer app. A theological school may serve students who cannot purchase large libraries. A small mission organization may need analysis, design, translation, or coding capacity that would normally exceed its budget. The fact that a technology can lower such barriers deserves more than suspicion.
 
-The Church has encountered disruptive technologies before. The printing press radically expanded access to Scripture and theological writing. Radio and television enabled preaching and teaching at unprecedented scale. Aviation transformed missionary travel. The internet made global communication almost instantaneous. Smartphones placed libraries, cameras, maps, translation tools, and communication networks into billions of pockets.
+At the same time, Christian mission cannot be reduced to the distribution of religious information. A person can receive accurate Christian content without becoming a disciple. A translation can be linguistically fluent and still be culturally inappropriate or theologically wrong. A chatbot can answer a pastoral question while remaining outside the structures of accountability that make pastoral authority meaningful. A ministry can automate administrative work and then discover that the time saved has merely produced a larger reporting burden. A powerful system can strengthen local Christians—or deepen their dependence on external platforms, languages, and institutions.
 
-Each technological change altered the environment in which Christian mission took place. None changed the mission itself.
+The central question is therefore not whether Christians should use artificial intelligence. They already do, and the category is too broad for a single yes or no. The better question is how Christians should steward forms of machine assistance whose capabilities are real, uneven, rapidly changing, and increasingly embedded in ordinary work.
 
-The same distinction is essential with artificial intelligence.
+This book approaches that question from within historic Christian conviction. God is not one variable in a technology strategy. Christ is not the patron of efficiency. The Holy Spirit is not a metaphor for human creativity. The Church is not merely a distribution network for religious information. Christian mission originates in God and is entrusted to a people who bear witness, make disciples, teach, baptize, form churches, serve neighbors, cross boundaries, suffer, persevere, and depend upon God.
 
-The Great Commission has not changed. Jesus still commands his followers to make disciples of all nations. The gospel still concerns the death and resurrection of Christ. The Church is still called to preach, teach, baptize, gather, serve, suffer, pray, and love. Human beings are still created in the image of God. Sin is still real. Truth still matters. Wisdom still matters. Holiness still matters.
+These claims do not make technical questions irrelevant. They make them morally situated. If mission matters, then translation quality matters. If people bear the image of God, then privacy and dignity matter. If truthfulness belongs to Christian witness, then fabricated citations, synthetic testimony, and misleading media matter. If the Church bears responsibility for doctrine and discipleship, then systems that sound authoritative matter. If Christian mission is global, then the languages and communities systematically underserved by technology matter.
 
-AI changes capability, not calling.
+The result is a position more demanding than either enthusiasm or rejection. Christians should use AI more strategically where it removes genuine barriers. They should also become more discerning as capability increases. Greater capacity is not an argument for less supervision. In consequential work, it is often an argument for clearer supervision, stronger verification, more explicit authority boundaries, and greater attention to the people who bear the consequences when the system fails.
 
-That distinction protects us from two opposite mistakes.
+A recurring temptation in discussions of AI is to make the machine the protagonist. The story becomes a sequence of escalating technical abilities: language models, multimodal systems, agents, autonomy, perhaps eventually artificial general intelligence. Christian theology begins elsewhere. The important subject is not what the machine may become in the abstract, but what the Church is called to be and do in the presence of new tools.
 
-The first is technological utopianism: the belief that sufficiently advanced tools will solve the deepest problems facing humanity or finally complete the missionary task. They will not. No model can regenerate the human heart. No algorithm can create repentance. No machine can replace the Holy Spirit. No technological system can become the Church.
+That is why this book does not depend on resolving whether a future machine could be conscious, morally considerable, or intellectually superior to humans in some comprehensive sense. Those questions may become important. They are not required to answer the practical Christian questions already before us. A system does not need consciousness to expose sensitive data. It does not need a soul to produce persuasive theological error. It does not need moral agency to be granted dangerous permissions by a human organization. And it does not need to become a person before people begin treating it as a source of relational or spiritual authority.
 
-The second mistake is technological withdrawal: the belief that because a technology is powerful, commercially driven, morally ambiguous, or capable of abuse, faithful Christians should simply refuse to engage with it.
+The theological task is therefore both humbler and more urgent. We need to know what human responsibility cannot be surrendered merely because an output can be generated. We need to distinguish assistance from authority, production from judgment, information from wisdom, communication from witness, and efficiency from faithfulness. We need to recognize that some forms of friction are needless and should be removed, while others are bound up with learning, presence, patience, or formation and cannot be discarded without loss.
 
-That response also fails.
+The missionary task also requires strategic imagination. If AI can lower the cost of language technology, theological education, software, accessibility, and research, Christians should ask where that capability can serve people who have historically received the least. There is no special virtue in preserving scarcity. The question is whether the technology can be developed and used in ways that strengthen local Christian agency rather than converting communities into permanent consumers of systems they cannot evaluate, govern, maintain, or refuse.
 
-Tools can be corrupted without being inherently corrupt. Language itself can communicate truth or lies. Printing can produce Bibles or propaganda. Cameras can document injustice or exploit people. The internet can distribute theological education or pornography. Money can fund mission or fuel greed.
+The governing conviction of this book can be stated simply: mission governs technology. Technology does not define the Church's mission, decide what faithfulness means, or inherit spiritual responsibility. It remains an instrument within a larger Christian account of creation, fall, redemption, wisdom, community, vocation, and obedience.
 
-The moral question therefore cannot be reduced to whether a technology is powerful. The more important questions are what the tool does, what it encourages, who controls it, what dependencies it creates, what risks it introduces, and how Christians should use or refuse it in particular situations.
+That does not make the instrument unimportant. A tool capable of reshaping how people think, communicate, learn, build, and decide deserves serious attention. But the Church enters the AI age with a commission older than any machine and a responsibility no machine can carry on its behalf.
 
-Artificial intelligence deserves careful attention precisely because its capabilities are unusually broad.
+The tools have changed. The question is what we will do with them.
 
-A modern AI system can operate across many domains that previously required separate specialists. It can help a missionary brainstorm language-learning exercises, draft software, explain grammar, summarize ethnographic research, generate training material, structure an administrative process, create first-pass translations, transcribe interviews, classify documents, and analyze survey responses.
+## A Capability Shift {#a-capability-shift}
 
-That breadth makes AI feel different from many earlier tools.
+Earlier mission technologies were often visibly specialized. A printing press printed. A radio transmitted. Bible software searched a corpus. Generative AI is different because the same interface can cross task boundaries. One system may help with language practice in the morning, code in the afternoon, and theological research in the evening.
 
-A spreadsheet performs calculations. A camera captures images. A translation dictionary helps with words. A programming language enables software development.
+General-purpose capability is strategically valuable in small organizations. A missionary team rarely has enough specialists for every need. A system that offers mediocre-to-strong assistance across ten domains can sometimes matter more than a tool that is world-class in one domain the team rarely uses.
 
-AI increasingly acts as a general-purpose capability layer across many kinds of knowledge work.
+This is also why general-purpose systems deserve stronger judgment. Users can carry confidence from one successful task into another where the model is much weaker. A missionary who has received excellent writing assistance may assume the system's historical research is equally reliable. A developer who has seen strong coding performance may overtrust advice about pastoral practice. The seamless interface hides uneven competence.
 
-This matters for mission because missionary work contains enormous amounts of knowledge work.
+Christian AI literacy therefore needs transfer resistance: the habit of asking whether success in one domain actually justifies trust in the next.
 
-Missionaries research cultures. They learn languages. They create teaching materials. They translate. They write newsletters and reports. They organize teams. They manage projects. They train leaders. They analyze needs. They build databases. They make websites. They prepare lessons. They communicate across languages and cultures.
+The missionary opportunity is real precisely because the system is broad. Translation, research, accessibility, analysis, communication, and software can increasingly sit within one toolkit. But stewardship means refusing to let one friendly interface erase the boundaries among those responsibilities.
 
-Historically, many of these tasks required either specialist training or access to specialists. A small mission team might have needed separate expertise in software engineering, graphic design, translation, research, media production, administration, and education.
+A common story of technological progress assumes that greater capability reduces responsibility. Better automation means less human involvement. For low-consequence mechanical tasks, that may be exactly right.
 
-AI does not eliminate the need for expertise, but it can lower the cost of accessing certain forms of it.
+In ministry, however, greater capability can enlarge the domain for which a person or institution must exercise judgment. A small church that could never produce synthetic video had no reason to adopt a synthetic-media policy. Once it can produce realistic media in minutes, new responsibilities exist. A missionary who could not process thousands of records did not need to decide what patterns should govern automated targeting. Once analysis becomes accessible, the strategic and ethical choice becomes real.
 
-A missionary with limited technical background can now generate a prototype application. A local church leader can receive explanations of unfamiliar software. A translator can rapidly compare alternative phrasings. A ministry can summarize hundreds of documents before a human review. A language learner can create personalized exercises in seconds.
+Capability creates options. Options create stewardship.
 
-This creates a profound shift in the economics of capability.
+This is a recurring biblical pattern even outside technology. Gifts, resources, authority, knowledge, and opportunity create corresponding responsibility. AI belongs inside that logic. The question is not whether the Church asked for every capability now arriving. The question is how faithfully it receives and limits them.
 
-Expertise is not becoming unnecessary. But some forms of assistance that were once scarce are becoming inexpensive and widely accessible.
+## Where the New Capacity Matters Most {#where-the-new-capacity-matters-most}
 
-For mission, this could be extremely significant.
+The institutional significance of generative AI appeared before most churches or mission agencies had vocabulary for it. Staff began using public chat systems to rewrite donor communication, translate messages, summarize reports, prepare teaching material, generate images, and troubleshoot software. Some leaders discovered the usage only after confidential information had already crossed into systems the organization had never evaluated.
 
-Many mission contexts operate with limited money, limited personnel, limited specialist support, and difficult logistics. Small churches and indigenous ministries often cannot hire consultants, software developers, research teams, designers, or language specialists on demand.
+This pattern matters because technological adoption is often bottom-up. Formal strategy arrives after convenience. A worker facing a three-hour task sees a tool that can finish the first draft in five minutes and reasonably tries it. By the time leadership debates whether AI belongs in ministry, the more practical question may already be which uses have become habitual.
 
-If AI can provide useful first-pass assistance in these domains, it can strengthen local capacity.
+That sequence changes the governance problem. A policy cannot be built only around future possibilities. It has to begin with ordinary work: what people are already doing, why they are doing it, what data they are using, and which parts of the workflow genuinely improve.
 
-But the same capabilities introduce serious dangers.
+Christian organizations should therefore resist two instincts. The first is institutional denial—pretending AI use can be prevented simply by never mentioning it. The second is institutional enthusiasm—requiring adoption before workers have learned what the systems can and cannot reliably do.
 
-AI can produce convincing falsehoods. It can imitate authority without possessing wisdom. It can reinforce cultural bias. It can encourage people to outsource thinking. It can create dependency on commercial infrastructure. It can expose sensitive information. It can generate synthetic media that undermines trust. It can flatten cultures into statistical patterns. It can create the illusion of pastoral presence without real relationship.
+The healthier approach is deliberate discovery. Identify real tasks. Compare old and new workflows. Ask what improved, what review burden appeared, what competence is required, and what risks changed. Use those observations to decide where standardization helps and where human judgment should remain primary.
 
-These risks become especially important in mission contexts.
+The goal is not to make every Christian worker an AI enthusiast. It is to make hidden technological dependence visible enough to govern.
 
-A mistranslated theological concept may distort the gospel. A leaked dataset may endanger believers in a hostile country. A culturally insensitive generated resource may damage trust. A hallucinated historical claim may undermine credibility. A centralized AI provider may expose information about an unreached people group, underground church, or missionary network.
+The strongest moral case for Christian AI investment appears where capability has historically been scarce.
 
-The Church therefore needs more than enthusiasm.
+A wealthy English-speaking church already has access to pastors, books, software, online courses, designers, and professional services. AI can still save time. The marginal benefit may be convenience.
 
-It needs discernment.
+A theological student studying in a language with few digital resources faces a different baseline. A church with no professional designer, no software developer, and limited access to translated material faces a different baseline. A Deaf community waiting for specialized translation tools faces a different baseline.
 
-Discernment does not mean fear. It means seeing clearly.
+The same technical improvement can therefore have radically different human significance. This should influence Christian funding. Mission technology budgets often follow organizational visibility: polished websites, donor systems, headquarters analytics. These needs are legitimate. But AI also creates a chance to fund less visible infrastructure whose commercial return is small and missionary value is high: speech data for minority languages, accessible theological libraries, offline search, transcription tools, open linguistic resources, and secure systems for contexts commercial products do not prioritize.
 
-Christians should ask what a technology is actually doing rather than what marketing language suggests it is doing. We should distinguish intelligence from wisdom, fluency from truth, automation from responsibility, and capability from authority.
+The Church should be wary of an AI strategy whose largest benefit is making the already well-resourced slightly faster.
 
-We should also distinguish between tasks that can appropriately be delegated and responsibilities that cannot.
+## Stewardship Before Hype {#stewardship-before-hype}
 
-A machine may help draft a sermon outline. It cannot bear responsibility for teaching the congregation.
+Artificial intelligence is unusually vulnerable to both hype and backlash because demos compress complexity. A model generates a translation instantly, and the demonstration appears to prove translation has been solved. An agent completes a coding task, and the demonstration appears to prove software engineering has been automated.
 
-A model may suggest translation options. It cannot replace the accountable community that decides how Scripture should be rendered in a language.
+Mission leaders should cultivate a simple discipline: distinguish demonstration from deployment. A demonstration asks whether something can happen once under favorable conditions. Deployment asks whether it happens reliably across ordinary cases, over time, under the constraints of real users, with acceptable error, cost, maintenance, and risk.
 
-An AI assistant may help organize discipleship material. It cannot disciple someone.
+This distinction protects churches from chasing technology cycles and protects legitimate innovation from being discredited by overclaiming.
 
-A chatbot may simulate pastoral conversation. It cannot become a pastor.
+The book therefore treats spectacular capability as a reason to investigate, not a reason to declare victory.
 
-These distinctions will appear repeatedly throughout this book.
+## A Mission Older Than the Machine {#a-mission-older-than-the-machine}
 
-The central argument is simple:
-
-AI should be treated as a powerful class of tools that can increase human capability but cannot inherit human spiritual responsibility.
-
-Used faithfully, AI may help Christians work more effectively, learn faster, build useful tools, expand access to knowledge, support translation, strengthen administration, and create resources for underserved communities.
-
-Used carelessly, it may weaken judgment, spread error, expose vulnerable people, concentrate power, and encourage the Church to automate responsibilities that require embodied faithfulness.
-
-The Church is therefore entering the AI age whether it has prepared for it or not.
-
-The question is what kind of Church will enter it.
-
-Will Christians become passive consumers of whatever technological systems corporations provide?
-
-Will ministries adopt tools without understanding their risks?
-
-Will churches reject useful capabilities because they seem unfamiliar?
-
-Will missionaries become dependent on systems they cannot explain or control?
-
-Or will the Church cultivate mature, technically literate, theologically grounded people who can evaluate new capabilities and steward them wisely?
-
-That is the task before us.
-
-The future of Christian mission will not be determined by artificial intelligence.
-
-But missionaries, churches, and Christian organizations will increasingly operate in a world shaped by it.
-
-Faithful stewardship requires learning how to live and serve in that world without confusing technological power with the power of God.
-
-[^1]: The term “artificial intelligence” is used throughout this book as a broad practical label for contemporary machine-learning systems, especially generative models, rather than as a claim that machines possess human-like consciousness or personhood.
+[^1]: Ross et al., “Christians Use AI to Share Jesus.”

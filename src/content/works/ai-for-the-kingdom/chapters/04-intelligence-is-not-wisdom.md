@@ -1,198 +1,98 @@
 ---
 id: intelligence-is-not-wisdom
-title: Intelligence Is Not Wisdom
 order: 1040
+title: "Intelligence Is Not Wisdom"
 part: god-humanity-technology-and-mission
 status: published
+description: "Chapter 4: Intelligence Is Not Wisdom."
 estimatedMinutes: 7
 ---
+Artificial intelligence has made the word *intelligence* unusually slippery. We use it for systems that predict text, recognize images, plan routes, write code, answer questions, or coordinate tools. The label is convenient, but it can encourage a theological mistake: assuming that increasingly impressive performance approaches what Scripture calls wisdom.
 
-# Intelligence Is Not Wisdom
+The biblical wisdom traditions present wisdom as more than problem-solving ability. Wisdom concerns living rightly before God within the moral grain of reality. It includes knowledge, but knowledge is not enough. The fool can possess information. The powerful can be clever. A person can reason strategically toward corrupt ends.
 
-Artificial intelligence encourages a dangerous confusion between intelligence and wisdom.
+Proverbs begins wisdom not with superior computation but with the fear of the Lord. Wisdom involves humility, teachability, justice, restraint, speech, work, relationships, money, sexuality, power, and the recognition that human plans exist before God. Job complicates any simplistic equation between wisdom and predictive control. Ecclesiastes exposes the limits of mastery and the instability of outcomes. The New Testament places Christ, the cross, the Spirit, and transformed communal life within the Christian account of wisdom.
 
-The two are not the same.
+This distinction matters because AI can create an abundance of plausible answers. In a world of scarce information, access to answers is valuable. In a world of abundant answers, judgment becomes more valuable.
 
-A person can be highly intelligent and profoundly foolish.
+A missionary can ask a model for ten strategies to approach a new community. The model can produce them immediately. Wisdom asks which assumptions are arrogant, which suggestions ignore local history, who should be consulted, whether the timing is right, and whether the entire project ought to proceed.
 
-History contains brilliant scientists who served destructive regimes, gifted leaders ruined by pride, sophisticated societies that practiced injustice, and educated people who used knowledge for exploitation.
+A pastor can ask for five ways to respond to a member in conflict. The system can produce polished alternatives. Wisdom includes knowing the person, recognizing when silence is better than advice, understanding the pastor's own role in the conflict, and knowing when the issue requires another leader or professional specialist.
 
-Cognitive ability does not automatically produce moral judgment.
+A Bible-translation team can generate candidate terms. Wisdom includes linguistic competence, theological judgment, community listening, patience, and the willingness to reject an efficient solution that local believers do not trust.
 
-Scripture treats wisdom as something much deeper.
+This is one reason “AI as oracle” is such a dangerous mental model. Fluent language can make recommendations feel like judgments rather than generated possibilities. The system rarely displays the social cost of its own advice. It does not bear the consequences if a ministry follows a culturally clumsy strategy or if a leader treats a synthetic recommendation as divine guidance.
 
-Wisdom involves rightly ordered knowledge under the fear of the Lord.
+Wisdom is also moral formation. People become wise through practices: instruction, correction, experience, community, suffering, repentance, prayer, and attention. A person who receives the correct answer every time may still fail to become wise if the workflow removes the need to notice, interpret, and judge.
 
-It includes moral discernment, humility, experience, obedience, and the ability to act well in concrete situations.
+This is not an argument for refusing assistance. Human beings have always learned through teachers, books, commentaries, and counsel. The question is whether the tool functions as a scaffold or a bypass. A student who uses AI to test an interpretation after wrestling with a text may learn more. A student who asks for the interpretation before reading may produce a better assignment while forming less independent judgment.
 
-This distinction matters because AI systems can display impressive forms of functional intelligence.
+Wisdom also knows limits. Models are often strongest when the task can be expressed in language and evaluated against patterns in data. Ministry regularly involves situations where crucial facts are missing, motives are opaque, relationships are changing, and consequences are morally serious. In such settings, uncertainty is not a technical defect that can always be eliminated by more data.[^1]
 
-They can solve problems, identify patterns, generate explanations, compare possibilities, and produce useful recommendations.
+The Christian tradition has long valued counsel because one person's perspective is limited. AI may become another source of counsel, and sometimes an unusually useful one. But wise counsel is not merely a statistically plausible completion. It comes within relationships of accountability, shared moral commitments, experience, and sometimes recognized office.
 
-These outputs may look wise.
+This helps distinguish expertise from authority. An AI system may be technically more knowledgeable than a church elder about a narrow subject. That knowledge should be used. It does not automatically make the system an elder. A specialist consultant may know more about cybersecurity than a mission director and therefore deserve deference on security architecture. That still does not give the consultant ecclesial authority over doctrine or calling.
 
-Sometimes they may even contain wise advice.
+Competence does not create office.
 
-But the system itself does not become wise merely because it can reproduce patterns found in wise human language.
+The same principle applies to AI. A system can be extraordinarily competent in a domain without inheriting the social and moral role attached to that domain in human community.
 
-Wisdom is not the same as producing statements associated with wisdom.
+Wisdom also resists the seduction of optimization. Artificial intelligence excels at tasks that can be formalized around goals. Christian life contains goals that should not be maximized without qualification. More engagement is not always better discipleship. More content is not always better teaching. More measurable reach is not always better mission. More donor response is not always better fundraising if the method manipulates people. More automation is not always better administration if it destroys accountability.
 
-Consider the difference between knowing a principle and living it.
+The wise question is not simply, “Can this be improved?” It is, “Improved toward what?”
 
-A model can explain forgiveness.
+This becomes especially important as AI systems gain agency. An agent needs an objective, explicit or implicit. If the objective is poorly chosen, greater capability can make the mistake more consequential. A system optimized to maximize responses to evangelistic content may learn tactics inconsistent with Christian truthfulness. A system optimized to minimize administrative time may cut away relational practices leadership actually values. A system optimized to rank mission need may conceal uncertainty behind a confident score.
 
-It cannot forgive someone who betrayed it.
+Christian wisdom therefore supplies a hierarchy of goods that technical systems do not generate for themselves. Truth outranks persuasive effect. Love constrains efficiency. Human dignity limits exploitation. The Church's responsibility constrains delegation. Local agency constrains external control. Faithfulness constrains optimization.
 
-It can describe courage.
+This does not require AI to be weak. In fact, the stronger the system becomes, the more important the hierarchy becomes. Weak tools fail obviously. Strong tools can succeed at the wrong objective.
 
-It cannot choose courage while afraid.
+The Christian response to increasingly capable AI should therefore not be a desperate search for the final cognitive ability machines can never reproduce. It should be a renewed commitment to wisdom: knowing what is good, what belongs to whom, what consequences matter, what limits should be accepted, and how to act faithfully under uncertainty.
 
-It can summarize the book of Job.
+Answers are becoming cheaper. Wisdom is not.
 
-It cannot suffer and remain faithful.
+## Answers Are Not Wisdom {#answers-are-not-wisdom}
 
-It can outline Christian teaching on generosity.
+For much of history, theological education was constrained by access. Books were expensive. Libraries were geographically concentrated. Teachers were scarce. A student with a difficult question might wait days or weeks for help.
 
-It cannot give sacrificially.
+AI creates a different environment: explanation abundance. A learner can request ten interpretations of a passage, five objections to a theological claim, and a comparison of historical positions before breakfast. The new bottleneck is not finding something to say. It is knowing which explanation deserves trust and what to do with it.
 
-Wisdom is embodied in character and action.
+This is the environment in which wisdom becomes more visible as a distinct good.
 
-This is why Christians should be careful when using AI for decisions involving moral complexity.
+Information abundance can even increase confusion because the user receives plausible alternatives faster than they can evaluate them. The wise teacher therefore helps students build criteria rather than merely supplying more content.
 
-An AI system may provide useful information about a situation.
+## Wisdom Is Moral and Local {#wisdom-is-moral-and-local}
 
-It may identify relevant considerations.
+Missionary strategy demonstrates another form of wisdom: knowledge that is situated rather than globally general.
 
-It may help expose assumptions or generate alternative approaches.
+A model may know thousands of pages about a country and still not know that the person sitting across the table is related to two church leaders, distrusts a particular institution, or interprets a polite invitation differently from the way an outsider does.
 
-But the human user still bears responsibility to judge.
+Local knowledge is not automatically wise either. Insiders can share prejudice, factional interests, or limited perspective. Wisdom often emerges through dialogue among sources, experience, community, and moral judgment.
 
-This principle becomes especially important in ministry.
+AI can widen the conversation. It should not flatten these forms of knowledge into one synthesis.
 
-Imagine a pastor facing a complicated pastoral situation.
+## Counsel, Authority, and Office {#counsel-authority-and-office}
 
-The pastor could describe the case to an AI system and receive several recommendations.
+Christian traditions disagree about many issues addressed in this book: church authority, spiritual gifts, pastoral practice, Bible translation, technology, and mission strategy.
 
-Some might be reasonable.
+A language model is often capable of producing a harmonized answer that sounds as though the disagreement has disappeared. Wisdom may require preserving the disagreement.
 
-But pastoral wisdom involves far more than selecting a plausible response.
+For example, practitioners differ over whether AI should produce Scripture Draft 0. The wise move is not to generate a compromise sentence merely because synthesis feels balanced. The disagreement exposes a real difference about translator formation and process.
 
-It involves knowing the people, understanding relationships, recognizing hidden wounds, discerning timing, praying, applying Scripture faithfully, considering confidentiality, and accepting responsibility for the consequences.
+Wisdom knows when resolution is premature. AI may become one of the most knowledgeable counselors a leader has ever had access to. This is worth using.
 
-No generated answer can replace this work.
+But Christian leadership has never treated advice and office as identical. A church elder may receive medical advice from a doctor, legal advice from a lawyer, and security advice from an expert without transferring ecclesial office to any of them.
 
-Missionaries face similar situations.
+AI should be treated similarly. Technical competence can deserve strong deference within a domain while authority remains bounded.
 
-Cross-cultural ministry constantly presents ambiguous circumstances.
+This distinction helps the Church avoid two errors: refusing good counsel because it comes through a machine, or granting broad authority because the counsel is impressive.
 
-A behavior that appears rude in one culture may communicate respect in another. A direct theological explanation may be clear in one context and deeply confusing in another. A ministry strategy that worked in one country may fail completely in another.
+## Judgment Under Uncertainty {#judgment-under-uncertainty}
 
-AI may provide cultural background.
+Many mission decisions cannot be optimized because the relevant future is unknowable. Should a worker stay in a difficult field another year? Should a church partner with a new organization? Should a translation team adopt a new workflow? Data helps. Models can surface scenarios. The decision still occurs under uncertainty.
 
-It cannot guarantee cultural wisdom.
+Christian wisdom includes acting faithfully without pretending uncertainty has been eliminated. AI systems can be useful precisely when asked to make uncertainty visible: generate alternative scenarios, identify assumptions, show missing data, state reasons a recommendation might fail.
 
-Cultural wisdom grows through listening, humility, relationships, correction, and long-term presence.
+The best use is not always “give me the answer.” Sometimes it is “help me see why the answer is difficult.”
 
-This is one reason missionaries should resist using AI as an oracle.
-
-The technology is most helpful when treated as an assistant that expands the information available to human judgment.
-
-It becomes dangerous when its output is treated as final authority.
-
-The distinction can be summarized in a simple hierarchy:
-
-Data are observations.
-
-Information organizes data.
-
-Knowledge interprets information.
-
-Intelligence applies knowledge to problems.
-
-Wisdom judges what should be done and why.
-
-These categories overlap, but the progression reveals something important.
-
-More information does not automatically produce better judgment.
-
-A missionary may possess enormous amounts of demographic data about a people group and still misunderstand the people themselves.
-
-A church may measure attendance, giving, volunteer hours, small-group participation, and sermon engagement while lacking wisdom about the spiritual health of the congregation.
-
-AI intensifies the availability of information.
-
-It does not solve the problem of wisdom.
-
-In fact, it may make wisdom more important.
-
-When answers become cheap, the ability to judge answers becomes valuable.
-
-When content becomes abundant, discernment becomes scarce.
-
-When everyone can generate persuasive explanations, credibility becomes more difficult to evaluate.
-
-When expertise can be simulated, people need deeper ways of recognizing real competence.
-
-This creates a new educational challenge for the Church.
-
-Christian education cannot focus only on transferring information.
-
-Believers need to learn how to evaluate claims, test sources, identify uncertainty, recognize manipulation, and distinguish fluency from truth.
-
-Missionary training will need similar changes.
-
-Future missionaries may routinely work with systems capable of generating language-learning material, cultural explanations, theological summaries, strategic recommendations, and ministry content.
-
-Training must therefore include not only how to use such systems but how to disagree with them.
-
-A mature AI user should be able to say:
-
-"This answer sounds plausible, but the source is weak."
-
-"This translation is grammatically correct but culturally wrong."
-
-"This recommendation is efficient but pastorally unwise."
-
-"This summary misses the theological issue."
-
-"This model is confident, but we do not have enough evidence."
-
-That capacity is a form of discernment.
-
-The Church should cultivate it.
-
-There is also a spiritual dimension.
-
-Biblical wisdom begins with the fear of the Lord.
-
-This means wisdom is fundamentally relational and moral.
-
-It begins by recognizing that God is God and we are not.
-
-AI systems do not possess this posture.
-
-They do not stand before God in reverence.
-
-They do not repent.
-
-They do not worship.
-
-They do not obey.
-
-They can generate language about all these things without participating in them.
-
-Christians therefore have no reason to feel spiritually inferior to a system because it can recall more information or generate faster answers.
-
-A machine may know the textual content of thousands of theological books.
-
-A faithful believer who knows far less information may still possess greater wisdom because that believer loves God, obeys Scripture, receives correction, serves others, and has been shaped through suffering and discipleship.
-
-The AI age may tempt us to admire intelligence more than character.
-
-The Church should resist that temptation.
-
-God does not call Christians merely to become informed.
-
-He calls us to become wise.
-
-[^1]: Proverbs repeatedly connects wisdom with the fear of the Lord, moral formation, teachability, and righteous action rather than with information accumulation alone.
+[^1]: The argument here is a theological synthesis rather than a claim that biblical wisdom literature directly addresses AI; compare Wright, *The Mission of God’s People: A Biblical Theology of the Church’s Mission*

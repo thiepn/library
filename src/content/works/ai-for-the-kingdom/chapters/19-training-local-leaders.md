@@ -1,88 +1,99 @@
 ---
 id: training-local-leaders
-title: Training Local Leaders
 order: 3080
+title: "Training Local Leaders"
 part: ai-in-missionary-practice
 status: published
+description: "Chapter 19: Training Local Leaders."
 estimatedMinutes: 5
 ---
+In June 2026, Daystar University's School of Mission and Theology in Nairobi gathered thirty full- and part-time faculty members for two days of AI literacy and ministry-focused training. The sessions included theological foundations, prompting, critical discernment, biblical study, research, and practical ministry tools.[^1]
 
-# Training Local Leaders
+The story matters because it reverses a common picture. African theological institutions are not waiting passively for Western organizations to decide what AI means for them. They are already experimenting, evaluating, teaching, and forming their own institutional responses.
 
-One of the strongest missionary uses of AI may be strengthening local Christian leaders.
+## Access Is Not Formation {#access-is-not-formation}
 
-Many pastors and ministry leaders around the world serve with limited access to libraries, theological education, technical support, and administrative staff.
+AI can reduce one longstanding inequality in theological education: access to explanation. A student with a difficult paragraph can request another explanation. A lecturer can generate exercises. A small school can search digitized resources more effectively. Translation can open material from other languages.
 
-AI cannot replace theological formation.
+This matters where faculty time and library access are constrained. But access to information is not the same as theological formation. A student can receive an excellent answer without learning how to interpret Scripture, evaluate arguments, or serve a church.
 
-But it can reduce barriers around it.
+A model can explain leadership principles instantly. Leadership itself is formed through responsibility.
 
-A pastor can receive help organizing study notes, understanding unfamiliar terminology, translating resources, preparing discussion questions, or creating teaching aids.
+Local leaders need opportunities to make decisions, bear consequences, receive correction, navigate conflict, teach real people, and remain faithful over time.
 
-A ministry leader can learn spreadsheet skills, basic accounting, presentation design, project management, or website maintenance through conversational instruction.
+AI can support that process. It cannot compress tested character into a content module.
 
-This access to practical expertise may be extremely valuable.
+This is why an AI-enabled theological school should not define success as faster completion alone. If students graduate sooner but with weaker interpretive competence or less pastoral maturity, efficiency has displaced the goal.
 
-The most important strategic principle is that AI should increase local agency.
+AI could lower barriers to theological education for leaders who cannot relocate, study in English, or access large libraries. That is an opportunity worth pursuing aggressively.
 
-Mission technology has sometimes been built in ways that keep expertise centralized.
+The aim should not be to produce globally standardized theological answers at lower cost.
 
-A ministry in one country depends permanently on developers, designers, translators, or administrators somewhere else.
+It should be to strengthen the capacity of churches and institutions to form leaders who can interpret Scripture faithfully, think theologically in their own contexts, teach others, and exercise accountable Christian leadership.
 
-AI may allow more work to move locally.
+Information can become cheaper. Leadership cannot be downloaded. AI may be especially significant for theological institutions teaching students in a second or third language.
 
-A pastor who once needed an overseas web developer may be able to maintain a simple site.
+A student can receive explanations in a stronger language while still engaging course material in the institution's language. Faculty can generate glossaries, bridge readings, and language support.
 
-A local translator may create first drafts without waiting for an external team.
+This can widen access without requiring every student to reach elite academic English before serious theological study begins.
 
-A church network may produce its own training materials.
+The long-term goal should include theological production in the student's own language, not permanent translation dependence.
 
-This is healthy when it strengthens ownership.
+## Who Is Teaching Through the Corpus? {#who-is-teaching-through-the-corpus}
 
-Missionaries should therefore ask not only, "How can we use AI for local leaders?"
+Theological AI raises a question often hidden by fluent output: whose theology is most available digitally?
 
-They should ask, "How can local leaders use AI without us?"
+English-language publishing, North American seminaries, major Western denominations, and highly digitized traditions may dominate the material from which systems learn or retrieve.
 
-That question shifts the goal from service delivery to capability building.
+A model can therefore sound like generic Christianity while reproducing a narrower theological center of gravity.
 
-Training should include critical use.
+The solution is not to remove Western theology. Christian theology has always crossed borders. The better response is to make sources visible and expand the corpus.
 
-Leaders need to understand hallucination, bias, privacy, copyright, source checking, and theological review.
+African, Asian, Latin American, Middle Eastern, Indigenous, and diaspora scholarship should not enter only as contextual supplements to a default Western framework.
 
-Providing access without discernment may simply create new forms of dependence.
+Institutions can build retrieval systems over their own reviewed libraries, faculty materials, denominational documents, regional scholarship, and local-language resources.
 
-A leader who trusts every generated answer is not empowered.
+This allows AI to assist without pretending one global model's latent knowledge represents the institution's theological identity.
 
-They are vulnerable.
+Corpus governance becomes part of academic governance. Who decides what enters? Which traditions are represented? What happens to copyrighted or unpublished materials? Can students see sources? Imported AI curricula can reproduce imported theology. An institution should decide which theological sources, ethical questions, and mission priorities belong in its own training. Global resources can enrich the curriculum without becoming the hidden default.
 
-Local leaders should also participate in tool selection and policy design.
+This is where local retrieval libraries and faculty-authored guidance can be particularly useful.
 
-A system appropriate in a wealthy urban church may be unsuitable in a rural setting with unstable internet.
+## Faculty Remain a Scarce Form of Judgment {#faculty-remain-a-scarce-form-of-judgment}
 
-A cloud platform acceptable in one country may create security risks in another.
+Where qualified theological educators are scarce, AI can handle some work that does not require the educator's highest judgment.
 
-A paid subscription affordable to a mission agency may be impossible for local churches to sustain.
+Routine explanation. Practice questions. Feedback on structure. Language support. Administrative preparation. The goal should be to concentrate faculty time on what is hardest to automate well: formation, mentoring, contextual theology, difficult interpretation, pastoral wisdom, and assessment of real competence.
 
-Sustainability matters.
+This is the same infrastructure shift seen elsewhere. Cheap first-pass assistance makes expert judgment more valuable.
 
-The best technology often looks ordinary.
+AI complicates traditional assignments. An essay can now be generated or heavily assisted with little evidence of learning.
 
-It works on existing devices.
+The answer is not necessarily stronger detection. Assessment can move toward oral defense, live interpretation, iterative drafts, ministry projects, source analysis, and tasks that require students to explain reasoning.
 
-It survives poor connectivity.
+Theological education should assess the person who will teach and lead, not merely the polished artifact submitted.
 
-It exports data.
+AI literacy for faculty should go beyond tool demonstrations. Educators need to understand how assignments change, how source verification works, what data students may upload, and how to distinguish AI assistance from replacement of the learning objective.[^2]
 
-It does not require specialized administrators.
+Faculty should also be allowed to disagree about appropriate boundaries. A theology professor may forbid AI in an interpretive exercise designed to assess independent exegesis while using it extensively to generate low-stakes quizzes. When AI supplies explanations cheaply, the educator's comparative advantage shifts toward diagnosis. Which misconception is blocking the student? Which theological question actually matters in the student's church context? Is the student becoming capable of interpreting independently? What kind of leader is the student becoming? These are not merely content-generation problems.
 
-It solves a real local problem.
+## Build Local Institutional Capacity {#build-local-institutional-capacity}
 
-AI should follow these same principles.
+There is no single “African response” to AI, just as there is no single Western response. Infrastructure, theology, regulation, language, faculty attitudes, and student access differ enormously.
 
-The missionary goal is not to make local churches technologically impressive.
+St. Paul's University and other African institutions have convened conversations about AI, pedagogy, access, spiritual formation, and the underrepresentation of African theological traditions. These are signs of agency, not evidence of one consensus.
 
-It is to help them become strong, faithful, self-governing communities capable of teaching, serving, multiplying, and making decisions.
+The same pattern should be encouraged globally. Mission organizations should support institutions in developing their own policies and capacities rather than exporting a universal AI curriculum.
 
-Technology is useful when it contributes to that maturity.
+Theological education increasingly intersects with technology infrastructure. Schools may need staff capable of managing retrieval systems, privacy, accounts, digital libraries, and evaluation.
 
-[^1]: Capability building should be evaluated by whether local leaders can continue the work without permanent dependence on external specialists or proprietary systems.
+External partners can help build these systems. Transfer matters. If the system becomes essential but nobody local can maintain or govern it, the institution has gained capability and dependency at the same time.
+
+AI education assumes devices, connectivity, accounts, and sometimes paid subscriptions. Institutions should avoid building pedagogy around tools students cannot reliably access outside the classroom.
+
+A lower-capability system available consistently may serve formation better than a cutting-edge platform accessible only to a privileged subset.
+
+PART IV
+
+[^1]: Mumbi, “School of Mission and Theology Trains in AI Literacy & Tools for Ministry and Teaching.”
+[^2]: For a current competency framework emphasizing human agency, ethics, foundations, pedagogy, and professional learning, see Miao et al., *AI Competency Framework for Teachers*

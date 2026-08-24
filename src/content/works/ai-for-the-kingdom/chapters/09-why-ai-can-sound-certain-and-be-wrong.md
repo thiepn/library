@@ -1,184 +1,95 @@
 ---
 id: why-ai-can-sound-certain-and-be-wrong
-title: Why AI Can Sound Certain and Be Wrong
 order: 2020
+title: "Why AI Can Sound Certain and Be Wrong"
 part: understanding-and-discerning-ai
 status: published
+description: "Chapter 9: Why AI Can Sound Certain and Be Wrong."
 estimatedMinutes: 7
 ---
+Human beings use fluency as evidence. We trust the person who explains something clearly, remembers details, uses the right vocabulary, and answers without hesitation. In ordinary conversation, these cues often correlate with competence.
 
-# Why AI Can Sound Certain and Be Wrong
+Generative AI breaks that correlation. A language model can produce an answer whose tone, grammar, structure, and confidence are nearly perfect even when the underlying claim is false. NIST uses the term *confabulation* for confidently generated erroneous or fabricated content, including invented sources and citations. The failure is not a strange exception to language generation. It follows from the fact that the system is optimized to generate an appropriate continuation, not to maintain an internal moral commitment to truth.[^1]
 
-One of the most dangerous characteristics of generative AI is that confidence and correctness are loosely connected.
+This does not mean models are unreliable in every domain. Many tasks are highly reliable. Summarizing a supplied paragraph, reformatting a table, generating alternative wording, or extracting obvious entities may work extremely well. Reliability should be judged according to task and consequence rather than by one global opinion of “AI accuracy.”
 
-A model can produce a completely false answer in the same calm, polished tone it uses for a correct one.
+Confabulation becomes dangerous when users mistake presentation quality for evidentiary quality. A model may invent a scholarly article with a plausible title, journal, volume, pages, and DOI-like string. To a reader unfamiliar with the field, the citation looks exactly like scholarship. The problem is not merely factual error. It is counterfeit verification.
 
-Human beings are vulnerable to this because we naturally interpret communication style as evidence of competence.
+Christian ministries should take this especially seriously because religious communication often trades on trust. A fabricated quotation attributed to a theologian, missionary, church father, or persecuted believer can travel rapidly because audiences assume ministries have verified what they publish.
 
-A hesitant speaker appears uncertain.
+Verification should therefore depend on consequence. Low-consequence ideation does not require the same process as public theological teaching. If a volunteer asks AI for ten possible names for a youth event, extensive verification is pointless. If a pastor asks for the exact wording and source of a historical quotation, the quotation must be checked against the original or a reliable edition.
 
-A fluent speaker appears knowledgeable.
+This principle prevents two opposite errors. One is naïve trust: accepting fluent output because the model is usually good. The other is verification theater: requiring burdensome review for trivial tasks until staff quietly bypass the policy.
 
-A detailed explanation feels researched.
+The most common reliability mistake is asking the system to do several epistemic jobs at once. A user says, “Research this topic, decide which sources are credible, synthesize them, and tell me the answer.” The result collapses discovery, evaluation, interpretation, and judgment into one polished paragraph. A stronger workflow separates them.
 
-A citation looks authoritative.
+First discover possible sources. Then locate the actual sources. Then inspect what they say. Then synthesize. Finally decide what the evidence supports.
 
-AI can reproduce all these signals without possessing the underlying certainty they normally indicate.
+AI can participate in every stage. It should not hide the stages. Retrieval helps because the model can ground its answer in supplied documents. But grounding is not the same as truth. Imagine a church assistant retrieves a doctrinal statement correctly and then answers a question using language the statement never supports. The source is real. The inference is wrong.
 
-This creates an epistemic problem.
+The same problem occurs in mission research. A system can retrieve accurate population estimates and produce an unjustified ranking of missionary priorities. The input data may be legitimate; the decision rule may not be.
 
-Users must learn to evaluate the content separately from the presentation.
+Verification therefore asks two questions: Is the evidence real? Does the evidence support the claim?
 
-Consider a model asked about a historical missionary.
+Statistics deserve special caution. AI systems are excellent at presenting numbers with precision. A figure like 0.37 percent appears authoritative. Mission datasets often contain estimates derived from incomplete reports, different counting systems, or old data. The model can preserve the decimal while losing the uncertainty.
 
-If reliable information is present in its training or retrieval context, it may provide an accurate biography.
+The correct response is not to abandon statistics. It is to carry methodology with the number. “Joshua Project's August 2026 by-country dataset classified…” is more truthful than “There are exactly…” because it tells the reader what kind of claim is being made.[^2]
 
-If information is incomplete, it may generate plausible details: dates, institutions, quotations, books, or events that fit the expected pattern.
+Legal and policy questions require another kind of verification. A model may summarize a law accurately but use an outdated version. It may generalize U.S. copyright doctrine globally. It may confuse organizational policy with legal obligation. Current law, regulation, and security guidance should be checked against current authoritative sources.
 
-The resulting paragraph may sound entirely credible.
+Bible and theology questions introduce additional complexity. A model can quote Scripture accurately and still present one contested interpretation as obvious. It can combine elements of several traditions into a synthetic answer that belongs fully to none. It can produce a sermon that sounds orthodox while introducing a subtle exegetical mistake.
 
-This is especially dangerous in fields where the user lacks expertise.
+This is why theological fluency should not be equated with theological reliability. The relevant reviewer is not merely someone who can tell whether the prose sounds Christian. It is someone competent enough to judge the underlying interpretation.
 
-A programmer may quickly notice invented code syntax.
+Language work provides a parallel example. A missionary may receive a translation that is semantically understandable but socially wrong: too formal, too intimate, regionally marked, or subtly insulting. The model's fluency can conceal the need for a target-language reviewer.
 
-A historian may recognize a fabricated source.
+Reliability also changes over time. A system that fails today may improve next year. A benchmark result from early 2025 may become a poor guide to late-2026 agents. This volatility is one reason the book avoids turning current product performance into theological principle.
 
-A linguist may detect an impossible grammatical claim.
+A mature verification system should therefore preserve both confidence and humility. Christians should use AI for tasks where it is extremely effective. They should not allow good performance in one domain to become generalized trust in another.
 
-But missionaries routinely work across many domains in which they are not specialists.
+The verification levels used later in this book formalize the idea: V0 for low-consequence ideation where ordinary judgment is sufficient. V1 for surface review. V2 for explicit factual checking. V3 for qualified domain review. V4 for independent or dual review in high-consequence contexts. V5 for formal approval processes such as final Scripture translation, official doctrine, or safeguarding decisions.
 
-They may ask about anthropology, linguistics, law, history, education, software, statistics, theology, security, health, or politics.
+The levels are not a universal law. They make one principle operational: required verification should rise with consequence.
 
-AI can provide helpful orientation.
+Users can also improve reliability by changing the task. Ask the model to state uncertainty. Require it to quote the supplied source rather than rely on memory. Ask for competing interpretations. Separate factual claims from recommendations. Use deterministic tools for arithmetic. Build retrieval over approved materials. Restrict the domain.
 
-But users must know when verification is essential.
+These techniques are useful, but none eliminates responsibility. A well-engineered system lowers the burden of verification; it does not make consequential truth self-authenticating.
 
-Several practices can reduce risk.
+This is where Christian ethics enters more directly. Chapter 9 is about the technical fact that AI can be wrong while sounding right. The deeper question is what Christians owe others when they communicate in that environment.
 
-The first is source inspection.
+## Why Plausible Language Can Be False {#why-plausible-language-can-be-false}
 
-Whenever a claim matters, ask where it came from.
+Not all AI error is confabulation. A system can fail because it misunderstood the instruction, retrieved the wrong source, applied a rule inconsistently, lacked necessary context, used outdated information, performed a calculation incorrectly, or generated a fabricated claim.
 
-If the system can provide citations, open them.
+The distinction matters because remedies differ. If the model lacks current information, retrieval may help. If it ignores policy, stronger system instructions or workflow constraints may help. If the task requires deterministic arithmetic, use a calculator tool. If the problem is missing local knowledge, no amount of prompt refinement can substitute for asking local people. Treating every failure as “hallucination” produces vague governance.
 
-Do not assume that a citation is real because it looks correctly formatted.
+## The Special Problem of Sources {#the-special-problem-of-sources}
 
-Models have been known to generate nonexistent books, articles, court cases, and academic references.
+Invented citations deserve special attention because they mimic the infrastructure of verification. A false factual sentence may trigger skepticism. A false factual sentence followed by a plausible journal citation can suppress skepticism.
 
-The second practice is primary-source preference.
+This is particularly dangerous in theology and mission research, where many readers cannot instantly recognize whether an obscure article or historical source exists.
 
-If the question concerns a Bible passage, read the passage.
+The safest workflow is to treat model-generated citations as search leads until the source is located independently. A citation that cannot be found does not become more credible because the title sounds right.
 
-If it concerns a law, check the government source.
+## Confidence Is Not Calibration {#confidence-is-not-calibration}
 
-If it concerns software, read the official documentation.
+Language models often fail to calibrate linguistic confidence with factual confidence. They may use the same tone for a well-established fact and a speculative reconstruction.
 
-If it concerns an organization's policy, consult the organization.
+Users should therefore ask systems to expose uncertainty structurally: separate known facts from assumptions, list source support, identify missing information, or offer alternative interpretations.
 
-AI summaries are useful starting points.
+These techniques help but should not be mistaken for internal honesty. The model is generating an uncertainty representation because the workflow requests one. The human remains responsible for deciding whether that representation is credible.
 
-They should not replace authoritative sources.
+## Designing for Verification {#designing-for-verification}
 
-The third practice is independent confirmation.
+If verifying an AI-generated artifact takes longer than creating the artifact manually, automation may not be useful.
 
-Important claims should be checked through more than one reliable source.
+This is one reason current productivity evidence varies. The cost of generation can fall while review cost rises.
 
-This is particularly important for medical, legal, security, financial, theological, and mission-strategy decisions.
+Organizations should measure end-to-end time rather than generation time alone. For high-consequence tasks, the value may not be speed. AI may improve breadth, consistency checking, or alternative generation while leaving final review time unchanged.
 
-The fourth practice is uncertainty awareness.
+Humility can be operationalized. Date volatile statistics. Attribute organizational claims. Mark hypotheses. Preserve dissenting interpretations. Record source status. Encourage staff to say “I don't know.”
 
-Users should ask the system to identify what it is unsure about.
+These practices counter the confident surface of generative systems. A ministry that normalizes uncertainty language becomes harder to manipulate by synthetic certainty.
 
-This does not eliminate error.
-
-A model may still misjudge its own uncertainty.
-
-But forcing the system to distinguish known facts from assumptions can reveal weak areas.
-
-The fifth practice is domain review.
-
-Generated material should be reviewed by someone competent in the relevant field before high-stakes use.
-
-A machine-translated Bible passage should be checked by qualified translators.
-
-A generated security plan should be reviewed by someone who understands the threat environment.
-
-A theological curriculum should be reviewed by responsible teachers.
-
-The sixth practice is limited delegation.
-
-The less reversible the consequence, the more human review is needed.
-
-If AI suggests five title ideas for a newsletter, the risk is low.
-
-If AI drafts a public statement during a crisis, the risk is higher.
-
-If AI recommends whether to expose the identity of a believer in a hostile country, the decision should never be delegated to the model.
-
-This leads to a broader Christian principle.
-
-Truthfulness requires effort.
-
-The AI age makes it easy to generate content faster than we can verify it.
-
-That creates pressure to publish first and check later.
-
-Christians should resist this incentive.
-
-The Church's credibility matters.
-
-If Christian ministries distribute invented quotations, false statistics, fabricated testimonies, inaccurate translations, or misleading images because AI produced them, the problem is not merely technical.
-
-It is moral.
-
-Christians are people of truth.
-
-We should therefore cultivate a culture in which verification is normal rather than embarrassing.
-
-Saying "I don't know" is better than presenting uncertainty as fact.
-
-Correcting an error is better than defending it.
-
-Slowing publication is better than spreading deception.
-
-This is particularly important in evangelism and apologetics.
-
-A fabricated archaeological claim may seem useful because it appears to support the Bible.
-
-But false evidence ultimately harms Christian witness.
-
-A model may generate persuasive apologetic arguments that misrepresent opposing views.
-
-Using them without checking may win a rhetorical point while violating intellectual honesty.
-
-Christian confidence should not depend on manufactured certainty.
-
-There is also a psychological danger.
-
-Frequent AI use can create the habit of immediate answers.
-
-The user asks.
-
-The system responds.
-
-Ambiguity disappears.
-
-But real life contains uncertainty.
-
-Missionaries often operate with incomplete information.
-
-They do not fully understand a culture.
-
-They cannot predict political changes.
-
-They do not know whether a ministry strategy will succeed.
-
-Wisdom requires learning to live faithfully without complete certainty.
-
-AI should not train Christians to expect an answer to every question.
-
-Sometimes the most accurate response remains:
-
-We do not know yet.
-
-[^1]: The phrase “hallucination” is widely used for fluent but false generated outputs, though it should not be interpreted as implying conscious perception or experience in the model.
+[^1]: Autio et al., *Artificial Intelligence Risk Management Framework: Generative Artificial Intelligence Profile*
+[^2]: The example is intentionally methodological: live mission datasets change and should be cited by date and counting system; see Joshua Project, “People Groups: Counts.”

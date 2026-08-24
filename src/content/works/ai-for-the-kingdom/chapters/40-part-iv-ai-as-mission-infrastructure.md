@@ -1,12 +1,11 @@
 ---
 id: part-iv
-title: AI as Mission Infrastructure
 order: 4000
+title: "AI as Mission Infrastructure"
+shortTitle: "Part IV"
 part: ai-as-mission-infrastructure
 status: published
+description: "Part IV introduction: AI as Mission Infrastructure."
 estimatedMinutes: 1
 ---
-
-# Part IV — AI as Mission Infrastructure
-
-AI can lower the cost of expertise, software, administration, research, and content production across an entire mission ecosystem.
+Some of AI's largest missionary effects may be almost invisible. Cheap expert-like assistance, software generation, resource production, administration, and data analysis can change what small organizations are able to attempt. They can also move bottlenecks into judgment, maintenance, curation, and trust.

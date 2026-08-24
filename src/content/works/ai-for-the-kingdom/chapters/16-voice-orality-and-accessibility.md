@@ -1,120 +1,107 @@
 ---
 id: voice-orality-and-accessibility
-title: Voice, Orality, and Accessibility
 order: 3050
+title: "Voice, Orality, and Accessibility"
 part: ai-in-missionary-practice
 status: published
+description: "Chapter 16: Voice, Orality, and Accessibility."
 estimatedMinutes: 6
 ---
+Text is only one interface to language. That fact can disappear inside discussions of generative AI because the modern AI boom arrived through chat boxes. For many communities, however, speech is the dominant medium of daily communication. For Deaf communities, sign languages possess their own linguistic structures. For people with visual, motor, cognitive, or literacy-related access needs, a text-first ministry can create barriers even when the written content is accurate.
 
-# Voice, Orality, and Accessibility
+Artificial intelligence can help because it increasingly works across modalities. Speech recognition can convert audio to text. Text-to-speech can produce listening versions. Vision systems can describe images. Language models can simplify or restructure content. Sign-language technologies can assist production and revision. The opportunity is real. Accessibility should not be inferred from format conversion alone.
 
-Much of the world's communication is oral.
+## Mission Beyond Text {#mission-beyond-text}
 
-Christian mission has often been shaped by written assumptions because missionaries, theologians, and publishers tend to work heavily with books and documents.
+The Ciyawo translation project is useful because it treats oral work as a primary translation environment rather than merely reading a written translation aloud at the end.[^1]
 
-But many communities prefer spoken communication, storytelling, song, memorization, and conversation.
+Oral-first workflows can better match communities where Scripture is heard, discussed, memorized, and shared through speech. AI can support transcription, segmentation, search, audio cleanup, comparison, and later text production.
 
-Artificial intelligence may significantly expand the Church's ability to serve oral learners.
+The missionary mistake would be to assume that “digital resource” means “written resource on a screen.”
 
-Speech recognition can convert audio into text.
+In some contexts, the most valuable AI investment may be speech recognition or searchable audio rather than another text generator.
 
-Text-to-speech systems can create spoken versions of written material.
+Synthetic speech can make enormous libraries available in audio quickly. This is useful for commuters, low-literacy users, people with visual impairments, and oral learners.
 
-Voice translation can help move between languages.
+Voice choice matters. Pronunciation of names matters. Theological terms matter. In smaller languages, synthetic voices may sound foreign or unnatural.
 
-Audio can be summarized, indexed, searched, and transformed into study resources.
+The Church should therefore measure accessibility through actual users, not through feature availability.
 
-These capabilities open practical possibilities.
+Automatic captioning can improve access to sermons, lectures, and videos. It can also introduce embarrassing or theologically significant errors, especially around names, biblical terms, accents, and low-resource languages.
 
-A missionary could record a Bible teaching session, transcribe it, translate the transcript, create subtitles, generate discussion questions, and produce an audio summary.
+Public captions should be reviewed proportionally to consequence. A short informal livestream may tolerate minor mistakes. A training library used for years deserves stronger correction.
 
-A local church could convert written discipleship material into spoken lessons.
+## Sign Languages and Identity {#sign-languages-and-identity}
 
-A translation team could compare recordings with transcripts.
+Wycliffe and DOOR International have publicly described several AI-assisted sign-language technologies: Chameleon for camera-based capture and avatar workflows, Lava under development, and Avodah Connect for sign search and replacement tasks.[^2]
 
-A ministry could create accessible audio for people who cannot read easily.
+These are documented deployments or development efforts. They are not proof that AI has solved sign-language translation or that communities will accept every avatar-based approach.
 
-AI may also help people with disabilities.
+Sign languages are languages, not visual encodings of nearby spoken languages. Quality therefore depends on linguistic competence, signer identity, natural expression, regional variation, and Deaf-led evaluation.
 
-Speech interfaces can assist users who cannot type.
+A technically accurate avatar may still be experienced as unnatural. A system can preserve semantic content while losing features of signing style, embodiment, or community identity.
 
-Image-description systems can help blind users understand visual content.
+Synthetic representation can also create a real benefit in sensitive environments. An avatar may allow signed material to be distributed without showing the identity of the original signer.
 
-Live captioning can support deaf or hard-of-hearing participants.
+That can protect people. It can also change the relational quality of the message. The security benefit should therefore be weighed with community input rather than treated as an automatic improvement.
 
-Text simplification can make resources more accessible to people with limited literacy or cognitive disabilities.
+Synthetic sign-language avatars raise questions beyond accuracy. Signers communicate identity through body, face, timing, and style. An avatar can protect a real signer's identity in a sensitive context but may also reduce the perceived humanity or trustworthiness of the message.
 
-These applications align naturally with Christian concern for inclusion.
+Different communities may judge the trade-off differently. The correct architecture is therefore not universal. Security, naturalness, cost, and community acceptance should all enter the decision.
 
-But voice technology introduces special ethical risks.
+Sign-language AI must be evaluated as language technology under Deaf-led linguistic judgment, not as visual encoding of nearby spoken languages. The long-term test is what grows around the tool. The ministry may gain speed while losing understanding, or it may use speed to create margin for better judgment and relationship. Success should therefore be evaluated over time through competence, accountability, resilience, and service rather than through the first impressive demonstration.
 
-A voice is closely connected to identity.
+## Accessibility Is a Workflow Property {#accessibility-is-a-workflow-property}
 
-Modern systems can imitate a person's voice from limited recordings.
+AI can rewrite text into simpler language. This can support readers with different literacy levels, language learners, or cognitive access needs.
 
-This creates possibilities for fraud, deception, and impersonation.
+Simplification can also remove theological precision, tone, ambiguity, or important rhetorical structure. A simplified Bible study is not automatically an accessible Bible study. Someone competent in both content and audience needs to evaluate what was lost.
 
-Christian ministries should not clone people's voices casually.
+Accessibility systems can process highly sensitive information. Speech-to-text may send audio to a cloud provider. Meeting transcription may capture pastoral disclosures. Assistive features should not be exempted from data classification because their purpose is good.
 
-Consent should be explicit.
+The best architecture may differ by user. Local processing can improve privacy in some contexts. Cloud systems may provide much stronger recognition for another user. Accessibility and security need to be evaluated together.
 
-Listeners should not be misled about whether a recording is authentic.
+Christian accessibility is not primarily a branding commitment to inclusive technology. It is rooted in the conviction that people should be able to participate meaningfully in the life, teaching, worship, and mission of the Church.
 
-This is particularly important when creating synthetic speech for respected Christian leaders.
+Technology can remove barriers that were never spiritually necessary. That is exactly the kind of efficiency Christians should celebrate. The standard, however, is not “we produced audio,” “we added captions,” or “we generated an avatar.”
 
-Imagine an AI-generated sermon spoken in the voice of a deceased pastor.
+The standard is whether people can actually understand, participate, respond, and exercise agency.
 
-Technically, this may be possible.
+Accessibility is demonstrated by users, not inferred from output format. A resource can technically contain captions and still be inaccessible. Captions may be inaccurate, badly timed, or written at a reading level inappropriate for the audience. An audio version may exist but use pronunciation that makes key terms difficult to understand. An avatar may sign accurately enough for one region and poorly for another.
 
-Pastorally, it raises serious questions.
+Accessibility therefore belongs to the whole production workflow rather than a final conversion step.
 
-Does the audience understand that the words were never spoken by that person?
+AI can reduce the cost of producing variants, which should allow ministries to test more options with actual users. The economic gain should be spent partly on evaluation.
 
-Does the synthetic voice create an authority the generated content has not earned?
+Access is not merely consumption. Christian resources should enable participation in teaching, worship, leadership, and mission.
 
-Could the person's reputation be used to legitimize statements they never made?
+A person using text-to-speech should be able to navigate Scripture references efficiently. A Deaf student should be able to discuss theological concepts in a language capable of carrying them. A learner with cognitive disabilities should not receive only simplified devotional material while deeper teaching remains inaccessible.
 
-The Church should be cautious.
+AI can widen the forms in which theological content is expressed. The measure is participation, not the number of generated formats.
 
-Voice synthesis can also affect low-resource languages.
+Organizations accumulate accessibility debt when they produce large libraries in inaccessible formats and promise to fix them later.
 
-Many commercial systems prioritize languages with large markets.
+Generative AI can help remediate existing material, but the better strategy is accessible-by-design production. Structured headings, alt text, clean transcripts, semantic documents, and multiple modalities make later adaptation easier.
 
-Minority languages may lack high-quality speech recognition or text-to-speech.
+AI should reduce accessibility debt rather than multiply content faster than it can be made usable.
 
-Mission technologists could help build open datasets and tools for underserved languages.
+AI should help remediate inaccessible archives without encouraging production to grow faster than accessibility review. The long-term test is what grows around the tool. The ministry may gain speed while losing understanding, or it may use speed to create margin for better judgment and relationship. Success should therefore be evaluated over time through competence, accountability, resilience, and service rather than through the first impressive demonstration.
 
-But this work should be community-centered.
+## Co-Design and Participation {#co-design-and-participation}
 
-Speakers should understand how recordings will be used.
+Recent reviews of generative AI and disability identify promising uses in personalized support and augmentative communication while also emphasizing uneven evidence and the underrepresentation of some disability groups.
 
-Data should not be extracted without benefit returning to the community.
+Another body of research warns that technology can reproduce ableist assumptions when disability is framed only as a deficit to be repaired.
 
-Orality also reminds us that communication is relational.
+Christian accessibility should begin from participation and dignity. Disabled Christians are not merely recipients for whom nondisabled technologists make accommodations. They should help decide what useful technology looks like.
 
-A recorded voice carries emotion, rhythm, emphasis, and identity.
+Co-design is therefore more than a user-experience technique. It is an agency principle.
 
-Stories are often remembered because someone told them.
+“Ask users for feedback” is weaker than co-design. Feedback occurs after major decisions are made. Co-design gives affected people meaningful influence over what problem is being solved and which trade-offs are acceptable.
 
-Faith is transmitted not merely through text but through testimony.
+A Deaf-led team may prioritize natural signing and community identity differently from a hearing engineering team. People with visual impairments may prefer a simple semantic document over a visually rich interface retrofitted with labels.
 
-AI-generated audio can expand access.
+AI lowers prototyping cost, making iterative co-design easier. Ministries should take advantage of that.
 
-It should not eliminate the voices of local believers.
-
-One of the best missionary uses of AI may therefore be helping real people communicate more widely.
-
-A local pastor's sermon can be transcribed and translated.
-
-A grandmother's testimony can become a bilingual resource.
-
-A community's oral Bible stories can be organized and preserved.
-
-A small church can produce accessible media without a professional studio.
-
-The goal is not synthetic abundance for its own sake.
-
-The goal is helping people hear truth.
-
-[^1]: Synthetic speech should be handled with strong consent and provenance practices because listeners often interpret a recognizable human voice as evidence of personal authorship.
+[^1]: Houston, “Experimenting with Excellence: Quality Assessment in a Mozambican Oral Bible Translation and Transcription Project.”
+[^2]: Wycliffe Global Alliance, “AI Opens a New World for Sign Language Translation.”

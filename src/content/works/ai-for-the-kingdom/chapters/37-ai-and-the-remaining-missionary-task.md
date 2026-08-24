@@ -1,78 +1,76 @@
 ---
 id: ai-and-the-remaining-missionary-task
-title: AI and the Remaining Missionary Task
 order: 7040
+title: "AI and the Remaining Missionary Task"
 part: the-strategic-frontier
 status: published
+description: "Chapter 37: AI and the Remaining Missionary Task."
 estimatedMinutes: 4
 ---
+Grant the strongest realistic case for artificial intelligence. Translation improves dramatically. Language learning becomes more accessible. Theological resources spread widely. Software becomes easier to build. Administration shrinks. Mission data becomes easier to analyze. What remains? The answer reveals whether mission has been defined correctly.
 
-# AI and the Remaining Missionary Task
+## Some Barriers Really Can Shrink {#some-barriers-really-can-shrink}
 
-Artificial intelligence arrives while the missionary task remains unfinished.
+Language-resource scarcity, information access, routine production, administrative burden, and some forms of specialist scarcity are technological barriers.
 
-Languages still lack Scripture.
+There is no theological virtue in preserving them. Christians should use AI to reduce them responsibly. Different mission organizations count peoples and engagement differently. The disagreement should make Christians more precise, not less concerned.[^1]
 
-People groups remain without viable churches.
+The broad reality remains that large populations have limited access to viable Christian communities, Scripture, or sustained witness under the definitions used by major mission researchers. Strategy can use the maps without pretending they are the territory.
 
-Missionaries still need training.
+## The Numbers Are Maps {#the-numbers-are-maps}
 
-Local leaders still lack resources.
+Mission organizations continue to report billions of people within categories described as unreached and thousands of people groups under different counting systems. Bible-translation organizations continue to report languages needing Scripture work. These figures are strategic maps, not a census of God's mission. They help expose neglected need. They do not define mission completion.[^2]
 
-Restricted regions remain difficult to access.
+**Table 37.1.** *Selected Mission Datasets and What Their Numbers Mean*
 
-The question is whether new capability will be directed toward these gaps.
+| **Source**               | **Measures / emphasizes**                     | **Caution**                                       |
+|--------------------------|-----------------------------------------------|---------------------------------------------------|
+| Joshua Project           | People-group strategic classifications        | Multiple counting methodologies; live data change |
+| IMB                      | Mission-oriented people-group reporting       | Different definitions and reporting system        |
+| ProgressBible / Wycliffe | Scripture access and translation status       | No Scripture ≠ automatically needs project begun  |
+| Open Doors               | Persecution / discrimination under WWL method | Estimate depends on stated methodology            |
 
-Technology tends to flow toward profitable users.
+## What Technology Does Not Supply {#what-technology-does-not-supply}
 
-AI companies naturally focus on large languages, wealthy markets, and high-volume applications.
+Mission still requires Christians willing to serve. Some will relocate. Some will work through diaspora communities. Some will translate remotely, build technology, train leaders, or strengthen local churches.
 
-The missionary logic is different.
+AI may change which kinds of workers need to travel. It does not eliminate Christian vocation. A person can understand Christianity perfectly and distrust Christians completely. History, politics, family loyalty, ethnic conflict, or prior abuse may stand between information and trust.
 
-Christians go toward neglected people.
+Trust develops through integrity and repeated relationship. Perfect translation would not make culture transparent. Authority, family, shame, time, hospitality, conflict, and religion are interpreted through histories and relationships that cannot be compressed into translated sentences.
 
-This means the Church may need to use AI in ways the market does not prioritize.
+Missionaries will still need correction. Mission is not complete when religious information reaches individuals. Churches need teaching, leadership, discipline, care, worship, service, and mission. Leadership is formed through responsibility, trust, character, failure, and tested faithfulness. AI can accelerate education. It cannot download maturity. States can close churches, arrest leaders, monitor networks, restrict travel, and punish conversion or unauthorized religious activity.
 
-Building tools for minority languages.
+AI does not abolish political power and may increase surveillance capability. Migration changes what “going to the nations” looks like. Churches may encounter languages and religious communities locally that earlier mission strategies treated as distant fields.
 
-Creating training systems for low-bandwidth environments.
+AI can help identify diaspora patterns, translate outreach material, and prepare cultural orientation.
 
-Supporting oral Scripture engagement.
+Presence may involve crossing a street as well as an ocean. The remaining task cannot be completed by accumulating foreign workers indefinitely. Healthy mission strengthens churches capable of evangelizing, discipling, sending, and theologizing within their own contexts.
 
-Helping small churches produce local resources.
+AI should accelerate local leadership and resource capacity where it can. Information access cannot substitute for credibility, historical reconciliation, cultural learning, and relationships. The long-term test is what grows around the tool. The ministry may gain speed while losing understanding, or it may use speed to create margin for better judgment and relationship. Success should therefore be evaluated over time through competence, accountability, resilience, and service rather than through the first impressive demonstration.
 
-Analyzing mission gaps that have little commercial value.
+## Presence, Suffering, and the Obedience Gap {#presence-suffering-and-the-obedience-gap}
 
-Reducing the cost of specialist support for remote teams.
+Digital ministry can be real ministry. There will also be settings where someone needs to be there: to share meals, become known, care through illness, learn slowly, remain through difficulty.
 
-The greatest missionary value of AI may therefore come from redistribution of capability.
+Use technology to extend presence before using it to replace presence. Christianity does not teach that difficulty is inherently holy. Missionaries should reduce avoidable waste and danger.
 
-A technology becomes strategically important when it gives small ministries access to functions once reserved for large institutions.
+The New Testament also gives no basis for assuming faithful witness can eventually be engineered into costlessness.
 
-This does not guarantee missionary progress.
+Some friction is technical. Some cost arises because love, perseverance, solidarity, and witness occur in a resistant world.
 
-Tools do not create obedience.
+The Church bears witness, reasons, serves, preaches, translates, and loves. The hearer may still reject Christ. Conversion cannot be manufactured through sufficiently advanced personalization. Suppose the Church eventually possesses translation, information, software, and communication capacity beyond anything previous generations imagined.
 
-The Church could spend enormous energy building Christian AI products while remaining reluctant to send workers, learn languages, or suffer for the gospel.
+What if it still does not pray, send, welcome, remain, teach, give, and obey?
 
-Technological activity can become a substitute for missionary sacrifice.
+AI may reduce the capability gap. It cannot resolve the obedience gap. Technology can create an expectation that every risk should be eliminated. Christian mission should use security and wisdom rigorously while recognizing that faithfulness sometimes entails costs no tool can optimize away.
 
-Christians should therefore keep the remaining task visible.
+The distinction between avoidable negligence and accepted obedience is morally important. Mission research can identify need. Prayer refuses to treat need as merely an allocation problem.
 
-Where is Christ not known?
+The Church asks God to send workers, open doors, strengthen believers, give wisdom, and sustain witness.
 
-Where is Scripture unavailable?
+AI may improve the information that shapes prayer. It does not make prayer redundant.
 
-Where are churches weak?
+PART VIII
 
-Where do believers lack training?
-
-Where can technology remove a real barrier?
-
-Those questions should guide investment.
-
-AI does not redefine the frontier.
-
-It may help the Church reach it.
-
-[^1]: Mission agencies use different definitions and datasets for the “remaining task”; strategy should state its methodology rather than treating any single global count as final.
+[^1]: Joshua Project publishes multiple counting methodologies; the manuscript treats the figures as dated strategic maps rather than a timeless census. See Joshua Project, “People Groups: Counts.”; Joshua Project, *Joshua Project Overview 2026*
+[^2]: For current mission, Scripture-access, and persecution estimates—each using its own definitions and methodology—see International Mission Board, *2026 Annual Statistical Report*; Wycliffe Bible Translators, “Bible Translation Statistics.”; Open Doors International, *World Watch List 2026: Compilation of Main Documents*
