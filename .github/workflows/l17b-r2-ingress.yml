@@ -29,6 +29,11 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
 
+      - name: Require Cloudflare release credentials
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN"
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+
       - name: Reconstruct exact frozen package
         run: |
           mkdir -p incoming
@@ -59,11 +64,6 @@ jobs:
         run: |
           node scripts/l17b-inject-package.mjs "$PACKAGE"
           L17B_PACKAGE="$PACKAGE" L17B_MEDIA_DIR="$MEDIA_DIR" pnpm l17b:verify
-
-      - name: Require Cloudflare release credentials
-        run: |
-          test -n "$CLOUDFLARE_API_TOKEN"
-          test -n "$CLOUDFLARE_ACCOUNT_ID"
 
       - name: Upload immutable R2 objects
         run: |
