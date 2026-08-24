@@ -26,6 +26,7 @@ jobs:
     env:
       PACKAGE: incoming/AI_for_the_Kingdom_L17_LIBRARY_PUBLICATION_PACKAGE.zip
       MEDIA_DIR: .build/l17b-media
+      R2_VERIFY_DIR: .build/l17b-r2-verify
       R2_BUCKET: thiepn-library-publications
       R2_PREFIX: works/ai-for-the-kingdom/editions/1.0.0-rc4
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -51,13 +52,8 @@ jobs:
           gh release download "${{ inputs.release_tag }}" --repo "$GITHUB_REPOSITORY" --pattern 'AI_for_the_Kingdom_L17_LIBRARY_PUBLICATION_PACKAGE.zip' --dir incoming
           test -f "$PACKAGE"
 
-      - name: Install dependencies and materialize lockfile if needed
-        run: |
-          if test -f pnpm-lock.yaml; then
-            pnpm install --frozen-lockfile
-          else
-            pnpm install
-          fi
+      - name: Install frozen dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Inject frozen package
         run: node scripts/l17b-inject-package.mjs "$PACKAGE"
@@ -81,19 +77,20 @@ jobs:
       - name: Download R2 objects back and verify exact hashes
         if: ${{ inputs.publish_r2 }}
         run: |
-          rm -rf .build/l17b-r2-verify && mkdir -p .build/l17b-r2-verify
-          pnpm exec wrangler r2 object get "$R2_BUCKET/$R2_PREFIX/AI_for_the_Kingdom_ONLINE_EDITION.pdf" --file=.build/l17b-r2-verify/AI_for_the_Kingdom_ONLINE_EDITION.pdf --remote
-          pnpm exec wrangler r2 object get "$R2_BUCKET/$R2_PREFIX/AI_for_the_Kingdom.epub" --file=.build/l17b-r2-verify/AI_for_the_Kingdom.epub --remote
-          pnpm exec wrangler r2 object get "$R2_BUCKET/$R2_PREFIX/ai-for-the-kingdom.webp" --file=.build/l17b-r2-verify/ai-for-the-kingdom.webp --remote
-          L17B_MEDIA_DIR=.build/l17b-r2-verify pnpm l17b:verify
+          rm -rf "$R2_VERIFY_DIR" && mkdir -p "$R2_VERIFY_DIR"
+          pnpm exec wrangler r2 object get "$R2_BUCKET/$R2_PREFIX/AI_for_the_Kingdom_ONLINE_EDITION.pdf" --file="$R2_VERIFY_DIR/AI_for_the_Kingdom_ONLINE_EDITION.pdf" --remote
+          pnpm exec wrangler r2 object get "$R2_BUCKET/$R2_PREFIX/AI_for_the_Kingdom.epub" --file="$R2_VERIFY_DIR/AI_for_the_Kingdom.epub" --remote
+          pnpm exec wrangler r2 object get "$R2_BUCKET/$R2_PREFIX/ai-for-the-kingdom.webp" --file="$R2_VERIFY_DIR/ai-for-the-kingdom.webp" --remote
+          L17B_MEDIA_DIR="$R2_VERIFY_DIR" pnpm l17b:verify
+          printf 'R2 readback verified against frozen L17 hashes\n' > "$R2_VERIFY_DIR/.r2-verified"
 
       - name: Write canonical release registry
         if: ${{ inputs.publish_r2 }}
-        run: node scripts/l17b-write-release.mjs
+        run: L17B_R2_MEDIA_DIR="$R2_VERIFY_DIR" node scripts/l17b-write-release.mjs
 
       - name: Full release certification
         if: ${{ inputs.publish_r2 }}
-        run: L17B_PACKAGE="$PACKAGE" L17B_MEDIA_DIR=.build/l17b-r2-verify pnpm release:certify
+        run: L17B_PACKAGE="$PACKAGE" L17B_MEDIA_DIR="$R2_VERIFY_DIR" pnpm release:certify
 
       - name: Commit verified materialization
         if: ${{ inputs.publish_r2 }}
@@ -113,6 +110,7 @@ jobs:
           name: l17b-2-certification-evidence
           path: |
             .build/certification
+            src/content/works/ai-for-the-kingdom/recovery/l17-original-release-registry.yaml
             src/publications/releases/ai-for-the-kingdom/1.0.0-rc4.yaml
           if-no-files-found: ignore
           retention-days: 30
