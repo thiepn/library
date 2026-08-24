@@ -47,17 +47,7 @@ Astro 6 loads native Markdown/MDX through `src/content.config.ts`. The public Re
 
 A Work with a frozen recovery manifest is `webMaterialized` only when every expected reader filename exists. Partial imports therefore remain invisible to public Reader routing.
 
-The Reader provides:
-
-- deterministic order;
-- desktop and mobile contents navigation;
-- previous/next navigation;
-- generated chapter H1;
-- Pagefind chapter indexing;
-- local text-size and line-measure controls;
-- browser-local progress persistence and resume routing;
-- footnote styling;
-- document-owned scrolling.
+The Reader provides deterministic ordering, desktop/mobile contents navigation, previous/next navigation, generated chapter H1s, Pagefind indexing, local reader controls, browser-local progress/resume state, footnote styling, and document-owned scrolling.
 
 ## Verification command
 
@@ -81,29 +71,60 @@ L17B_MEDIA_DIR=/absolute/path/to/recovered-media pnpm l17b:verify
 
 When supplied, package/media bytes and SHA-256 hashes must exactly match the frozen L17 contract.
 
+## Recovered historical registry
+
+The original rc4 release-registry record has now been recovered from retained File Library evidence and preserved at:
+
+```text
+src/content/works/ai-for-the-kingdom/recovery/l17-original-release-registry.yaml
+```
+
+This file is **provenance only**. Its presence does not activate downloads and must never be copied mechanically into the canonical live registry. Historical release metadata proves the intended release identity; it does not prove the corresponding immutable R2 objects currently exist.
+
 ## Binary activation rule
 
-The historical L17 package release metadata is not treated as proof that R2 objects exist. PDF/EPUB controls become available only after the ordinary L10 pipeline has verified remote immutable objects and written:
+PDF/EPUB controls become available only after immutable R2 objects have been uploaded, downloaded back, and verified against the frozen hashes. Only then may the live registry exist at:
 
 ```text
 src/publications/releases/ai-for-the-kingdom/1.0.0-rc4.yaml
 ```
 
-This prevents a metadata-only recovery from creating broken download controls.
+`scripts/l17b-write-release.mjs` is fail-closed. It requires the R2 readback verification marker and independently recomputes the byte size and SHA-256 of the read-back PDF, EPUB, and cover before writing the canonical registry.
+
+The L17B GitHub Actions workflow creates that marker only after Wrangler has downloaded all three remote R2 objects and `pnpm l17b:verify` has accepted them.
+
+## L17B-2 execution sequence
+
+The implemented production path is:
+
+1. attach the exact frozen ZIP to a GitHub Release (default tag `l17b-frozen-payload`);
+2. manually dispatch `L17B-2 Frozen Payload Injection`;
+3. download the package into the runner;
+4. verify package byte size and SHA-256 before extraction;
+5. inject exactly the 57 manifest-listed Markdown files;
+6. stage and verify the exact PDF, EPUB, and cover;
+7. upload all three assets to immutable R2 keys;
+8. download all three R2 objects back;
+9. re-run frozen hash verification on the readback directory;
+10. write the R2 verification marker;
+11. write the canonical release registry through the guarded writer;
+12. run the complete release certification suite;
+13. commit the verified chapters and canonical registry to `main`;
+14. allow the ordinary production deployment gate to deploy `https://thiepn.dev/library`.
+
+The dependency step is pinned to the committed pnpm lockfile and uses `pnpm install --frozen-lockfile`.
 
 ## Exhaustive recovery audit — 2026-08-24
 
-The retained publication package was checked across every materializable source available to the release workflow.
-
 ### ChatGPT File Library
 
-The File Library retains the package SHA-256 sidecar, L17 package manifest, validation report, fidelity audit, publication proofs and an EPUB reference. It does not expose the exact `AI_for_the_Kingdom_L17_LIBRARY_PUBLICATION_PACKAGE.zip` as transferable raw bytes to this runtime.
+The File Library retains the package SHA-256 sidecar, L17 package manifest, validation report, fidelity audit, original rc4 registry, frozen online PDF, publication proofs, and EPUB reference material. It does not expose the exact `AI_for_the_Kingdom_L17_LIBRARY_PUBLICATION_PACKAGE.zip` as transferable raw bytes to this runtime.
 
 The retained checksum sidecar records that the original package existed at `/mnt/data/AI_for_the_Kingdom_L17_LIBRARY_PUBLICATION_PACKAGE.zip` when L17 was produced. That original runtime path is not present in the current execution environment.
 
 ### Google Drive / Dropbox
 
-Earlier exact-name and publication-title searches did not find a materializable copy of the L17 package.
+Exact package-name and publication-title searches did not find a materializable copy of the L17 package.
 
 ### Git repository history
 
@@ -128,15 +149,15 @@ The audit terminated with:
 FROZEN_PACKAGE_NOT_FOUND_IN_REACHABLE_GIT_HISTORY
 ```
 
-This means the exact rc4 package cannot be reconstructed from reachable Git history without inventing missing compressed bytes. The incomplete recovery chunks must not be treated as publication source.
+The exact rc4 package therefore cannot be reconstructed from reachable Git history without inventing missing compressed bytes. The incomplete recovery chunks must not be treated as publication source.
 
 ### Cloudflare publication runtime
 
-The GitHub Actions environment currently has no configured `CLOUDFLARE_API_TOKEN` or `CLOUDFLARE_ACCOUNT_ID`, so immutable R2 publication/upload verification cannot run yet.
+R2 publication and production deployment require GitHub Actions secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`. The release workflow remains blocked until those credentials are configured.
 
 ## Application readiness
 
-The Library application itself has completed a dependency-connected GitHub Actions build using the committed pnpm 11 lockfile. The verified build reported:
+The Library application itself has completed a dependency-connected build using the committed pnpm 11 lockfile. The verified build reported:
 
 ```text
 astro check: 0 errors, 0 warnings, 0 hints
@@ -146,20 +167,19 @@ Pagefind indexing: pass
 Cloudflare deploy preparation: pass
 ```
 
-Source certification therefore has only two publication blockers:
+The application/integration layer and L17B-2 release machinery are complete and fail-closed. The remaining rc4 work is external byte/credential materialization, not feature development.
+
+## Remaining blockers
 
 ```text
-L17_READER_PAYLOAD — exact 57 native reader files unavailable
-L17_RELEASE_REGISTRY — canonical registry awaits immutable R2 verification
+L17_READER_PAYLOAD — exact frozen ZIP / 57 native reader files unavailable
+L17_RELEASE_REGISTRY — intentionally absent until verified R2 readback
+CLOUDFLARE_RELEASE_CREDENTIALS — required for R2 and production deployment
 ```
 
-## Current materialization boundary
+To preserve publication fidelity, there are only two valid publication paths:
 
-The application/integration layer is complete and fail-closed. The remaining rc4 release work is external byte materialization, not further reconstruction of the application.
-
-To preserve publication fidelity, there are only two valid paths:
-
-1. supply the exact frozen package (or exact 57 Markdown files plus the three frozen binary assets) and verify it against the recorded hashes; or
+1. supply the exact frozen package (or the exact 57 Markdown files plus all three frozen binary assets) and complete the rc4 verification pipeline; or
 2. explicitly authorize a **new reconstructed edition** from retained EPUB/proof sources, with a new release identity rather than falsely presenting it as the frozen rc4 payload.
 
-Until one of those paths is chosen, Reader/PDF/EPUB activation must remain disabled for `AI for the Kingdom`.
+Until one of those paths is completed, Reader/PDF/EPUB activation remains disabled for `AI for the Kingdom`.
