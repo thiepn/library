@@ -17,3 +17,9 @@ artifacts:
     mimeType: application/epub+zip
     sizeBytes: 568942
     sha256: 8931f8578cbd7e09ccf31385047f8eb5d58ea5a74a683c79669a51d2b9e59e1f
+  cover:
+    url: https://thiepn.dev/library/media/works/ai-for-the-kingdom/editions/1.0.0-rc4/ai-for-the-kingdom.webp
+    filename: ai-for-the-kingdom.webp
+    mimeType: image/webp
+    sizeBytes: 56752
+    sha256: 938830415749fff85b864248c7e302624f17d50bbe5336de1009538fe040df94
