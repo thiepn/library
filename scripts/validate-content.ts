@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import YAML from 'yaml';
@@ -19,6 +20,25 @@ function parseFrontmatter(raw: string) {
   return YAML.parse(match[1] ?? '') as Record<string, unknown>;
 }
 
+interface ExpectedRecord {
+  id: string;
+  title: string;
+  order: number;
+  part: string | null;
+  file: string;
+  estimatedMinutes: number;
+  sha256?: string;
+}
+interface ExpectedManifest { expectedReaderFiles: number; records: ExpectedRecord[] }
+
+async function readExpectedManifest(workId: string): Promise<ExpectedManifest | undefined> {
+  const recovery = path.join(root, workId, 'recovery');
+  for (const filename of ['publication-expected.json', 'l17b-expected.json']) {
+    try { return JSON.parse(await readFile(path.join(recovery, filename), 'utf8')) as ExpectedManifest; } catch {}
+  }
+  return undefined;
+}
+
 for (const dir of dirs) {
   if (!dir.isDirectory()) continue;
   const manifestPath = path.join(root, dir.name, 'work.yaml');
@@ -37,16 +57,20 @@ for (const dir of dirs) {
   } catch {}
   chapters += chapterFiles.length;
 
-  let expected: { expectedReaderFiles: number; records: Array<{ id: string; title: string; order: number; part: string | null; file: string; estimatedMinutes: number }> } | undefined;
-  try { expected = JSON.parse(await readFile(path.join(root, dir.name, 'recovery/l17b-expected.json'), 'utf8')); } catch {}
+  const expected = await readExpectedManifest(work.id);
   if (expected) {
     const expectedMap = new Map(expected.records.map((record) => [record.file, record]));
     for (const file of chapterFiles) {
       const record = expectedMap.get(file);
       if (!record) throw new Error(`${work.id}: unexpected reader file ${file}`);
-      const data = parseFrontmatter(await readFile(path.join(root, dir.name, 'chapters', file), 'utf8'));
+      const raw = await readFile(path.join(root, dir.name, 'chapters', file), 'utf8');
+      const data = parseFrontmatter(raw);
       if (data.id !== record.id || data.title !== record.title || data.order !== record.order || (data.part ?? null) !== record.part || data.status !== 'published' || data.estimatedMinutes !== record.estimatedMinutes) {
-        throw new Error(`${work.id}/${file}: frontmatter does not match the frozen L17 manifest`);
+        throw new Error(`${work.id}/${file}: frontmatter does not match its frozen publication manifest`);
+      }
+      if (record.sha256) {
+        const digest = createHash('sha256').update(raw).digest('hex');
+        if (digest !== record.sha256.toLowerCase()) throw new Error(`${work.id}/${file}: file hash does not match its frozen publication manifest`);
       }
     }
     if (chapterFiles.length !== expected.expectedReaderFiles) {
@@ -62,7 +86,7 @@ for (const dir of dirs) {
     const canonicalRelease = path.join(releaseRoot, work.id, `${work.publication.activeRelease}.yaml`);
     if (!(await exists(canonicalRelease))) {
       warnings++;
-      console.warn(`[content] ${work.id}: active binary metadata is recovered but canonical R2 release registry is not materialized`);
+      console.warn(`[content] ${work.id}: active binary metadata exists but canonical R2 release registry is not materialized`);
     }
   }
 }
