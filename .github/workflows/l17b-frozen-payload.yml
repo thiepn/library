@@ -37,6 +37,7 @@ jobs:
       R2_BUCKET: thiepn-library-publications
       R2_PREFIX: works/ai-for-the-kingdom/editions/1.0.0-rc4
       RELEASE_TAG: ${{ github.event_name == 'release' && github.event.release.tag_name || github.event_name == 'workflow_dispatch' && inputs.release_tag || 'l17b-frozen-payload' }}
+      DRIVE_FALLBACK_ID: 1VNGvbEoeI91harOZZ2dYE3apKhoIwCzk
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
@@ -53,12 +54,26 @@ jobs:
           cache: true
 
       - id: package
-        name: Obtain exact frozen package from GitHub Release
+        name: Obtain and verify exact frozen package
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          rm -rf incoming
           mkdir -p incoming
+
+          set +e
           gh release download "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --pattern 'AI_for_the_Kingdom_L17_LIBRARY_PUBLICATION_PACKAGE.zip' --dir incoming
+          RELEASE_RC=$?
+          set -e
+
+          if [ "$RELEASE_RC" -ne 0 ] || [ ! -f "$PACKAGE" ]; then
+            echo 'GitHub Release asset unavailable; trying temporary verified Drive fallback.'
+            rm -f "$PACKAGE"
+            curl --fail --location --retry 2 --retry-delay 2 \
+              "https://drive.usercontent.google.com/download?id=${DRIVE_FALLBACK_ID}&export=download&confirm=t" \
+              --output "$PACKAGE"
+          fi
+
           test -f "$PACKAGE"
           test "$(stat -c %s "$PACKAGE")" = '2034059'
           echo '1c6f831ca9c3a48031121dc6129d39cb66f5ad521d53c3e9f40153f8c9f776b7  incoming/AI_for_the_Kingdom_L17_LIBRARY_PUBLICATION_PACKAGE.zip' | sha256sum -c -
