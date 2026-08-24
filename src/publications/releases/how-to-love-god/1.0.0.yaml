@@ -1,0 +1,19 @@
+schemaVersion: 1
+workId: how-to-love-god
+version: 1.0.0
+edition: 1
+releasedAt: 2026-07-21
+sourceHash: 4aea811955c7d18bf083a409e814816aaa583781a094764041bd5919fd655147
+artifacts:
+  pdf:
+    url: https://thiepn.dev/library/media/works/how-to-love-god/editions/1.0.0/How_to_Love_God.pdf
+    filename: How_to_Love_God.pdf
+    mimeType: application/pdf
+    sizeBytes: 485555
+    sha256: 4aea811955c7d18bf083a409e814816aaa583781a094764041bd5919fd655147
+  cover:
+    url: https://thiepn.dev/library/media/works/how-to-love-god/editions/1.0.0/how-to-love-god.webp
+    filename: how-to-love-god.webp
+    mimeType: image/webp
+    sizeBytes: 44762
+    sha256: f2c68ff5804c5eed5c37f20c51dfc3b636e9fdc315ab8d079293be47ce885792

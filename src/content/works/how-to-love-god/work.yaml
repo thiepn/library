@@ -1,0 +1,72 @@
+schemaVersion: 1
+id: how-to-love-god
+slug: how-to-love-god
+title: How to Love God
+subtitle: Understanding, Receiving, and Growing in Wholehearted Love for God
+type: book
+language: en-US
+contributors: []
+description: How to Love God is a biblical theology, practical discipleship guide, and pastoral resource on wholehearted love for God. It traces the greatest commandment through God’s prior grace in Christ, the Spirit’s renewing work, affection and obedience, Scripture and prayer, worship and repentance, ordinary life, suffering, mission, spiritual warfare, Christian community, and lifelong hope.
+shortDescription: A biblical theology, practical discipleship guide, and pastoral resource on growing in wholehearted love for God.
+status: published
+visibility: public
+publication:
+  firstPublished: '2026-07-21'
+  lastUpdated: '2026-07-21'
+  edition: 1
+  editionLabel: First Edition
+  version: 1.0.0
+  activeRelease: 1.0.0
+cover:
+  src: /media/works/how-to-love-god/editions/1.0.0/how-to-love-god.webp
+  alt: Cover of How to Love God
+classification:
+  subjects:
+  - theology
+  - discipleship
+  tags:
+  - love-for-god
+  - spiritual-formation
+  - christian-discipleship
+  - prayer
+  - worship
+  - holiness
+  - pastoral-care
+  collections:
+  - discipleship
+parts:
+- id: the-greatest-commandment
+  title: The Greatest Commandment
+  order: 10
+- id: the-gospel-and-the-transformation-of-love
+  title: The Gospel and the Transformation of Love
+  order: 20
+- id: love-emotion-and-obedience
+  title: Love, Emotion, and Obedience
+  order: 30
+- id: the-practices-through-which-love-grows
+  title: The Practices Through Which Love Grows
+  order: 40
+- id: obstacles-counterfeits-and-spiritual-warfare
+  title: Obstacles, Counterfeits, and Spiritual Warfare
+  order: 50
+- id: growing-in-mature-love
+  title: Growing in Mature Love
+  order: 60
+- id: study-and-practice-resources
+  title: Study and Practice Resources
+  order: 70
+formats:
+  web:
+    enabled: true
+  pdf:
+    enabled: true
+  epub:
+    enabled: false
+relationships:
+  relatedWorks: []
+  prerequisites: []
+resources: []
+rights:
+  status: source-not-specified
+  notice: The supplied first-edition PDF does not include an explicit copyright notice.
