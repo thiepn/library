@@ -1,0 +1,68 @@
+name: L17 Verified Source Import
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: l17-source-import-${{ github.head_ref }}
+  cancel-in-progress: false
+
+jobs:
+  import:
+    if: github.head_ref == 'ci/l17-source-import' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ci/l17-source-import
+          fetch-depth: 0
+
+      - name: Setup pnpm and Node
+        uses: pnpm/setup@v2
+        with:
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+          cache: true
+
+      - name: Materialize verified reader source
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .build/l17-source
+          cat recovery/l17-source/part00 recovery/l17-source/part01 recovery/l17-source/part02 recovery/l17-source/part03 > .build/l17-source/payload.b64
+          base64 --decode .build/l17-source/payload.b64 > .build/l17-source/payload.xz
+          echo '5636064da4b69ddf77eadb20728191dbf2c5d6b3c0dbc92c2e4d1682d9b8ed79  .build/l17-source/payload.xz' | sha256sum --check --strict
+          rm -rf .build/l17-source/extracted
+          mkdir -p .build/l17-source/extracted
+          xz --decompress --stdout .build/l17-source/payload.xz | tar -x -C .build/l17-source/extracted
+          test "$(find .build/l17-source/extracted -maxdepth 1 -type f -name '*.md' | wc -l | tr -d ' ')" = '57'
+          rm -rf src/content/works/ai-for-the-kingdom/chapters
+          mkdir -p src/content/works/ai-for-the-kingdom/chapters
+          cp .build/l17-source/extracted/*.md src/content/works/ai-for-the-kingdom/chapters/
+
+      - name: Install frozen dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify frozen reader payload
+        run: pnpm l17b:verify
+
+      - name: Build production site
+        run: pnpm build
+
+      - name: Commit verified source and remove staging payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf recovery/l17-source
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git diff --cached --quiet && exit 0
+          git commit -m 'Materialize verified frozen AI for the Kingdom reader payload'
+          git pull --rebase origin ci/l17-source-import
+          git push origin HEAD:ci/l17-source-import
