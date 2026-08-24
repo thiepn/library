@@ -42,7 +42,7 @@ pnpm build
 pnpm certify:source
 ```
 
-A production deployment is deliberately fail-closed. `pnpm deploy` first runs the full release certification, and the GitHub deploy workflow remains skipped until the 57-file AI for the Kingdom payload, immutable release registry, and frozen pnpm lockfile are all present.
+A production deployment is deliberately fail-closed. `pnpm deploy` first runs the full release certification, and the GitHub deploy workflow remains skipped until the 57-file AI for the Kingdom payload, immutable release registry, frozen pnpm lockfile, and Cloudflare credentials are all present.
 
 ## Content
 
@@ -58,8 +58,10 @@ Large immutable public binaries do **not** belong in Git. Release records point 
 
 ## Current release gate
 
-The application shell, `/library` path deployment architecture, native reader, search, saved state, annotations surface, security headers, sitemap, release verifier, R2 verification pipeline, and production deployment workflow are implemented.
+The application shell, `/library` path deployment architecture, native reader, search, saved state, annotations surface, security headers, sitemap, release verifier, R2 verification pipeline, frozen dependency lockfile, and production deployment workflow are implemented.
 
-The remaining hard publication gate is the original frozen `AI_for_the_Kingdom_L17_LIBRARY_PUBLICATION_PACKAGE.zip`. Until its exact bytes are supplied and verified, the reader/download release controls remain unavailable rather than exposing an unverifiable publication.
+The remaining hard publication gate is external byte materialization for the frozen `AI_for_the_Kingdom_L17_LIBRARY_PUBLICATION_PACKAGE.zip` plus Cloudflare release credentials. The exact historical rc4 registry has been recovered as provenance, but the live canonical registry is intentionally not created until the PDF, EPUB, and cover have been uploaded to R2, downloaded back, and verified against their frozen hashes.
+
+Until that final materialization succeeds, the reader/download release controls remain unavailable rather than exposing an unverifiable publication.
 
 See `docs/RECOVERY_STATUS.md` and `docs/L17B_PUBLICATION_MATERIALIZATION.md`.
