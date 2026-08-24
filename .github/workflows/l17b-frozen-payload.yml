@@ -98,9 +98,13 @@ jobs:
           test -n "$CLOUDFLARE_ACCOUNT_ID"
 
       - id: upload
-        name: Upload immutable R2 objects
+        name: Ensure R2 bucket and upload immutable objects
         if: ${{ github.event_name == 'release' || github.event_name == 'push' || inputs.publish_r2 }}
         run: |
+          if ! pnpm exec wrangler r2 bucket list | grep -Fq "$R2_BUCKET"; then
+            echo "R2 bucket $R2_BUCKET does not exist; creating it."
+            pnpm exec wrangler r2 bucket create "$R2_BUCKET"
+          fi
           pnpm exec wrangler r2 object put "$R2_BUCKET/$R2_PREFIX/AI_for_the_Kingdom_ONLINE_EDITION.pdf" --file="$MEDIA_DIR/AI_for_the_Kingdom_ONLINE_EDITION.pdf" --content-type='application/pdf' --cache-control='public, max-age=31536000, immutable' --remote
           pnpm exec wrangler r2 object put "$R2_BUCKET/$R2_PREFIX/AI_for_the_Kingdom.epub" --file="$MEDIA_DIR/AI_for_the_Kingdom.epub" --content-type='application/epub+zip' --content-disposition='attachment; filename="AI_for_the_Kingdom.epub"' --cache-control='public, max-age=31536000, immutable' --remote
           pnpm exec wrangler r2 object put "$R2_BUCKET/$R2_PREFIX/ai-for-the-kingdom.webp" --file="$MEDIA_DIR/ai-for-the-kingdom.webp" --content-type='image/webp' --cache-control='public, max-age=31536000, immutable' --remote
