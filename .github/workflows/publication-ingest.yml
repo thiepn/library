@@ -152,12 +152,11 @@ jobs:
           cp -R /tmp/library-ingest/package/chapters "src/content/works/$work_id/chapters"
           cp -R /tmp/library-ingest/package/recovery "src/content/works/$work_id/recovery"
 
-      - name: Ensure R2 bucket exists
+      - name: Use provisioned R2 bucket
         run: |
           set -euo pipefail
-          if ! pnpm exec wrangler r2 bucket list --json | grep -q '"name"[[:space:]]*:[[:space:]]*"'"$R2_BUCKET"'"'; then
-            pnpm exec wrangler r2 bucket create "$R2_BUCKET"
-          fi
+          test -n "$R2_BUCKET"
+          echo "Using provisioned R2 bucket: $R2_BUCKET"
 
       - name: Upload artifacts and verify immutable R2 readback
         run: |
