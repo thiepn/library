@@ -4,7 +4,7 @@ Date: 2026-08-24
 
 ## Recovery result
 
-The canonical Library application has been reconstructed in `thiepn/library` and is no longer blocked on application architecture or dependency recovery.
+The canonical Library application has been reconstructed in `thiepn/library`. Application architecture, dependency recovery, and the frozen `AI for the Kingdom` reader payload are complete.
 
 The current tree uses the retained production decisions:
 
@@ -20,14 +20,14 @@ The committed pnpm 11.21.0 lockfile is present, dependency-connected validation/
 
 ## L17 — AI for the Kingdom
 
-Recovered authoritative publication contract:
+Authoritative publication contract:
 
 - Work ID: `ai-for-the-kingdom`
 - release: `1.0.0-rc4`
 - frozen package: `AI_for_the_Kingdom_L17_LIBRARY_PUBLICATION_PACKAGE.zip`
 - package bytes: 2,034,059
 - package SHA-256: `1c6f831ca9c3a48031121dc6129d39cb66f5ad521d53c3e9f40153f8c9f776b7`
-- native reader files expected: 57
+- native reader files: 57
 - numbered chapters: 41
 - conclusion: 1
 - Part openings: 8
@@ -39,47 +39,74 @@ Recovered authoritative publication contract:
 
 The author/byline remains intentionally unspecified. Do not infer it from repository ownership or profile data.
 
-## Recovered release provenance
+## Frozen package recovery — complete
 
-The original L17 rc4 release-registry record has been recovered from retained publication evidence and preserved at:
+On 2026-08-24 the original package was supplied again as exact bytes. Verification succeeded before repository materialization:
+
+```text
+bytes:   2034059
+sha256:  1c6f831ca9c3a48031121dc6129d39cb66f5ad521d53c3e9f40153f8c9f776b7
+reader:  57/57
+words:   50092
+notes:   57 references / 57 definitions
+PDF:     exact frozen hash
+EPUB:    exact frozen hash
+cover:   exact frozen hash
+```
+
+The 57 native Markdown reader files were staged as a single Git tree and submitted as PR #6. The PR changed exactly 57 files and no unrelated files. GitHub Actions then passed:
+
+- frozen pnpm dependency install;
+- source certification;
+- content validation;
+- full production build.
+
+PR #6 was squash-merged into `main` as commit `f2e82708641667536642a4332de4a396d21fe92b`.
+
+The former `L17_READER_PAYLOAD` blocker is therefore resolved.
+
+## Release provenance and canonical registry
+
+The original historical rc4 registry remains preserved at:
 
 ```text
 src/content/works/ai-for-the-kingdom/recovery/l17-original-release-registry.yaml
 ```
 
-It is provenance only. It is deliberately **not** copied into the live canonical release path because historical metadata does not prove that immutable R2 objects currently exist.
-
-The canonical live registry remains:
+It is provenance only. The canonical live registry remains:
 
 ```text
 src/publications/releases/ai-for-the-kingdom/1.0.0-rc4.yaml
 ```
 
-and may be written only after verified R2 readback.
+and is deliberately absent until immutable R2 readback verifies the exact frozen binaries.
 
-## L17B-2 release pipeline
+## R2 activation probe
 
-The repository now has a complete fail-closed materialization path:
+A same-repository GitHub Actions probe was run after reader recovery. It failed at the first Cloudflare credential gate, before package reconstruction or any R2 action. The subsequent upload/readback/promotion steps were skipped.
 
-1. obtain the exact frozen ZIP from the `l17b-frozen-payload` GitHub Release;
-2. verify ZIP byte size and SHA-256 before extraction;
-3. inject exactly the 57 expected native Markdown files;
-4. verify reader identity/frontmatter/ordering/footnotes;
-5. verify PDF, EPUB, and cover bytes against the frozen hashes;
-6. upload the three immutable assets to R2;
-7. download all three objects back from R2;
-8. verify the downloaded bytes again;
-9. create an R2-verification marker only after that readback passes;
-10. allow `scripts/l17b-write-release.mjs` to write the canonical registry only when the marker exists and all three readback assets still match their frozen hashes;
-11. run the full release certification suite;
-12. commit the verified reader payload and canonical registry;
-13. allow the normal production deployment workflow to proceed.
+This establishes the remaining operational blocker directly rather than inferring it from configuration.
 
-## Remaining blockers
+## Remaining blocker
 
-Only external materialization remains:
+Only Cloudflare release credentials remain:
 
-1. **Frozen package ingress** — the exact 2,034,059-byte L17 ZIP is not materializable from the current ChatGPT File Library runtime, Google Drive, Dropbox, or reachable Git history. It must be supplied as exact bytes; reconstructing the missing rc4 package from an older EPUB/PDF is not permitted.
-2. **Cloudflare release credentials** — GitHub Actions must have `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` configured before R2 upload/readback and production deployment can run.
+```text
+CLOUDFLARE_API_TOKEN
+CLOUDFLARE_ACCOUNT_ID
+```
 
-Until both conditions are satisfied, the 57-file Reader and PDF/EPUB release controls remain disabled. This is intentional release-integrity behavior, not unfinished application functionality.
+Once those GitHub Actions secrets exist, the prepared L17B ingress workflow can:
+
+1. reconstruct the already-verified frozen package in an isolated runner;
+2. re-verify its byte size and SHA-256;
+3. verify the reader and all three local binaries;
+4. upload PDF, EPUB, and cover to immutable R2 keys;
+5. download all three objects back;
+6. verify readback bytes against the frozen hashes;
+7. create the guarded canonical release registry;
+8. run the complete release certification suite;
+9. promote only the verified registry to `main`;
+10. allow the normal production deployment gate to deploy the final release.
+
+The remaining work is therefore production credential/R2 activation, not application development or publication-content recovery.
