@@ -18,7 +18,9 @@
     "certify:source": "node scripts/certification/source.mjs",
     "certify:postbuild": "node scripts/certification/post-build.mjs",
     "release:certify": "pnpm certify:source && pnpm l17b:verify && pnpm build && pnpm certify:postbuild",
-    "deploy": "pnpm release:certify && wrangler deploy"
+    "stage:media": "node scripts/stage-publication-media.mjs",
+    "verify:production": "node scripts/verify-production.mjs",
+    "deploy": "pnpm release:certify && pnpm stage:media"
   },
   "dependencies": {
     "astro": "^6.0.0",

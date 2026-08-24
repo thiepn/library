@@ -59,6 +59,13 @@ const release = {
       sizeBytes: expected.assets.epub.bytes,
       sha256: expected.assets.epub.sha256,
     },
+    cover: {
+      url: `${base}/${expected.assets.cover.filename}`,
+      filename: expected.assets.cover.filename,
+      mimeType: 'image/webp',
+      sizeBytes: expected.assets.cover.bytes,
+      sha256: expected.assets.cover.sha256,
+    },
   },
 };
 
