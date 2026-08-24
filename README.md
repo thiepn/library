@@ -42,7 +42,7 @@ pnpm build
 pnpm certify:source
 ```
 
-A production deployment is deliberately fail-closed. `pnpm deploy` first runs the full release certification, and the GitHub deploy workflow remains skipped until the 57-file AI for the Kingdom payload, immutable release registry, frozen pnpm lockfile, and Cloudflare credentials are all present.
+A production deployment is deliberately fail-closed. `pnpm deploy` first runs the full release certification, and the GitHub deploy workflow remains skipped until the immutable release registry and Cloudflare credentials are present.
 
 ## Content
 
@@ -60,8 +60,10 @@ Large immutable public binaries do **not** belong in Git. Release records point 
 
 The application shell, `/library` path deployment architecture, native reader, search, saved state, annotations surface, security headers, sitemap, release verifier, R2 verification pipeline, frozen dependency lockfile, and production deployment workflow are implemented.
 
-The remaining hard publication gate is external byte materialization for the frozen `AI_for_the_Kingdom_L17_LIBRARY_PUBLICATION_PACKAGE.zip` plus Cloudflare release credentials. The exact historical rc4 registry has been recovered as provenance, but the live canonical registry is intentionally not created until the PDF, EPUB, and cover have been uploaded to R2, downloaded back, and verified against their frozen hashes.
+The exact frozen `AI_for_the_Kingdom_L17_LIBRARY_PUBLICATION_PACKAGE.zip` has now been recovered and verified at 2,034,059 bytes with SHA-256 `1c6f831ca9c3a48031121dc6129d39cb66f5ad521d53c3e9f40153f8c9f776b7`. Its complete 57-file native reader payload was merged into `main` after source certification and a full production build passed in PR #6.
 
-Until that final materialization succeeds, the reader/download release controls remain unavailable rather than exposing an unverifiable publication.
+The only remaining hard publication gate is Cloudflare release activation. GitHub Actions currently does not have `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`, so the PDF, EPUB, and cover cannot yet be uploaded to R2, read back, hash-verified, and promoted into the canonical live release registry.
+
+Until that R2 verification succeeds, binary download controls remain fail-closed rather than exposing an unverifiable publication.
 
 See `docs/RECOVERY_STATUS.md` and `docs/L17B_PUBLICATION_MATERIALIZATION.md`.
