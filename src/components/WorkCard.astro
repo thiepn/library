@@ -21,3 +21,28 @@ const coverUrl = /^https?:\/\//i.test(work.cover.src)
     <p class="micro">{work.publication.editionLabel} · {work.publication.version}</p>
   </div>
 </article>
+
+<style>
+  .publication-cover-link {
+    width: min(280px, 100%);
+    display: block;
+    align-self: start;
+    background: #0c0d0f;
+    border: 1px solid color-mix(in srgb, var(--strong-rule) 55%, transparent);
+    border-radius: 2px;
+    box-shadow: 8px 9px 0 color-mix(in srgb, var(--strong-rule) 35%, transparent);
+    overflow: hidden;
+    text-decoration: none;
+  }
+  .publication-cover {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  @media (max-width: 800px) {
+    .publication-cover-link { width: min(260px, 72vw); }
+  }
+  @media (max-width: 440px) {
+    .publication-cover-link { width: 190px; }
+  }
+</style>
