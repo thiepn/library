@@ -1,36 +1,57 @@
 import { access, readFile, readdir } from 'node:fs/promises';
+import path from 'node:path';
+import YAML from 'yaml';
 
 const checks = [];
 const pass = (id, ok, detail) => checks.push({ id, ok, detail });
-const exists = async (path) => { try { await access(path); return true; } catch { return false; } };
-const chapterDir = 'src/content/works/ai-for-the-kingdom/chapters';
-const chapterCount = await exists(chapterDir) ? (await readdir(chapterDir)).filter((name) => /\.(md|mdx)$/i.test(name)).length : 0;
+const exists = async (file) => { try { await access(file); return true; } catch { return false; } };
 const astroConfig = await readFile('astro.config.mjs', 'utf8');
 const deployWorkflow = await readFile('.github/workflows/deploy.yml', 'utf8');
-const releaseRegistry = await readFile('src/publications/releases/ai-for-the-kingdom/1.0.0-rc4.yaml', 'utf8');
 
 pass('ASTRO_STACK', await exists('astro.config.mjs'), 'Astro configuration is present');
 pass('ASTRO6_CONTENT', await exists('src/content.config.ts'), 'Astro 6 Content Loader configuration is present');
 pass('PATH_MOUNT', astroConfig.includes("site: 'https://thiepn.dev'") && astroConfig.includes("base: '/library'") && astroConfig.includes("outDir: './dist/library'"), 'Production application is mounted at https://thiepn.dev/library');
 pass('GITHUB_PAGES_DEPLOY', deployWorkflow.includes('actions/configure-pages@') && deployWorkflow.includes('actions/upload-pages-artifact@') && deployWorkflow.includes('actions/deploy-pages@'), 'Production static site is deployed through GitHub Pages');
-pass('R2_MEDIA_STAGING', deployWorkflow.includes('wrangler r2 object get') && deployWorkflow.includes('sha256sum -c'), 'Verified R2 publication binaries are staged into the Pages artifact');
-pass('PAGES_MEDIA_ORIGIN', releaseRegistry.includes('https://thiepn.dev/library/media/'), 'Canonical publication URLs resolve from the Library Pages origin');
+pass('R2_MEDIA_STAGING', deployWorkflow.includes('pnpm stage:media'), 'All canonical release media are staged generically from verified R2 objects');
+pass('PRODUCTION_VERIFY', deployWorkflow.includes('pnpm verify:production'), 'Production routes and artifact hashes are verified generically');
 pass('NO_REACT_RUNTIME', !(await exists('vite.config.ts')) && !(await exists('src/main.tsx')), 'Temporary React/Vite runtime is absent');
 pass('SITEMAP', await exists('src/pages/sitemap.xml.ts'), 'Library sitemap endpoint is generated under /library');
-pass('L17_METADATA', await exists('src/content/works/ai-for-the-kingdom/work.yaml'), 'Validated L17 Work metadata is registered');
-pass('L17B_EXPECTED', await exists('src/content/works/ai-for-the-kingdom/recovery/l17b-expected.json'), 'Frozen 57-file materialization manifest is registered');
 pass('READER_ROUTES', await exists('src/pages/works/[slug]/read/[chapter].astro'), 'Native Reader route is implemented');
-pass('LOCKFILE', await exists('pnpm-lock.yaml'), 'A frozen dependency lock is required before RC certification');
-pass('L17_READER_PAYLOAD', chapterCount === 57, `57 native reader files required; found ${chapterCount}`);
-pass('L17_RELEASE_REGISTRY', await exists('src/publications/releases/ai-for-the-kingdom/1.0.0-rc4.yaml'), 'Canonical release registry exists after immutable R2 verification');
+pass('LOCKFILE', await exists('pnpm-lock.yaml'), 'A frozen dependency lock is required before certification');
+
+const worksRoot = 'src/content/works';
+const releaseRoot = 'src/publications/releases';
+for (const entry of await readdir(worksRoot, { withFileTypes: true })) {
+  if (!entry.isDirectory()) continue;
+  const manifestPath = path.join(worksRoot, entry.name, 'work.yaml');
+  const work = YAML.parse(await readFile(manifestPath, 'utf8'));
+  if (work.visibility !== 'public' || !['published', 'archived'].includes(work.status)) continue;
+
+  const chapterDir = path.join(worksRoot, work.id, 'chapters');
+  let chapterCount = 0;
+  if (await exists(chapterDir)) chapterCount = (await readdir(chapterDir)).filter((name) => /\.(md|mdx)$/i.test(name)).length;
+  let expected;
+  for (const filename of ['publication-expected.json', 'l17b-expected.json']) {
+    try { expected = JSON.parse(await readFile(path.join(worksRoot, work.id, 'recovery', filename), 'utf8')); break; } catch {}
+  }
+  if (work.formats?.web?.enabled) {
+    const ok = expected ? chapterCount === Number(expected.expectedReaderFiles) : chapterCount > 0;
+    pass(`WEB_${work.id}`, ok, expected ? `${chapterCount}/${expected.expectedReaderFiles} frozen reader files` : `${chapterCount} reader files`);
+  }
+
+  if (work.formats?.pdf?.enabled || work.formats?.epub?.enabled) {
+    const version = work.publication?.activeRelease;
+    const releaseFile = path.join(releaseRoot, work.id, `${version}.yaml`);
+    const releaseExists = Boolean(version) && await exists(releaseFile);
+    pass(`RELEASE_${work.id}`, releaseExists, releaseExists ? `Canonical release ${version} is registered` : 'Canonical release registry is missing');
+    if (releaseExists) {
+      const releaseRaw = await readFile(releaseFile, 'utf8');
+      pass(`MEDIA_ORIGIN_${work.id}`, releaseRaw.includes('https://thiepn.dev/library/media/'), 'Canonical publication media use the Library Pages origin');
+    }
+  }
+}
 
 for (const check of checks) console.log(`${check.ok ? 'PASS' : 'BLOCK'} ${check.id} — ${check.detail}`);
-const blockers = new Set(['LOCKFILE', 'L17_READER_PAYLOAD', 'L17_RELEASE_REGISTRY']);
-const hardFailures = checks.filter((check) => !check.ok && !blockers.has(check.id));
-const blocked = checks.filter((check) => !check.ok && blockers.has(check.id));
-if (hardFailures.length) process.exit(1);
-if (blocked.length) {
-  console.log(`SOURCE_RECOVERY_PASS_WITH_BLOCKERS ${blocked.map((item) => item.id).join(',')}`);
-  process.exit(0);
-}
+const failures = checks.filter((check) => !check.ok);
+if (failures.length) process.exit(1);
 console.log('SOURCE_PASS');
