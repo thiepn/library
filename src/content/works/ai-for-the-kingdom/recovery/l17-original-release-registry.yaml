@@ -1,0 +1,26 @@
+schemaVersion: 1
+workId: ai-for-the-kingdom
+version: 1.0.0-rc4
+releasedAt: 2026-08-22
+status: active
+immutable: true
+
+files:
+  pdf:
+    url: /media/works/ai-for-the-kingdom/1.0.0-rc4/AI_for_the_Kingdom_ONLINE_EDITION.pdf
+    filename: AI_for_the_Kingdom_ONLINE_EDITION.pdf
+    mimeType: application/pdf
+    bytes: 1792545
+    sha256: 8aa58f8eb291c9c5abb4c0ebc633032ae2c4a3703c443e7c3779f38646c707bd
+  epub:
+    url: /media/works/ai-for-the-kingdom/1.0.0-rc4/AI_for_the_Kingdom.epub
+    filename: AI_for_the_Kingdom.epub
+    mimeType: application/epub+zip
+    bytes: 568942
+    sha256: 8931f8578cbd7e09ccf31385047f8eb5d58ea5a74a683c79669a51d2b9e59e1f
+
+validation:
+  source: Phase 39 v1.0.0-rc4 release lock
+  epubStructuralValidation: pass
+  officialEpubCheck: pending
+  publicAuthorIdentity: pending
