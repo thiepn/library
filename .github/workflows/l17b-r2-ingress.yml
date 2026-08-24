@@ -34,21 +34,6 @@ jobs:
           test -n "$CLOUDFLARE_API_TOKEN"
           test -n "$CLOUDFLARE_ACCOUNT_ID"
 
-      - name: Reconstruct exact frozen package
-        run: |
-          mkdir -p incoming
-          python - <<'PY'
-          from pathlib import Path
-          import base64
-          parts = sorted(Path('.l17b-ingress').glob('package.b85.part*'))
-          if not parts:
-              raise SystemExit('No ingress chunks found')
-          encoded = ''.join(p.read_text('ascii') for p in parts)
-          Path('incoming/AI_for_the_Kingdom_L17_LIBRARY_PUBLICATION_PACKAGE.zip').write_bytes(base64.b85decode(encoded.encode('ascii')))
-          PY
-          test "$(stat -c %s "$PACKAGE")" = '2034059'
-          echo '1c6f831ca9c3a48031121dc6129d39cb66f5ad521d53c3e9f40153f8c9f776b7  incoming/AI_for_the_Kingdom_L17_LIBRARY_PUBLICATION_PACKAGE.zip' | sha256sum -c -
-
       - name: Setup pnpm and Node
         uses: pnpm/setup@v2
         with:
@@ -60,18 +45,59 @@ jobs:
       - name: Install frozen dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Probe existing immutable R2 objects
+        id: r2_probe
+        shell: bash
+        run: |
+          rm -rf "$R2_VERIFY_DIR" && mkdir -p "$R2_VERIFY_DIR"
+          set +e
+          pnpm exec wrangler r2 object get "$R2_BUCKET/$R2_PREFIX/AI_for_the_Kingdom_ONLINE_EDITION.pdf" --file="$R2_VERIFY_DIR/AI_for_the_Kingdom_ONLINE_EDITION.pdf" --remote
+          PDF_RC=$?
+          pnpm exec wrangler r2 object get "$R2_BUCKET/$R2_PREFIX/AI_for_the_Kingdom.epub" --file="$R2_VERIFY_DIR/AI_for_the_Kingdom.epub" --remote
+          EPUB_RC=$?
+          pnpm exec wrangler r2 object get "$R2_BUCKET/$R2_PREFIX/ai-for-the-kingdom.webp" --file="$R2_VERIFY_DIR/ai-for-the-kingdom.webp" --remote
+          COVER_RC=$?
+          set -e
+
+          if [ "$PDF_RC" -eq 0 ] && [ "$EPUB_RC" -eq 0 ] && [ "$COVER_RC" -eq 0 ] && L17B_MEDIA_DIR="$R2_VERIFY_DIR" pnpm l17b:verify; then
+            printf 'R2 readback verified against frozen L17 hashes\n' > "$R2_VERIFY_DIR/.r2-verified"
+            echo 'existing=true' >> "$GITHUB_OUTPUT"
+          else
+            rm -rf "$R2_VERIFY_DIR"
+            echo 'existing=false' >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Reconstruct exact frozen package
+        if: steps.r2_probe.outputs.existing != 'true'
+        run: |
+          mkdir -p incoming
+          python - <<'PY'
+          from pathlib import Path
+          import base64
+          parts = sorted(Path('.l17b-ingress').glob('package.b85.part*'))
+          if not parts:
+              raise SystemExit('No ingress chunks found and exact frozen R2 objects were not already present')
+          encoded = ''.join(p.read_text('ascii') for p in parts)
+          Path('incoming/AI_for_the_Kingdom_L17_LIBRARY_PUBLICATION_PACKAGE.zip').write_bytes(base64.b85decode(encoded.encode('ascii')))
+          PY
+          test "$(stat -c %s "$PACKAGE")" = '2034059'
+          echo '1c6f831ca9c3a48031121dc6129d39cb66f5ad521d53c3e9f40153f8c9f776b7  incoming/AI_for_the_Kingdom_L17_LIBRARY_PUBLICATION_PACKAGE.zip' | sha256sum -c -
+
       - name: Inject and verify exact rc4 package
+        if: steps.r2_probe.outputs.existing != 'true'
         run: |
           node scripts/l17b-inject-package.mjs "$PACKAGE"
           L17B_PACKAGE="$PACKAGE" L17B_MEDIA_DIR="$MEDIA_DIR" pnpm l17b:verify
 
       - name: Upload immutable R2 objects
+        if: steps.r2_probe.outputs.existing != 'true'
         run: |
           pnpm exec wrangler r2 object put "$R2_BUCKET/$R2_PREFIX/AI_for_the_Kingdom_ONLINE_EDITION.pdf" --file="$MEDIA_DIR/AI_for_the_Kingdom_ONLINE_EDITION.pdf" --content-type='application/pdf' --cache-control='public, max-age=31536000, immutable' --remote
           pnpm exec wrangler r2 object put "$R2_BUCKET/$R2_PREFIX/AI_for_the_Kingdom.epub" --file="$MEDIA_DIR/AI_for_the_Kingdom.epub" --content-type='application/epub+zip' --content-disposition='attachment; filename="AI_for_the_Kingdom.epub"' --cache-control='public, max-age=31536000, immutable' --remote
           pnpm exec wrangler r2 object put "$R2_BUCKET/$R2_PREFIX/ai-for-the-kingdom.webp" --file="$MEDIA_DIR/ai-for-the-kingdom.webp" --content-type='image/webp' --cache-control='public, max-age=31536000, immutable' --remote
 
-      - name: Read back and verify immutable R2 objects
+      - name: Read back and verify uploaded immutable R2 objects
+        if: steps.r2_probe.outputs.existing != 'true'
         run: |
           rm -rf "$R2_VERIFY_DIR" && mkdir -p "$R2_VERIFY_DIR"
           pnpm exec wrangler r2 object get "$R2_BUCKET/$R2_PREFIX/AI_for_the_Kingdom_ONLINE_EDITION.pdf" --file="$R2_VERIFY_DIR/AI_for_the_Kingdom_ONLINE_EDITION.pdf" --remote
@@ -83,7 +109,11 @@ jobs:
       - name: Write and certify canonical release registry
         run: |
           L17B_R2_MEDIA_DIR="$R2_VERIFY_DIR" node scripts/l17b-write-release.mjs
-          L17B_PACKAGE="$PACKAGE" L17B_MEDIA_DIR="$R2_VERIFY_DIR" pnpm release:certify
+          if [ -f "$PACKAGE" ]; then
+            L17B_PACKAGE="$PACKAGE" L17B_MEDIA_DIR="$R2_VERIFY_DIR" pnpm release:certify
+          else
+            L17B_MEDIA_DIR="$R2_VERIFY_DIR" pnpm release:certify
+          fi
           cp src/publications/releases/ai-for-the-kingdom/1.0.0-rc4.yaml /tmp/1.0.0-rc4.yaml
 
       - name: Promote verified registry to main
