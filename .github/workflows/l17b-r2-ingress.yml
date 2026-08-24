@@ -1,0 +1,100 @@
+name: L17B R2 Ingress
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: l17b-r2-ingress
+  cancel-in-progress: false
+
+jobs:
+  promote:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'l17b/r2-ingress'
+    runs-on: ubuntu-latest
+    env:
+      PACKAGE: incoming/AI_for_the_Kingdom_L17_LIBRARY_PUBLICATION_PACKAGE.zip
+      MEDIA_DIR: .build/l17b-media
+      R2_VERIFY_DIR: .build/l17b-r2-verify
+      R2_BUCKET: thiepn-library-publications
+      R2_PREFIX: works/ai-for-the-kingdom/editions/1.0.0-rc4
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Reconstruct exact frozen package
+        run: |
+          mkdir -p incoming
+          python - <<'PY'
+          from pathlib import Path
+          import base64
+          parts = sorted(Path('.l17b-ingress').glob('package.b85.part*'))
+          if not parts:
+              raise SystemExit('No ingress chunks found')
+          encoded = ''.join(p.read_text('ascii') for p in parts)
+          Path('incoming/AI_for_the_Kingdom_L17_LIBRARY_PUBLICATION_PACKAGE.zip').write_bytes(base64.b85decode(encoded.encode('ascii')))
+          PY
+          test "$(stat -c %s "$PACKAGE")" = '2034059'
+          echo '1c6f831ca9c3a48031121dc6129d39cb66f5ad521d53c3e9f40153f8c9f776b7  incoming/AI_for_the_Kingdom_L17_LIBRARY_PUBLICATION_PACKAGE.zip' | sha256sum -c -
+
+      - name: Setup pnpm and Node
+        uses: pnpm/setup@v2
+        with:
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+          cache: true
+
+      - name: Install frozen dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Inject and verify exact rc4 package
+        run: |
+          node scripts/l17b-inject-package.mjs "$PACKAGE"
+          L17B_PACKAGE="$PACKAGE" L17B_MEDIA_DIR="$MEDIA_DIR" pnpm l17b:verify
+
+      - name: Require Cloudflare release credentials
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN"
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+
+      - name: Upload immutable R2 objects
+        run: |
+          pnpm exec wrangler r2 object put "$R2_BUCKET/$R2_PREFIX/AI_for_the_Kingdom_ONLINE_EDITION.pdf" --file="$MEDIA_DIR/AI_for_the_Kingdom_ONLINE_EDITION.pdf" --content-type='application/pdf' --cache-control='public, max-age=31536000, immutable' --remote
+          pnpm exec wrangler r2 object put "$R2_BUCKET/$R2_PREFIX/AI_for_the_Kingdom.epub" --file="$MEDIA_DIR/AI_for_the_Kingdom.epub" --content-type='application/epub+zip' --content-disposition='attachment; filename="AI_for_the_Kingdom.epub"' --cache-control='public, max-age=31536000, immutable' --remote
+          pnpm exec wrangler r2 object put "$R2_BUCKET/$R2_PREFIX/ai-for-the-kingdom.webp" --file="$MEDIA_DIR/ai-for-the-kingdom.webp" --content-type='image/webp' --cache-control='public, max-age=31536000, immutable' --remote
+
+      - name: Read back and verify immutable R2 objects
+        run: |
+          rm -rf "$R2_VERIFY_DIR" && mkdir -p "$R2_VERIFY_DIR"
+          pnpm exec wrangler r2 object get "$R2_BUCKET/$R2_PREFIX/AI_for_the_Kingdom_ONLINE_EDITION.pdf" --file="$R2_VERIFY_DIR/AI_for_the_Kingdom_ONLINE_EDITION.pdf" --remote
+          pnpm exec wrangler r2 object get "$R2_BUCKET/$R2_PREFIX/AI_for_the_Kingdom.epub" --file="$R2_VERIFY_DIR/AI_for_the_Kingdom.epub" --remote
+          pnpm exec wrangler r2 object get "$R2_BUCKET/$R2_PREFIX/ai-for-the-kingdom.webp" --file="$R2_VERIFY_DIR/ai-for-the-kingdom.webp" --remote
+          L17B_MEDIA_DIR="$R2_VERIFY_DIR" pnpm l17b:verify
+          printf 'R2 readback verified against frozen L17 hashes\n' > "$R2_VERIFY_DIR/.r2-verified"
+
+      - name: Write and certify canonical release registry
+        run: |
+          L17B_R2_MEDIA_DIR="$R2_VERIFY_DIR" node scripts/l17b-write-release.mjs
+          L17B_PACKAGE="$PACKAGE" L17B_MEDIA_DIR="$R2_VERIFY_DIR" pnpm release:certify
+          cp src/publications/releases/ai-for-the-kingdom/1.0.0-rc4.yaml /tmp/1.0.0-rc4.yaml
+
+      - name: Promote verified registry to main
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git fetch origin main
+          git checkout --detach origin/main
+          mkdir -p src/publications/releases/ai-for-the-kingdom
+          cp /tmp/1.0.0-rc4.yaml src/publications/releases/ai-for-the-kingdom/1.0.0-rc4.yaml
+          git add src/publications/releases/ai-for-the-kingdom/1.0.0-rc4.yaml
+          git diff --cached --quiet && exit 0
+          git commit -m 'Activate verified AI for the Kingdom rc4 binaries'
+          git push origin HEAD:main
