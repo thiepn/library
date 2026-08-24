@@ -51,13 +51,20 @@ jobs:
           mkdir -p /tmp/library-ingest
           package_url=$(node -e "const r=require('./.publication-ingress/request.json'); process.stdout.write(r.packageUrl || '')")
           package_blob_sha=$(node -e "const r=require('./.publication-ingress/request.json'); process.stdout.write(r.packageGitBlobSha || '')")
+          package_chunk_blob_shas=$(node -e "const r=require('./.publication-ingress/request.json'); process.stdout.write(Array.isArray(r.packageChunkBlobShas) ? r.packageChunkBlobShas.join(' ') : '')")
           expected_hash=$(node -e "const r=require('./.publication-ingress/request.json'); process.stdout.write(r.packageSha256)")
           expected_bytes=$(node -e "const r=require('./.publication-ingress/request.json'); process.stdout.write(String(r.packageBytes))")
 
-          if [ -n "$package_url" ] && [ -n "$package_blob_sha" ]; then
-            echo 'request.json must provide only one package transport' >&2
+          transport_count=0
+          [ -n "$package_url" ] && transport_count=$((transport_count + 1))
+          [ -n "$package_blob_sha" ] && transport_count=$((transport_count + 1))
+          [ -n "$package_chunk_blob_shas" ] && transport_count=$((transport_count + 1))
+          if [ "$transport_count" -ne 1 ]; then
+            echo 'request.json must provide exactly one package transport' >&2
             exit 1
-          elif [ -n "$package_url" ]; then
+          fi
+
+          if [ -n "$package_url" ]; then
             curl --fail --silent --show-error --location --retry 4 --retry-delay 2 "$package_url" -o /tmp/library-ingest/package.zip
           elif [[ "$package_blob_sha" =~ ^[a-f0-9]{40}$ ]]; then
             curl --fail --silent --show-error --location --retry 4 --retry-delay 2 \
@@ -66,8 +73,27 @@ jobs:
               -H 'X-GitHub-Api-Version: 2022-11-28' \
               "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/blobs/${package_blob_sha}" \
               -o /tmp/library-ingest/package.zip
+          elif [ -n "$package_chunk_blob_shas" ]; then
+            : > /tmp/library-ingest/package.zip
+            chunk_index=0
+            for chunk_sha in $package_chunk_blob_shas; do
+              if [[ ! "$chunk_sha" =~ ^[a-f0-9]{40}$ ]]; then
+                echo "invalid package chunk blob SHA: $chunk_sha" >&2
+                exit 1
+              fi
+              chunk_file="/tmp/library-ingest/chunk-${chunk_index}.bin"
+              curl --fail --silent --show-error --location --retry 4 --retry-delay 2 \
+                -H 'Accept: application/vnd.github.raw+json' \
+                -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+                -H 'X-GitHub-Api-Version: 2022-11-28' \
+                "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/blobs/${chunk_sha}" \
+                -o "$chunk_file"
+              cat "$chunk_file" >> /tmp/library-ingest/package.zip
+              chunk_index=$((chunk_index + 1))
+            done
+            test "$chunk_index" -gt 0
           else
-            echo 'request.json must provide packageUrl or a 40-character packageGitBlobSha' >&2
+            echo 'request.json contains an invalid package transport' >&2
             exit 1
           fi
 
