@@ -7,12 +7,12 @@ Release tag: l17b-frozen-payload
 
 | Stage | Outcome |
 | --- | --- |
-| package | failure |
-| install | skipped |
-| inject | skipped |
-| verify | skipped |
-| credentials | skipped |
-| R2 upload | skipped |
+| package | success |
+| install | success |
+| inject | success |
+| verify | success |
+| credentials | success |
+| R2 upload | failure |
 | R2 readback | skipped |
 | registry | skipped |
 | certification | skipped |
