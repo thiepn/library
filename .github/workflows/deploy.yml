@@ -7,6 +7,8 @@ on:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 concurrency:
   group: library-production
@@ -23,7 +25,7 @@ jobs:
       ready: ${{ steps.gate.outputs.ready }}
       blockers: ${{ steps.gate.outputs.blockers }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - id: gate
         shell: bash
         run: |
@@ -51,16 +53,20 @@ jobs:
             echo "::notice title=Library production gate blocked::$joined"
           fi
 
-  deploy:
+  build:
     needs: readiness
     if: needs.readiness.outputs.ready == 'true'
     runs-on: ubuntu-latest
-    environment: production
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      R2_BUCKET: thiepn-library-publications
+      R2_PREFIX: works/ai-for-the-kingdom/editions/1.0.0-rc4
+      MEDIA_TARGET: dist/library/media/works/ai-for-the-kingdom/editions/1.0.0-rc4
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v5
+
       - name: Setup pnpm and Node
         uses: pnpm/setup@v2
         with:
@@ -68,40 +74,96 @@ jobs:
           runtime: node@22.12.0
           install: false
           cache: true
+
       - name: Install frozen dependencies
         run: pnpm install --frozen-lockfile
-      - name: Certify release
+
+      - name: Certify release and build static site
         run: pnpm release:certify
-      - name: Deploy certified static assets
-        run: pnpm exec wrangler deploy
-      - name: Production application smoke test
+
+      - name: Stage immutable publication media from verified R2 archive
         run: |
-          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 https://thiepn.dev/library >/dev/null
-          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 https://thiepn.dev/library/search >/dev/null
-          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 https://thiepn.dev/library/subjects >/dev/null
-          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 https://thiepn.dev/library/collections >/dev/null
-          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 https://thiepn.dev/library/works/ai-for-the-kingdom >/dev/null
-          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 https://thiepn.dev/library/works/ai-for-the-kingdom/read >/dev/null
-      - name: Production publication media smoke test
+          set -euo pipefail
+          mkdir -p "$MEDIA_TARGET"
+          pnpm exec wrangler r2 object get "$R2_BUCKET/$R2_PREFIX/AI_for_the_Kingdom_ONLINE_EDITION.pdf" --file="$MEDIA_TARGET/AI_for_the_Kingdom_ONLINE_EDITION.pdf" --remote
+          pnpm exec wrangler r2 object get "$R2_BUCKET/$R2_PREFIX/AI_for_the_Kingdom.epub" --file="$MEDIA_TARGET/AI_for_the_Kingdom.epub" --remote
+          pnpm exec wrangler r2 object get "$R2_BUCKET/$R2_PREFIX/ai-for-the-kingdom.webp" --file="$MEDIA_TARGET/ai-for-the-kingdom.webp" --remote
+
+          test "$(stat -c %s "$MEDIA_TARGET/AI_for_the_Kingdom_ONLINE_EDITION.pdf")" = '1792545'
+          test "$(stat -c %s "$MEDIA_TARGET/AI_for_the_Kingdom.epub")" = '568942'
+          test "$(stat -c %s "$MEDIA_TARGET/ai-for-the-kingdom.webp")" = '56752'
+
+          printf '%s  %s\n' '8aa58f8eb291c9c5abb4c0ebc633032ae2c4a3703c443e7c3779f38646c707bd' "$MEDIA_TARGET/AI_for_the_Kingdom_ONLINE_EDITION.pdf" | sha256sum -c -
+          printf '%s  %s\n' '8931f8578cbd7e09ccf31385047f8eb5d58ea5a74a683c79669a51d2b9e59e1f' "$MEDIA_TARGET/AI_for_the_Kingdom.epub" | sha256sum -c -
+          printf '%s  %s\n' '938830415749fff85b864248c7e302624f17d50bbe5336de1009538fe040df94' "$MEDIA_TARGET/ai-for-the-kingdom.webp" | sha256sum -c -
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload certified Library artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ./dist/library
+
+  deploy:
+    needs: build
+    if: needs.build.result == 'success'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  verify-production:
+    needs: deploy
+    if: needs.deploy.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for custom-domain propagation
+        run: sleep 10
+
+      - name: Verify Library application routes
         run: |
-          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 --range 0-0 https://media.library.thiepn.dev/works/ai-for-the-kingdom/editions/1.0.0-rc4/AI_for_the_Kingdom_ONLINE_EDITION.pdf >/dev/null
-          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 --range 0-0 https://media.library.thiepn.dev/works/ai-for-the-kingdom/editions/1.0.0-rc4/AI_for_the_Kingdom.epub >/dev/null
-          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 --range 0-0 https://media.library.thiepn.dev/works/ai-for-the-kingdom/editions/1.0.0-rc4/ai-for-the-kingdom.webp >/dev/null
+          set -euo pipefail
+          curl --fail --silent --show-error --location --retry 8 --retry-delay 3 https://thiepn.dev/library/ >/dev/null
+          curl --fail --silent --show-error --location --retry 8 --retry-delay 3 https://thiepn.dev/library/search >/dev/null
+          curl --fail --silent --show-error --location --retry 8 --retry-delay 3 https://thiepn.dev/library/subjects >/dev/null
+          curl --fail --silent --show-error --location --retry 8 --retry-delay 3 https://thiepn.dev/library/collections >/dev/null
+          curl --fail --silent --show-error --location --retry 8 --retry-delay 3 https://thiepn.dev/library/works/ai-for-the-kingdom >/dev/null
+          curl --fail --silent --show-error --location --retry 8 --retry-delay 3 https://thiepn.dev/library/works/ai-for-the-kingdom/read >/dev/null
+
+      - name: Verify published PDF, EPUB and cover
+        run: |
+          set -euo pipefail
+          tmp=$(mktemp -d)
+          trap 'rm -rf "$tmp"' EXIT
+          curl --fail --silent --show-error --location --retry 8 --retry-delay 3 https://thiepn.dev/library/media/works/ai-for-the-kingdom/editions/1.0.0-rc4/AI_for_the_Kingdom_ONLINE_EDITION.pdf -o "$tmp/book.pdf"
+          curl --fail --silent --show-error --location --retry 8 --retry-delay 3 https://thiepn.dev/library/media/works/ai-for-the-kingdom/editions/1.0.0-rc4/AI_for_the_Kingdom.epub -o "$tmp/book.epub"
+          curl --fail --silent --show-error --location --retry 8 --retry-delay 3 https://thiepn.dev/library/media/works/ai-for-the-kingdom/editions/1.0.0-rc4/ai-for-the-kingdom.webp -o "$tmp/cover.webp"
+          echo '8aa58f8eb291c9c5abb4c0ebc633032ae2c4a3703c443e7c3779f38646c707bd  '"$tmp/book.pdf" | sha256sum -c -
+          echo '8931f8578cbd7e09ccf31385047f8eb5d58ea5a74a683c79669a51d2b9e59e1f  '"$tmp/book.epub" | sha256sum -c -
+          echo '938830415749fff85b864248c7e302624f17d50bbe5336de1009538fe040df94  '"$tmp/cover.webp" | sha256sum -c -
 
   report:
-    needs: [readiness, deploy]
+    needs: [readiness, build, deploy, verify-production]
     if: always() && (github.event_name != 'push' || !startsWith(github.event.head_commit.message, 'Record production deployment outcome'))
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
+
       - name: Record production deployment outcome
         env:
           READINESS_RESULT: ${{ needs.readiness.result }}
           READY: ${{ needs.readiness.outputs.ready }}
           BLOCKERS: ${{ needs.readiness.outputs.blockers }}
+          BUILD_RESULT: ${{ needs.build.result }}
           DEPLOY_RESULT: ${{ needs.deploy.result }}
+          VERIFY_RESULT: ${{ needs.verify-production.result }}
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
@@ -119,7 +181,9 @@ jobs:
           | readiness job | ${READINESS_RESULT} |
           | production gate | ${READY:-false} |
           | blockers | ${BLOCKERS:-none} |
-          | deploy + application/media smoke tests | ${DEPLOY_RESULT} |
+          | certified build + R2 media staging | ${BUILD_RESULT} |
+          | GitHub Pages deployment | ${DEPLOY_RESULT} |
+          | live application + media verification | ${VERIFY_RESULT} |
           EOF
           git add docs/PRODUCTION_DEPLOY_STATUS.md
           git diff --cached --quiet && exit 0
