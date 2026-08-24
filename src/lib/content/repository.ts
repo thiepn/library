@@ -20,11 +20,13 @@ interface ExpectedReaderManifest {
 const worksRoot = path.join(process.cwd(), 'src/content/works');
 
 async function readExpectedReaderManifest(workId: string): Promise<ExpectedReaderManifest | undefined> {
-  try {
-    return JSON.parse(await readFile(path.join(worksRoot, workId, 'recovery', 'l17b-expected.json'), 'utf8')) as ExpectedReaderManifest;
-  } catch {
-    return undefined;
+  const recoveryRoot = path.join(worksRoot, workId, 'recovery');
+  for (const filename of ['publication-expected.json', 'l17b-expected.json']) {
+    try {
+      return JSON.parse(await readFile(path.join(recoveryRoot, filename), 'utf8')) as ExpectedReaderManifest;
+    } catch {}
   }
+  return undefined;
 }
 
 async function isWebPayloadComplete(work: WorkManifest, actualFiles: string[]) {
