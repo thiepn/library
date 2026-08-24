@@ -33,3 +33,5 @@ jobs:
         run: pnpm certify:source
       - name: Validate and build launch shell
         run: pnpm build
+      - name: Post-build regression certification
+        run: pnpm certify:postbuild
