@@ -1,25 +1,24 @@
 # Thiepn Library
 
-Static-first personal publishing, reading, and learning platform for books, courses, research editions, PDFs, EPUBs, annotations, and cross-work knowledge.
+Static-first personal publishing, reading, and learning platform for books, research editions, PDFs, EPUBs, annotations, search, and cross-work knowledge.
+
+Production: `https://thiepn.dev/library`
 
 ## Architecture
 
-The canonical runtime is:
+The production runtime is:
 
 - Astro 6 + strict TypeScript
-- native Archive Editorial CSS
+- Archive Editorial CSS
 - build-time publication metadata and Markdown/MDX content
-- Pagefind for static full-text search
-- Cloudflare Workers Static Assets mounted only at `/library`
-- Cloudflare R2 for immutable PDF/EPUB publication binaries
-- browser-local reading state; no account is required for the public library
-- optional owner-authenticated AI as a separate Worker, never as a dependency of the static library
+- Pagefind static full-text search
+- GitHub Pages mounted at `/library`
+- Cloudflare R2 as the immutable source of publication binaries
+- deployment-time R2 staging into the certified GitHub Pages artifact
+- browser-local reading state; no account is required for the public Library
+- optional owner-authenticated AI as a separate service, never as a dependency of the static reader
 
-Production application: `https://thiepn.dev/library`
-
-Publication media: `https://media.library.thiepn.dev`
-
-The main `thiepn.dev` site remains the origin for every path outside `/library`; the Library Worker is configured as a Cloudflare path route, not as a standalone custom domain.
+Large PDF, EPUB, and cover binaries do **not** live in normal Git history. Each canonical release records filename, MIME type, byte size, and SHA-256. Deployment downloads those objects from R2 and verifies them before they are included in the public Pages artifact.
 
 ## Local development
 
@@ -40,30 +39,71 @@ Astro serves the application under `/library` in development as well as producti
 pnpm validate
 pnpm build
 pnpm certify:source
+pnpm release:certify
 ```
 
-A production deployment is deliberately fail-closed. `pnpm deploy` first runs the full release certification, and the GitHub deploy workflow remains skipped until the immutable release registry and Cloudflare credentials are present.
+Production is fail-closed: source, reader manifests, release registries, built routes, and immutable media hashes must all pass before deployment.
 
-## Content
+## Content model
 
 Canonical publication source belongs under:
 
 ```text
 src/content/works/<work-id>/
 ├── work.yaml
-└── chapters/
+├── chapters/
+└── recovery/
 ```
 
-Large immutable public binaries do **not** belong in Git. Release records point to the R2 publication domain.
+Canonical binary release registries belong under:
 
-## Current release gate
+```text
+src/publications/releases/<work-id>/<version>.yaml
+```
 
-The application shell, `/library` path deployment architecture, native reader, search, saved state, annotations surface, security headers, sitemap, release verifier, R2 verification pipeline, frozen dependency lockfile, and production deployment workflow are implemented.
+## Generic publication ingest
 
-The exact frozen `AI_for_the_Kingdom_L17_LIBRARY_PUBLICATION_PACKAGE.zip` has now been recovered and verified at 2,034,059 bytes with SHA-256 `1c6f831ca9c3a48031121dc6129d39cb66f5ad521d53c3e9f40153f8c9f776b7`. Its complete 57-file native reader payload was merged into `main` after source certification and a full production build passed in PR #6.
+New publications use the L18 generic ingestion pipeline. An `ingest/**` request points to a frozen publication package containing:
 
-The only remaining hard publication gate is Cloudflare release activation. GitHub Actions currently does not have `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`, so the PDF, EPUB, and cover cannot yet be uploaded to R2, read back, hash-verified, and promoted into the canonical live release registry.
+```text
+publication.json
+work.yaml
+chapters/
+recovery/publication-expected.json
+assets/
+```
 
-Until that R2 verification succeeds, binary download controls remain fail-closed rather than exposing an unverifiable publication.
+The ingest workflow:
 
-See `docs/RECOVERY_STATUS.md` and `docs/L17B_PUBLICATION_MATERIALIZATION.md`.
+1. verifies the package byte count and SHA-256;
+2. validates publication identity and frozen reader-file hashes;
+3. materializes the native reader source;
+4. uploads publication artifacts to the provisioned R2 bucket;
+5. downloads them again and verifies immutable size/SHA-256 readback;
+6. writes the canonical release registry;
+7. runs the complete Library certification suite;
+8. promotes only verified publication source and registry data to `main`.
+
+The normal production workflow then rebuilds the Library, stages every canonical R2 artifact generically, deploys through GitHub Pages, and verifies live routes and artifact hashes.
+
+## Published works
+
+### AI for the Kingdom
+
+**Stewarding Artificial Intelligence for the Great Commission**
+
+- native Web reader: 57 publication sections
+- PDF: available
+- EPUB: available
+- frozen release: `1.0.0-rc4`
+
+### How to Love God
+
+**Understanding, Receiving, and Growing in Wholehearted Love for God**
+
+- native Web reader: 57 publication sections
+- PDF: available
+- EPUB: not supplied in the source edition
+- first edition release: `1.0.0`
+
+The Library remains multi-work by design: catalog, work pages, native reader routes, search, publication media staging, and production verification all discover canonical works/releases rather than relying on per-book application code.
