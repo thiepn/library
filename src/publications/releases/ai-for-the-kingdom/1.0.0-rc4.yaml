@@ -6,13 +6,13 @@ releasedAt: 2026-08-22
 sourceHash: 1c6f831ca9c3a48031121dc6129d39cb66f5ad521d53c3e9f40153f8c9f776b7
 artifacts:
   pdf:
-    url: https://media.library.thiepn.dev/works/ai-for-the-kingdom/editions/1.0.0-rc4/AI_for_the_Kingdom_ONLINE_EDITION.pdf
+    url: https://thiepn.dev/library/media/works/ai-for-the-kingdom/editions/1.0.0-rc4/AI_for_the_Kingdom_ONLINE_EDITION.pdf
     filename: AI_for_the_Kingdom_ONLINE_EDITION.pdf
     mimeType: application/pdf
     sizeBytes: 1792545
     sha256: 8aa58f8eb291c9c5abb4c0ebc633032ae2c4a3703c443e7c3779f38646c707bd
   epub:
-    url: https://media.library.thiepn.dev/works/ai-for-the-kingdom/editions/1.0.0-rc4/AI_for_the_Kingdom.epub
+    url: https://thiepn.dev/library/media/works/ai-for-the-kingdom/editions/1.0.0-rc4/AI_for_the_Kingdom.epub
     filename: AI_for_the_Kingdom.epub
     mimeType: application/epub+zip
     sizeBytes: 568942
