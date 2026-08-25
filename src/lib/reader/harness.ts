@@ -1,6 +1,7 @@
 import { ReaderController } from './controller';
 import { ReaderPageLayoutController, type ReaderPageLayoutOptions } from './page-layout';
 import { ReaderReadingModeController, type ReaderReadingModeOptions } from './reading-mode';
+import { ReaderSettingsStore } from './settings';
 import { mountReaderShell, type ReaderShellController } from './shell';
 import { ReaderThemeController, type ReaderThemeOptions } from './theme';
 import { ReaderTypographyController, type ReaderTypographyOptions } from './typography';
@@ -17,6 +18,7 @@ export interface ReaderShellHarnessHandle extends ReaderHarnessHandle {
   typography: ReaderTypographyController;
   pageLayout: ReaderPageLayoutController;
   theme: ReaderThemeController;
+  settings: ReaderSettingsStore;
 }
 
 /**
@@ -43,8 +45,8 @@ export async function mountReaderEngineHarness(
 }
 
 /**
- * Connects the reader shell, reading-mode controller, typography engine, page-layout controller,
- * theme controller, and EPUB engine without exposing a book route.
+ * Connects the reader shell, persistent settings, reading-mode controller, typography engine,
+ * page-layout controller, theme controller, and EPUB engine without exposing a book route.
  */
 export async function mountReaderShellHarness(
   root: HTMLElement,
@@ -54,23 +56,25 @@ export async function mountReaderShellHarness(
 ): Promise<ReaderShellHarnessHandle> {
   const shell = mountReaderShell(root);
   const controller = new ReaderController();
+  const settings = new ReaderSettingsStore();
+  const resolvedOptions = settings.resolveOpenOptions(options);
   const readingModeOptions: ReaderReadingModeOptions = {
-    ...(options.flow ? { flow: options.flow } : {}),
-    ...(options.spread ? { spread: options.spread } : {}),
-    ...(options.minSpreadWidth !== undefined ? { minSpreadWidth: options.minSpreadWidth } : {}),
+    ...(resolvedOptions.flow ? { flow: resolvedOptions.flow } : {}),
+    ...(resolvedOptions.spread ? { spread: resolvedOptions.spread } : {}),
+    ...(resolvedOptions.minSpreadWidth !== undefined ? { minSpreadWidth: resolvedOptions.minSpreadWidth } : {}),
   };
-  const typographyOptions: ReaderTypographyOptions = options.appearance ? {
-    ...(options.appearance.fontFamily ? { fontFamily: options.appearance.fontFamily } : {}),
-    ...(options.appearance.fontScale !== undefined ? { fontScale: options.appearance.fontScale } : {}),
-    ...(options.appearance.lineHeight !== undefined ? { lineHeight: options.appearance.lineHeight } : {}),
-    ...(options.appearance.paragraphSpacing !== undefined ? { paragraphSpacing: options.appearance.paragraphSpacing } : {}),
-    ...(options.appearance.alignment ? { alignment: options.appearance.alignment } : {}),
+  const typographyOptions: ReaderTypographyOptions = resolvedOptions.appearance ? {
+    ...(resolvedOptions.appearance.fontFamily ? { fontFamily: resolvedOptions.appearance.fontFamily } : {}),
+    ...(resolvedOptions.appearance.fontScale !== undefined ? { fontScale: resolvedOptions.appearance.fontScale } : {}),
+    ...(resolvedOptions.appearance.lineHeight !== undefined ? { lineHeight: resolvedOptions.appearance.lineHeight } : {}),
+    ...(resolvedOptions.appearance.paragraphSpacing !== undefined ? { paragraphSpacing: resolvedOptions.appearance.paragraphSpacing } : {}),
+    ...(resolvedOptions.appearance.alignment ? { alignment: resolvedOptions.appearance.alignment } : {}),
   } : {};
-  const pageLayoutOptions: ReaderPageLayoutOptions = options.appearance ? {
-    ...(options.appearance.textWidth ? { textWidth: options.appearance.textWidth } : {}),
-    ...(options.appearance.pageMargins ? { pageMargins: options.appearance.pageMargins } : {}),
+  const pageLayoutOptions: ReaderPageLayoutOptions = resolvedOptions.appearance ? {
+    ...(resolvedOptions.appearance.textWidth ? { textWidth: resolvedOptions.appearance.textWidth } : {}),
+    ...(resolvedOptions.appearance.pageMargins ? { pageMargins: resolvedOptions.appearance.pageMargins } : {}),
   } : {};
-  const themeOptions: ReaderThemeOptions = options.appearance?.theme ? { theme: options.appearance.theme } : {};
+  const themeOptions: ReaderThemeOptions = resolvedOptions.appearance?.theme ? { theme: resolvedOptions.appearance.theme } : {};
   const theme = new ReaderThemeController(controller, shell.root, themeOptions);
   const readingMode = new ReaderReadingModeController(controller, shell.viewport, readingModeOptions);
   const pageLayout = new ReaderPageLayoutController(readingMode, shell.root, pageLayoutOptions);
@@ -82,10 +86,21 @@ export async function mountReaderShellHarness(
   let pageLayoutStarted = false;
   let themeStarted = false;
 
+  const currentOpenOptions = (): ReaderOpenOptions => ({
+    ...resolvedOptions,
+    flow: readingMode.snapshot.flow,
+    spread: readingMode.snapshot.spreadPreference,
+    appearance: {
+      ...typography.snapshot,
+      ...pageLayout.snapshot,
+      theme: theme.snapshot.theme,
+    },
+  });
+
   const open = async () => {
     shell.setStatus('loading', 'Opening book…');
     try {
-      await controller.open(source, shell.viewport, options, target);
+      await controller.open(source, shell.viewport, currentOpenOptions(), target);
       if (themeStarted) theme.reapply();
       else {
         themeStarted = true;
@@ -115,19 +130,23 @@ export async function mountReaderShellHarness(
 
   cleanups.push(readingMode.subscribe((state) => {
     shell.setReadingMode(state.flow, state.spreadPreference, state.effectiveSpread);
+    settings.patch({ flow: state.flow, spread: state.spreadPreference });
   }));
 
   cleanups.push(typography.subscribe((state) => {
     shell.setTypography(state);
+    settings.patch(state);
   }));
 
   cleanups.push(pageLayout.subscribe((state) => {
     shell.root.dataset.readerTextWidth = state.textWidth;
     shell.root.dataset.readerPageMargins = state.pageMargins;
+    settings.patch(state);
   }));
 
   cleanups.push(theme.subscribe((state) => {
     shell.root.dataset.readerTheme = state.theme;
+    settings.patch({ theme: state.theme });
   }));
 
   cleanups.push(controller.subscribe((state) => {
@@ -223,6 +242,7 @@ export async function mountReaderShellHarness(
     typography,
     pageLayout,
     theme,
+    settings,
     destroy: () => {
       if (destroyed) return;
       destroyed = true;
