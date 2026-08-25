@@ -5,6 +5,7 @@ export { ReaderPageLayoutController, READER_PAGE_LAYOUT_DEFAULTS } from './page-
 export { ReaderReadingModeController } from './reading-mode';
 export { resolveReaderPublicationCandidate } from './publication';
 export { mountReaderShell, ReaderShellController } from './shell';
+export { ReaderThemeController, READER_THEME_DEFAULTS } from './theme';
 export { ReaderTypographyController, READER_TYPOGRAPHY_DEFAULTS } from './typography';
 export { ReaderEngineError } from './types';
 export type { ReaderEngine } from './engines/engine';
@@ -32,5 +33,6 @@ export type { ReaderHarnessHandle, ReaderShellHarnessHandle } from './harness';
 export type { ReaderPageLayoutOptions, ReaderPageLayoutState } from './page-layout';
 export type { ReaderOrientation, ReaderReadingModeOptions, ReaderReadingModeState } from './reading-mode';
 export type { ReaderNavigationAvailability, ReaderProgressDisplay, ReaderShellCommand, ReaderShellStatus, ReaderTypographyIntent } from './shell';
+export type { ReaderThemeOptions, ReaderThemeState } from './theme';
 export type { ReaderTypographyOptions, ReaderTypographyState } from './typography';
 export type { ReaderPublicationArtifact, ReaderPublicationCandidate } from './publication';
