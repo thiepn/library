@@ -1,6 +1,6 @@
 export { ReaderController } from './controller';
 export { EpubJsEngine } from './engines/epubjs';
-export { mountReaderEngineHarness, mountReaderPublicationHarness, mountReaderShellHarness } from './harness';
+export { mountReaderEngineHarness, mountReaderShellHarness } from './harness';
 export { ReaderPageLayoutController, READER_PAGE_LAYOUT_DEFAULTS } from './page-layout';
 export { ReaderProgressController } from './progress';
 export { ReaderReadingModeController } from './reading-mode';
@@ -14,6 +14,8 @@ export {
 } from './settings';
 export { mountReaderShell, ReaderShellController } from './shell';
 export { ReaderThemeController, READER_THEME_DEFAULTS } from './theme';
+export { ReaderTocController } from './toc';
+export { mountReaderPublicationWithTocHarness, mountReaderShellWithTocHarness } from './toc-harness';
 export { ReaderTypographyController, READER_TYPOGRAPHY_DEFAULTS } from './typography';
 export { ReaderEngineError } from './types';
 export type { ReaderEngine } from './engines/engine';
@@ -39,15 +41,12 @@ export type {
 export type { ReaderControllerState, ReaderStatus } from './controller';
 export type { ReaderHarnessHandle, ReaderShellHarnessHandle } from './harness';
 export type { ReaderPageLayoutOptions, ReaderPageLayoutState } from './page-layout';
-export type {
-  ReaderProgressControllerOptions,
-  ReaderProgressIdentity,
-  ReaderResumeCandidate,
-  ReaderResumeStatus,
-} from './progress';
+export type { ReaderProgressControllerOptions, ReaderProgressIdentity, ReaderResumeCandidate, ReaderResumeStatus } from './progress';
 export type { ReaderOrientation, ReaderReadingModeOptions, ReaderReadingModeState } from './reading-mode';
 export type { ReaderSettingsPatch, ReaderSettingsRecord } from './settings';
 export type { ReaderNavigationAvailability, ReaderProgressDisplay, ReaderShellCommand, ReaderShellStatus, ReaderTypographyIntent } from './shell';
 export type { ReaderThemeOptions, ReaderThemeState } from './theme';
+export type { ReaderTocState } from './toc';
+export type { ReaderTocHarnessHandle } from './toc-harness';
 export type { ReaderTypographyOptions, ReaderTypographyState } from './typography';
 export type { ReaderPublicationArtifact, ReaderPublicationCandidate } from './publication';
