@@ -104,7 +104,7 @@ if (themesExist) {
   const engine = await readFile('src/lib/reader/engines/epubjs.ts', 'utf8');
   const shellHarness = await readFile('src/lib/reader/harness.ts', 'utf8');
   const readerLayout = await readFile('src/layouts/EpubReaderLayout.astro', 'utf8');
-  const allThemes = ['light', 'warm', 'sepia', 'gray', 'dark', 'black'].every((name) => theme.includes(`data-reader-theme-option=\"${name}\"`) && themeCss.includes(`data-reader-theme=\"${name}\"`));
+  const allThemes = ['light', 'warm', 'sepia', 'gray', 'dark', 'black'].every((name) => theme.includes(`data-reader-theme-option="${name}"`) && themeCss.includes(`data-reader-theme="${name}"`));
   pass('EPUB_READER_THEME_PALETTES', allThemes, 'Reader exposes Light, Warm, Sepia, Gray, Dark, and Black shell palettes');
   pass('EPUB_READER_THEME_EPUB', engine.includes('THEME_PALETTES') && engine.includes('blockquote, aside') && engine.includes('hr, table, th, td') && engine.includes('pre, code, kbd, samp'), 'EPUB themes cover prose, links, quotes, tables, rules, and code surfaces');
   pass('EPUB_READER_THEME_POSITION_STABLE', theme.includes('controller.setAppearance({ theme') && !theme.includes('updateAppearance(') && !theme.includes('.display('), 'Theme changes update colors in place without repagination, CFI redisplay, or navigation');
