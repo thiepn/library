@@ -4,6 +4,7 @@ import {
   ReaderEngineError,
   type ReaderAppearance,
   type ReaderFlow,
+  type ReaderInteractionHandler,
   type ReaderLayoutUpdate,
   type ReaderLocation,
   type ReaderOpenOptions,
@@ -27,8 +28,10 @@ export class ReaderController {
   private state: ReaderControllerState = { status: 'idle', location: null, toc: [], error: null };
   private stateListeners = new Set<(state: ReaderControllerState) => void>();
   private selectionListeners = new Set<(selection: ReaderSelection) => void>();
+  private interactionListeners = new Set<ReaderInteractionHandler>();
   private unsubscribeLocation: Unsubscribe | undefined;
   private unsubscribeSelection: Unsubscribe | undefined;
+  private unsubscribeInteraction: Unsubscribe | undefined;
 
   constructor(engine: ReaderEngine = new EpubJsEngine()) {
     this.engine = engine;
@@ -130,26 +133,42 @@ export class ReaderController {
     return () => this.selectionListeners.delete(listener);
   }
 
+  onInteraction(listener: ReaderInteractionHandler): Unsubscribe {
+    this.interactionListeners.add(listener);
+    return () => this.interactionListeners.delete(listener);
+  }
+
   destroy(): void {
     if (this.state.status === 'destroyed') return;
     this.unsubscribeLocation?.();
     this.unsubscribeSelection?.();
+    this.unsubscribeInteraction?.();
     this.unsubscribeLocation = undefined;
     this.unsubscribeSelection = undefined;
+    this.unsubscribeInteraction = undefined;
     this.engine.destroy();
     this.stateListeners.clear();
     this.selectionListeners.clear();
+    this.interactionListeners.clear();
     this.state = { status: 'destroyed', location: null, toc: [], error: null };
   }
 
   private attachEngineListeners(): void {
     this.unsubscribeLocation?.();
     this.unsubscribeSelection?.();
+    this.unsubscribeInteraction?.();
     this.unsubscribeLocation = this.engine.onLocationChange((location) => {
       this.setState({ ...this.state, location });
     });
     this.unsubscribeSelection = this.engine.onSelection((selection) => {
       for (const listener of this.selectionListeners) listener(selection);
+    });
+    this.unsubscribeInteraction = this.engine.onInteraction((interaction) => {
+      let handled = false;
+      for (const listener of this.interactionListeners) {
+        if (listener(interaction) === true) handled = true;
+      }
+      return handled;
     });
   }
 
