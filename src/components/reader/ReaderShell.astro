@@ -1,0 +1,92 @@
+---
+import '../../styles/reader-shell.css';
+
+interface Props {
+  title: string;
+  subtitle?: string;
+  backHref: string;
+  backLabel?: string;
+  chapterLabel?: string;
+  progressLabel?: string;
+  loadingMessage?: string;
+}
+
+const {
+  title,
+  subtitle,
+  backHref,
+  backLabel = 'Back to book',
+  chapterLabel = 'Beginning',
+  progressLabel = '0%',
+  loadingMessage = 'Opening book…',
+} = Astro.props;
+---
+<div class="reader-shell" data-reader-shell data-reader-status="loading" data-reader-controls="visible">
+  <header class="reader-shell__bar reader-shell__bar--top" data-reader-topbar>
+    <div class="reader-shell__cluster reader-shell__cluster--start">
+      <a class="reader-shell__icon-button" href={backHref} aria-label={backLabel} title={backLabel}>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7" /></svg>
+      </a>
+    </div>
+
+    <div class="reader-shell__identity" aria-live="polite">
+      <strong data-reader-title>{title}</strong>
+      {subtitle && <span>{subtitle}</span>}
+    </div>
+
+    <div class="reader-shell__cluster reader-shell__cluster--end">
+      <button class="reader-shell__icon-button" type="button" data-reader-command="contents" aria-label="Open contents" title="Contents" disabled>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01" /></svg>
+      </button>
+      <button class="reader-shell__text-button" type="button" data-reader-command="appearance" aria-label="Reading appearance" title="Reading appearance">Aa</button>
+      <button class="reader-shell__icon-button" type="button" data-reader-command="more" aria-label="More reader options" title="More options">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1" /><circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" /></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="reader-shell__stage" data-reader-stage>
+    <div class="reader-shell__viewport" id="reader-viewport" data-reader-viewport tabindex="-1" aria-busy="true" aria-label={`Book content: ${title}`}></div>
+
+    <section class="reader-shell__state reader-shell__state--loading" data-reader-loading role="status" aria-live="polite">
+      <span class="reader-shell__loader" aria-hidden="true"></span>
+      <p data-reader-loading-message>{loadingMessage}</p>
+    </section>
+
+    <section class="reader-shell__state reader-shell__state--error" data-reader-error role="alert" hidden>
+      <p class="reader-shell__eyebrow">Reader unavailable</p>
+      <h1>We couldn’t open this book.</h1>
+      <p data-reader-error-message>Try again, or return to the book page.</p>
+      <div class="reader-shell__error-actions">
+        <button type="button" data-reader-command="retry">Try again</button>
+        <a href={backHref}>{backLabel}</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="reader-shell__bar reader-shell__bar--bottom" data-reader-bottombar>
+    <button class="reader-shell__nav-button" type="button" data-reader-command="previous" aria-label="Previous page" title="Previous page" disabled>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7" /></svg>
+    </button>
+
+    <div class="reader-shell__location" aria-live="polite">
+      <span data-reader-chapter>{chapterLabel}</span>
+      <span aria-hidden="true">•</span>
+      <span data-reader-progress>{progressLabel}</span>
+    </div>
+
+    <button class="reader-shell__nav-button" type="button" data-reader-command="next" aria-label="Next page" title="Next page" disabled>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7" /></svg>
+    </button>
+  </footer>
+
+  <div class="reader-shell__announcer" data-reader-announcer aria-live="polite" aria-atomic="true"></div>
+</div>
+
+<script>
+  import { mountReaderShell } from '../../lib/reader/shell';
+
+  document.querySelectorAll<HTMLElement>('[data-reader-shell]').forEach((root) => {
+    mountReaderShell(root);
+  });
+</script>

@@ -1,7 +1,8 @@
 export { ReaderController } from './controller';
 export { EpubJsEngine } from './engines/epubjs';
-export { mountReaderEngineHarness } from './harness';
+export { mountReaderEngineHarness, mountReaderShellHarness } from './harness';
 export { resolveReaderPublicationCandidate } from './publication';
+export { mountReaderShell, ReaderShellController } from './shell';
 export { ReaderEngineError } from './types';
 export type { ReaderEngine } from './engines/engine';
 export type {
@@ -20,5 +21,6 @@ export type {
   Unsubscribe,
 } from './types';
 export type { ReaderControllerState, ReaderStatus } from './controller';
-export type { ReaderHarnessHandle } from './harness';
+export type { ReaderHarnessHandle, ReaderShellHarnessHandle } from './harness';
+export type { ReaderNavigationAvailability, ReaderProgressDisplay, ReaderShellCommand, ReaderShellStatus } from './shell';
 export type { ReaderPublicationArtifact, ReaderPublicationCandidate } from './publication';

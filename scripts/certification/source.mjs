@@ -19,6 +19,23 @@ pass('SITEMAP', await exists('src/pages/sitemap.xml.ts'), 'Library sitemap endpo
 pass('READER_ROUTES', await exists('src/pages/works/[slug]/read/[chapter].astro'), 'Native Reader route is implemented');
 pass('LOCKFILE', await exists('pnpm-lock.yaml'), 'A frozen dependency lock is required before certification');
 
+const readerShellFiles = [
+  'src/layouts/ReaderLayout.astro',
+  'src/components/reader/ReaderShell.astro',
+  'src/styles/reader-shell.css',
+  'src/lib/reader/shell.ts',
+];
+const readerShellExists = (await Promise.all(readerShellFiles.map(exists))).every(Boolean);
+pass('EPUB_READER_SHELL', readerShellExists, 'Dedicated fullscreen EPUB reader shell is present');
+if (readerShellExists) {
+  const shellComponent = await readFile('src/components/reader/ReaderShell.astro', 'utf8');
+  const shellController = await readFile('src/lib/reader/shell.ts', 'utf8');
+  const shellHarness = await readFile('src/lib/reader/harness.ts', 'utf8');
+  pass('EPUB_READER_SHELL_A11Y', shellComponent.includes('aria-live="polite"') && shellComponent.includes('aria-busy="true"') && shellComponent.includes('data-reader-error'), 'Reader shell exposes loading, error, live-region, and busy accessibility states');
+  pass('EPUB_READER_SHELL_CONTROLS', shellController.includes('setControlsVisible') && shellController.includes('setNavigationAvailability') && shellController.includes('reader-shell:toggle-controls'), 'Reader shell controller owns chrome visibility and navigation availability');
+  pass('EPUB_READER_SHELL_HARNESS', shellHarness.includes('mountReaderShellHarness') && shellHarness.includes('mountReaderShell(root)'), 'Reader shell and EPUB engine are connected through a non-public fixture harness');
+}
+
 const worksRoot = 'src/content/works';
 const releaseRoot = 'src/publications/releases';
 for (const entry of await readdir(worksRoot, { withFileTypes: true })) {
