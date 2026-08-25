@@ -1,39 +1,105 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import WorkCard from '../components/WorkCard.astro';
 import { getWorks } from '../lib/content/repository';
+import { taxonomyLabel } from '../lib/content/taxonomy';
+
 const works = await getWorks();
 const readableWorks = works.filter((work) => work.webMaterialized);
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const catalog = works.map((work) => {
+  const coverUrl = /^https?:\/\//i.test(work.cover.src)
+    ? work.cover.src
+    : `${base}${work.cover.src.startsWith('/') ? work.cover.src : `/${work.cover.src}`}`;
+  const formats = [
+    work.webMaterialized ? 'Web' : null,
+    work.formats.pdf.enabled ? 'PDF' : null,
+    work.formats.epub.enabled ? 'EPUB' : null,
+  ].filter((value): value is string => Boolean(value));
+  return { work, coverUrl, formats };
+});
 ---
-<BaseLayout>
-  <div class="page">
-    <section class="hero">
-      <div><p class="eyebrow">00 / Library</p><h1>Read deeply. Keep what matters.</h1></div>
-      <p class="hero-copy">A durable home for books, research editions, courses, and long-form work—designed around reading rather than feeds, dashboards, or disposable content.</p>
-    </section>
-
-    {readableWorks.length > 0 && <section class="section" data-continue-section hidden>
-      <div class="section-heading"><div><p class="eyebrow">01 / Resume</p><h2>Continue reading</h2></div><a href={`${base}/saved`}>My Library →</a></div>
-      <div class="continue-list" data-continue-list>
-        {readableWorks.map((work) => <a class="continue-item" href={`${base}/works/${work.slug}/read`} data-continue-work={work.id} hidden><span><strong>{work.title}</strong>{work.subtitle && <small>{work.subtitle}</small>}</span><span class="micro" data-continue-progress>Resume</span></a>)}
+<BaseLayout title="Library" description="Books and long-form publications available to read online or download.">
+  <div class="page library-home">
+    <header class="library-intro">
+      <div class="library-intro-copy">
+        <p class="eyebrow">Library</p>
+        <h1>Books</h1>
+        <p>{works.length} publication{works.length === 1 ? '' : 's'} available. Read online, open the PDF edition, or download available formats.</p>
       </div>
-    </section>}
+      <form class="catalog-search" action={`${base}/search`} method="get" role="search">
+        <label class="sr-only" for="home-library-search">Search the Library</label>
+        <input id="home-library-search" type="search" name="q" placeholder="Search books, chapters, or topics" autocomplete="off" />
+        <button type="submit">Search</button>
+      </form>
+    </header>
 
-    <section class="section" id="publications">
-      <div class="section-heading"><div><p class="eyebrow">02 / Publications</p><h2>Library</h2></div><p class="micro">{works.length} publication{works.length === 1 ? '' : 's'}</p></div>
-      {works.length ? <div class="work-list">{works.map((work, index) => <WorkCard work={work} index={index + 1} />)}</div> : <div class="empty"><h2>The shelves are being prepared.</h2><p>No public publication is available yet.</p></div>}
-    </section>
-
-    <section class="section">
-      <div class="section-heading"><div><p class="eyebrow">03 / Browse</p><h2>Explore the catalog</h2></div></div>
-      <div class="taxonomy-grid">
-        <a class="taxonomy-card" href={`${base}/subjects`}><span class="micro">Topics and disciplines</span><strong>Subjects</strong></a>
-        <a class="taxonomy-card" href={`${base}/collections`}><span class="micro">Curated shelves</span><strong>Collections</strong></a>
-        <a class="taxonomy-card" href={`${base}/search`}><span class="micro">Full-text discovery</span><strong>Search</strong></a>
+    <section class="catalog-section" id="publications" aria-labelledby="catalog-heading">
+      <div class="catalog-toolbar">
+        <div>
+          <p class="eyebrow">Catalog</p>
+          <h2 id="catalog-heading">All books</h2>
+        </div>
+        <nav class="catalog-links" aria-label="Catalog navigation">
+          <a href={`${base}/subjects`}>Subjects</a>
+          <a href={`${base}/collections`}>Collections</a>
+          <a href={`${base}/search`}>Search</a>
+        </nav>
       </div>
+
+      {catalog.length ? (
+        <div class="catalog-grid">
+          {catalog.map(({ work, coverUrl, formats }) => (
+            <article class="catalog-book" data-pagefind-ignore="all">
+              <a class="catalog-cover" href={`${base}/works/${work.slug}`} aria-label={`Open ${work.title}`}>
+                <img src={coverUrl} alt={work.cover.alt} loading="eager" decoding="async" />
+              </a>
+              <div class="catalog-copy">
+                <div class="catalog-subjects">
+                  {work.classification.subjects.slice(0, 2).map((subject, index) => (
+                    <>
+                      <a href={`${base}/subjects/${subject}`}>{taxonomyLabel(subject)}</a>
+                      {index < Math.min(2, work.classification.subjects.length) - 1 && <span>·</span>}
+                    </>
+                  ))}
+                </div>
+                <h3><a href={`${base}/works/${work.slug}`}>{work.title}</a></h3>
+                {work.subtitle && <p class="catalog-subtitle">{work.subtitle}</p>}
+                <p class="catalog-description">{work.shortDescription}</p>
+                <div class="catalog-meta">
+                  <span>{work.publication.editionLabel}</span>
+                  <span>{formats.join(' · ')}</span>
+                </div>
+                <div class="catalog-actions">
+                  {work.webMaterialized && <a class="catalog-read" href={`${base}/works/${work.slug}/read`}>Read</a>}
+                  <a href={`${base}/works/${work.slug}`}>Details</a>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <div class="empty compact-empty"><h2>No books yet.</h2><p>No public publication is currently available.</p></div>
+      )}
     </section>
+
+    {readableWorks.length > 0 && (
+      <section class="resume-section" data-continue-section hidden aria-labelledby="resume-heading">
+        <div class="compact-heading">
+          <div><p class="eyebrow">Your reading</p><h2 id="resume-heading">Continue reading</h2></div>
+          <a href={`${base}/saved`}>My Library</a>
+        </div>
+        <div class="continue-list compact-continue" data-continue-list>
+          {readableWorks.map((work) => (
+            <a class="continue-item" href={`${base}/works/${work.slug}/read`} data-continue-work={work.id} hidden>
+              <span><strong>{work.title}</strong>{work.subtitle && <small>{work.subtitle}</small>}</span>
+              <span class="micro" data-continue-progress>Resume</span>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
   </div>
+
   <script>
     import { getProgress, subscribeLibraryState } from '../lib/client/library-db';
     const section = document.querySelector<HTMLElement>('[data-continue-section]');
@@ -60,4 +126,190 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     window.addEventListener('pagehide', unsubscribe, { once: true });
     void renderContinue();
   </script>
+
+  <style>
+    .library-home { padding-bottom: 48px; }
+    .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+
+    .library-intro {
+      display:grid;
+      grid-template-columns:minmax(0,1fr) minmax(320px,520px);
+      gap:clamp(28px,5vw,72px);
+      align-items:end;
+      padding:34px 0 26px;
+      border-bottom:1px solid var(--rule);
+    }
+    .library-intro h1 {
+      margin:0;
+      font-family:var(--display);
+      font-size:clamp(2.4rem,4vw,4.2rem);
+      line-height:.95;
+      font-weight:500;
+      letter-spacing:-.035em;
+    }
+    .library-intro-copy > p:last-child {
+      max-width:64ch;
+      margin:10px 0 0;
+      color:var(--secondary);
+      line-height:1.55;
+      font-size:.94rem;
+    }
+    .catalog-search {
+      min-height:44px;
+      display:grid;
+      grid-template-columns:1fr auto;
+      align-items:center;
+      border:1px solid var(--strong-rule);
+      background:var(--surface);
+    }
+    .catalog-search input {
+      min-width:0;
+      padding:10px 12px;
+      border:0;
+      background:transparent;
+      outline:0;
+      font-size:.9rem;
+    }
+    .catalog-search button {
+      height:100%;
+      padding:0 14px;
+      border:0;
+      border-left:1px solid var(--rule);
+      background:transparent;
+      cursor:pointer;
+      font-size:.76rem;
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+    .catalog-search button:hover { background:var(--ink); color:var(--canvas); }
+
+    .catalog-section { padding:28px 0 38px; border-bottom:1px solid var(--rule); }
+    .catalog-toolbar, .compact-heading {
+      display:flex;
+      justify-content:space-between;
+      align-items:end;
+      gap:24px;
+      margin-bottom:22px;
+    }
+    .catalog-toolbar h2, .compact-heading h2 {
+      margin:0;
+      font-family:var(--display);
+      font-size:clamp(1.6rem,2.4vw,2.25rem);
+      font-weight:500;
+      letter-spacing:-.02em;
+    }
+    .catalog-links { display:flex; flex-wrap:wrap; gap:18px; }
+    .catalog-links a, .compact-heading > a { color:var(--secondary); font-size:.82rem; text-decoration:none; }
+    .catalog-links a:hover, .compact-heading > a:hover { color:var(--accent); text-decoration:underline; }
+
+    .catalog-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(245px,1fr));
+      gap:1px;
+      background:var(--rule);
+      border:1px solid var(--rule);
+    }
+    .catalog-book {
+      min-width:0;
+      display:grid;
+      grid-template-columns:118px minmax(0,1fr);
+      gap:18px;
+      align-items:start;
+      padding:18px;
+      background:var(--canvas);
+    }
+    .catalog-cover {
+      display:block;
+      width:118px;
+      background:#0c0d0f;
+      border:1px solid var(--strong-rule);
+      overflow:hidden;
+      text-decoration:none;
+    }
+    .catalog-cover img { display:block; width:100%; height:auto; }
+    .catalog-copy { min-width:0; display:flex; flex-direction:column; min-height:100%; }
+    .catalog-subjects {
+      display:flex;
+      flex-wrap:wrap;
+      gap:5px;
+      color:var(--accent);
+      font-size:.64rem;
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+    .catalog-subjects a { text-decoration:none; }
+    .catalog-subjects a:hover { text-decoration:underline; }
+    .catalog-copy h3 {
+      margin:7px 0 5px;
+      font-family:var(--display);
+      font-size:1.32rem;
+      line-height:1.05;
+      font-weight:500;
+      letter-spacing:-.018em;
+    }
+    .catalog-copy h3 a { text-decoration:none; }
+    .catalog-copy h3 a:hover { color:var(--accent); }
+    .catalog-subtitle {
+      margin:0 0 9px;
+      color:var(--secondary);
+      font-family:var(--display);
+      font-size:.88rem;
+      line-height:1.28;
+    }
+    .catalog-description {
+      display:-webkit-box;
+      -webkit-line-clamp:3;
+      -webkit-box-orient:vertical;
+      overflow:hidden;
+      margin:0 0 12px;
+      color:var(--secondary);
+      font-size:.76rem;
+      line-height:1.42;
+    }
+    .catalog-meta {
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:space-between;
+      gap:6px 12px;
+      margin-top:auto;
+      padding-top:8px;
+      border-top:1px solid var(--rule);
+      color:var(--muted);
+      font-size:.65rem;
+      text-transform:uppercase;
+      letter-spacing:.06em;
+    }
+    .catalog-actions { display:flex; gap:12px; margin-top:10px; font-size:.76rem; }
+    .catalog-actions a { text-decoration:none; }
+    .catalog-actions a:hover { color:var(--accent); text-decoration:underline; }
+    .catalog-actions .catalog-read { font-weight:700; color:var(--accent); }
+
+    .resume-section { padding:30px 0 0; }
+    .compact-continue { border-top:1px solid var(--rule); }
+    .compact-continue .continue-item { padding:15px 0; }
+    .compact-continue .continue-item strong { font-size:1.12rem; }
+    .compact-continue .continue-item small { font-size:.74rem; }
+    .compact-empty { padding:32px 0; }
+
+    @media (min-width:1180px) {
+      .catalog-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+    }
+    @media (max-width:800px) {
+      .library-intro { grid-template-columns:1fr; padding-top:26px; gap:18px; }
+      .catalog-toolbar { align-items:flex-start; flex-direction:column; gap:10px; }
+      .catalog-grid { grid-template-columns:1fr 1fr; }
+      .catalog-book { grid-template-columns:92px minmax(0,1fr); gap:14px; padding:14px; }
+      .catalog-cover { width:92px; }
+      .catalog-description { -webkit-line-clamp:2; }
+    }
+    @media (max-width:560px) {
+      .catalog-grid { grid-template-columns:1fr; }
+      .catalog-book { grid-template-columns:104px minmax(0,1fr); }
+      .catalog-cover { width:104px; }
+      .catalog-links { gap:14px; }
+      .catalog-description { -webkit-line-clamp:3; }
+    }
+  </style>
 </BaseLayout>
