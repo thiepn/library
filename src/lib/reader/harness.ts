@@ -2,6 +2,7 @@ import { ReaderController } from './controller';
 import { ReaderPageLayoutController, type ReaderPageLayoutOptions } from './page-layout';
 import { ReaderReadingModeController, type ReaderReadingModeOptions } from './reading-mode';
 import { mountReaderShell, type ReaderShellController } from './shell';
+import { ReaderThemeController, type ReaderThemeOptions } from './theme';
 import { ReaderTypographyController, type ReaderTypographyOptions } from './typography';
 import type { ReaderOpenOptions, Unsubscribe } from './types';
 
@@ -15,6 +16,7 @@ export interface ReaderShellHarnessHandle extends ReaderHarnessHandle {
   readingMode: ReaderReadingModeController;
   typography: ReaderTypographyController;
   pageLayout: ReaderPageLayoutController;
+  theme: ReaderThemeController;
 }
 
 /**
@@ -42,7 +44,7 @@ export async function mountReaderEngineHarness(
 
 /**
  * Connects the reader shell, reading-mode controller, typography engine, page-layout controller,
- * and EPUB engine without exposing a book route.
+ * theme controller, and EPUB engine without exposing a book route.
  */
 export async function mountReaderShellHarness(
   root: HTMLElement,
@@ -68,6 +70,8 @@ export async function mountReaderShellHarness(
     ...(options.appearance.textWidth ? { textWidth: options.appearance.textWidth } : {}),
     ...(options.appearance.pageMargins ? { pageMargins: options.appearance.pageMargins } : {}),
   } : {};
+  const themeOptions: ReaderThemeOptions = options.appearance?.theme ? { theme: options.appearance.theme } : {};
+  const theme = new ReaderThemeController(controller, shell.root, themeOptions);
   const readingMode = new ReaderReadingModeController(controller, shell.viewport, readingModeOptions);
   const pageLayout = new ReaderPageLayoutController(readingMode, shell.root, pageLayoutOptions);
   const typography = new ReaderTypographyController(controller, typographyOptions);
@@ -76,11 +80,17 @@ export async function mountReaderShellHarness(
   let modesStarted = false;
   let typographyStarted = false;
   let pageLayoutStarted = false;
+  let themeStarted = false;
 
   const open = async () => {
     shell.setStatus('loading', 'Opening book…');
     try {
       await controller.open(source, shell.viewport, options, target);
+      if (themeStarted) theme.reapply();
+      else {
+        themeStarted = true;
+        theme.start();
+      }
       if (modesStarted) await readingMode.reapply();
       else {
         modesStarted = true;
@@ -114,6 +124,10 @@ export async function mountReaderShellHarness(
   cleanups.push(pageLayout.subscribe((state) => {
     shell.root.dataset.readerTextWidth = state.textWidth;
     shell.root.dataset.readerPageMargins = state.pageMargins;
+  }));
+
+  cleanups.push(theme.subscribe((state) => {
+    shell.root.dataset.readerTheme = state.theme;
   }));
 
   cleanups.push(controller.subscribe((state) => {
@@ -196,6 +210,7 @@ export async function mountReaderShellHarness(
     pageLayout.destroy();
     typography.destroy();
     readingMode.destroy();
+    theme.destroy();
     controller.destroy();
     shell.destroy();
     throw error;
@@ -207,6 +222,7 @@ export async function mountReaderShellHarness(
     readingMode,
     typography,
     pageLayout,
+    theme,
     destroy: () => {
       if (destroyed) return;
       destroyed = true;
@@ -214,6 +230,7 @@ export async function mountReaderShellHarness(
       pageLayout.destroy();
       typography.destroy();
       readingMode.destroy();
+      theme.destroy();
       controller.destroy();
       shell.destroy();
     },
