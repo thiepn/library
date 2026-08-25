@@ -2,6 +2,7 @@ import type {
   ReaderAppearance,
   ReaderEngineMetadata,
   ReaderFlow,
+  ReaderInteractionHandler,
   ReaderLocation,
   ReaderLocationMap,
   ReaderOpenOptions,
@@ -37,4 +38,5 @@ export interface ReaderEngine {
 
   onLocationChange(callback: (location: ReaderLocation) => void): Unsubscribe;
   onSelection(callback: (selection: ReaderSelection) => void): Unsubscribe;
+  onInteraction(callback: ReaderInteractionHandler): Unsubscribe;
 }
