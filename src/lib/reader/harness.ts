@@ -1,5 +1,7 @@
 import { ReaderController } from './controller';
 import { ReaderPageLayoutController, type ReaderPageLayoutOptions } from './page-layout';
+import { ReaderProgressController, type ReaderProgressIdentity } from './progress';
+import type { ReaderPublicationCandidate } from './publication';
 import { ReaderReadingModeController, type ReaderReadingModeOptions } from './reading-mode';
 import { ReaderSettingsStore } from './settings';
 import { mountReaderShell, type ReaderShellController } from './shell';
@@ -19,6 +21,7 @@ export interface ReaderShellHarnessHandle extends ReaderHarnessHandle {
   pageLayout: ReaderPageLayoutController;
   theme: ReaderThemeController;
   settings: ReaderSettingsStore;
+  progress?: ReaderProgressController;
 }
 
 /**
@@ -45,18 +48,21 @@ export async function mountReaderEngineHarness(
 }
 
 /**
- * Connects the reader shell, persistent settings, reading-mode controller, typography engine,
- * page-layout controller, theme controller, and EPUB engine without exposing a book route.
+ * Connects the reader shell, persistent settings, version-aware reading position,
+ * reading-mode controller, typography engine, page-layout controller, theme controller,
+ * and EPUB engine without exposing a book route.
  */
 export async function mountReaderShellHarness(
   root: HTMLElement,
   source: string | ArrayBuffer,
   options: ReaderOpenOptions = {},
   target?: string,
+  progressIdentity?: ReaderProgressIdentity,
 ): Promise<ReaderShellHarnessHandle> {
   const shell = mountReaderShell(root);
   const controller = new ReaderController();
   const settings = new ReaderSettingsStore();
+  const progress = progressIdentity ? new ReaderProgressController(controller, progressIdentity) : undefined;
   const resolvedOptions = settings.resolveOpenOptions(options);
   const readingModeOptions: ReaderReadingModeOptions = {
     ...(resolvedOptions.flow ? { flow: resolvedOptions.flow } : {}),
@@ -85,6 +91,7 @@ export async function mountReaderShellHarness(
   let typographyStarted = false;
   let pageLayoutStarted = false;
   let themeStarted = false;
+  let progressStarted = false;
 
   const currentOpenOptions = (): ReaderOpenOptions => ({
     ...resolvedOptions,
@@ -97,10 +104,17 @@ export async function mountReaderShellHarness(
     },
   });
 
+  const resolveOpenTarget = async (): Promise<string | undefined> => {
+    if (target) return target;
+    const resume = await progress?.getResumeCandidate();
+    return resume?.status === 'same-release' ? resume.target : undefined;
+  };
+
   const open = async () => {
     shell.setStatus('loading', 'Opening book…');
     try {
-      await controller.open(source, shell.viewport, currentOpenOptions(), target);
+      const openTarget = await resolveOpenTarget();
+      await controller.open(source, shell.viewport, currentOpenOptions(), openTarget);
       if (themeStarted) theme.reapply();
       else {
         themeStarted = true;
@@ -120,6 +134,10 @@ export async function mountReaderShellHarness(
       else {
         pageLayoutStarted = true;
         await pageLayout.start();
+      }
+      if (progress && !progressStarted) {
+        progressStarted = true;
+        progress.start();
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unable to open EPUB publication.';
@@ -226,6 +244,7 @@ export async function mountReaderShellHarness(
     await open();
   } catch (error) {
     for (const cleanup of cleanups) cleanup();
+    progress?.destroy();
     pageLayout.destroy();
     typography.destroy();
     readingMode.destroy();
@@ -243,10 +262,12 @@ export async function mountReaderShellHarness(
     pageLayout,
     theme,
     settings,
+    ...(progress ? { progress } : {}),
     destroy: () => {
       if (destroyed) return;
       destroyed = true;
       for (const cleanup of cleanups) cleanup();
+      progress?.destroy();
       pageLayout.destroy();
       typography.destroy();
       readingMode.destroy();
@@ -255,4 +276,27 @@ export async function mountReaderShellHarness(
       shell.destroy();
     },
   };
+}
+
+/**
+ * Generic publication-aware harness used by future public route integration. The exact active
+ * edition and release version define whether a saved EPUB CFI is eligible for restoration.
+ */
+export function mountReaderPublicationHarness(
+  root: HTMLElement,
+  publication: ReaderPublicationCandidate,
+  options: ReaderOpenOptions = {},
+  target?: string,
+): Promise<ReaderShellHarnessHandle> {
+  return mountReaderShellHarness(
+    root,
+    publication.epub.url,
+    options,
+    target,
+    {
+      workId: publication.workId,
+      edition: publication.edition,
+      releaseVersion: publication.version,
+    },
+  );
 }
