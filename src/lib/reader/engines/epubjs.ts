@@ -9,12 +9,15 @@ import type { ReaderEngine } from './engine';
 import {
   ReaderEngineError,
   type ReaderAppearance,
+  type ReaderContentInteraction,
   type ReaderEngineMetadata,
   type ReaderFlow,
   type ReaderFontFamily,
+  type ReaderInteractionHandler,
   type ReaderLocation,
   type ReaderLocationMap,
   type ReaderOpenOptions,
+  type ReaderPointerType,
   type ReaderSelection,
   type ReaderSpread,
   type ReaderTocItem,
@@ -46,6 +49,14 @@ interface ThemePalette {
   surface: string;
   code: string;
   mark: string;
+}
+
+interface PointerStart {
+  x: number;
+  y: number;
+  time: number;
+  pointerType: ReaderPointerType;
+  interactive: boolean;
 }
 
 const THEME_PALETTES: Record<ReaderAppearance['theme'], ThemePalette> = {
@@ -88,6 +99,24 @@ const THEME_RULES: Record<ReaderAppearance['theme'], Record<string, Record<strin
   black: themeRules(THEME_PALETTES.black),
 };
 
+const INTERACTIVE_SELECTOR = [
+  'a[href]',
+  'button',
+  'input',
+  'textarea',
+  'select',
+  'option',
+  'label',
+  'summary',
+  'details',
+  'audio',
+  'video',
+  '[contenteditable="true"]',
+  '[role="button"]',
+  '[role="link"]',
+  '[data-no-reader-nav]',
+].join(',');
+
 function mapFlow(flow: ReaderFlow): string {
   return flow === 'scrolled' ? 'scrolled-doc' : 'paginated';
 }
@@ -104,6 +133,25 @@ function finite(value: unknown): number | undefined {
 
 function nonEmpty(value: unknown): string | undefined {
   return typeof value === 'string' && value.trim() ? value : undefined;
+}
+
+function normalizePointerType(value: string): ReaderPointerType {
+  if (value === 'mouse' || value === 'touch' || value === 'pen') return value;
+  return 'unknown';
+}
+
+function isInteractiveTarget(target: EventTarget | null): boolean {
+  const candidate = target as { closest?: (selector: string) => Element | null } | null;
+  if (typeof candidate?.closest !== 'function') return false;
+  try {
+    return Boolean(candidate.closest(INTERACTIVE_SELECTOR));
+  } catch {
+    return false;
+  }
+}
+
+function clampRatio(value: number): number {
+  return Math.max(0, Math.min(1, value));
 }
 
 function mapLocation(location: EpubLocation): ReaderLocation {
@@ -145,6 +193,8 @@ export class EpubJsEngine implements ReaderEngine {
   private appearance: ReaderAppearance = { ...DEFAULT_APPEARANCE };
   private locationListeners = new Set<(location: ReaderLocation) => void>();
   private selectionListeners = new Set<(selection: ReaderSelection) => void>();
+  private interactionListeners = new Set<ReaderInteractionHandler>();
+  private instrumentedDocuments = new WeakSet<Document>();
 
   private readonly handleRelocated = (location: EpubLocation) => {
     const mapped = mapLocation(location);
@@ -156,6 +206,95 @@ export class EpubJsEngine implements ReaderEngine {
     const text = contents.window.getSelection()?.toString().trim() ?? '';
     const selection: ReaderSelection = { cfiRange, text };
     for (const listener of this.selectionListeners) listener(selection);
+  };
+
+  private readonly handleContent = (contents: Contents) => {
+    const doc = contents.document;
+    const win = contents.window;
+    if (!doc || !win || this.instrumentedDocuments.has(doc)) return;
+    this.instrumentedDocuments.add(doc);
+
+    let pointerStart: PointerStart | null = null;
+    const hasSelection = () => Boolean(win.getSelection()?.toString().trim());
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!event.isPrimary || event.button !== 0) return;
+      pointerStart = {
+        x: event.clientX,
+        y: event.clientY,
+        time: performance.now(),
+        pointerType: normalizePointerType(event.pointerType),
+        interactive: isInteractiveTarget(event.target),
+      };
+    };
+
+    const handlePointerCancel = () => {
+      pointerStart = null;
+    };
+
+    const handlePointerUp = (event: PointerEvent) => {
+      if (!pointerStart || !event.isPrimary || event.button !== 0) {
+        pointerStart = null;
+        return;
+      }
+
+      const start = pointerStart;
+      pointerStart = null;
+      const deltaX = event.clientX - start.x;
+      const deltaY = event.clientY - start.y;
+      const absX = Math.abs(deltaX);
+      const absY = Math.abs(deltaY);
+      const duration = performance.now() - start.time;
+      const interactive = start.interactive || isInteractiveTarget(event.target);
+      const selected = hasSelection();
+      let interaction: ReaderContentInteraction | null = null;
+
+      if (!interactive && !selected && start.pointerType !== 'mouse' && duration <= 900 && absX >= 48 && absX > absY * 1.3) {
+        interaction = {
+          type: 'swipe',
+          direction: deltaX < 0 ? 'left' : 'right',
+          deltaX,
+          deltaY,
+          pointerType: start.pointerType,
+          interactive,
+          hasSelection: selected,
+        };
+      } else if (!interactive && !selected && duration <= 650 && Math.hypot(deltaX, deltaY) <= 12) {
+        const width = Math.max(1, doc.documentElement?.clientWidth || win.innerWidth || 1);
+        const height = Math.max(1, doc.documentElement?.clientHeight || win.innerHeight || 1);
+        interaction = {
+          type: 'tap',
+          xRatio: clampRatio(event.clientX / width),
+          yRatio: clampRatio(event.clientY / height),
+          pointerType: start.pointerType,
+          interactive,
+          hasSelection: selected,
+        };
+      }
+
+      if (interaction && this.emitInteraction(interaction)) event.preventDefault();
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const interaction: ReaderContentInteraction = {
+        type: 'key',
+        key: event.key,
+        code: event.code,
+        repeat: event.repeat,
+        shiftKey: event.shiftKey,
+        altKey: event.altKey,
+        ctrlKey: event.ctrlKey,
+        metaKey: event.metaKey,
+        interactive: isInteractiveTarget(event.target),
+        hasSelection: hasSelection(),
+      };
+      if (this.emitInteraction(interaction)) event.preventDefault();
+    };
+
+    doc.addEventListener('pointerdown', handlePointerDown, { passive: true });
+    doc.addEventListener('pointerup', handlePointerUp);
+    doc.addEventListener('pointercancel', handlePointerCancel, { passive: true });
+    doc.addEventListener('keydown', handleKeyDown);
   };
 
   async open(source: string | ArrayBuffer, container: Element, options: ReaderOpenOptions = {}): Promise<void> {
@@ -183,6 +322,7 @@ export class EpubJsEngine implements ReaderEngine {
       this.rendition = rendition;
       rendition.on('relocated', this.handleRelocated);
       rendition.on('selected', this.handleSelected);
+      rendition.hooks.content.register(this.handleContent);
 
       this.registerThemes();
       this.applyAppearance(options.appearance ?? {});
@@ -196,6 +336,7 @@ export class EpubJsEngine implements ReaderEngine {
     this.destroyRuntime();
     this.locationListeners.clear();
     this.selectionListeners.clear();
+    this.interactionListeners.clear();
     this.currentLocation = null;
   }
 
@@ -310,6 +451,19 @@ export class EpubJsEngine implements ReaderEngine {
     return () => this.selectionListeners.delete(callback);
   }
 
+  onInteraction(callback: ReaderInteractionHandler): Unsubscribe {
+    this.interactionListeners.add(callback);
+    return () => this.interactionListeners.delete(callback);
+  }
+
+  private emitInteraction(interaction: ReaderContentInteraction): boolean {
+    let handled = false;
+    for (const listener of this.interactionListeners) {
+      if (listener(interaction) === true) handled = true;
+    }
+    return handled;
+  }
+
   private registerThemes(): void {
     const rendition = this.requireRendition();
     for (const [name, rules] of Object.entries(THEME_RULES)) rendition.themes.register(name, rules);
@@ -361,6 +515,7 @@ export class EpubJsEngine implements ReaderEngine {
     this.rendition = undefined;
     if (this.book) this.book.destroy();
     this.book = undefined;
+    this.instrumentedDocuments = new WeakSet<Document>();
     this.currentLocation = null;
   }
 }
