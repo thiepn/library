@@ -106,4 +106,14 @@ The normal production workflow then rebuilds the Library, stages every canonical
 - EPUB: not supplied in the source edition
 - first edition release: `1.0.0`
 
+### The Unfinished Mission
+
+**Why Gospel Access Remains Unequal—and What Faithful Mission Requires Now**
+
+- native Web reader: 41 publication sections
+- PDF: online Library edition available
+- EPUB: available
+- cover: canonical first-edition artwork
+- first edition release candidate: `1.0.0-rc1`
+
 The Library remains multi-work by design: catalog, work pages, native reader routes, search, publication media staging, and production verification all discover canonical works/releases rather than relying on per-book application code.
