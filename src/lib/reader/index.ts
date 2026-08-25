@@ -1,6 +1,7 @@
 export { ReaderController } from './controller';
 export { EpubJsEngine } from './engines/epubjs';
 export { mountReaderEngineHarness, mountReaderShellHarness } from './harness';
+export { ReaderNavigationController } from './navigation';
 export { ReaderPageLayoutController, READER_PAGE_LAYOUT_DEFAULTS } from './page-layout';
 export { ReaderProgressController } from './progress';
 export { ReaderReadingModeController } from './reading-mode';
@@ -22,15 +23,18 @@ export type { ReaderEngine } from './engines/engine';
 export type {
   ReaderAlignment,
   ReaderAppearance,
+  ReaderContentInteraction,
   ReaderEngineErrorCode,
   ReaderEngineMetadata,
   ReaderFlow,
   ReaderFontFamily,
+  ReaderInteractionHandler,
   ReaderLayoutUpdate,
   ReaderLocation,
   ReaderLocationMap,
   ReaderOpenOptions,
   ReaderPageMargins,
+  ReaderPointerType,
   ReaderSelection,
   ReaderSpread,
   ReaderTextWidth,
@@ -40,6 +44,7 @@ export type {
 } from './types';
 export type { ReaderControllerState, ReaderStatus } from './controller';
 export type { ReaderHarnessHandle, ReaderShellHarnessHandle } from './harness';
+export type { ReaderNavigationDirection, ReaderNavigationOptions, ReaderNavigationState } from './navigation';
 export type { ReaderPageLayoutOptions, ReaderPageLayoutState } from './page-layout';
 export type { ReaderProgressControllerOptions, ReaderProgressIdentity, ReaderResumeCandidate, ReaderResumeStatus } from './progress';
 export type { ReaderOrientation, ReaderReadingModeOptions, ReaderReadingModeState } from './reading-mode';
