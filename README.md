@@ -102,9 +102,10 @@ The normal production workflow then rebuilds the Library, stages every canonical
 **Understanding, Receiving, and Growing in Wholehearted Love for God**
 
 - native Web reader: 57 publication sections
-- PDF: available
+- PDF: available with redesigned publication cover
 - EPUB: not supplied in the source edition
-- first edition release: `1.0.0`
+- active first-edition release: `1.0.1`
+- `1.0.0` remains preserved as the previous immutable release
 
 ### The Unfinished Mission
 
