@@ -11,6 +11,7 @@ import {
   type ReaderAppearance,
   type ReaderEngineMetadata,
   type ReaderFlow,
+  type ReaderFontFamily,
   type ReaderLocation,
   type ReaderLocationMap,
   type ReaderOpenOptions,
@@ -21,12 +22,19 @@ import {
 } from '../types';
 
 const DEFAULT_APPEARANCE: ReaderAppearance = {
-  fontFamily: 'serif',
+  fontFamily: 'publisher',
   fontScale: 1,
   lineHeight: 1.55,
   paragraphSpacing: 0,
   alignment: 'left',
   theme: 'light',
+};
+
+const FONT_STACKS: Record<Exclude<ReaderFontFamily, 'publisher'>, string> = {
+  literata: '"Literata", Georgia, "Times New Roman", serif',
+  serif: 'Georgia, "Times New Roman", serif',
+  sans: '"Source Sans 3", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+  accessible: 'Verdana, "Segoe UI", Arial, sans-serif',
 };
 
 const THEME_RULES: Record<ReaderAppearance['theme'], Record<string, Record<string, string>>> = {
@@ -221,13 +229,15 @@ export class EpubJsEngine implements ReaderEngine {
     const rendition = this.requireRendition();
     this.appearance = { ...this.appearance, ...next };
     const appearance = this.appearance;
+    const themes = rendition.themes as typeof rendition.themes & { removeOverride(name: string): void };
 
-    rendition.themes.select(appearance.theme);
-    rendition.themes.font(appearance.fontFamily);
-    rendition.themes.fontSize(`${Math.round(appearance.fontScale * 100)}%`);
-    rendition.themes.override('line-height', String(appearance.lineHeight), true);
-    rendition.themes.override('text-align', appearance.alignment, true);
-    rendition.themes.override('margin-block-end', `${appearance.paragraphSpacing}em`, false);
+    themes.select(appearance.theme);
+    if (appearance.fontFamily === 'publisher') themes.removeOverride('font-family');
+    else themes.font(FONT_STACKS[appearance.fontFamily]);
+    themes.fontSize(`${Math.round(appearance.fontScale * 100)}%`);
+    themes.override('line-height', String(appearance.lineHeight), true);
+    themes.override('text-align', appearance.alignment, true);
+    themes.override('--reader-paragraph-spacing', `${appearance.paragraphSpacing}em`, false);
   }
 
   async generateLocations(charactersPerLocation = 1600): Promise<ReaderLocationMap> {
@@ -268,6 +278,17 @@ export class EpubJsEngine implements ReaderEngine {
       body: {
         margin: '0 !important',
         padding: '0 !important',
+        '--reader-paragraph-spacing': '0em',
+      },
+      'p, li, blockquote, h1, h2, h3, h4, h5, h6': {
+        'font-family': 'inherit !important',
+      },
+      'p, li, blockquote': {
+        'line-height': 'inherit !important',
+      },
+      p: {
+        'text-align': 'inherit !important',
+        'margin-block-end': 'var(--reader-paragraph-spacing, 0em) !important',
       },
       img: {
         'max-width': '100% !important',

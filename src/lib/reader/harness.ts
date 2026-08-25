@@ -1,6 +1,7 @@
 import { ReaderController } from './controller';
 import { ReaderReadingModeController, type ReaderReadingModeOptions } from './reading-mode';
 import { mountReaderShell, type ReaderShellController } from './shell';
+import { ReaderTypographyController, type ReaderTypographyOptions } from './typography';
 import type { ReaderOpenOptions, Unsubscribe } from './types';
 
 export interface ReaderHarnessHandle {
@@ -11,6 +12,7 @@ export interface ReaderHarnessHandle {
 export interface ReaderShellHarnessHandle extends ReaderHarnessHandle {
   shell: ReaderShellController;
   readingMode: ReaderReadingModeController;
+  typography: ReaderTypographyController;
 }
 
 /**
@@ -37,7 +39,7 @@ export async function mountReaderEngineHarness(
 }
 
 /**
- * Connects the reader shell, reading-mode controller, and EPUB engine without exposing a book route.
+ * Connects the reader shell, reading-mode controller, typography engine, and EPUB engine without exposing a book route.
  * The harness is deliberately publication-agnostic and can be exercised with synthetic EPUB fixtures.
  */
 export async function mountReaderShellHarness(
@@ -53,10 +55,19 @@ export async function mountReaderShellHarness(
     ...(options.spread ? { spread: options.spread } : {}),
     ...(options.minSpreadWidth !== undefined ? { minSpreadWidth: options.minSpreadWidth } : {}),
   };
+  const typographyOptions: ReaderTypographyOptions = options.appearance ? {
+    ...(options.appearance.fontFamily ? { fontFamily: options.appearance.fontFamily } : {}),
+    ...(options.appearance.fontScale !== undefined ? { fontScale: options.appearance.fontScale } : {}),
+    ...(options.appearance.lineHeight !== undefined ? { lineHeight: options.appearance.lineHeight } : {}),
+    ...(options.appearance.paragraphSpacing !== undefined ? { paragraphSpacing: options.appearance.paragraphSpacing } : {}),
+    ...(options.appearance.alignment ? { alignment: options.appearance.alignment } : {}),
+  } : {};
   const readingMode = new ReaderReadingModeController(controller, shell.viewport, readingModeOptions);
+  const typography = new ReaderTypographyController(controller, typographyOptions);
   const cleanups: Unsubscribe[] = [];
   let destroyed = false;
   let modesStarted = false;
+  let typographyStarted = false;
 
   const open = async () => {
     shell.setStatus('loading', 'Opening book…');
@@ -67,6 +78,11 @@ export async function mountReaderShellHarness(
         modesStarted = true;
         await readingMode.start();
       }
+      if (typographyStarted) await typography.reapply();
+      else {
+        typographyStarted = true;
+        await typography.start();
+      }
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unable to open EPUB publication.';
       shell.setStatus('error', message);
@@ -76,6 +92,10 @@ export async function mountReaderShellHarness(
 
   cleanups.push(readingMode.subscribe((state) => {
     shell.setReadingMode(state.flow, state.spreadPreference, state.effectiveSpread);
+  }));
+
+  cleanups.push(typography.subscribe((state) => {
+    shell.setTypography(state);
   }));
 
   cleanups.push(controller.subscribe((state) => {
@@ -92,6 +112,30 @@ export async function mountReaderShellHarness(
       });
       shell.setNavigationAvailability({ previous: !state.location.atStart, next: !state.location.atEnd });
     }
+  }));
+
+  cleanups.push(shell.onTypographyIntent((intent) => {
+    const run = async () => {
+      if (intent.type === 'reset') {
+        await typography.reset();
+        shell.announce('Typography reset to book defaults');
+      }
+      if (intent.type === 'fontFamily') {
+        await typography.setFontFamily(intent.value);
+        shell.announce(`Font changed to ${intent.value === 'publisher' ? 'book font' : intent.value}`);
+      }
+      if (intent.type === 'fontScale') await typography.setFontScale(intent.value);
+      if (intent.type === 'lineHeight') await typography.setLineHeight(intent.value);
+      if (intent.type === 'paragraphSpacing') await typography.setParagraphSpacing(intent.value);
+      if (intent.type === 'alignment') {
+        await typography.setAlignment(intent.value);
+        shell.announce(intent.value === 'justify' ? 'Justified text' : 'Left aligned text');
+      }
+    };
+    void run().catch((error) => {
+      const message = error instanceof Error ? error.message : 'Unable to change typography.';
+      shell.setStatus('error', message);
+    });
   }));
 
   cleanups.push(shell.onCommand((command) => {
@@ -131,6 +175,7 @@ export async function mountReaderShellHarness(
     await open();
   } catch (error) {
     for (const cleanup of cleanups) cleanup();
+    typography.destroy();
     readingMode.destroy();
     controller.destroy();
     shell.destroy();
@@ -141,10 +186,12 @@ export async function mountReaderShellHarness(
     controller,
     shell,
     readingMode,
+    typography,
     destroy: () => {
       if (destroyed) return;
       destroyed = true;
       for (const cleanup of cleanups) cleanup();
+      typography.destroy();
       readingMode.destroy();
       controller.destroy();
       shell.destroy();

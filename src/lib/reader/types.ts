@@ -2,9 +2,10 @@ export type ReaderFlow = 'paginated' | 'scrolled';
 export type ReaderSpread = 'auto' | 'single' | 'double';
 export type ReaderTheme = 'light' | 'warm' | 'sepia' | 'gray' | 'dark' | 'black';
 export type ReaderAlignment = 'left' | 'justify';
+export type ReaderFontFamily = 'publisher' | 'literata' | 'serif' | 'sans' | 'accessible';
 
 export interface ReaderAppearance {
-  fontFamily: string;
+  fontFamily: ReaderFontFamily;
   fontScale: number;
   lineHeight: number;
   paragraphSpacing: number;

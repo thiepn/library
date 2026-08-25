@@ -1,4 +1,5 @@
-import type { ReaderFlow, ReaderSpread, Unsubscribe } from './types';
+import type { ReaderAlignment, ReaderFlow, ReaderFontFamily, ReaderSpread, Unsubscribe } from './types';
+import type { ReaderTypographyState } from './typography';
 
 export type ReaderShellStatus = 'idle' | 'loading' | 'ready' | 'error';
 export type ReaderShellCommand =
@@ -14,6 +15,14 @@ export type ReaderShellCommand =
   | 'spread-single'
   | 'spread-double';
 
+export type ReaderTypographyIntent =
+  | { type: 'fontFamily'; value: ReaderFontFamily }
+  | { type: 'fontScale'; value: number }
+  | { type: 'lineHeight'; value: number }
+  | { type: 'paragraphSpacing'; value: number }
+  | { type: 'alignment'; value: ReaderAlignment }
+  | { type: 'reset' };
+
 export interface ReaderNavigationAvailability {
   previous: boolean;
   next: boolean;
@@ -25,6 +34,7 @@ export interface ReaderProgressDisplay {
 }
 
 type CommandListener = (command: ReaderShellCommand) => void;
+type TypographyListener = (intent: ReaderTypographyIntent) => void;
 
 const mountedShells = new WeakMap<HTMLElement, ReaderShellController>();
 
@@ -47,8 +57,11 @@ export class ReaderShellController {
   private readonly errorMessage: HTMLElement;
   private readonly announcer: HTMLElement;
   private readonly modePanel: HTMLElement;
+  private readonly appearancePanel: HTMLElement;
   private readonly moreButton: HTMLButtonElement;
+  private readonly appearanceButton: HTMLButtonElement;
   private readonly commandListeners = new Set<CommandListener>();
+  private readonly typographyListeners = new Set<TypographyListener>();
   private hideTimer: number | null = null;
   private autoHide = false;
   private autoHideDelay = 3600;
@@ -66,9 +79,12 @@ export class ReaderShellController {
     this.errorMessage = requireElement(root, '[data-reader-error-message]');
     this.announcer = requireElement(root, '[data-reader-announcer]');
     this.modePanel = requireElement(root, '[data-reader-mode-panel]');
+    this.appearancePanel = requireElement(root, '[data-reader-appearance-panel]');
     this.moreButton = requireElement<HTMLButtonElement>(root, '[data-reader-command="more"]');
+    this.appearanceButton = requireElement<HTMLButtonElement>(root, '[data-reader-command="appearance"]');
 
     root.addEventListener('click', this.handleClick);
+    root.addEventListener('input', this.handleInput);
     root.addEventListener('pointermove', this.handleActivity, { passive: true });
     root.addEventListener('focusin', this.handleActivity);
     root.addEventListener('reader-shell:toggle-controls', this.handleToggleControls as EventListener);
@@ -76,6 +92,7 @@ export class ReaderShellController {
 
     this.setControlsVisible(true);
     this.setReadingMode('paginated', 'auto', 'single');
+    this.setTypography({ fontFamily: 'publisher', fontScale: 1, lineHeight: 1.55, paragraphSpacing: 0, alignment: 'left' });
     this.setStatus((root.dataset.readerStatus as ReaderShellStatus | undefined) ?? 'idle');
   }
 
@@ -91,9 +108,12 @@ export class ReaderShellController {
 
     const contents = this.root.querySelector<HTMLButtonElement>('[data-reader-command="contents"]');
     if (contents) contents.disabled = status !== 'ready';
+    this.appearanceButton.disabled = status !== 'ready';
+    this.moreButton.disabled = status !== 'ready';
     if (status !== 'ready') {
       this.setNavigationAvailability({ previous: false, next: false });
       this.setModePanelOpen(false);
+      this.setAppearancePanelOpen(false);
     }
 
     if (status === 'ready') this.scheduleAutoHide();
@@ -151,14 +171,47 @@ export class ReaderShellController {
     }
   }
 
+  setTypography(state: ReaderTypographyState): void {
+    this.assertUsable();
+    this.root.dataset.readerFontFamily = state.fontFamily;
+    this.root.dataset.readerAlignment = state.alignment;
+    this.root.querySelectorAll<HTMLButtonElement>('[data-reader-font-option]').forEach((button) => {
+      button.setAttribute('aria-pressed', String(button.dataset.readerFontOption === state.fontFamily));
+    });
+    this.root.querySelectorAll<HTMLButtonElement>('[data-reader-alignment-option]').forEach((button) => {
+      button.setAttribute('aria-pressed', String(button.dataset.readerAlignmentOption === state.alignment));
+    });
+    this.setRangeValue('fontScale', state.fontScale, `${Math.round(state.fontScale * 100)}%`);
+    this.setRangeValue('lineHeight', state.lineHeight, state.lineHeight.toFixed(2));
+    this.setRangeValue('paragraphSpacing', state.paragraphSpacing, `${state.paragraphSpacing.toFixed(1)}em`);
+  }
+
   setModePanelOpen(open: boolean): void {
     this.assertUsable();
+    if (open) {
+      this.appearancePanel.hidden = true;
+      this.appearanceButton.setAttribute('aria-expanded', 'false');
+    }
     this.modePanel.hidden = !open;
     this.moreButton.setAttribute('aria-expanded', String(open));
   }
 
   toggleModePanel(): void {
     this.setModePanelOpen(this.modePanel.hidden);
+  }
+
+  setAppearancePanelOpen(open: boolean): void {
+    this.assertUsable();
+    if (open) {
+      this.modePanel.hidden = true;
+      this.moreButton.setAttribute('aria-expanded', 'false');
+    }
+    this.appearancePanel.hidden = !open;
+    this.appearanceButton.setAttribute('aria-expanded', String(open));
+  }
+
+  toggleAppearancePanel(): void {
+    this.setAppearancePanelOpen(this.appearancePanel.hidden);
   }
 
   setControlsVisible(visible: boolean): void {
@@ -168,7 +221,10 @@ export class ReaderShellController {
       bar.setAttribute('aria-hidden', visible ? 'false' : 'true');
       bar.toggleAttribute('inert', !visible);
     }
-    if (!visible) this.setModePanelOpen(false);
+    if (!visible) {
+      this.setModePanelOpen(false);
+      this.setAppearancePanelOpen(false);
+    }
     if (visible) this.scheduleAutoHide();
     else this.clearAutoHide();
   }
@@ -203,27 +259,66 @@ export class ReaderShellController {
     return () => this.commandListeners.delete(listener);
   }
 
+  onTypographyIntent(listener: TypographyListener): Unsubscribe {
+    this.assertUsable();
+    this.typographyListeners.add(listener);
+    return () => this.typographyListeners.delete(listener);
+  }
+
   destroy(): void {
     if (this.destroyed) return;
     this.destroyed = true;
     this.clearAutoHide();
     this.root.removeEventListener('click', this.handleClick);
+    this.root.removeEventListener('input', this.handleInput);
     this.root.removeEventListener('pointermove', this.handleActivity);
     this.root.removeEventListener('focusin', this.handleActivity);
     this.root.removeEventListener('reader-shell:toggle-controls', this.handleToggleControls as EventListener);
     document.removeEventListener('keydown', this.handleKeydown);
     this.commandListeners.clear();
+    this.typographyListeners.clear();
     mountedShells.delete(this.root);
   }
 
   private readonly handleClick = (event: MouseEvent) => {
-    const target = event.target instanceof Element ? event.target.closest<HTMLElement>('[data-reader-command]') : null;
+    const origin = event.target instanceof Element ? event.target : null;
+    if (!origin) return;
+
+    const reset = origin.closest<HTMLElement>('[data-reader-typography-reset]');
+    if (reset && this.root.contains(reset)) {
+      this.showControls();
+      this.emitTypography({ type: 'reset' });
+      return;
+    }
+
+    const typographyOption = origin.closest<HTMLElement>('[data-reader-typography-property][data-reader-typography-value]');
+    if (typographyOption && this.root.contains(typographyOption)) {
+      this.showControls();
+      const property = typographyOption.dataset.readerTypographyProperty;
+      const value = typographyOption.dataset.readerTypographyValue;
+      if (property === 'fontFamily' && value) this.emitTypography({ type: 'fontFamily', value: value as ReaderFontFamily });
+      if (property === 'alignment' && value) this.emitTypography({ type: 'alignment', value: value as ReaderAlignment });
+      return;
+    }
+
+    const target = origin.closest<HTMLElement>('[data-reader-command]');
     if (!target || !this.root.contains(target)) return;
     const command = target.dataset.readerCommand as ReaderShellCommand | undefined;
     if (!command || target.matches(':disabled')) return;
     this.showControls();
+    if (command === 'appearance') this.toggleAppearancePanel();
     if (command === 'more') this.toggleModePanel();
     for (const listener of this.commandListeners) listener(command);
+  };
+
+  private readonly handleInput = (event: Event) => {
+    if (!(event.target instanceof HTMLInputElement)) return;
+    const property = event.target.dataset.readerTypographyInput;
+    const value = Number(event.target.value);
+    if (!Number.isFinite(value)) return;
+    if (property === 'fontScale') this.emitTypography({ type: 'fontScale', value });
+    if (property === 'lineHeight') this.emitTypography({ type: 'lineHeight', value });
+    if (property === 'paragraphSpacing') this.emitTypography({ type: 'paragraphSpacing', value });
   };
 
   private readonly handleActivity = () => {
@@ -235,9 +330,21 @@ export class ReaderShellController {
 
   private readonly handleKeydown = (event: KeyboardEvent) => {
     if (event.key !== 'Escape') return;
-    if (!this.modePanel.hidden) this.setModePanelOpen(false);
+    if (!this.appearancePanel.hidden) this.setAppearancePanelOpen(false);
+    else if (!this.modePanel.hidden) this.setModePanelOpen(false);
     else this.showControls();
   };
+
+  private emitTypography(intent: ReaderTypographyIntent): void {
+    for (const listener of this.typographyListeners) listener(intent);
+  }
+
+  private setRangeValue(property: 'fontScale' | 'lineHeight' | 'paragraphSpacing', value: number, label: string): void {
+    const input = this.root.querySelector<HTMLInputElement>(`[data-reader-typography-input="${property}"]`);
+    const output = this.root.querySelector<HTMLOutputElement>(`[data-reader-typography-output="${property}"]`);
+    if (input && Number(input.value) !== value) input.value = String(value);
+    if (output) output.value = label;
+  }
 
   private scheduleAutoHide(): void {
     this.clearAutoHide();

@@ -107,6 +107,18 @@ export class ReaderController {
     this.engine.applyAppearance(appearance);
   }
 
+  async updateAppearance(appearance: Partial<ReaderAppearance>, preserveLocation = true): Promise<void> {
+    this.requireReady();
+    const target = preserveLocation ? this.state.location?.cfi : undefined;
+    this.engine.applyAppearance(appearance);
+    if (!target) return;
+    await new Promise<void>((resolve) => {
+      if (typeof requestAnimationFrame === 'function') requestAnimationFrame(() => resolve());
+      else setTimeout(resolve, 0);
+    });
+    await this.engine.display(target);
+  }
+
   subscribe(listener: (state: ReaderControllerState) => void): Unsubscribe {
     this.stateListeners.add(listener);
     listener(this.snapshot);

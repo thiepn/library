@@ -51,6 +51,27 @@ if (readingModesExist) {
   pass('EPUB_READER_RESPONSIVE_SPREAD', readingModes.includes('ResizeObserver') && readingModes.includes('minSpreadWidth') && readingModes.includes("flow === 'scrolled'") && readingModes.includes("return 'double'"), 'Reading mode controller recalculates single/double spreads from viewport changes');
   pass('EPUB_READER_RESIZE', engine.includes('resize(width: number, height: number)') && engine.includes('.resize(safeWidth, safeHeight)'), 'EPUB rendition has an explicit resize bridge for orientation and viewport changes');
   pass('EPUB_READER_MODE_CONTROLS', shellComponent.includes('flow-paginated') && shellComponent.includes('flow-scrolled') && shellComponent.includes('spread-auto') && shellComponent.includes('spread-double'), 'Reader shell exposes paginated/scroll and page-spread controls');
+  pass('EPUB_READER_MODE_STYLES', shellComponent.includes("reader-modes.css"), 'Reading-mode controls load their dedicated responsive stylesheet');
+}
+
+const typographyFiles = [
+  'src/lib/reader/typography.ts',
+  'src/styles/reader-typography.css',
+];
+const typographyExists = (await Promise.all(typographyFiles.map(exists))).every(Boolean);
+pass('EPUB_READER_TYPOGRAPHY', typographyExists, 'Dedicated EPUB typography controller and appearance styles are present');
+if (typographyExists) {
+  const typography = await readFile('src/lib/reader/typography.ts', 'utf8');
+  const controller = await readFile('src/lib/reader/controller.ts', 'utf8');
+  const engine = await readFile('src/lib/reader/engines/epubjs.ts', 'utf8');
+  const shellComponent = await readFile('src/components/reader/ReaderShell.astro', 'utf8');
+  const shellController = await readFile('src/lib/reader/shell.ts', 'utf8');
+  const shellHarness = await readFile('src/lib/reader/harness.ts', 'utf8');
+  pass('EPUB_READER_TYPOGRAPHY_POSITION_PRESERVE', controller.includes('updateAppearance') && controller.includes('this.state.location?.cfi') && controller.includes('this.engine.display(target)'), 'Typography reflow preserves the current EPUB CFI');
+  pass('EPUB_READER_TYPOGRAPHY_CONTROLS', shellComponent.includes('reader-font-size') && shellComponent.includes('reader-line-height') && shellComponent.includes('reader-paragraph-spacing') && shellComponent.includes('data-reader-alignment-option'), 'Reader shell exposes font, text size, line height, paragraph spacing, and alignment controls');
+  pass('EPUB_READER_TYPOGRAPHY_FONTS', typography.includes("fontFamily: 'publisher'") && typography.includes('setFontFamily') && engine.includes('FONT_STACKS'), 'Typography engine supports publisher, Literata, serif, sans, and readable font modes');
+  pass('EPUB_READER_PUBLISHER_FONT_RESET', engine.includes("removeOverride('font-family')"), 'Publisher font mode removes the reader font override instead of substituting another font');
+  pass('EPUB_READER_TYPOGRAPHY_HARNESS', shellController.includes('onTypographyIntent') && shellHarness.includes('ReaderTypographyController') && shellHarness.includes('typography.start()'), 'Typography UI is wired through the non-public EPUB harness');
 }
 
 const worksRoot = 'src/content/works';

@@ -1,5 +1,7 @@
 ---
 import '../../styles/reader-shell.css';
+import '../../styles/reader-modes.css';
+import '../../styles/reader-typography.css';
 
 interface Props {
   title: string;
@@ -21,7 +23,7 @@ const {
   loadingMessage = 'Opening book…',
 } = Astro.props;
 ---
-<div class="reader-shell" data-reader-shell data-reader-status="loading" data-reader-controls="visible" data-reader-flow="paginated" data-reader-spread-preference="auto" data-reader-spread="single">
+<div class="reader-shell" data-reader-shell data-reader-status="loading" data-reader-controls="visible" data-reader-flow="paginated" data-reader-spread-preference="auto" data-reader-spread="single" data-reader-font-family="publisher" data-reader-alignment="left">
   <header class="reader-shell__bar reader-shell__bar--top" data-reader-topbar>
     <div class="reader-shell__cluster reader-shell__cluster--start">
       <a class="reader-shell__icon-button" href={backHref} aria-label={backLabel} title={backLabel}>
@@ -38,12 +40,52 @@ const {
       <button class="reader-shell__icon-button" type="button" data-reader-command="contents" aria-label="Open contents" title="Contents" disabled>
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01" /></svg>
       </button>
-      <button class="reader-shell__text-button" type="button" data-reader-command="appearance" aria-label="Reading appearance" title="Reading appearance">Aa</button>
+      <button class="reader-shell__text-button" type="button" data-reader-command="appearance" aria-label="Reading appearance" title="Reading appearance" aria-expanded="false" aria-controls="reader-appearance">Aa</button>
       <button class="reader-shell__icon-button" type="button" data-reader-command="more" aria-label="Reading mode" title="Reading mode" aria-expanded="false" aria-controls="reader-reading-mode">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M7 12h10M10 17h4" /></svg>
       </button>
     </div>
   </header>
+
+  <section class="reader-shell__appearance-panel" id="reader-appearance" data-reader-appearance-panel aria-labelledby="reader-appearance-title" hidden>
+    <div class="reader-shell__panel-heading">
+      <div>
+        <p class="reader-shell__eyebrow">Text</p>
+        <h2 id="reader-appearance-title">Reading appearance</h2>
+      </div>
+      <button type="button" class="reader-shell__panel-reset" data-reader-typography-reset>Reset</button>
+    </div>
+
+    <div class="reader-shell__setting-label">Font</div>
+    <div class="reader-shell__font-grid" role="group" aria-label="Reading font">
+      <button type="button" data-reader-typography-property="fontFamily" data-reader-typography-value="publisher" data-reader-font-option="publisher" aria-pressed="true"><span class="reader-shell__font-sample reader-shell__font-sample--publisher">Aa</span><span>Book</span></button>
+      <button type="button" data-reader-typography-property="fontFamily" data-reader-typography-value="literata" data-reader-font-option="literata" aria-pressed="false"><span class="reader-shell__font-sample reader-shell__font-sample--literata">Aa</span><span>Literata</span></button>
+      <button type="button" data-reader-typography-property="fontFamily" data-reader-typography-value="serif" data-reader-font-option="serif" aria-pressed="false"><span class="reader-shell__font-sample reader-shell__font-sample--serif">Aa</span><span>Serif</span></button>
+      <button type="button" data-reader-typography-property="fontFamily" data-reader-typography-value="sans" data-reader-font-option="sans" aria-pressed="false"><span class="reader-shell__font-sample reader-shell__font-sample--sans">Aa</span><span>Sans</span></button>
+      <button type="button" data-reader-typography-property="fontFamily" data-reader-typography-value="accessible" data-reader-font-option="accessible" aria-pressed="false"><span class="reader-shell__font-sample reader-shell__font-sample--accessible">Aa</span><span>Readable</span></button>
+    </div>
+
+    <div class="reader-shell__slider-setting">
+      <div class="reader-shell__setting-row"><label for="reader-font-size">Text size</label><output for="reader-font-size" data-reader-typography-output="fontScale">100%</output></div>
+      <input id="reader-font-size" type="range" min="0.8" max="1.8" step="0.05" value="1" data-reader-typography-input="fontScale" />
+    </div>
+
+    <div class="reader-shell__slider-setting">
+      <div class="reader-shell__setting-row"><label for="reader-line-height">Line height</label><output for="reader-line-height" data-reader-typography-output="lineHeight">1.55</output></div>
+      <input id="reader-line-height" type="range" min="1.2" max="2.1" step="0.05" value="1.55" data-reader-typography-input="lineHeight" />
+    </div>
+
+    <div class="reader-shell__slider-setting">
+      <div class="reader-shell__setting-row"><label for="reader-paragraph-spacing">Paragraph spacing</label><output for="reader-paragraph-spacing" data-reader-typography-output="paragraphSpacing">0.0em</output></div>
+      <input id="reader-paragraph-spacing" type="range" min="0" max="1.2" step="0.1" value="0" data-reader-typography-input="paragraphSpacing" />
+    </div>
+
+    <div class="reader-shell__setting-label">Alignment</div>
+    <div class="reader-shell__alignment-group" role="group" aria-label="Text alignment">
+      <button type="button" data-reader-typography-property="alignment" data-reader-typography-value="left" data-reader-alignment-option="left" aria-pressed="true">Left</button>
+      <button type="button" data-reader-typography-property="alignment" data-reader-typography-value="justify" data-reader-alignment-option="justify" aria-pressed="false">Justified</button>
+    </div>
+  </section>
 
   <section class="reader-shell__mode-panel" id="reader-reading-mode" data-reader-mode-panel aria-labelledby="reader-reading-mode-title" hidden>
     <div class="reader-shell__mode-heading">

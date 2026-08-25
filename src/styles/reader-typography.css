@@ -1,0 +1,85 @@
+.reader-shell__appearance-panel {
+  position: absolute;
+  z-index: 46;
+  top: calc(var(--reader-topbar-height) + var(--reader-safe-top) + 10px);
+  right: calc(var(--reader-safe-right) + 58px);
+  width: min(380px, calc(100vw - var(--reader-safe-left) - var(--reader-safe-right) - 24px));
+  max-height: calc(100dvh - var(--reader-topbar-height) - var(--reader-bottombar-height) - var(--reader-safe-top) - var(--reader-safe-bottom) - 24px);
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 18px;
+  border: 1px solid var(--reader-shell-rule);
+  border-radius: 10px;
+  background: var(--reader-shell-surface);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.14);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.reader-shell__appearance-panel[hidden] { display: none !important; }
+.reader-shell__panel-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; margin-bottom: 16px; }
+.reader-shell__panel-heading h2 { margin: 2px 0 0; font-family: var(--reader-shell-reader); font-size: 1.25rem; line-height: 1.1; }
+.reader-shell__panel-reset { min-height: 34px; padding: 0 10px; border: 1px solid var(--reader-shell-rule); border-radius: 6px; background: transparent; color: var(--reader-shell-secondary); font-size: 0.74rem; }
+.reader-shell__setting-label { margin: 16px 0 7px; color: var(--reader-shell-secondary); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+
+.reader-shell__font-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+.reader-shell__font-grid button {
+  min-width: 0;
+  min-height: 64px;
+  display: grid;
+  place-items: center;
+  gap: 2px;
+  padding: 7px 3px;
+  border: 1px solid var(--reader-shell-rule);
+  border-radius: 7px;
+  background: transparent;
+  color: var(--reader-shell-secondary);
+  font-size: 0.64rem;
+}
+.reader-shell__font-grid button[aria-pressed="true"],
+.reader-shell__alignment-group button[aria-pressed="true"] {
+  border-color: var(--reader-shell-ink);
+  background: var(--reader-shell-ink);
+  color: var(--reader-shell-bg);
+}
+.reader-shell__font-sample { font-size: 1.18rem; line-height: 1; color: inherit; }
+.reader-shell__font-sample--publisher { font-family: var(--reader-shell-reader); font-style: italic; }
+.reader-shell__font-sample--literata { font-family: "Literata", Georgia, serif; }
+.reader-shell__font-sample--serif { font-family: Georgia, "Times New Roman", serif; }
+.reader-shell__font-sample--sans { font-family: "Source Sans 3", system-ui, sans-serif; }
+.reader-shell__font-sample--accessible { font-family: Verdana, Arial, sans-serif; }
+
+.reader-shell__slider-setting { margin-top: 18px; }
+.reader-shell__setting-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 8px; color: var(--reader-shell-secondary); font-size: 0.76rem; }
+.reader-shell__setting-row output { min-width: 4.5ch; text-align: right; color: var(--reader-shell-ink); font-variant-numeric: tabular-nums; }
+.reader-shell__slider-setting input[type="range"] { width: 100%; accent-color: var(--reader-shell-ink); }
+
+.reader-shell__alignment-group { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+.reader-shell__alignment-group button {
+  min-height: 40px;
+  padding: 0 10px;
+  border: 1px solid var(--reader-shell-rule);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--reader-shell-secondary);
+}
+
+@media (max-width: 600px) {
+  .reader-shell__appearance-panel {
+    top: auto;
+    right: calc(var(--reader-safe-right) + 8px);
+    bottom: calc(var(--reader-bottombar-height) + var(--reader-safe-bottom) + 8px);
+    left: calc(var(--reader-safe-left) + 8px);
+    width: auto;
+    max-height: min(72dvh, 620px);
+    padding: 16px;
+  }
+  .reader-shell__font-grid { grid-template-columns: repeat(5, minmax(52px, 1fr)); overflow-x: auto; padding-bottom: 2px; }
+}
+
+@media (forced-colors: active) {
+  .reader-shell__appearance-panel,
+  .reader-shell__font-grid button,
+  .reader-shell__alignment-group button,
+  .reader-shell__panel-reset { border-color: CanvasText; }
+}
