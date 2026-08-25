@@ -26,8 +26,8 @@ export class ReaderController {
   private state: ReaderControllerState = { status: 'idle', location: null, toc: [], error: null };
   private stateListeners = new Set<(state: ReaderControllerState) => void>();
   private selectionListeners = new Set<(selection: ReaderSelection) => void>();
-  private unsubscribeLocation?: Unsubscribe;
-  private unsubscribeSelection?: Unsubscribe;
+  private unsubscribeLocation: Unsubscribe | undefined;
+  private unsubscribeSelection: Unsubscribe | undefined;
 
   constructor(engine: ReaderEngine = new EpubJsEngine()) {
     this.engine = engine;
