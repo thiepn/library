@@ -1,0 +1,74 @@
+schemaVersion: 1
+id: the-unfinished-mission
+slug: the-unfinished-mission
+title: The Unfinished Mission
+subtitle: Why Gospel Access Remains Unequal—and What Faithful Mission Requires Now
+type: book
+language: en-US
+contributors:
+- name: Jonathan
+  role: author
+description: A theological, historical, demographic, and practical examination of
+  why meaningful gospel access remains profoundly unequal and what faithful Christian
+  mission requires now.
+shortDescription: Why gospel access remains unequal—and how the whole church can pursue
+  faithful mission with theological clarity, strategic honesty, and local ownership.
+status: published
+visibility: public
+publication:
+  firstPublished: '2026-08-22'
+  lastUpdated: '2026-08-23'
+  edition: 1
+  editionLabel: First Edition — Release Candidate
+  version: 1.0.0-rc1
+  activeRelease: 1.0.0-rc1
+cover:
+  src: /media/works/the-unfinished-mission/editions/1.0.0-rc1/the-unfinished-mission.jpg
+  alt: Cover of The Unfinished Mission
+classification:
+  subjects:
+  - missions
+  - theology
+  - world-christianity
+  tags:
+  - great-commission
+  - gospel-access
+  - unreached-peoples
+  - world-christianity
+  - mission-strategy
+  - contextualization
+  - local-church
+  collections:
+  - mission
+parts:
+- id: the-mission
+  title: The Mission
+  order: 10
+- id: how-christianity-became-global
+  title: How Christianity Became Global
+  order: 20
+- id: mapping-the-unfinished-mission
+  title: Mapping the Unfinished Mission
+  order: 30
+- id: why-the-gaps-persist
+  title: Why the Gaps Persist
+  order: 40
+- id: what-faithful-mission-requires-now
+  title: What Faithful Mission Requires Now
+  order: 50
+formats:
+  web:
+    enabled: true
+  pdf:
+    enabled: true
+  epub:
+    enabled: true
+relationships:
+  relatedWorks:
+  - ai-for-the-kingdom
+  prerequisites: []
+resources: []
+rights:
+  status: copyright
+  notice: Copyright © 2026 Jonathan. All rights reserved. Scripture quotations are
+    from the ESV® Bible, ESV Text Edition 2025, used by permission.

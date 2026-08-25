@@ -1,0 +1,32 @@
+{
+  "project": "The Unfinished Mission",
+  "phase": "22R-P5B",
+  "date": "2026-08-23",
+  "candidate": "v1.0.0-rc1",
+  "target": "v1.0.0",
+  "decision": "HOLD",
+  "promotion_authorized": false,
+  "canonical_hashes": {
+    "paperback_interior": "35bf0176b6945edac1e65ec56c8c47d96d56f60bc544e7394264ae92db1c03fe",
+    "paperback_cover": "f517fcb8734122c56c1f87fafe492db9f5c3610fdcd40eaf0e4b56de177813cd",
+    "kindle_epub": "e37724f0cd74de6060c923b7514c64a0322a49c8bace22ffbdf2ff172d1d61c3",
+    "kindle_cover": "08db849e640add47b9be543915117b0d74101af391487fdfe6e8efc41ec8e572"
+  },
+  "gates": {
+    "canonical_lineage": "PASS",
+    "paperback_preflight": "PASS",
+    "cover_preflight": "PASS",
+    "deep_epub_structural_validation": "PASS_26_OF_26_ZERO_ERRORS_ZERO_WARNINGS",
+    "official_epubcheck_5_3_0": "OPEN",
+    "public_byline": "OPEN",
+    "kdp_isbn": "OPEN",
+    "kdp_print_previewer": "OPEN",
+    "kindle_online_previewer": "OPEN",
+    "physical_paperback_proof": "OPEN",
+    "commercial_settings": "OPEN",
+    "ai_disclosure": "OPEN",
+    "paperback_live": "BLOCKED",
+    "kindle_live": "BLOCKED",
+    "live_listing_verification": "BLOCKED"
+  }
+}

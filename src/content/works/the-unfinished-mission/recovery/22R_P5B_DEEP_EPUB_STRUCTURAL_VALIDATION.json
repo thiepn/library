@@ -1,0 +1,153 @@
+{
+  "file": "/mnt/data/p5b_canonical/The_Unfinished_Mission_22R-P4_UPLOAD_Kindle.epub",
+  "errors": [],
+  "warnings": [],
+  "checks": [
+    {
+      "check": "mimetype first",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "check": "mimetype content",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "check": "mimetype uncompressed",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "check": "no duplicate ZIP entries",
+      "status": "PASS",
+      "detail": 51
+    },
+    {
+      "check": "no case-colliding ZIP paths",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "check": "single rootfile",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "check": "OPF rootfile exists",
+      "status": "PASS",
+      "detail": "EPUB/content.opf"
+    },
+    {
+      "check": "OPF XML parse",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "check": "EPUB package version",
+      "status": "PASS",
+      "detail": "3.0"
+    },
+    {
+      "check": "unique identifier resolves",
+      "status": "PASS",
+      "detail": "urn:uuid:3a284947-c4d1-59d3-9314-da48af801319"
+    },
+    {
+      "check": "dc:title present",
+      "status": "PASS",
+      "detail": [
+        "The Unfinished Mission"
+      ]
+    },
+    {
+      "check": "dc:language present",
+      "status": "PASS",
+      "detail": [
+        "en"
+      ]
+    },
+    {
+      "check": "dc:creator present",
+      "status": "PASS",
+      "detail": [
+        "Jonathan"
+      ]
+    },
+    {
+      "check": "manifest parsed",
+      "status": "PASS",
+      "detail": 47
+    },
+    {
+      "check": "single nav document",
+      "status": "PASS",
+      "detail": "EPUB/nav.xhtml"
+    },
+    {
+      "check": "single cover-image",
+      "status": "PASS",
+      "detail": "EPUB/images/cover.jpg"
+    },
+    {
+      "check": "spine nonempty",
+      "status": "PASS",
+      "detail": 44
+    },
+    {
+      "check": "spine resources XHTML",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "check": "all XML/XHTML resources well-formed",
+      "status": "PASS",
+      "detail": 44
+    },
+    {
+      "check": "internal resource links resolve",
+      "status": "PASS",
+      "detail": 323
+    },
+    {
+      "check": "internal fragment links resolve",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "check": "external links counted",
+      "status": "PASS",
+      "detail": 0
+    },
+    {
+      "check": "nav TOC present",
+      "status": "PASS",
+      "detail": [
+        "toc",
+        "landmarks"
+      ]
+    },
+    {
+      "check": "nav TOC entries present",
+      "status": "PASS",
+      "detail": 41
+    },
+    {
+      "check": "no encryption.xml",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "check": "no signatures.xml",
+      "status": "PASS",
+      "detail": null
+    }
+  ],
+  "summary": {
+    "errors": 0,
+    "warnings": 0,
+    "pass_checks": 26,
+    "warn_checks": 0,
+    "fail_checks": 0
+  }
+}

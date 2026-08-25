@@ -1,0 +1,25 @@
+schemaVersion: 1
+workId: the-unfinished-mission
+version: 1.0.0-rc1
+edition: 1
+releasedAt: 2026-08-23
+sourceHash: 12f7f885448361ba720ff24563dc04fb00af179b8fd6a656d41f3044bc33445b
+artifacts:
+  pdf:
+    url: https://thiepn.dev/library/media/works/the-unfinished-mission/editions/1.0.0-rc1/The_Unfinished_Mission_Online_Library_Edition.pdf
+    filename: The_Unfinished_Mission_Online_Library_Edition.pdf
+    mimeType: application/pdf
+    sizeBytes: 1622497
+    sha256: 456d1e28c99934941d87d97f091b5d981d372af19c70a0bdc6fbb04e958571ba
+  epub:
+    url: https://thiepn.dev/library/media/works/the-unfinished-mission/editions/1.0.0-rc1/The_Unfinished_Mission.epub
+    filename: The_Unfinished_Mission.epub
+    mimeType: application/epub+zip
+    sizeBytes: 534961
+    sha256: e37724f0cd74de6060c923b7514c64a0322a49c8bace22ffbdf2ff172d1d61c3
+  cover:
+    url: https://thiepn.dev/library/media/works/the-unfinished-mission/editions/1.0.0-rc1/the-unfinished-mission.jpg
+    filename: the-unfinished-mission.jpg
+    mimeType: image/jpeg
+    sizeBytes: 393651
+    sha256: 08db849e640add47b9be543915117b0d74101af391487fdfe6e8efc41ec8e572
