@@ -20,13 +20,13 @@ pass('READER_ROUTES', await exists('src/pages/works/[slug]/read/[chapter].astro'
 pass('LOCKFILE', await exists('pnpm-lock.yaml'), 'A frozen dependency lock is required before certification');
 
 const readerShellFiles = [
-  'src/layouts/ReaderLayout.astro',
+  'src/layouts/EpubReaderLayout.astro',
   'src/components/reader/ReaderShell.astro',
   'src/styles/reader-shell.css',
   'src/lib/reader/shell.ts',
 ];
 const readerShellExists = (await Promise.all(readerShellFiles.map(exists))).every(Boolean);
-pass('EPUB_READER_SHELL', readerShellExists, 'Dedicated fullscreen EPUB reader shell is present');
+pass('EPUB_READER_SHELL', readerShellExists, 'Dedicated fullscreen EPUB reader shell is present alongside the preserved legacy chapter reader');
 if (readerShellExists) {
   const shellComponent = await readFile('src/components/reader/ReaderShell.astro', 'utf8');
   const shellController = await readFile('src/lib/reader/shell.ts', 'utf8');
