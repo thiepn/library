@@ -1,4 +1,5 @@
 import { ReaderController } from './controller';
+import { ReaderNavigationController } from './navigation';
 import { ReaderPageLayoutController, type ReaderPageLayoutOptions } from './page-layout';
 import { ReaderProgressController, type ReaderProgressIdentity } from './progress';
 import type { ReaderPublicationCandidate } from './publication';
@@ -16,6 +17,7 @@ export interface ReaderHarnessHandle {
 
 export interface ReaderShellHarnessHandle extends ReaderHarnessHandle {
   shell: ReaderShellController;
+  navigation: ReaderNavigationController;
   readingMode: ReaderReadingModeController;
   typography: ReaderTypographyController;
   pageLayout: ReaderPageLayoutController;
@@ -49,8 +51,8 @@ export async function mountReaderEngineHarness(
 
 /**
  * Connects the reader shell, persistent settings, version-aware reading position,
- * reading-mode controller, typography engine, page-layout controller, theme controller,
- * and EPUB engine without exposing a book route.
+ * serialized navigation controls, reading-mode controller, typography engine,
+ * page-layout controller, theme controller, and EPUB engine without exposing a book route.
  */
 export async function mountReaderShellHarness(
   root: HTMLElement,
@@ -83,11 +85,13 @@ export async function mountReaderShellHarness(
   const themeOptions: ReaderThemeOptions = resolvedOptions.appearance?.theme ? { theme: resolvedOptions.appearance.theme } : {};
   const theme = new ReaderThemeController(controller, shell.root, themeOptions);
   const readingMode = new ReaderReadingModeController(controller, shell.viewport, readingModeOptions);
+  const navigation = new ReaderNavigationController(controller, readingMode, shell);
   const pageLayout = new ReaderPageLayoutController(readingMode, shell.root, pageLayoutOptions);
   const typography = new ReaderTypographyController(controller, typographyOptions);
   const cleanups: Unsubscribe[] = [];
   let destroyed = false;
   let modesStarted = false;
+  let navigationStarted = false;
   let typographyStarted = false;
   let pageLayoutStarted = false;
   let themeStarted = false;
@@ -124,6 +128,10 @@ export async function mountReaderShellHarness(
       else {
         modesStarted = true;
         await readingMode.start();
+      }
+      if (!navigationStarted) {
+        navigationStarted = true;
+        navigation.start();
       }
       if (typographyStarted) await typography.reapply();
       else {
@@ -179,7 +187,6 @@ export async function mountReaderShellHarness(
         label: percentage === undefined ? 'Reading' : `${Math.round(percentage * 100)}%`,
         ...(percentage === undefined ? {} : { percentage }),
       });
-      shell.setNavigationAvailability({ previous: !state.location.atStart, next: !state.location.atEnd });
     }
   }));
 
@@ -209,8 +216,6 @@ export async function mountReaderShellHarness(
 
   cleanups.push(shell.onCommand((command) => {
     const run = async () => {
-      if (command === 'previous') await controller.previous();
-      if (command === 'next') await controller.next();
       if (command === 'retry') await open();
       if (command === 'flow-paginated') {
         await readingMode.setFlow('paginated');
@@ -245,6 +250,7 @@ export async function mountReaderShellHarness(
   } catch (error) {
     for (const cleanup of cleanups) cleanup();
     progress?.destroy();
+    navigation.destroy();
     pageLayout.destroy();
     typography.destroy();
     readingMode.destroy();
@@ -257,6 +263,7 @@ export async function mountReaderShellHarness(
   return {
     controller,
     shell,
+    navigation,
     readingMode,
     typography,
     pageLayout,
@@ -268,6 +275,7 @@ export async function mountReaderShellHarness(
       destroyed = true;
       for (const cleanup of cleanups) cleanup();
       progress?.destroy();
+      navigation.destroy();
       pageLayout.destroy();
       typography.destroy();
       readingMode.destroy();
