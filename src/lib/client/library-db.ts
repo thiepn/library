@@ -17,12 +17,29 @@ export interface FavoriteRecord {
   savedAt: string;
 }
 
+/** Legacy chapter/scroll progress retained while the old Markdown reader remains available. */
 export interface ProgressRecord {
   workId: string;
   chapterId: string;
   percent: number;
   updatedAt: string;
 }
+
+/** Native EPUB reader progress. Percentages are normalized to the 0..1 range. */
+export interface ReaderProgressRecordV2 {
+  schemaVersion: 2;
+  workId: string;
+  edition: number;
+  releaseVersion: string;
+  cfi: string;
+  percentage: number;
+  furthestPercentage: number;
+  chapterHref?: string;
+  chapterLabel?: string;
+  updatedAt: string;
+}
+
+export type StoredProgressRecord = ProgressRecord | ReaderProgressRecordV2;
 
 export interface AnnotationRecord {
   id: string;
@@ -93,6 +110,37 @@ function broadcast(kind: string, workId?: string) {
   }
 }
 
+function clampPercent01(value: number): number {
+  return Math.min(1, Math.max(0, Number.isFinite(value) ? value : 0));
+}
+
+export function isReaderProgressRecordV2(value: unknown): value is ReaderProgressRecordV2 {
+  if (typeof value !== 'object' || value === null) return false;
+  const record = value as Partial<ReaderProgressRecordV2>;
+  return record.schemaVersion === 2
+    && typeof record.workId === 'string'
+    && typeof record.edition === 'number'
+    && Number.isFinite(record.edition)
+    && typeof record.releaseVersion === 'string'
+    && typeof record.cfi === 'string'
+    && record.cfi.startsWith('epubcfi(')
+    && typeof record.percentage === 'number'
+    && Number.isFinite(record.percentage)
+    && typeof record.furthestPercentage === 'number'
+    && Number.isFinite(record.furthestPercentage)
+    && typeof record.updatedAt === 'string';
+}
+
+function isLegacyProgressRecord(value: unknown): value is ProgressRecord {
+  if (typeof value !== 'object' || value === null || isReaderProgressRecordV2(value)) return false;
+  const record = value as Partial<ProgressRecord>;
+  return typeof record.workId === 'string'
+    && typeof record.chapterId === 'string'
+    && typeof record.percent === 'number'
+    && Number.isFinite(record.percent)
+    && typeof record.updatedAt === 'string';
+}
+
 export async function getFavoriteWorkIds(): Promise<string[]> {
   return withStore('favorites', 'readonly', async (store) => {
     const values = await request<FavoriteRecord[]>(store.getAll());
@@ -118,10 +166,15 @@ export async function toggleFavorite(workId: string): Promise<boolean> {
   return next;
 }
 
+/** Legacy progress reader. Native EPUB records are intentionally invisible to the old chapter launcher. */
 export async function getProgress(workId: string): Promise<ProgressRecord | undefined> {
-  return withStore('progress', 'readonly', async (store) => request<ProgressRecord | undefined>(store.get(workId)));
+  return withStore('progress', 'readonly', async (store) => {
+    const stored = await request<StoredProgressRecord | undefined>(store.get(workId));
+    return isLegacyProgressRecord(stored) ? stored : undefined;
+  });
 }
 
+/** Legacy progress writer. It never overwrites a newer native EPUB progress record. */
 export async function setProgress(workId: string, progress: ProgressRecord): Promise<void> {
   if (progress.workId !== workId) throw new Error('Progress work identity mismatch');
   const next: ProgressRecord = {
@@ -130,12 +183,56 @@ export async function setProgress(workId: string, progress: ProgressRecord): Pro
   };
   let changed = false;
   await withStore('progress', 'readwrite', async (store) => {
-    const existing = await request<ProgressRecord | undefined>(store.get(workId));
-    if (existing && existing.percent > next.percent) return;
+    const existing = await request<StoredProgressRecord | undefined>(store.get(workId));
+    if (isReaderProgressRecordV2(existing)) return;
+    if (isLegacyProgressRecord(existing) && existing.percent > next.percent) return;
     await request(store.put(next));
     changed = true;
   });
   if (changed) broadcast('progress', workId);
+}
+
+export async function getReaderProgress(workId: string): Promise<ReaderProgressRecordV2 | undefined> {
+  return withStore('progress', 'readonly', async (store) => {
+    const stored = await request<StoredProgressRecord | undefined>(store.get(workId));
+    if (!isReaderProgressRecordV2(stored)) return undefined;
+    const percentage = clampPercent01(stored.percentage);
+    return {
+      ...stored,
+      percentage,
+      furthestPercentage: Math.max(percentage, clampPercent01(stored.furthestPercentage)),
+    };
+  });
+}
+
+/**
+ * Saves exact current EPUB location while keeping furthest progress monotonic only within
+ * the same work edition/release. A new release starts a new progress lineage.
+ */
+export async function setReaderProgress(workId: string, progress: ReaderProgressRecordV2): Promise<void> {
+  if (progress.workId !== workId) throw new Error('Progress work identity mismatch');
+  if (!progress.cfi.startsWith('epubcfi(')) throw new Error('Native reader progress requires an EPUB CFI');
+
+  const percentage = clampPercent01(progress.percentage);
+  const next: ReaderProgressRecordV2 = {
+    ...progress,
+    schemaVersion: 2,
+    percentage,
+    furthestPercentage: Math.max(percentage, clampPercent01(progress.furthestPercentage)),
+  };
+
+  await withStore('progress', 'readwrite', async (store) => {
+    const existing = await request<StoredProgressRecord | undefined>(store.get(workId));
+    if (
+      isReaderProgressRecordV2(existing)
+      && existing.edition === next.edition
+      && existing.releaseVersion === next.releaseVersion
+    ) {
+      next.furthestPercentage = Math.max(next.furthestPercentage, clampPercent01(existing.furthestPercentage));
+    }
+    await request(store.put(next));
+  });
+  broadcast('progress', workId);
 }
 
 export async function getAnnotations(): Promise<AnnotationRecord[]> {
