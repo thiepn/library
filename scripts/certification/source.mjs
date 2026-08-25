@@ -92,6 +92,27 @@ if (pageLayoutExists) {
   pass('EPUB_READER_PAGE_LAYOUT_EPUB_SAFE', !pageLayoutCss.includes('iframe body') && pageLayoutCss.includes('.reader-shell__viewport'), 'Page geometry constrains the rendition viewport without forcing fixed widths into publisher XHTML');
 }
 
+const themeFiles = [
+  'src/lib/reader/theme.ts',
+  'src/styles/reader-themes.css',
+];
+const themesExist = (await Promise.all(themeFiles.map(exists))).every(Boolean);
+pass('EPUB_READER_THEMES', themesExist, 'Dedicated shell and EPUB theme controller and palette styles are present');
+if (themesExist) {
+  const theme = await readFile('src/lib/reader/theme.ts', 'utf8');
+  const themeCss = await readFile('src/styles/reader-themes.css', 'utf8');
+  const engine = await readFile('src/lib/reader/engines/epubjs.ts', 'utf8');
+  const shellHarness = await readFile('src/lib/reader/harness.ts', 'utf8');
+  const readerLayout = await readFile('src/layouts/EpubReaderLayout.astro', 'utf8');
+  const allThemes = ['light', 'warm', 'sepia', 'gray', 'dark', 'black'].every((name) => theme.includes(`data-reader-theme-option=\"${name}\"`) && themeCss.includes(`data-reader-theme=\"${name}\"`));
+  pass('EPUB_READER_THEME_PALETTES', allThemes, 'Reader exposes Light, Warm, Sepia, Gray, Dark, and Black shell palettes');
+  pass('EPUB_READER_THEME_EPUB', engine.includes('THEME_PALETTES') && engine.includes('blockquote, aside') && engine.includes('hr, table, th, td') && engine.includes('pre, code, kbd, samp'), 'EPUB themes cover prose, links, quotes, tables, rules, and code surfaces');
+  pass('EPUB_READER_THEME_POSITION_STABLE', theme.includes('controller.setAppearance({ theme') && !theme.includes('updateAppearance(') && !theme.includes('.display('), 'Theme changes update colors in place without repagination, CFI redisplay, or navigation');
+  pass('EPUB_READER_THEME_NO_FLASH', readerLayout.includes('data-reader-theme="light"') && readerLayout.includes("reader-themes.css") && themeCss.includes('.reader-shell__viewport > iframe') && engine.indexOf('this.applyAppearance(options.appearance ?? {})') < engine.indexOf('async display('), 'Shell and EPUB backgrounds are themed before first display and iframe background matches the shell');
+  pass('EPUB_READER_THEME_HARNESS', shellHarness.includes('ReaderThemeController') && shellHarness.includes('theme.start()') && shellHarness.includes('theme.destroy()'), 'Theme controller participates in the non-public EPUB harness lifecycle');
+  pass('EPUB_READER_THEME_BROWSER_CHROME', theme.includes('THEME_META_COLORS') && theme.includes('meta[name="theme-color"]'), 'Reader themes update browser theme-color alongside shell appearance');
+}
+
 const worksRoot = 'src/content/works';
 const releaseRoot = 'src/publications/releases';
 for (const entry of await readdir(worksRoot, { withFileTypes: true })) {
