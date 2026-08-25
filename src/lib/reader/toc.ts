@@ -25,6 +25,7 @@ interface TocElements {
   backdrop: HTMLButtonElement;
   list: HTMLOListElement;
   empty: HTMLElement;
+  status: HTMLElement;
   close: HTMLButtonElement;
   contentsButton: HTMLButtonElement;
 }
@@ -103,19 +104,26 @@ function ensureTocElements(root: HTMLElement): TocElements {
     empty.textContent = 'This publication does not provide a table of contents.';
     empty.hidden = true;
 
-    panel.append(header, nav, empty);
+    const status = document.createElement('p');
+    status.className = 'reader-toc__status';
+    status.dataset.readerTocStatus = '';
+    status.setAttribute('aria-live', 'polite');
+    status.setAttribute('aria-atomic', 'true');
+
+    panel.append(header, nav, empty, status);
     root.append(backdrop, panel);
   }
 
   const list = panel.querySelector<HTMLOListElement>('[data-reader-toc-list]');
   const empty = panel.querySelector<HTMLElement>('[data-reader-toc-empty]');
+  const status = panel.querySelector<HTMLElement>('[data-reader-toc-status]');
   const close = panel.querySelector<HTMLButtonElement>('[data-reader-toc-close]');
-  if (!list || !empty || !close) throw new Error('Reader contents panel is incomplete.');
+  if (!list || !empty || !status || !close) throw new Error('Reader contents panel is incomplete.');
 
   contentsButton.setAttribute('aria-controls', panel.id);
   contentsButton.setAttribute('aria-expanded', 'false');
 
-  return { panel, backdrop, list, empty, close, contentsButton };
+  return { panel, backdrop, list, empty, status, close, contentsButton };
 }
 
 export class ReaderTocController {
@@ -128,6 +136,7 @@ export class ReaderTocController {
   private readonly disclosures = new Map<string, HTMLButtonElement>();
   private unsubscribeController: Unsubscribe | undefined;
   private signature = '';
+  private lastReaderStatus: ReaderControllerState['status'] | null = null;
   private state: ReaderTocState = { open: false, activeHref: null, activeLabel: null, itemCount: 0 };
   private started = false;
   private destroyed = false;
@@ -161,7 +170,8 @@ export class ReaderTocController {
 
   open(): void {
     this.assertUsable();
-    if (this.state.open || this.root.dataset.readerStatus !== 'ready') return;
+    if (this.state.open || this.root.dataset.readerStatus !== 'ready' || this.entries.length === 0) return;
+    this.elements.status.textContent = '';
     this.elements.panel.hidden = false;
     this.elements.backdrop.hidden = false;
     this.root.dataset.readerToc = 'open';
@@ -203,13 +213,20 @@ export class ReaderTocController {
   }
 
   private syncReaderState(state: ReaderControllerState): void {
+    const becameReady = state.status === 'ready' && this.lastReaderStatus !== 'ready';
     if (state.status !== 'ready') this.close(false);
-    const nextSignature = tocSignature(state.toc);
-    if (nextSignature !== this.signature) {
-      this.signature = nextSignature;
-      this.render(state.toc);
+
+    if (becameReady) {
+      const nextSignature = tocSignature(state.toc);
+      if (nextSignature !== this.signature) {
+        this.signature = nextSignature;
+        this.render(state.toc);
+      }
     }
+
+    this.elements.contentsButton.disabled = state.status !== 'ready' || this.entries.length === 0;
     if (state.location) this.activate(state.location.href);
+    this.lastReaderStatus = state.status;
   }
 
   private render(items: ReaderTocItem[]): void {
@@ -363,12 +380,15 @@ export class ReaderTocController {
     const href = target.dataset.readerTocTarget;
     if (!href) return;
     target.disabled = true;
+    this.elements.status.textContent = '';
     void this.controller.goTo(href)
-      .then(() => this.close())
+      .then(() => {
+        target.disabled = false;
+        this.close();
+      })
       .catch(() => {
         target.disabled = false;
-        const status = this.elements.panel.querySelector<HTMLElement>('[data-reader-toc-status]');
-        if (status) status.textContent = 'Unable to open this section.';
+        this.elements.status.textContent = 'Unable to open this section.';
       });
   };
 
