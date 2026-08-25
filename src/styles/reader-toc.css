@@ -181,6 +181,7 @@
 
 @media (max-width: 370px) {
   .reader-toc { width: 100%; }
+  .reader-shell__cluster--end .reader-shell__icon-button[data-reader-command="contents"] { display: inline-grid !important; }
 }
 
 @media (prefers-reduced-motion: reduce) {
