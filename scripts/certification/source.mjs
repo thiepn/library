@@ -113,6 +113,21 @@ if (themesExist) {
   pass('EPUB_READER_THEME_BROWSER_CHROME', theme.includes('THEME_META_COLORS') && theme.includes('meta[name="theme-color"]'), 'Reader themes update browser theme-color alongside shell appearance');
 }
 
+const settingsFile = 'src/lib/reader/settings.ts';
+const settingsExist = await exists(settingsFile);
+pass('EPUB_READER_SETTINGS', settingsExist, 'Versioned global EPUB reader settings store is present');
+if (settingsExist) {
+  const settings = await readFile(settingsFile, 'utf8');
+  const shellHarness = await readFile('src/lib/reader/harness.ts', 'utf8');
+  pass('EPUB_READER_SETTINGS_SCHEMA', settings.includes("thiepn.library.reader.settings.v2") && settings.includes('READER_SETTINGS_SCHEMA_VERSION = 1'), 'Reader settings use the frozen v2 storage key and schema version 1');
+  pass('EPUB_READER_SETTINGS_COMPLETE', ['fontFamily', 'fontScale', 'lineHeight', 'paragraphSpacing', 'alignment', 'theme', 'textWidth', 'pageMargins', 'flow', 'spread'].every((field) => settings.includes(field)), 'One settings record covers typography, theme, page geometry, flow, and spread preferences');
+  pass('EPUB_READER_SETTINGS_VALIDATE', settings.includes('parseReaderSettings') && settings.includes('isNumberInRange') && settings.includes('isChoice'), 'Persisted settings are schema- and value-validated before restoration');
+  pass('EPUB_READER_SETTINGS_SAFE_FALLBACK', settings.includes('browserStorage()') && settings.includes('catch {') && settings.includes('disablePersistence()') && settings.includes('Storage | null'), 'Blocked or broken localStorage degrades to in-memory settings without blocking reading');
+  pass('EPUB_READER_SETTINGS_RESTORE', shellHarness.includes('settings.resolveOpenOptions(options)') && shellHarness.indexOf('settings.resolveOpenOptions(options)') < shellHarness.indexOf('new ReaderThemeController'), 'Persisted settings are restored before reader controllers and first EPUB display are initialized');
+  pass('EPUB_READER_SETTINGS_AUTOSAVE', shellHarness.includes('settings.patch({ flow: state.flow, spread: state.spreadPreference })') && shellHarness.includes('settings.patch(state)') && shellHarness.includes('settings.patch({ theme: state.theme })'), 'Reading-mode, typography, page-layout, and theme changes automatically update the unified settings record');
+  pass('EPUB_READER_SETTINGS_SEPARATE_FROM_PROGRESS', !settings.includes('cfi') && !settings.includes('percentage') && !settings.includes('workId'), 'Global appearance settings remain separate from per-publication reading progress');
+}
+
 const worksRoot = 'src/content/works';
 const releaseRoot = 'src/publications/releases';
 for (const entry of await readdir(worksRoot, { withFileTypes: true })) {
