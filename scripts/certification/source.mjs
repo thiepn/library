@@ -36,6 +36,23 @@ if (readerShellExists) {
   pass('EPUB_READER_SHELL_HARNESS', shellHarness.includes('mountReaderShellHarness') && shellHarness.includes('mountReaderShell(root)'), 'Reader shell and EPUB engine are connected through a non-public fixture harness');
 }
 
+const readingModeFiles = [
+  'src/lib/reader/reading-mode.ts',
+  'src/styles/reader-modes.css',
+];
+const readingModesExist = (await Promise.all(readingModeFiles.map(exists))).every(Boolean);
+pass('EPUB_READER_READING_MODES', readingModesExist, 'Paginated and scrolling mode controller and responsive mode UI are present');
+if (readingModesExist) {
+  const readingModes = await readFile('src/lib/reader/reading-mode.ts', 'utf8');
+  const controller = await readFile('src/lib/reader/controller.ts', 'utf8');
+  const engine = await readFile('src/lib/reader/engines/epubjs.ts', 'utf8');
+  const shellComponent = await readFile('src/components/reader/ReaderShell.astro', 'utf8');
+  pass('EPUB_READER_POSITION_PRESERVE', controller.includes('updateReadingLayout') && controller.includes('this.state.location?.cfi') && controller.includes('this.engine.display(target)'), 'Reading layout changes preserve the current EPUB CFI');
+  pass('EPUB_READER_RESPONSIVE_SPREAD', readingModes.includes('ResizeObserver') && readingModes.includes('minSpreadWidth') && readingModes.includes("flow === 'scrolled'") && readingModes.includes("return 'double'"), 'Reading mode controller recalculates single/double spreads from viewport changes');
+  pass('EPUB_READER_RESIZE', engine.includes('resize(width: number, height: number)') && engine.includes('.resize(safeWidth, safeHeight)'), 'EPUB rendition has an explicit resize bridge for orientation and viewport changes');
+  pass('EPUB_READER_MODE_CONTROLS', shellComponent.includes('flow-paginated') && shellComponent.includes('flow-scrolled') && shellComponent.includes('spread-auto') && shellComponent.includes('spread-double'), 'Reader shell exposes paginated/scroll and page-spread controls');
+}
+
 const worksRoot = 'src/content/works';
 const releaseRoot = 'src/publications/releases';
 for (const entry of await readdir(worksRoot, { withFileTypes: true })) {

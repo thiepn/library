@@ -1,4 +1,5 @@
 import { ReaderController } from './controller';
+import { ReaderReadingModeController, type ReaderReadingModeOptions } from './reading-mode';
 import { mountReaderShell, type ReaderShellController } from './shell';
 import type { ReaderOpenOptions, Unsubscribe } from './types';
 
@@ -9,6 +10,7 @@ export interface ReaderHarnessHandle {
 
 export interface ReaderShellHarnessHandle extends ReaderHarnessHandle {
   shell: ReaderShellController;
+  readingMode: ReaderReadingModeController;
 }
 
 /**
@@ -35,7 +37,7 @@ export async function mountReaderEngineHarness(
 }
 
 /**
- * Connects the P6 reader shell to the P5 EPUB engine without exposing a book route.
+ * Connects the reader shell, reading-mode controller, and EPUB engine without exposing a book route.
  * The harness is deliberately publication-agnostic and can be exercised with synthetic EPUB fixtures.
  */
 export async function mountReaderShellHarness(
@@ -46,19 +48,35 @@ export async function mountReaderShellHarness(
 ): Promise<ReaderShellHarnessHandle> {
   const shell = mountReaderShell(root);
   const controller = new ReaderController();
+  const readingModeOptions: ReaderReadingModeOptions = {
+    ...(options.flow ? { flow: options.flow } : {}),
+    ...(options.spread ? { spread: options.spread } : {}),
+    ...(options.minSpreadWidth !== undefined ? { minSpreadWidth: options.minSpreadWidth } : {}),
+  };
+  const readingMode = new ReaderReadingModeController(controller, shell.viewport, readingModeOptions);
   const cleanups: Unsubscribe[] = [];
   let destroyed = false;
+  let modesStarted = false;
 
   const open = async () => {
     shell.setStatus('loading', 'Opening book…');
     try {
       await controller.open(source, shell.viewport, options, target);
+      if (modesStarted) await readingMode.reapply();
+      else {
+        modesStarted = true;
+        await readingMode.start();
+      }
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unable to open EPUB publication.';
       shell.setStatus('error', message);
       throw error;
     }
   };
+
+  cleanups.push(readingMode.subscribe((state) => {
+    shell.setReadingMode(state.flow, state.spreadPreference, state.effectiveSpread);
+  }));
 
   cleanups.push(controller.subscribe((state) => {
     if (state.status === 'loading') shell.setStatus('loading');
@@ -77,15 +95,43 @@ export async function mountReaderShellHarness(
   }));
 
   cleanups.push(shell.onCommand((command) => {
-    if (command === 'previous') void controller.previous();
-    if (command === 'next') void controller.next();
-    if (command === 'retry') void open().catch(() => undefined);
+    const run = async () => {
+      if (command === 'previous') await controller.previous();
+      if (command === 'next') await controller.next();
+      if (command === 'retry') await open();
+      if (command === 'flow-paginated') {
+        await readingMode.setFlow('paginated');
+        shell.announce('Paginated reading mode');
+      }
+      if (command === 'flow-scrolled') {
+        await readingMode.setFlow('scrolled');
+        shell.announce('Scrolling reading mode');
+      }
+      if (command === 'spread-auto') {
+        await readingMode.setSpreadPreference('auto');
+        shell.announce('Automatic page spread');
+      }
+      if (command === 'spread-single') {
+        await readingMode.setSpreadPreference('single');
+        shell.announce('Single page spread');
+      }
+      if (command === 'spread-double') {
+        await readingMode.setSpreadPreference('double');
+        shell.announce('Two page spread where space allows');
+      }
+    };
+
+    void run().catch((error) => {
+      const message = error instanceof Error ? error.message : 'Unable to change reading layout.';
+      shell.setStatus('error', message);
+    });
   }));
 
   try {
     await open();
   } catch (error) {
     for (const cleanup of cleanups) cleanup();
+    readingMode.destroy();
     controller.destroy();
     shell.destroy();
     throw error;
@@ -94,10 +140,12 @@ export async function mountReaderShellHarness(
   return {
     controller,
     shell,
+    readingMode,
     destroy: () => {
       if (destroyed) return;
       destroyed = true;
       for (const cleanup of cleanups) cleanup();
+      readingMode.destroy();
       controller.destroy();
       shell.destroy();
     },

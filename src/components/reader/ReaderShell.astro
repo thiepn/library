@@ -21,7 +21,7 @@ const {
   loadingMessage = 'Opening book…',
 } = Astro.props;
 ---
-<div class="reader-shell" data-reader-shell data-reader-status="loading" data-reader-controls="visible">
+<div class="reader-shell" data-reader-shell data-reader-status="loading" data-reader-controls="visible" data-reader-flow="paginated" data-reader-spread-preference="auto" data-reader-spread="single">
   <header class="reader-shell__bar reader-shell__bar--top" data-reader-topbar>
     <div class="reader-shell__cluster reader-shell__cluster--start">
       <a class="reader-shell__icon-button" href={backHref} aria-label={backLabel} title={backLabel}>
@@ -39,11 +39,34 @@ const {
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01" /></svg>
       </button>
       <button class="reader-shell__text-button" type="button" data-reader-command="appearance" aria-label="Reading appearance" title="Reading appearance">Aa</button>
-      <button class="reader-shell__icon-button" type="button" data-reader-command="more" aria-label="More reader options" title="More options">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1" /><circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" /></svg>
+      <button class="reader-shell__icon-button" type="button" data-reader-command="more" aria-label="Reading mode" title="Reading mode" aria-expanded="false" aria-controls="reader-reading-mode">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M7 12h10M10 17h4" /></svg>
       </button>
     </div>
   </header>
+
+  <section class="reader-shell__mode-panel" id="reader-reading-mode" data-reader-mode-panel aria-labelledby="reader-reading-mode-title" hidden>
+    <div class="reader-shell__mode-heading">
+      <div>
+        <p class="reader-shell__eyebrow">Layout</p>
+        <h2 id="reader-reading-mode-title">Reading mode</h2>
+      </div>
+      <span data-reader-mode-summary>Pages · one page</span>
+    </div>
+
+    <div class="reader-shell__mode-group" role="group" aria-label="Reading flow">
+      <button type="button" data-reader-command="flow-paginated" data-reader-flow-option="paginated" aria-pressed="true">Pages</button>
+      <button type="button" data-reader-command="flow-scrolled" data-reader-flow-option="scrolled" aria-pressed="false">Scroll</button>
+    </div>
+
+    <div class="reader-shell__mode-label">Page spread</div>
+    <div class="reader-shell__mode-group reader-shell__mode-group--spread" role="group" aria-label="Page spread">
+      <button type="button" data-reader-command="spread-auto" data-reader-spread-option="auto" aria-pressed="true">Auto</button>
+      <button type="button" data-reader-command="spread-single" data-reader-spread-option="single" aria-pressed="false">Single</button>
+      <button type="button" data-reader-command="spread-double" data-reader-spread-option="double" aria-pressed="false">Double</button>
+    </div>
+    <p class="reader-shell__mode-note">Double-page layouts automatically collapse to one page on narrow screens. Scroll mode always uses a single reading column.</p>
+  </section>
 
   <main class="reader-shell__stage" data-reader-stage>
     <div class="reader-shell__viewport" id="reader-viewport" data-reader-viewport tabindex="-1" aria-busy="true" aria-label={`Book content: ${title}`}></div>

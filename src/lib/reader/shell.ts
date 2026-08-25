@@ -1,7 +1,18 @@
-import type { Unsubscribe } from './types';
+import type { ReaderFlow, ReaderSpread, Unsubscribe } from './types';
 
 export type ReaderShellStatus = 'idle' | 'loading' | 'ready' | 'error';
-export type ReaderShellCommand = 'previous' | 'next' | 'contents' | 'appearance' | 'more' | 'retry';
+export type ReaderShellCommand =
+  | 'previous'
+  | 'next'
+  | 'contents'
+  | 'appearance'
+  | 'more'
+  | 'retry'
+  | 'flow-paginated'
+  | 'flow-scrolled'
+  | 'spread-auto'
+  | 'spread-single'
+  | 'spread-double';
 
 export interface ReaderNavigationAvailability {
   previous: boolean;
@@ -35,6 +46,8 @@ export class ReaderShellController {
   private readonly loadingMessage: HTMLElement;
   private readonly errorMessage: HTMLElement;
   private readonly announcer: HTMLElement;
+  private readonly modePanel: HTMLElement;
+  private readonly moreButton: HTMLButtonElement;
   private readonly commandListeners = new Set<CommandListener>();
   private hideTimer: number | null = null;
   private autoHide = false;
@@ -52,6 +65,8 @@ export class ReaderShellController {
     this.loadingMessage = requireElement(root, '[data-reader-loading-message]');
     this.errorMessage = requireElement(root, '[data-reader-error-message]');
     this.announcer = requireElement(root, '[data-reader-announcer]');
+    this.modePanel = requireElement(root, '[data-reader-mode-panel]');
+    this.moreButton = requireElement<HTMLButtonElement>(root, '[data-reader-command="more"]');
 
     root.addEventListener('click', this.handleClick);
     root.addEventListener('pointermove', this.handleActivity, { passive: true });
@@ -60,6 +75,7 @@ export class ReaderShellController {
     document.addEventListener('keydown', this.handleKeydown);
 
     this.setControlsVisible(true);
+    this.setReadingMode('paginated', 'auto', 'single');
     this.setStatus((root.dataset.readerStatus as ReaderShellStatus | undefined) ?? 'idle');
   }
 
@@ -75,7 +91,10 @@ export class ReaderShellController {
 
     const contents = this.root.querySelector<HTMLButtonElement>('[data-reader-command="contents"]');
     if (contents) contents.disabled = status !== 'ready';
-    if (status !== 'ready') this.setNavigationAvailability({ previous: false, next: false });
+    if (status !== 'ready') {
+      this.setNavigationAvailability({ previous: false, next: false });
+      this.setModePanelOpen(false);
+    }
 
     if (status === 'ready') this.scheduleAutoHide();
     else this.clearAutoHide();
@@ -110,6 +129,38 @@ export class ReaderShellController {
     if (next) next.disabled = !availability.next;
   }
 
+  setReadingMode(flow: ReaderFlow, spreadPreference: ReaderSpread, effectiveSpread: Exclude<ReaderSpread, 'auto'>): void {
+    this.assertUsable();
+    this.root.dataset.readerFlow = flow;
+    this.root.dataset.readerSpreadPreference = spreadPreference;
+    this.root.dataset.readerSpread = effectiveSpread;
+
+    this.root.querySelectorAll<HTMLButtonElement>('[data-reader-flow-option]').forEach((button) => {
+      button.setAttribute('aria-pressed', String(button.dataset.readerFlowOption === flow));
+    });
+    this.root.querySelectorAll<HTMLButtonElement>('[data-reader-spread-option]').forEach((button) => {
+      button.setAttribute('aria-pressed', String(button.dataset.readerSpreadOption === spreadPreference));
+      button.disabled = flow === 'scrolled';
+    });
+
+    const summary = this.root.querySelector<HTMLElement>('[data-reader-mode-summary]');
+    if (summary) {
+      const flowLabel = flow === 'paginated' ? 'Pages' : 'Scroll';
+      const spreadLabel = flow === 'scrolled' ? 'single column' : effectiveSpread === 'double' ? 'two pages' : 'one page';
+      summary.textContent = `${flowLabel} · ${spreadLabel}`;
+    }
+  }
+
+  setModePanelOpen(open: boolean): void {
+    this.assertUsable();
+    this.modePanel.hidden = !open;
+    this.moreButton.setAttribute('aria-expanded', String(open));
+  }
+
+  toggleModePanel(): void {
+    this.setModePanelOpen(this.modePanel.hidden);
+  }
+
   setControlsVisible(visible: boolean): void {
     this.assertUsable();
     this.root.dataset.readerControls = visible ? 'visible' : 'hidden';
@@ -117,6 +168,7 @@ export class ReaderShellController {
       bar.setAttribute('aria-hidden', visible ? 'false' : 'true');
       bar.toggleAttribute('inert', !visible);
     }
+    if (!visible) this.setModePanelOpen(false);
     if (visible) this.scheduleAutoHide();
     else this.clearAutoHide();
   }
@@ -170,6 +222,7 @@ export class ReaderShellController {
     const command = target.dataset.readerCommand as ReaderShellCommand | undefined;
     if (!command || target.matches(':disabled')) return;
     this.showControls();
+    if (command === 'more') this.toggleModePanel();
     for (const listener of this.commandListeners) listener(command);
   };
 
@@ -181,7 +234,9 @@ export class ReaderShellController {
   private readonly handleToggleControls = () => this.toggleControls();
 
   private readonly handleKeydown = (event: KeyboardEvent) => {
-    if (event.key === 'Escape') this.showControls();
+    if (event.key !== 'Escape') return;
+    if (!this.modePanel.hidden) this.setModePanelOpen(false);
+    else this.showControls();
   };
 
   private scheduleAutoHide(): void {

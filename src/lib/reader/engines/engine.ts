@@ -28,6 +28,7 @@ export interface ReaderEngine {
 
   setFlow(flow: ReaderFlow): void;
   setSpread(spread: ReaderSpread, minSpreadWidth?: number): void;
+  resize(width: number, height: number): void;
   applyAppearance(appearance: Partial<ReaderAppearance>): void;
 
   generateLocations(charactersPerLocation?: number): Promise<ReaderLocationMap>;

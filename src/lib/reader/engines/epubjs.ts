@@ -211,6 +211,12 @@ export class EpubJsEngine implements ReaderEngine {
     this.requireRendition().spread(mapSpread(spread), minSpreadWidth);
   }
 
+  resize(width: number, height: number): void {
+    const safeWidth = Math.max(1, Math.round(width));
+    const safeHeight = Math.max(1, Math.round(height));
+    this.requireRendition().resize(safeWidth, safeHeight);
+  }
+
   applyAppearance(next: Partial<ReaderAppearance>): void {
     const rendition = this.requireRendition();
     this.appearance = { ...this.appearance, ...next };

@@ -19,6 +19,15 @@ export interface ReaderOpenOptions {
   appearance?: Partial<ReaderAppearance>;
 }
 
+export interface ReaderLayoutUpdate {
+  flow?: ReaderFlow;
+  spread?: ReaderSpread;
+  minSpreadWidth?: number;
+  width?: number;
+  height?: number;
+  preserveLocation?: boolean;
+}
+
 export interface ReaderLocation {
   cfi: string;
   href: string;

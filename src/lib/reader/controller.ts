@@ -4,6 +4,7 @@ import {
   ReaderEngineError,
   type ReaderAppearance,
   type ReaderFlow,
+  type ReaderLayoutUpdate,
   type ReaderLocation,
   type ReaderOpenOptions,
   type ReaderSelection,
@@ -85,6 +86,20 @@ export class ReaderController {
   setSpread(spread: ReaderSpread, minSpreadWidth?: number): void {
     this.requireReady();
     this.engine.setSpread(spread, minSpreadWidth);
+  }
+
+  resize(width: number, height: number): void {
+    this.requireReady();
+    this.engine.resize(width, height);
+  }
+
+  async updateReadingLayout(update: ReaderLayoutUpdate): Promise<void> {
+    this.requireReady();
+    const target = update.preserveLocation === false ? undefined : this.state.location?.cfi;
+    if (update.flow) this.engine.setFlow(update.flow);
+    if (update.spread) this.engine.setSpread(update.spread, update.minSpreadWidth);
+    if (update.width !== undefined && update.height !== undefined) this.engine.resize(update.width, update.height);
+    if (target) await this.engine.display(target);
   }
 
   setAppearance(appearance: Partial<ReaderAppearance>): void {
