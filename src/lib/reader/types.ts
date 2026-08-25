@@ -3,6 +3,8 @@ export type ReaderSpread = 'auto' | 'single' | 'double';
 export type ReaderTheme = 'light' | 'warm' | 'sepia' | 'gray' | 'dark' | 'black';
 export type ReaderAlignment = 'left' | 'justify';
 export type ReaderFontFamily = 'publisher' | 'literata' | 'serif' | 'sans' | 'accessible';
+export type ReaderTextWidth = 'narrow' | 'medium' | 'wide';
+export type ReaderPageMargins = 'small' | 'medium' | 'large';
 
 export interface ReaderAppearance {
   fontFamily: ReaderFontFamily;
@@ -11,6 +13,8 @@ export interface ReaderAppearance {
   paragraphSpacing: number;
   alignment: ReaderAlignment;
   theme: ReaderTheme;
+  textWidth?: ReaderTextWidth;
+  pageMargins?: ReaderPageMargins;
 }
 
 export interface ReaderOpenOptions {

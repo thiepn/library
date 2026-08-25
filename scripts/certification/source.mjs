@@ -74,6 +74,24 @@ if (typographyExists) {
   pass('EPUB_READER_TYPOGRAPHY_HARNESS', shellController.includes('onTypographyIntent') && shellHarness.includes('ReaderTypographyController') && shellHarness.includes('typography.start()'), 'Typography UI is wired through the non-public EPUB harness');
 }
 
+const pageLayoutFiles = [
+  'src/lib/reader/page-layout.ts',
+  'src/styles/reader-page-layout.css',
+];
+const pageLayoutExists = (await Promise.all(pageLayoutFiles.map(exists))).every(Boolean);
+pass('EPUB_READER_PAGE_LAYOUT', pageLayoutExists, 'Dedicated reading-width and page-margin controller and styles are present');
+if (pageLayoutExists) {
+  const pageLayout = await readFile('src/lib/reader/page-layout.ts', 'utf8');
+  const pageLayoutCss = await readFile('src/styles/reader-page-layout.css', 'utf8');
+  const shellHarness = await readFile('src/lib/reader/harness.ts', 'utf8');
+  pass('EPUB_READER_PAGE_WIDTHS', pageLayout.includes("textWidth: 'medium'") && pageLayout.includes('narrow') && pageLayout.includes('wide') && pageLayoutCss.includes('760px') && pageLayoutCss.includes('1320px'), 'Reader exposes narrow, medium, and wide responsive reading canvases');
+  pass('EPUB_READER_PAGE_MARGINS', pageLayout.includes("pageMargins: 'medium'") && pageLayout.includes('small') && pageLayout.includes('large') && pageLayoutCss.includes('--reader-canvas-margin'), 'Reader exposes small, medium, and large responsive page margins');
+  pass('EPUB_READER_PAGE_LAYOUT_POSITION_PRESERVE', pageLayout.includes('readingMode.reapply()') && pageLayout.includes('nextFrame()'), 'Page geometry changes route through the CFI-preserving reading-mode reflow');
+  pass('EPUB_READER_PAGE_LAYOUT_CONTROLS', pageLayout.includes('data-reader-page-layout-property="textWidth"') && pageLayout.includes('data-reader-page-layout-property="pageMargins"') && pageLayout.includes('aria-label="Reading width"') && pageLayout.includes('aria-label="Page margins"'), 'Appearance panel receives accessible width and margin controls');
+  pass('EPUB_READER_PAGE_LAYOUT_HARNESS', shellHarness.includes('ReaderPageLayoutController') && shellHarness.includes('pageLayout.start()') && shellHarness.includes('pageLayout.destroy()'), 'Page-layout controller participates in the non-public EPUB harness lifecycle');
+  pass('EPUB_READER_PAGE_LAYOUT_EPUB_SAFE', !pageLayoutCss.includes('iframe body') && pageLayoutCss.includes('.reader-shell__viewport'), 'Page geometry constrains the rendition viewport without forcing fixed widths into publisher XHTML');
+}
+
 const worksRoot = 'src/content/works';
 const releaseRoot = 'src/publications/releases';
 for (const entry of await readdir(worksRoot, { withFileTypes: true })) {

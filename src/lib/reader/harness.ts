@@ -1,4 +1,5 @@
 import { ReaderController } from './controller';
+import { ReaderPageLayoutController, type ReaderPageLayoutOptions } from './page-layout';
 import { ReaderReadingModeController, type ReaderReadingModeOptions } from './reading-mode';
 import { mountReaderShell, type ReaderShellController } from './shell';
 import { ReaderTypographyController, type ReaderTypographyOptions } from './typography';
@@ -13,6 +14,7 @@ export interface ReaderShellHarnessHandle extends ReaderHarnessHandle {
   shell: ReaderShellController;
   readingMode: ReaderReadingModeController;
   typography: ReaderTypographyController;
+  pageLayout: ReaderPageLayoutController;
 }
 
 /**
@@ -39,8 +41,8 @@ export async function mountReaderEngineHarness(
 }
 
 /**
- * Connects the reader shell, reading-mode controller, typography engine, and EPUB engine without exposing a book route.
- * The harness is deliberately publication-agnostic and can be exercised with synthetic EPUB fixtures.
+ * Connects the reader shell, reading-mode controller, typography engine, page-layout controller,
+ * and EPUB engine without exposing a book route.
  */
 export async function mountReaderShellHarness(
   root: HTMLElement,
@@ -62,12 +64,18 @@ export async function mountReaderShellHarness(
     ...(options.appearance.paragraphSpacing !== undefined ? { paragraphSpacing: options.appearance.paragraphSpacing } : {}),
     ...(options.appearance.alignment ? { alignment: options.appearance.alignment } : {}),
   } : {};
+  const pageLayoutOptions: ReaderPageLayoutOptions = options.appearance ? {
+    ...(options.appearance.textWidth ? { textWidth: options.appearance.textWidth } : {}),
+    ...(options.appearance.pageMargins ? { pageMargins: options.appearance.pageMargins } : {}),
+  } : {};
   const readingMode = new ReaderReadingModeController(controller, shell.viewport, readingModeOptions);
+  const pageLayout = new ReaderPageLayoutController(readingMode, shell.root, pageLayoutOptions);
   const typography = new ReaderTypographyController(controller, typographyOptions);
   const cleanups: Unsubscribe[] = [];
   let destroyed = false;
   let modesStarted = false;
   let typographyStarted = false;
+  let pageLayoutStarted = false;
 
   const open = async () => {
     shell.setStatus('loading', 'Opening book…');
@@ -83,6 +91,11 @@ export async function mountReaderShellHarness(
         typographyStarted = true;
         await typography.start();
       }
+      if (pageLayoutStarted) await pageLayout.reapply();
+      else {
+        pageLayoutStarted = true;
+        await pageLayout.start();
+      }
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unable to open EPUB publication.';
       shell.setStatus('error', message);
@@ -96,6 +109,11 @@ export async function mountReaderShellHarness(
 
   cleanups.push(typography.subscribe((state) => {
     shell.setTypography(state);
+  }));
+
+  cleanups.push(pageLayout.subscribe((state) => {
+    shell.root.dataset.readerTextWidth = state.textWidth;
+    shell.root.dataset.readerPageMargins = state.pageMargins;
   }));
 
   cleanups.push(controller.subscribe((state) => {
@@ -175,6 +193,7 @@ export async function mountReaderShellHarness(
     await open();
   } catch (error) {
     for (const cleanup of cleanups) cleanup();
+    pageLayout.destroy();
     typography.destroy();
     readingMode.destroy();
     controller.destroy();
@@ -187,10 +206,12 @@ export async function mountReaderShellHarness(
     shell,
     readingMode,
     typography,
+    pageLayout,
     destroy: () => {
       if (destroyed) return;
       destroyed = true;
       for (const cleanup of cleanups) cleanup();
+      pageLayout.destroy();
       typography.destroy();
       readingMode.destroy();
       controller.destroy();
