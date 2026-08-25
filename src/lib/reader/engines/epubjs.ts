@@ -89,8 +89,8 @@ function normalizeError(code: ReaderEngineError['code'], message: string, cause:
 }
 
 export class EpubJsEngine implements ReaderEngine {
-  private book?: Book;
-  private rendition?: Rendition;
+  private book: Book | undefined;
+  private rendition: Rendition | undefined;
   private currentLocation: ReaderLocation | null = null;
   private appearance: ReaderAppearance = { ...DEFAULT_APPEARANCE };
   private locationListeners = new Set<(location: ReaderLocation) => void>();
@@ -129,7 +129,6 @@ export class EpubJsEngine implements ReaderEngine {
         spread: mapSpread(spread),
         minSpreadWidth: options.minSpreadWidth ?? 900,
         allowScriptedContent: false,
-        allowPopups: false,
       });
       this.rendition = rendition;
       rendition.on('relocated', this.handleRelocated);
@@ -268,7 +267,7 @@ export class EpubJsEngine implements ReaderEngine {
         'max-width': '100% !important',
         height: 'auto !important',
       },
-      'table': {
+      table: {
         'max-width': '100%',
       },
     });
