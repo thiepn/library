@@ -190,15 +190,36 @@ export class ReaderSettingsStore {
 
   private load(): void {
     if (!this.storage) return;
+    let raw: string | null;
     try {
-      const raw = this.storage.getItem(READER_SETTINGS_KEY);
-      if (raw === null) return;
-      const parsed = parseReaderSettings(JSON.parse(raw));
-      if (parsed) {
-        this.state = parsed;
-        return;
-      }
-      this.storage.setItem(READER_SETTINGS_KEY, JSON.stringify(READER_SETTINGS_DEFAULTS));
+      raw = this.storage.getItem(READER_SETTINGS_KEY);
+    } catch {
+      this.disablePersistence();
+      return;
+    }
+    if (raw === null) return;
+
+    let decoded: unknown;
+    try {
+      decoded = JSON.parse(raw);
+    } catch {
+      this.healCorruptRecord();
+      return;
+    }
+
+    const parsed = parseReaderSettings(decoded);
+    if (parsed) {
+      this.state = parsed;
+      return;
+    }
+    this.healCorruptRecord();
+  }
+
+  private healCorruptRecord(): void {
+    this.state = { ...READER_SETTINGS_DEFAULTS };
+    if (!this.storage || !this.storageWorking) return;
+    try {
+      this.storage.setItem(READER_SETTINGS_KEY, JSON.stringify(this.state));
     } catch {
       this.disablePersistence();
     }
