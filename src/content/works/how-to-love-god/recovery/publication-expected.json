@@ -1,28 +1,28 @@
 {
   "schemaVersion": 1,
   "workId": "how-to-love-god",
-  "release": "1.0.0",
+  "release": "1.0.1",
   "expectedReaderFiles": 57,
   "chapterWordsTotal": 30586,
   "source": {
     "filename": "How_to_Love_God.pdf",
     "pages": 150,
-    "bytes": 485555,
-    "sha256": "4aea811955c7d18bf083a409e814816aaa583781a094764041bd5919fd655147",
+    "bytes": 1579614,
+    "sha256": "3bb4dd3e2697b80b1321d0f61690bf6ae335e86f9f7a4642259cc1bba045d458",
     "pdfTitle": "How to Love God",
     "pdfSubject": "Biblical theology and practical discipleship",
-    "createdAt": "2026-07-21T19:29:53Z"
+    "createdAt": "2026-08-25T00:32:00Z"
   },
   "assets": {
     "pdf": {
       "filename": "How_to_Love_God.pdf",
-      "bytes": 485555,
-      "sha256": "4aea811955c7d18bf083a409e814816aaa583781a094764041bd5919fd655147"
+      "bytes": 1579614,
+      "sha256": "3bb4dd3e2697b80b1321d0f61690bf6ae335e86f9f7a4642259cc1bba045d458"
     },
     "cover": {
       "filename": "how-to-love-god.webp",
-      "bytes": 44762,
-      "sha256": "f2c68ff5804c5eed5c37f20c51dfc3b636e9fdc315ab8d079293be47ce885792"
+      "bytes": 235636,
+      "sha256": "cb99fabb0c8eb342a1315ae1af284033e0b562933bb04a915ac1215d2c42fe65"
     }
   },
   "records": [

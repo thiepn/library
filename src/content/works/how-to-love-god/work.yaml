@@ -6,19 +6,24 @@ subtitle: Understanding, Receiving, and Growing in Wholehearted Love for God
 type: book
 language: en-US
 contributors: []
-description: How to Love God is a biblical theology, practical discipleship guide, and pastoral resource on wholehearted love for God. It traces the greatest commandment through God’s prior grace in Christ, the Spirit’s renewing work, affection and obedience, Scripture and prayer, worship and repentance, ordinary life, suffering, mission, spiritual warfare, Christian community, and lifelong hope.
-shortDescription: A biblical theology, practical discipleship guide, and pastoral resource on growing in wholehearted love for God.
+description: How to Love God is a biblical theology, practical discipleship guide,
+  and pastoral resource on wholehearted love for God. It traces the greatest commandment
+  through God’s prior grace in Christ, the Spirit’s renewing work, affection and obedience,
+  Scripture and prayer, worship and repentance, ordinary life, suffering, mission,
+  spiritual warfare, Christian community, and lifelong hope.
+shortDescription: A biblical theology, practical discipleship guide, and pastoral
+  resource on growing in wholehearted love for God.
 status: published
 visibility: public
 publication:
   firstPublished: '2026-07-21'
-  lastUpdated: '2026-07-21'
+  lastUpdated: '2026-08-25'
   edition: 1
   editionLabel: First Edition
-  version: 1.0.0
-  activeRelease: 1.0.0
+  version: 1.0.1
+  activeRelease: 1.0.1
 cover:
-  src: /media/works/how-to-love-god/editions/1.0.0/how-to-love-god.webp
+  src: /media/works/how-to-love-god/editions/1.0.1/how-to-love-god.webp
   alt: Cover of How to Love God
 classification:
   subjects:
