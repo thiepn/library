@@ -128,6 +128,27 @@ if (settingsExist) {
   pass('EPUB_READER_SETTINGS_SEPARATE_FROM_PROGRESS', !settings.includes('cfi') && !settings.includes('percentage') && !settings.includes('workId'), 'Global appearance settings remain separate from per-publication reading progress');
 }
 
+const progressFiles = [
+  'src/lib/reader/progress.ts',
+  'src/lib/client/library-db.ts',
+];
+const progressExists = (await Promise.all(progressFiles.map(exists))).every(Boolean);
+pass('EPUB_READER_PROGRESS', progressExists, 'Version-aware EPUB CFI reading-position persistence is present');
+if (progressExists) {
+  const progress = await readFile('src/lib/reader/progress.ts', 'utf8');
+  const libraryDb = await readFile('src/lib/client/library-db.ts', 'utf8');
+  const controller = await readFile('src/lib/reader/controller.ts', 'utf8');
+  const shellHarness = await readFile('src/lib/reader/harness.ts', 'utf8');
+  pass('EPUB_READER_PROGRESS_V2', ['edition', 'releaseVersion', 'cfi', 'percentage', 'furthestPercentage', 'chapterHref', 'chapterLabel'].every((field) => libraryDb.includes(field)) && libraryDb.includes('schemaVersion: 2'), 'Native progress record stores exact CFI, current/furthest percentages, chapter context, edition, and release version');
+  pass('EPUB_READER_PROGRESS_CURRENT_VS_FURTHEST', libraryDb.includes('Math.max(next.furthestPercentage') && progress.includes('this.savedForRelease?.furthestPercentage') && !libraryDb.includes('existing.percentage > next.percentage'), 'Current resume position may move backward while furthest progress remains monotonic');
+  pass('EPUB_READER_PROGRESS_RELEASE_GUARD', progress.includes("saved.edition !== this.identity.edition") && progress.includes("saved.releaseVersion !== this.identity.releaseVersion") && progress.includes("status: 'stale-release'"), 'Saved CFIs restore only for the exact same edition and release version');
+  pass('EPUB_READER_PROGRESS_CFI_RESUME', progress.includes("status: 'same-release', target: saved.cfi") && shellHarness.includes('getResumeCandidate()') && shellHarness.includes("resume?.status === 'same-release'"), 'Same-release EPUBs resume from the exact saved CFI before display');
+  pass('EPUB_READER_PROGRESS_INVALID_CFI_SAFE', controller.includes('if (!target) throw error') && controller.includes('await this.engine.display();'), 'Invalid saved targets fall back to the beginning instead of blocking reading');
+  pass('EPUB_READER_PROGRESS_STORAGE_SAFE', progress.includes("status: 'storage-unavailable'") && progress.includes('Reading must remain functional when IndexedDB is unavailable'), 'IndexedDB failure disables persistence without disabling reading');
+  pass('EPUB_READER_PROGRESS_LEGACY_BRIDGE', libraryDb.includes('Legacy progress writer') && libraryDb.includes('if (isReaderProgressRecordV2(existing)) return') && libraryDb.includes('DB_VERSION = 6'), 'Legacy chapter progress remains compatible and cannot overwrite native CFI progress; no destructive DB migration is required');
+  pass('EPUB_READER_PROGRESS_HARNESS', shellHarness.includes('ReaderProgressController') && shellHarness.includes('mountReaderPublicationHarness') && shellHarness.includes('publication.edition') && shellHarness.includes('publication.version'), 'Generic publication harness supplies exact release identity to the progress controller');
+}
+
 const worksRoot = 'src/content/works';
 const releaseRoot = 'src/publications/releases';
 for (const entry of await readdir(worksRoot, { withFileTypes: true })) {
