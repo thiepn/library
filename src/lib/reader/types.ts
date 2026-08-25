@@ -5,6 +5,7 @@ export type ReaderAlignment = 'left' | 'justify';
 export type ReaderFontFamily = 'publisher' | 'literata' | 'serif' | 'sans' | 'accessible';
 export type ReaderTextWidth = 'narrow' | 'medium' | 'wide';
 export type ReaderPageMargins = 'small' | 'medium' | 'large';
+export type ReaderPointerType = 'mouse' | 'touch' | 'pen' | 'unknown';
 
 export interface ReaderAppearance {
   fontFamily: ReaderFontFamily;
@@ -56,6 +57,39 @@ export interface ReaderSelection {
   cfiRange: string;
   text: string;
 }
+
+export type ReaderContentInteraction =
+  | {
+      type: 'tap';
+      xRatio: number;
+      yRatio: number;
+      pointerType: ReaderPointerType;
+      interactive: boolean;
+      hasSelection: boolean;
+    }
+  | {
+      type: 'swipe';
+      direction: 'left' | 'right';
+      deltaX: number;
+      deltaY: number;
+      pointerType: ReaderPointerType;
+      interactive: boolean;
+      hasSelection: boolean;
+    }
+  | {
+      type: 'key';
+      key: string;
+      code: string;
+      repeat: boolean;
+      shiftKey: boolean;
+      altKey: boolean;
+      ctrlKey: boolean;
+      metaKey: boolean;
+      interactive: boolean;
+      hasSelection: boolean;
+    };
+
+export type ReaderInteractionHandler = (interaction: ReaderContentInteraction) => boolean | void;
 
 export interface ReaderLocationMap {
   serialized: string;
