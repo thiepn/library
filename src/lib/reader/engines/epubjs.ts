@@ -37,13 +37,55 @@ const FONT_STACKS: Record<Exclude<ReaderFontFamily, 'publisher'>, string> = {
   accessible: 'Verdana, "Segoe UI", Arial, sans-serif',
 };
 
+interface ThemePalette {
+  background: string;
+  text: string;
+  secondary: string;
+  link: string;
+  rule: string;
+  surface: string;
+  code: string;
+  mark: string;
+}
+
+const THEME_PALETTES: Record<ReaderAppearance['theme'], ThemePalette> = {
+  light: { background: '#fbfbfa', text: '#1d1e1c', secondary: '#555a55', link: '#315f86', rule: '#d7d9d5', surface: '#f1f2ef', code: '#f0f1ee', mark: '#fff1a8' },
+  warm: { background: '#f7f3e8', text: '#28251f', secondary: '#625b50', link: '#6f552f', rule: '#d7cebd', surface: '#eee7d8', code: '#eee6d5', mark: '#eadc91' },
+  sepia: { background: '#efe3ca', text: '#30271f', secondary: '#665545', link: '#75522f', rule: '#cdbb9d', surface: '#e6d5b6', code: '#e5d4b5', mark: '#ddc77f' },
+  gray: { background: '#e7e8e8', text: '#26282a', secondary: '#5d6265', link: '#3d5f72', rule: '#c7cbcd', surface: '#daddde', code: '#d8dcdd', mark: '#d8cf83' },
+  dark: { background: '#1c1d1e', text: '#e8e7e3', secondary: '#b9b8b2', link: '#9bc8e6', rule: '#454748', surface: '#292b2c', code: '#27292a', mark: '#655d2d' },
+  black: { background: '#000000', text: '#efefed', secondary: '#b9b9b5', link: '#abd5ef', rule: '#353535', surface: '#111111', code: '#151515', mark: '#5f5728' },
+};
+
+function themeRules(palette: ThemePalette): Record<string, Record<string, string>> {
+  return {
+    'html, body': {
+      color: palette.text,
+      background: palette.background,
+      'background-color': palette.background,
+    },
+    body: { color: palette.text, background: palette.background },
+    'h1, h2, h3, h4, h5, h6, p, li, dt, dd, figcaption': { color: 'inherit' },
+    a: { color: palette.link },
+    'blockquote, aside': {
+      color: palette.secondary,
+      'border-color': palette.rule,
+    },
+    'hr, table, th, td': { 'border-color': palette.rule },
+    th: { background: palette.surface, color: palette.text },
+    'pre, code, kbd, samp': { background: palette.code, color: palette.text },
+    mark: { background: palette.mark, color: palette.text },
+    'img, svg, video': { 'color-scheme': 'normal' },
+  };
+}
+
 const THEME_RULES: Record<ReaderAppearance['theme'], Record<string, Record<string, string>>> = {
-  light: { body: { color: '#1f211f', background: '#ffffff' }, a: { color: '#315f86' } },
-  warm: { body: { color: '#27251f', background: '#f7f1e5' }, a: { color: '#6f552f' } },
-  sepia: { body: { color: '#30271f', background: '#efe3ca' }, a: { color: '#75522f' } },
-  gray: { body: { color: '#26282a', background: '#e7e8e8' }, a: { color: '#3d5f72' } },
-  dark: { body: { color: '#e8e7e3', background: '#1c1d1e' }, a: { color: '#9bc8e6' } },
-  black: { body: { color: '#efefed', background: '#000000' }, a: { color: '#abd5ef' } },
+  light: themeRules(THEME_PALETTES.light),
+  warm: themeRules(THEME_PALETTES.warm),
+  sepia: themeRules(THEME_PALETTES.sepia),
+  gray: themeRules(THEME_PALETTES.gray),
+  dark: themeRules(THEME_PALETTES.dark),
+  black: themeRules(THEME_PALETTES.black),
 };
 
 function mapFlow(flow: ReaderFlow): string {
