@@ -105,8 +105,9 @@ export class ReaderReadingModeController {
   }
 
   private attachResizeMonitoring(): void {
-    if ('ResizeObserver' in window) {
-      this.resizeObserver = new ResizeObserver(() => this.scheduleViewportRefresh());
+    const ResizeObserverCtor = (globalThis as unknown as { ResizeObserver?: typeof ResizeObserver }).ResizeObserver;
+    if (ResizeObserverCtor) {
+      this.resizeObserver = new ResizeObserverCtor(() => this.scheduleViewportRefresh());
       this.resizeObserver.observe(this.viewport);
     } else {
       window.addEventListener('resize', this.handleWindowResize, { passive: true });
