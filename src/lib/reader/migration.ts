@@ -50,7 +50,14 @@ export function readerCanOpen(work: ResolvedWork): boolean {
   return resolveReaderMigration(work).mode !== 'unavailable';
 }
 
-function localizeArtifact(artifact: ReaderPublicationArtifact, base: string): ReaderPublicationArtifact {
+/**
+ * Convert a canonical production media URL to the current Library base. Noncanonical
+ * URLs are preserved so the release registry remains authoritative for external media.
+ */
+export function localizeReaderArtifact(
+  artifact: ReaderPublicationArtifact,
+  base: string,
+): ReaderPublicationArtifact {
   if (!artifact.url.startsWith(CANONICAL_MEDIA_ORIGIN)) return artifact;
   const normalizedBase = base.replace(/\/$/, '');
   const relative = artifact.url.slice(CANONICAL_MEDIA_ORIGIN.length);
@@ -70,7 +77,7 @@ export function localizeReaderPublication(
 ): ReaderPublicationCandidate {
   return {
     ...publication,
-    epub: localizeArtifact(publication.epub, base),
-    ...(publication.pdf ? { pdf: localizeArtifact(publication.pdf, base) } : {}),
+    epub: localizeReaderArtifact(publication.epub, base),
+    ...(publication.pdf ? { pdf: localizeReaderArtifact(publication.pdf, base) } : {}),
   };
 }
