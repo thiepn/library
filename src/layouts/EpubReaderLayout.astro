@@ -12,12 +12,14 @@ import '../styles/reader-accessibility.css';
 interface Props {
   title?: string;
   description?: string;
+  language?: string;
   noindex?: boolean;
 }
 
 const {
   title = 'Reader',
   description = 'Native EPUB reading experience in Thiepn Library.',
+  language = 'en',
   noindex = true,
 } = Astro.props;
 const pageTitle = `${title} — Thiepn Library`;
@@ -26,7 +28,7 @@ const href = (path = '') => `${base}${path}`;
 const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).href;
 ---
 <!doctype html>
-<html lang="en" data-reader-document data-reader-theme="light">
+<html lang={language} data-reader-document data-reader-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
