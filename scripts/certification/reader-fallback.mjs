@@ -93,7 +93,7 @@ if (present) {
   pass(
     'EPUB_READER_FALLBACK_LEGACY_DIRECT',
     launcher.includes('const legacyFallbackHref = first')
-      && launcher.includes('`/works/${work.slug}/read/${first.entry.data.id}`')
+      && launcher.includes('/works/${work.slug}/read/${first.entry.data.id}`')
       && launcher.includes('fallbackWebHref={legacyFallbackHref ?? \'\'}')
       && legacyChapter.includes('ReaderLayout'),
     'A verified Markdown fallback points directly to a materialized chapter instead of looping through the EPUB-first /read launcher',
