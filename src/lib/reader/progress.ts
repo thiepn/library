@@ -28,6 +28,14 @@ export interface ReaderProgressControllerOptions {
   saveDebounceMs?: number;
 }
 
+export interface ReaderProgressState {
+  currentPercentage: number;
+  furthestPercentage: number;
+  chapterHref?: string;
+  chapterLabel?: string;
+  updatedAt?: string;
+}
+
 const DEFAULT_SAVE_DEBOUNCE_MS = 250;
 
 function clamp01(value: number): number {
@@ -52,10 +60,12 @@ export class ReaderProgressController {
   private readonly controller: ReaderController;
   private readonly identity: ReaderProgressIdentity;
   private readonly saveDebounceMs: number;
+  private readonly listeners = new Set<(state: ReaderProgressState) => void>();
   private unsubscribeController: Unsubscribe | undefined;
   private saveTimer: number | undefined;
   private pending: ReaderProgressRecordV2 | undefined;
   private savedForRelease: ReaderProgressRecordV2 | undefined;
+  private state: ReaderProgressState = { currentPercentage: 0, furthestPercentage: 0 };
   private started = false;
   private destroyed = false;
 
@@ -73,6 +83,17 @@ export class ReaderProgressController {
     return { ...this.identity };
   }
 
+  get snapshot(): ReaderProgressState {
+    return { ...this.state };
+  }
+
+  subscribe(listener: (state: ReaderProgressState) => void): Unsubscribe {
+    this.assertUsable();
+    this.listeners.add(listener);
+    listener(this.snapshot);
+    return () => this.listeners.delete(listener);
+  }
+
   async getResumeCandidate(): Promise<ReaderResumeCandidate> {
     this.assertUsable();
     try {
@@ -85,6 +106,7 @@ export class ReaderProgressController {
         return { status: 'stale-release', saved };
       }
       this.savedForRelease = saved;
+      this.applyRecord(saved);
       return { status: 'same-release', target: saved.cfi, saved };
     } catch {
       return { status: 'storage-unavailable' };
@@ -118,6 +140,7 @@ export class ReaderProgressController {
           this.savedForRelease?.furthestPercentage ?? 0,
         ),
       };
+      this.applyRecord(this.savedForRelease);
     } catch {
       // Reading must remain functional when IndexedDB is unavailable.
     }
@@ -133,12 +156,14 @@ export class ReaderProgressController {
     window.removeEventListener('pagehide', this.handlePageHide);
     void this.flushBeforeDestroy();
     this.destroyed = true;
+    this.listeners.clear();
   }
 
   private capture(state: ReaderControllerState): void {
     if (this.destroyed || state.status !== 'ready' || !state.location) return;
     const next = this.toRecord(state.location, state.toc);
     this.pending = next;
+    this.applyRecord(next);
     this.scheduleSave();
   }
 
@@ -171,6 +196,18 @@ export class ReaderProgressController {
       ...(chapterLabel ? { chapterLabel } : {}),
       updatedAt: new Date().toISOString(),
     };
+  }
+
+  private applyRecord(record: ReaderProgressRecordV2): void {
+    this.state = {
+      currentPercentage: clamp01(record.percentage),
+      furthestPercentage: Math.max(clamp01(record.percentage), clamp01(record.furthestPercentage)),
+      ...(record.chapterHref ? { chapterHref: record.chapterHref } : {}),
+      ...(record.chapterLabel ? { chapterLabel: record.chapterLabel } : {}),
+      ...(record.updatedAt ? { updatedAt: record.updatedAt } : {}),
+    };
+    const snapshot = this.snapshot;
+    for (const listener of this.listeners) listener(snapshot);
   }
 
   private scheduleSave(): void {
