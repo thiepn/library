@@ -5,6 +5,7 @@ import ReaderShell from '../../../../components/reader/ReaderShell.astro';
 import { getWorks, type ResolvedWork } from '../../../../lib/content/repository';
 import { getChaptersForWork } from '../../../../lib/content/chapters';
 import {
+  localizeReaderArtifact,
   localizeReaderPublication,
   readerCanOpen,
   resolveReaderMigration,
@@ -23,10 +24,19 @@ const migration = resolveReaderMigration(work);
 const publication = migration.publication
   ? localizeReaderPublication(migration.publication, base)
   : undefined;
-const chapters = migration.mode === 'legacy-web' ? await getChaptersForWork(work.id) : [];
-const first = chapters[0];
-const ids = chapters.map((chapter) => chapter.entry.data.id);
+
+// Keep the verified Markdown payload available as an explicit P26 escape path even
+// when the active release normally opens through EPUB. This is never auto-selected.
+const legacyChapters = work.webMaterialized ? await getChaptersForWork(work.id) : [];
+const first = legacyChapters[0];
+const ids = legacyChapters.map((chapter) => chapter.entry.data.id);
 const bookHref = `${base}/works/${work.slug}`;
+const legacyFallbackHref = first
+  ? `${base}/works/${work.slug}/read/${first.entry.data.id}`
+  : undefined;
+const pdfFallback = work.release?.artifacts.pdf
+  ? localizeReaderArtifact(work.release.artifacts.pdf, base)
+  : undefined;
 ---
 {migration.mode === 'native-epub' && publication ? (
   <EpubReaderLayout
@@ -41,30 +51,40 @@ const bookHref = `${base}/works/${work.slug}`;
       subtitle={publication.subtitle ?? ''}
       backHref={bookHref}
       loadingMessage={`Opening ${publication.title}…`}
+      fallbackWebHref={legacyFallbackHref ?? ''}
+      fallbackPdfHref={publication.pdf?.url ?? ''}
+      fallbackEpubHref={publication.epub.url}
     />
     <script>
       import {
-        mountReaderPublicationWithCompatibilityHarness,
-        type ReaderCompatibilityHarnessHandle,
+        mountReaderPublicationWithFallbackHarness,
+        mountReaderShell,
+        setReaderFailureState,
+        type ReaderFallbackHarnessHandle,
         type ReaderPublicationCandidate,
       } from '../../../../lib/reader';
 
       const publicationNode = document.querySelector<HTMLElement>('[data-reader-publication]');
       const root = document.querySelector<HTMLElement>('[data-reader-shell]');
-      let mounted: ReaderCompatibilityHarnessHandle | undefined;
+      let mounted: ReaderFallbackHarnessHandle | undefined;
+      let bootstrapRetry: ((event: MouseEvent) => void) | undefined;
       let pageClosing = false;
 
-      function showLaunchError(message: string) {
+      function showBootstrapFailure(error: unknown) {
         if (!root) return;
-        root.dataset.readerStatus = 'error';
-        const viewport = root.querySelector<HTMLElement>('[data-reader-viewport]');
-        const loading = root.querySelector<HTMLElement>('[data-reader-loading]');
-        const error = root.querySelector<HTMLElement>('[data-reader-error]');
-        const errorMessage = root.querySelector<HTMLElement>('[data-reader-error-message]');
-        viewport?.setAttribute('aria-busy', 'false');
-        if (loading) loading.hidden = true;
-        if (error) error.hidden = false;
-        if (errorMessage) errorMessage.textContent = message;
+        const shell = mountReaderShell(root);
+        const failure = setReaderFailureState(shell, error);
+        const retry = root.querySelector<HTMLButtonElement>('[data-reader-command="retry"]');
+        if (!failure.retryable || !retry) return;
+        retry.textContent = 'Reload page';
+        bootstrapRetry = (event: MouseEvent) => {
+          const origin = event.target instanceof Element ? event.target : null;
+          const button = origin?.closest<HTMLElement>('[data-reader-command="retry"]');
+          if (!button || !root.contains(button)) return;
+          event.preventDefault();
+          location.reload();
+        };
+        root.addEventListener('click', bootstrapRetry);
       }
 
       if (publicationNode && root) {
@@ -72,29 +92,27 @@ const bookHref = `${base}/works/${work.slug}`;
           const raw = publicationNode.dataset.readerPublication;
           if (!raw) throw new Error('Reader publication metadata is missing.');
           const publication = JSON.parse(raw) as ReaderPublicationCandidate;
-          void mountReaderPublicationWithCompatibilityHarness(root, publication)
+          void mountReaderPublicationWithFallbackHarness(root, publication)
             .then((handle) => {
               if (pageClosing) handle.destroy();
               else mounted = handle;
             })
-            .catch((error) => {
-              const message = error instanceof Error ? error.message : 'Unable to open this EPUB edition.';
-              showLaunchError(message);
-            });
+            .catch(showBootstrapFailure);
         } catch (error) {
-          const message = error instanceof Error ? error.message : 'Unable to prepare this EPUB edition.';
-          showLaunchError(message);
+          showBootstrapFailure(error);
         }
       }
 
       window.addEventListener('pagehide', () => {
         pageClosing = true;
+        if (root && bootstrapRetry) root.removeEventListener('click', bootstrapRetry);
+        bootstrapRetry = undefined;
         mounted?.destroy();
         mounted = undefined;
       }, { once: true });
     </script>
   </EpubReaderLayout>
-) : migration.mode === 'legacy-web' ? (
+) : migration.mode === 'legacy-web' && first ? (
   <BaseLayout title={`Read ${work.title}`} noindex>
     <div class="page">
       <section class="section">
@@ -104,12 +122,12 @@ const bookHref = `${base}/works/${work.slug}`;
           data-base={base}
           data-work-id={work.id}
           data-work-slug={work.slug}
-          data-first-chapter={first?.entry.data.id}
+          data-first-chapter={first.entry.data.id}
           data-chapter-ids={JSON.stringify(ids)}
         >
           <p class="eyebrow">Reader</p>
           <h2>Opening {work.title}…</h2>
-          {first && <p><a href={`${base}/works/${work.slug}/read/${first.entry.data.id}`}>Open the first section</a></p>}
+          <p><a href={`${base}/works/${work.slug}/read/${first.entry.data.id}`}>Open the first section</a></p>
         </div>
       </section>
     </div>
@@ -132,8 +150,12 @@ const bookHref = `${base}/works/${work.slug}`;
       <section class="section">
         <div class="empty">
           <p class="eyebrow">Reader unavailable</p>
-          <h2>This edition does not currently have a readable web publication.</h2>
-          <p><a href={bookHref}>Return to the book page</a></p>
+          <h2>This edition does not currently have a usable web reading path.</h2>
+          <p>The Library did not silently switch this title to a different edition or format.</p>
+          <div class="actions">
+            {pdfFallback && <a class="button" href={pdfFallback.url}>Open PDF</a>}
+            <a class="button secondary" href={bookHref}>Return to the book page</a>
+          </div>
         </div>
       </section>
     </div>
