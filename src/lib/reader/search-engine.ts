@@ -1,4 +1,5 @@
 import ePub, { type Book } from 'epubjs';
+import { yieldReaderMainThread } from './performance';
 
 export interface ReaderSearchMatch {
   cfi: string;
@@ -61,12 +62,6 @@ function abortError(): Error {
 
 function assertNotAborted(signal?: AbortSignal): void {
   if (signal?.aborted) throw abortError();
-}
-
-async function yieldToMainThread(signal?: AbortSignal): Promise<void> {
-  assertNotAborted(signal);
-  await new Promise<void>((resolve) => setTimeout(resolve, 0));
-  assertNotAborted(signal);
 }
 
 function boundedInteger(value: number | undefined, fallback: number, min: number, max: number): number {
@@ -156,12 +151,19 @@ export class EpubSearchEngine {
       }
 
       scannedSections = index + 1;
-      options.onProgress?.({ scannedSections, totalSections, resultCount: deduped.size });
+      const finished = scannedSections >= totalSections || deduped.size >= maxResults;
+      const yieldBoundary = scannedSections % yieldEverySections === 0;
+      if (finished || yieldBoundary) {
+        options.onProgress?.({ scannedSections, totalSections, resultCount: deduped.size });
+      }
       if (deduped.size >= maxResults) {
         truncated = truncated || scannedSections < totalSections;
         break;
       }
-      if (scannedSections % yieldEverySections === 0) await yieldToMainThread(signal);
+      if (yieldBoundary) {
+        await yieldReaderMainThread(signal);
+        assertNotAborted(signal);
+      }
     }
 
     const results = [...deduped.values()];
