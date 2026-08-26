@@ -7,6 +7,7 @@ import {
   type ReaderInteractionHandler,
   type ReaderLayoutUpdate,
   type ReaderLocation,
+  type ReaderLocationMap,
   type ReaderOpenOptions,
   type ReaderSelection,
   type ReaderSpread,
@@ -122,6 +123,25 @@ export class ReaderController {
     await this.engine.display(target);
   }
 
+  async generateLocations(charactersPerLocation = 1600): Promise<ReaderLocationMap> {
+    this.requireReady();
+    const map = await this.engine.generateLocations(charactersPerLocation);
+    this.refreshCurrentPercentage();
+    return map;
+  }
+
+  loadLocations(serialized: string): ReaderLocationMap {
+    this.requireReady();
+    const map = this.engine.loadLocations(serialized);
+    this.refreshCurrentPercentage();
+    return map;
+  }
+
+  percentageFromCfi(cfi: string): number | undefined {
+    this.requireReady();
+    return this.engine.percentageFromCfi(cfi);
+  }
+
   subscribe(listener: (state: ReaderControllerState) => void): Unsubscribe {
     this.stateListeners.add(listener);
     listener(this.snapshot);
@@ -158,7 +178,9 @@ export class ReaderController {
     this.unsubscribeSelection?.();
     this.unsubscribeInteraction?.();
     this.unsubscribeLocation = this.engine.onLocationChange((location) => {
-      this.setState({ ...this.state, location });
+      const percentage = location.percentage ?? this.engine.percentageFromCfi(location.cfi);
+      const nextLocation = percentage === undefined ? location : { ...location, percentage };
+      this.setState({ ...this.state, location: nextLocation });
     });
     this.unsubscribeSelection = this.engine.onSelection((selection) => {
       for (const listener of this.selectionListeners) listener(selection);
@@ -170,6 +192,14 @@ export class ReaderController {
       }
       return handled;
     });
+  }
+
+  private refreshCurrentPercentage(): void {
+    const location = this.state.location;
+    if (!location) return;
+    const percentage = this.engine.percentageFromCfi(location.cfi);
+    if (percentage === undefined) return;
+    this.setState({ ...this.state, location: { ...location, percentage } });
   }
 
   private setState(next: ReaderControllerState): void {
