@@ -126,9 +126,8 @@ export class EpubSearchEngine {
     let failedSections = 0;
     let truncated = false;
 
-    for (let index = 0; index < sections.length; index += 1) {
+    for (const [index, section] of sections.entries()) {
       assertNotAborted(signal);
-      const section = sections[index];
       try {
         await Promise.resolve(section.load(book.load.bind(book)));
         assertNotAborted(signal);

@@ -27,7 +27,7 @@ export interface ReaderSearchState {
   failedSections: number;
   truncated: boolean;
   fromCache: boolean;
-  selectedCfi?: string;
+  selectedCfi: string | undefined;
   message: string;
 }
 
@@ -152,7 +152,7 @@ export class ReaderSearchController {
   private readonly engine: EpubSearchEngine;
   private readonly cache = new ReaderSearchCache();
   private readonly highlighter: ReaderSearchHighlighter;
-  private readonly identity?: ReaderSearchCacheIdentity;
+  private readonly identity: ReaderSearchCacheIdentity | undefined;
   private readonly minQueryLength: number;
   private readonly maxQueryLength: number;
   private readonly maxResults: number;
@@ -167,6 +167,7 @@ export class ReaderSearchController {
     failedSections: 0,
     truncated: false,
     fromCache: false,
+    selectedCfi: undefined,
     message: 'Search the full EPUB.',
   };
   private listeners = new Set<(state: ReaderSearchState) => void>();
@@ -390,8 +391,7 @@ export class ReaderSearchController {
 
   private renderResults(): void {
     this.ui.results.replaceChildren();
-    for (let index = 0; index < this.state.results.length; index += 1) {
-      const result = this.state.results[index];
+    for (const [index, result] of this.state.results.entries()) {
       const item = document.createElement('li');
       const button = document.createElement('button');
       button.type = 'button';
