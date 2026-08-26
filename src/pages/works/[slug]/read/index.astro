@@ -38,7 +38,7 @@ const bookHref = `${base}/works/${work.slug}`;
     <div data-reader-publication={JSON.stringify(publication)} hidden></div>
     <ReaderShell
       title={publication.title}
-      subtitle={publication.subtitle}
+      subtitle={publication.subtitle ?? ''}
       backHref={bookHref}
       loadingMessage={`Opening ${publication.title}…`}
     />
