@@ -36,7 +36,7 @@ if (present) {
     'EPUB_READER_MOBILE_KEYBOARD',
     mobile.includes('keyboardThreshold')
       && mobile.includes('focusedEditable')
-      && mobile.includes("data-reader-keyboard")
+      && mobile.includes('readerKeyboard')
       && mobile.includes('keepFocusedControlVisible')
       && css.includes('[data-reader-keyboard="open"] .reader-shell__bar--bottom')
       && css.includes('[data-reader-keyboard="open"] .reader-search-panel'),
@@ -46,7 +46,7 @@ if (present) {
     'EPUB_READER_MOBILE_ORIENTATION',
     mobile.includes("orientation: ReaderMobileOrientation")
       && mobile.includes("window.addEventListener('orientationchange'")
-      && mobile.includes('data-reader-orientation')
+      && mobile.includes('readerOrientation')
       && css.includes('@media (max-width: 760px) and (orientation: landscape)')
       && css.includes('[data-reader-compact="true"]'),
     'P21 exposes portrait/landscape and compact-height states for low-height phone layouts',
@@ -135,7 +135,8 @@ if (present) {
   );
   pass(
     'EPUB_READER_MOBILE_LEGACY_PRESERVED',
-    legacyLayout.includes('data-reader-root')
+    legacyLayout.includes("import '../styles/reader.css';")
+      && legacyLayout.includes('class="reader-body"')
       && !legacyLayout.includes('ReaderMobileController')
       && !legacyLayout.includes('reader-mobile.css'),
     'The existing production Markdown ReaderLayout remains outside the staged P21 EPUB mobile stack',
