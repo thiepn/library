@@ -390,7 +390,7 @@ export class ReaderSearchController {
   }
 
   private renderResults(): void {
-    this.ui.results.replaceChildren();
+    const fragment = document.createDocumentFragment();
     for (const [index, result] of this.state.results.entries()) {
       const item = document.createElement('li');
       const button = document.createElement('button');
@@ -408,8 +408,9 @@ export class ReaderSearchController {
       appendHighlightedExcerpt(excerpt, result.excerpt || this.state.query, this.state.query);
       button.append(meta, excerpt);
       item.append(button);
-      this.ui.results.append(item);
+      fragment.append(item);
     }
+    this.ui.results.replaceChildren(fragment);
   }
 
   private async openResult(button: HTMLButtonElement): Promise<void> {
