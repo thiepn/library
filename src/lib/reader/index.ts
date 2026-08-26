@@ -8,6 +8,16 @@ export { ReaderProgressController } from './progress';
 export { ReaderProgressUxController } from './progress-ux';
 export { ReaderReadingModeController } from './reading-mode';
 export { resolveReaderPublicationCandidate } from './publication';
+export {
+  deleteReaderBookmark,
+  getReaderBookmarksForWork,
+  isReaderBookmarkRecordV2,
+  putReaderBookmark,
+  READER_BOOKMARK_SCHEMA_VERSION,
+  subscribeReaderBookmarkChanges,
+} from './bookmark-store';
+export { ReaderBookmarksController, READER_BOOKMARK_MAX_PER_RELEASE } from './bookmarks';
+export { mountReaderPublicationWithBookmarksHarness, mountReaderShellWithBookmarksHarness } from './bookmarks-harness';
 export { ReaderSearchCache } from './search-cache';
 export { EpubSearchEngine, normalizeReaderSearchQuery } from './search-engine';
 export { ReaderSearchController, READER_SEARCH_MAX_RESULTS } from './search';
@@ -68,6 +78,15 @@ export type {
   ReaderProgressUxState,
 } from './progress-ux';
 export type { ReaderOrientation, ReaderReadingModeOptions, ReaderReadingModeState } from './reading-mode';
+export type { ReaderBookmarkIdentity, ReaderBookmarkRecordV2 } from './bookmark-store';
+export type {
+  ReaderBookmarkSort,
+  ReaderBookmarkStorageMode,
+  ReaderBookmarksControllerOptions,
+  ReaderBookmarksState,
+  ReaderBookmarksStatus,
+} from './bookmarks';
+export type { ReaderBookmarksHarnessHandle } from './bookmarks-harness';
 export type { ReaderSearchCacheIdentity } from './search-cache';
 export type { ReaderSearchMatch, ReaderSearchOptions, ReaderSearchProgress, ReaderSearchResponse } from './search-engine';
 export type { ReaderSearchControllerOptions, ReaderSearchResult, ReaderSearchState, ReaderSearchStatus } from './search';
