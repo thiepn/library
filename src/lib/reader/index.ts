@@ -8,6 +8,11 @@ export { ReaderProgressController } from './progress';
 export { ReaderProgressUxController } from './progress-ux';
 export { ReaderReadingModeController } from './reading-mode';
 export { resolveReaderPublicationCandidate } from './publication';
+export { ReaderSearchCache } from './search-cache';
+export { EpubSearchEngine, normalizeReaderSearchQuery } from './search-engine';
+export { ReaderSearchController, READER_SEARCH_MAX_RESULTS } from './search';
+export { ReaderSearchHighlighter } from './search-highlighter';
+export { mountReaderPublicationWithSearchHarness, mountReaderShellWithSearchHarness } from './search-harness';
 export {
   parseReaderSettings,
   ReaderSettingsStore,
@@ -63,6 +68,10 @@ export type {
   ReaderProgressUxState,
 } from './progress-ux';
 export type { ReaderOrientation, ReaderReadingModeOptions, ReaderReadingModeState } from './reading-mode';
+export type { ReaderSearchCacheIdentity } from './search-cache';
+export type { ReaderSearchMatch, ReaderSearchOptions, ReaderSearchProgress, ReaderSearchResponse } from './search-engine';
+export type { ReaderSearchControllerOptions, ReaderSearchResult, ReaderSearchState, ReaderSearchStatus } from './search';
+export type { ReaderSearchHarnessHandle } from './search-harness';
 export type { ReaderSettingsPatch, ReaderSettingsRecord } from './settings';
 export type { ReaderNavigationAvailability, ReaderProgressDisplay, ReaderShellCommand, ReaderShellStatus, ReaderTypographyIntent } from './shell';
 export type { ReaderThemeOptions, ReaderThemeState } from './theme';
