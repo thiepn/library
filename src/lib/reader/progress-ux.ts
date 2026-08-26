@@ -1,6 +1,7 @@
 import '../../styles/reader-progress.css';
 import { ReaderController, type ReaderControllerState } from './controller';
 import { ReaderLocationCache } from './location-cache';
+import { scheduleReaderIdleTask } from './performance';
 import {
   ReaderProgressController,
   type ReaderProgressIdentity,
@@ -25,6 +26,7 @@ export interface ReaderProgressUxState {
 export interface ReaderProgressUxOptions {
   charactersPerLocation?: number;
   generationDelayMs?: number;
+  generationIdleTimeoutMs?: number;
 }
 
 interface ProgressElements {
@@ -34,7 +36,8 @@ interface ProgressElements {
 }
 
 const DEFAULT_CHARACTERS_PER_LOCATION = 1600;
-const DEFAULT_GENERATION_DELAY_MS = 320;
+const DEFAULT_GENERATION_DELAY_MS = 500;
+const DEFAULT_GENERATION_IDLE_TIMEOUT_MS = 2500;
 
 function clamp01(value: number): number {
   return Math.min(1, Math.max(0, Number.isFinite(value) ? value : 0));
@@ -132,10 +135,11 @@ export class ReaderProgressUxController {
   private readonly cache = new ReaderLocationCache();
   private readonly charactersPerLocation: number;
   private readonly generationDelayMs: number;
+  private readonly generationIdleTimeoutMs: number;
   private readonly listeners = new Set<(state: ReaderProgressUxState) => void>();
   private readonly elements: ProgressElements;
   private cleanups: Unsubscribe[] = [];
-  private generationTimer: number | undefined;
+  private cancelGeneration: Unsubscribe | undefined;
   private controllerState: ReaderControllerState;
   private progressState: ReaderProgressState;
   private serializedMap: string | undefined;
@@ -158,6 +162,7 @@ export class ReaderProgressUxController {
     this.identity = identity;
     this.charactersPerLocation = Math.max(500, Math.round(options.charactersPerLocation ?? DEFAULT_CHARACTERS_PER_LOCATION));
     this.generationDelayMs = Math.max(0, Math.round(options.generationDelayMs ?? DEFAULT_GENERATION_DELAY_MS));
+    this.generationIdleTimeoutMs = Math.max(500, Math.round(options.generationIdleTimeoutMs ?? DEFAULT_GENERATION_IDLE_TIMEOUT_MS));
     this.controllerState = controller.snapshot;
     this.progressState = progress.snapshot;
     this.elements = ensureProgressElements(shell.root);
@@ -236,8 +241,8 @@ export class ReaderProgressUxController {
   destroy(): void {
     if (this.destroyed) return;
     this.destroyed = true;
-    if (this.generationTimer !== undefined) window.clearTimeout(this.generationTimer);
-    this.generationTimer = undefined;
+    this.cancelGeneration?.();
+    this.cancelGeneration = undefined;
     this.elements.input.removeEventListener('change', this.handleProgressChange);
     for (const cleanup of this.cleanups) cleanup();
     this.cleanups = [];
@@ -269,12 +274,18 @@ export class ReaderProgressUxController {
   }
 
   private scheduleGeneration(): void {
-    if (this.destroyed || this.generationTimer !== undefined) return;
-    this.setMapStatus('generating');
-    this.generationTimer = window.setTimeout(() => {
-      this.generationTimer = undefined;
-      void this.generateLocationMap();
-    }, this.generationDelayMs);
+    if (this.destroyed || this.cancelGeneration) return;
+    this.setMapStatus('idle');
+    this.cancelGeneration = scheduleReaderIdleTask(async () => {
+      this.cancelGeneration = undefined;
+      if (this.destroyed || this.controllerState.status !== 'ready') return;
+      this.setMapStatus('generating');
+      await this.generateLocationMap();
+    }, {
+      delayMs: this.generationDelayMs,
+      timeoutMs: this.generationIdleTimeoutMs,
+      visibleOnly: true,
+    });
   }
 
   private async generateLocationMap(): Promise<void> {
@@ -290,6 +301,8 @@ export class ReaderProgressUxController {
   }
 
   private acceptMap(map: ReaderLocationMap): void {
+    this.cancelGeneration?.();
+    this.cancelGeneration = undefined;
     this.serializedMap = map.serialized;
     this.locationCfis = parseLocationCfis(map.serialized);
     this.state = {
