@@ -1,13 +1,13 @@
 # Library production deployment status
 
-Run: 33009998549
-Source SHA: 10b64ab61bba0dd267227d760795515d81190691
+Run: 33010336712
+Source SHA: 8461f81f43b29a0df88c347c9c13eb0f063d913a
 
 | Stage | Outcome |
 | --- | --- |
 | readiness job | success |
 | production gate | true |
 | blockers | none |
-| certified build + R2 media staging | failure |
-| GitHub Pages deployment | skipped |
-| live application + media verification | skipped |
+| certified build + R2 media staging | success |
+| GitHub Pages deployment | success |
+| live application + media verification | success |
