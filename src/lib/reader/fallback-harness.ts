@@ -10,7 +10,7 @@ import type { ReaderOpenOptions } from './types';
 
 export interface ReaderFallbackHarnessHandle {
   readonly publication: ReaderPublicationCandidate;
-  readonly reader?: ReaderCompatibilityHarnessHandle;
+  readonly reader: ReaderCompatibilityHarnessHandle | undefined;
   retry(): Promise<boolean>;
   destroy(): void;
 }
