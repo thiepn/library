@@ -11,6 +11,9 @@ interface Props {
   chapterLabel?: string;
   progressLabel?: string;
   loadingMessage?: string;
+  fallbackWebHref?: string;
+  fallbackPdfHref?: string;
+  fallbackEpubHref?: string;
 }
 
 const {
@@ -21,6 +24,9 @@ const {
   chapterLabel = 'Beginning',
   progressLabel = '0%',
   loadingMessage = 'Opening book…',
+  fallbackWebHref,
+  fallbackPdfHref,
+  fallbackEpubHref,
 } = Astro.props;
 ---
 <div class="reader-shell" data-reader-shell data-reader-status="loading" data-reader-controls="visible" data-reader-flow="paginated" data-reader-spread-preference="auto" data-reader-spread="single" data-reader-font-family="publisher" data-reader-alignment="left">
@@ -120,11 +126,14 @@ const {
 
     <section class="reader-shell__state reader-shell__state--error" data-reader-error role="alert" hidden>
       <p class="reader-shell__eyebrow">Reader unavailable</p>
-      <h1>We couldn’t open this book.</h1>
-      <p data-reader-error-message>Try again, or return to the book page.</p>
-      <div class="reader-shell__error-actions">
+      <h1 data-reader-error-heading>We couldn’t continue in the reader.</h1>
+      <p data-reader-error-message>Try again, or use another available reading format.</p>
+      <div class="reader-shell__error-actions" role="group" aria-label="Reader recovery options">
         <button type="button" data-reader-command="retry">Try again</button>
-        <a href={backHref}>{backLabel}</a>
+        {fallbackWebHref && <a data-reader-fallback="legacy-web" href={fallbackWebHref}>Open web edition</a>}
+        {fallbackPdfHref && <a data-reader-fallback="pdf" href={fallbackPdfHref}>Open PDF</a>}
+        {fallbackEpubHref && <a data-reader-fallback="epub" href={fallbackEpubHref} download>Download EPUB</a>}
+        <a data-reader-fallback="book" href={backHref}>{backLabel}</a>
       </div>
     </section>
   </main>
