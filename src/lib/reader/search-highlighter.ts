@@ -24,7 +24,10 @@ export class ReaderSearchHighlighter {
     viewport.addEventListener('scroll', this.handleViewportChange, { passive: true });
     window.addEventListener('resize', this.handleViewportChange, { passive: true });
     this.observer = typeof MutationObserver === 'function'
-      ? new MutationObserver(() => this.schedule())
+      ? new MutationObserver((records) => {
+          const externalMutation = records.some((record) => record.target !== this.layer && !this.layer.contains(record.target));
+          if (externalMutation) this.schedule();
+        })
       : undefined;
     this.observer?.observe(viewport, { childList: true, subtree: true });
   }
