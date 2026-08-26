@@ -2,88 +2,267 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getWorks, type ResolvedWork } from '../../lib/content/repository';
 import { taxonomyLabel } from '../../lib/content/taxonomy';
+import '../../styles/work-detail.css';
+
 export async function getStaticPaths() {
   return (await getWorks()).map((work) => ({ params: { slug: work.slug }, props: { work } }));
 }
+
 interface Props { work: ResolvedWork; }
+
 const { work } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const coverUrl = /^https?:\/\//i.test(work.cover.src)
   ? work.cover.src
   : `${base}${work.cover.src.startsWith('/') ? work.cover.src : `/${work.cover.src}`}`;
-const pdf = work.release?.artifacts.pdf;
-const epub = work.release?.artifacts.epub;
-const webStatus = work.webMaterialized ? 'available' : work.id === 'ai-for-the-kingdom' ? `restoring ${work.chapterCount}/57` : 'restoring';
+const release = work.release;
+const pdf = release?.artifacts.pdf;
+const epub = release?.artifacts.epub;
+const readHref = work.webMaterialized ? `${base}/works/${work.slug}/read` : undefined;
+const pdfHref = pdf ? `${base}/works/${work.slug}/pdf` : undefined;
+
+function formatBytes(bytes: number): string {
+  if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
+  const mb = bytes / (1024 * 1024);
+  return `${mb >= 10 ? Math.round(mb) : mb.toFixed(1)} MB`;
+}
+
+function formatDate(value: string | Date): string {
+  const date = value instanceof Date ? value : new Date(value);
+  return Number.isNaN(date.getTime())
+    ? String(value)
+    : new Intl.DateTimeFormat('en', { year: 'numeric', month: 'short', day: 'numeric' }).format(date);
+}
+
+function languageLabel(code: string): string {
+  try { return new Intl.DisplayNames(['en'], { type: 'language' }).of(code) ?? code; }
+  catch { return code; }
+}
+
+const primaryAction = readHref
+  ? { href: readHref, label: 'Start reading', kind: 'read' as const }
+  : epub
+    ? { href: epub.url, label: 'Download EPUB', kind: 'epub' as const }
+    : pdfHref
+      ? { href: pdfHref, label: 'Read PDF', kind: 'pdf' as const }
+      : undefined;
 ---
 <BaseLayout title={work.title} description={work.shortDescription}>
-  <article class="page" data-pagefind-body data-pagefind-meta={`work_id:${work.id}`}>
-    <section class="work-hero">
-      <div class="publication-cover-frame">
-        <img class="publication-cover" src={coverUrl} alt={work.cover.alt} decoding="async" />
+  <article
+    class="page book-detail"
+    data-pagefind-body
+    data-pagefind-meta={`work_id:${work.id}`}
+    data-work-detail
+    data-work-id={work.id}
+    data-work-slug={work.slug}
+    data-edition={work.publication.edition}
+    data-release-version={release?.version ?? ''}
+  >
+    <section class="book-detail__hero">
+      <div class="book-detail__cover-column">
+        <div class="book-detail__cover-frame">
+          <img class="book-detail__cover" src={coverUrl} alt={work.cover.alt} decoding="async" />
+        </div>
+        <p class="book-detail__cover-caption">{work.publication.editionLabel}</p>
       </div>
-      <div>
-        <p class="eyebrow">{work.publication.editionLabel}</p>
+
+      <div class="book-detail__hero-copy">
+        <div class="book-detail__kicker-row">
+          <p class="eyebrow">{work.type}</p>
+          <span class="book-detail__release-state" data-release-state={release ? 'available' : 'unavailable'}>
+            {release ? `Release ${release.version}` : 'No active binary release'}
+          </span>
+        </div>
+
         <h1 data-pagefind-weight="10">{work.title}</h1>
-        {work.subtitle && <p class="work-deck">{work.subtitle}</p>}
-        <p class="work-description">{work.description}</p>
-        <div class="work-actions">
-          {work.webMaterialized && <a class="primary-action" href={`${base}/works/${work.slug}/read`}>Start reading</a>}
-          {pdf && <a class="secondary-action" href={`${base}/works/${work.slug}/pdf`}>Read PDF</a>}
-          {epub && <a class="secondary-action" href={epub.url}>Download EPUB</a>}
-          <button class="secondary-action" type="button" data-save-work={work.id}>Save to my library</button>
-        </div>
-        <div class="format-status" aria-label="Edition status">
-          <span>Web · {webStatus}</span>
-          <span>PDF · {pdf ? 'available' : 'restoring'}</span>
-          <span>EPUB · {epub ? 'available' : 'restoring'}</span>
-        </div>
-        {(!work.webMaterialized || !work.releaseMaterialized) && <p class="recovery-note"><strong>Edition restoration:</strong> validated publication metadata is present, but reader and binary controls activate only after their exact payloads pass the materialization gates. Partial or unverified files are never exposed as a release.</p>}
+        {work.subtitle && <p class="book-detail__deck">{work.subtitle}</p>}
+        <p class="book-detail__description">{work.description}</p>
+
+        {primaryAction && (
+          <div class="book-detail__primary-actions">
+            <a
+              class="primary-action book-detail__primary"
+              href={primaryAction.href}
+              data-reader-cta={primaryAction.kind === 'read' ? '' : undefined}
+            >
+              {primaryAction.label}
+            </a>
+            <button class="secondary-action" type="button" data-save-work={work.id} aria-pressed="false">Save to my library</button>
+          </div>
+        )}
+        {!primaryAction && (
+          <div class="book-detail__primary-actions">
+            <button class="secondary-action" type="button" data-save-work={work.id} aria-pressed="false">Save to my library</button>
+          </div>
+        )}
+
+        <section class="book-detail__progress" data-publication-progress hidden aria-live="polite">
+          <div class="book-detail__progress-copy">
+            <span data-progress-context>Reading progress</span>
+            <strong data-progress-label>0%</strong>
+          </div>
+          <div class="book-detail__progress-track" aria-hidden="true">
+            <span data-progress-fill></span>
+            <i data-progress-furthest></i>
+          </div>
+          <p data-progress-detail></p>
+        </section>
+
+        <dl class="book-detail__facts" aria-label="Publication details">
+          <div><dt>Edition</dt><dd>{work.publication.editionLabel}</dd></div>
+          <div><dt>Updated</dt><dd><time datetime={String(work.publication.lastUpdated)}>{formatDate(work.publication.lastUpdated)}</time></dd></div>
+          <div><dt>Language</dt><dd>{languageLabel(work.language)}</dd></div>
+          <div><dt>Version</dt><dd>{work.publication.version}</dd></div>
+        </dl>
       </div>
     </section>
-    <dl class="meta-grid">
-      <div><dt>Release</dt><dd>{work.publication.version}</dd></div>
-      <div><dt>Language</dt><dd>{work.language}</dd></div>
-      <div><dt>Subjects</dt><dd class="taxonomy-inline">{work.classification.subjects.map((subject, index) => <><a href={`${base}/subjects/${subject}`}>{taxonomyLabel(subject)}</a>{index < work.classification.subjects.length - 1 && <span>, </span>}</>)}</dd></div>
-      <div><dt>Collections</dt><dd class="taxonomy-inline">{work.classification.collections.length ? work.classification.collections.map((collection, index) => <><a href={`${base}/collections/${collection}`}>{taxonomyLabel(collection)}</a>{index < work.classification.collections.length - 1 && <span>, </span>}</>) : '—'}</dd></div>
-      <div><dt>Rights</dt><dd>{work.rights.status}</dd></div>
-    </dl>
+
+    <section class="book-detail__formats" aria-labelledby="formats-heading">
+      <div class="book-detail__section-heading">
+        <div>
+          <p class="eyebrow">Formats</p>
+          <h2 id="formats-heading">Read this edition</h2>
+        </div>
+        {release && <p>Active release · {formatDate(release.releasedAt)}</p>}
+      </div>
+
+      <div class="book-detail__format-grid">
+        <article class="book-detail__format-card" data-format="web" data-format-state={work.webMaterialized ? 'available' : 'unavailable'}>
+          <div class="book-detail__format-heading">
+            <h3>Web reader</h3>
+            <span>{work.webMaterialized ? 'Available' : 'Not currently available'}</span>
+          </div>
+          <p>Read in the Library with saved position and browser-based reading controls.</p>
+          {readHref ? <a href={readHref} data-reader-format-link>Open reader</a> : <span class="book-detail__format-muted">No verified web edition is exposed.</span>}
+        </article>
+
+        <article class="book-detail__format-card" data-format="epub" data-format-state={epub ? 'available' : 'unavailable'}>
+          <div class="book-detail__format-heading">
+            <h3>EPUB</h3>
+            <span>{epub ? 'Verified release' : 'Not currently available'}</span>
+          </div>
+          <p>Reflowable ebook for compatible reading apps and the Library’s native EPUB reader architecture.</p>
+          {epub
+            ? <a href={epub.url}>Download EPUB <small>{formatBytes(epub.sizeBytes)}</small></a>
+            : <span class="book-detail__format-muted">No EPUB artifact is in the active release.</span>}
+        </article>
+
+        <article class="book-detail__format-card" data-format="pdf" data-format-state={pdf ? 'available' : 'unavailable'}>
+          <div class="book-detail__format-heading">
+            <h3>PDF</h3>
+            <span>{pdf ? 'Verified release' : 'Not currently available'}</span>
+          </div>
+          <p>Fixed-layout edition for viewing, printing, and archival reference.</p>
+          {pdfHref && pdf
+            ? <a href={pdfHref}>View PDF <small>{formatBytes(pdf.sizeBytes)}</small></a>
+            : <span class="book-detail__format-muted">No PDF artifact is in the active release.</span>}
+        </article>
+      </div>
+    </section>
+
+    <section class="book-detail__metadata" aria-labelledby="details-heading">
+      <div class="book-detail__section-heading">
+        <div>
+          <p class="eyebrow">About this edition</p>
+          <h2 id="details-heading">Publication details</h2>
+        </div>
+      </div>
+
+      <dl class="book-detail__metadata-grid">
+        <div><dt>First published</dt><dd><time datetime={String(work.publication.firstPublished)}>{formatDate(work.publication.firstPublished)}</time></dd></div>
+        <div><dt>Edition number</dt><dd>{work.publication.edition}</dd></div>
+        <div><dt>Release version</dt><dd>{release?.version ?? '—'}</dd></div>
+        <div><dt>Rights</dt><dd>{work.rights.status}</dd></div>
+        <div class="book-detail__metadata-wide"><dt>Subjects</dt><dd class="taxonomy-inline">{work.classification.subjects.map((subject, index) => <><a href={`${base}/subjects/${subject}`}>{taxonomyLabel(subject)}</a>{index < work.classification.subjects.length - 1 && <span>, </span>}</>)}</dd></div>
+        <div class="book-detail__metadata-wide"><dt>Collections</dt><dd class="taxonomy-inline">{work.classification.collections.length ? work.classification.collections.map((collection, index) => <><a href={`${base}/collections/${collection}`}>{taxonomyLabel(collection)}</a>{index < work.classification.collections.length - 1 && <span>, </span>}</>) : '—'}</dd></div>
+      </dl>
+      <p class="book-detail__rights-notice">{work.rights.notice}</p>
+    </section>
   </article>
+
   <script>
-    import { isFavorite, toggleFavorite } from '../../lib/client/library-db';
-    const control = document.querySelector<HTMLButtonElement>('[data-save-work]');
-    const workId = control?.dataset.saveWork;
+    import { getProgress, getReaderProgress, isFavorite, toggleFavorite } from '../../lib/client/library-db';
+
+    const root = document.querySelector<HTMLElement>('[data-work-detail]');
+    const control = root?.querySelector<HTMLButtonElement>('[data-save-work]');
+    const readerCta = root?.querySelector<HTMLAnchorElement>('[data-reader-cta]');
+    const progressPanel = root?.querySelector<HTMLElement>('[data-publication-progress]');
+    const workId = root?.dataset.workId;
+    const edition = Number(root?.dataset.edition ?? '');
+    const releaseVersion = root?.dataset.releaseVersion ?? '';
+
+    function clamp01(value: number): number {
+      return Math.min(1, Math.max(0, Number.isFinite(value) ? value : 0));
+    }
+
+    function renderProgress(current: number, furthest: number, context: string, detail: string) {
+      if (!progressPanel) return;
+      const normalizedCurrent = clamp01(current);
+      const normalizedFurthest = Math.max(normalizedCurrent, clamp01(furthest));
+      progressPanel.hidden = false;
+      progressPanel.querySelector<HTMLElement>('[data-progress-context]')!.textContent = context;
+      progressPanel.querySelector<HTMLElement>('[data-progress-label]')!.textContent = `${Math.round(normalizedCurrent * 100)}%`;
+      progressPanel.querySelector<HTMLElement>('[data-progress-detail]')!.textContent = detail;
+      progressPanel.querySelector<HTMLElement>('[data-progress-fill]')!.style.width = `${normalizedCurrent * 100}%`;
+      progressPanel.querySelector<HTMLElement>('[data-progress-furthest]')!.style.left = `${normalizedFurthest * 100}%`;
+    }
+
     async function renderSavedState() {
       if (!control || !workId) return;
-      const saved = await isFavorite(workId);
-      control.textContent = saved ? 'Remove from my library' : 'Save to my library';
-      control.setAttribute('aria-pressed', String(saved));
+      try {
+        const saved = await isFavorite(workId);
+        control.textContent = saved ? 'Remove from my library' : 'Save to my library';
+        control.setAttribute('aria-pressed', String(saved));
+      } catch {
+        control.textContent = 'Save to my library';
+      }
     }
+
+    async function renderReadingState() {
+      if (!workId) return;
+      const [native, legacy] = await Promise.all([
+        getReaderProgress(workId).catch(() => undefined),
+        getProgress(workId).catch(() => undefined),
+      ]);
+
+      const nativeMatchesRelease = Boolean(
+        native
+        && releaseVersion
+        && Number.isFinite(edition)
+        && native.edition === edition
+        && native.releaseVersion === releaseVersion,
+      );
+
+      if (native && nativeMatchesRelease) {
+        const chapter = native.chapterLabel ? ` · ${native.chapterLabel}` : '';
+        renderProgress(
+          native.percentage,
+          native.furthestPercentage,
+          'EPUB edition progress',
+          `Furthest reached ${Math.round(native.furthestPercentage * 100)}%${chapter}`,
+        );
+      } else if (legacy && legacy.percent > 0) {
+        const current = clamp01(legacy.percent / 100);
+        renderProgress(current, current, 'Web reader progress', `Saved in the current web reader · ${Math.round(legacy.percent)}%`);
+      }
+
+      if (readerCta && legacy && legacy.percent > 0) {
+        readerCta.textContent = legacy.percent >= 99 ? 'Read again' : 'Continue reading';
+      }
+    }
+
     control?.addEventListener('click', async () => {
       if (!control || !workId) return;
       control.disabled = true;
-      try { await toggleFavorite(workId); await renderSavedState(); }
-      finally { control.disabled = false; }
+      try {
+        await toggleFavorite(workId);
+        await renderSavedState();
+      } finally {
+        control.disabled = false;
+      }
     });
+
     void renderSavedState();
+    void renderReadingState();
   </script>
 </BaseLayout>
-
-<style>
-  .publication-cover-frame {
-    width: min(360px, 100%);
-    align-self: start;
-    background: #0c0d0f;
-    border: 1px solid color-mix(in srgb, var(--strong-rule) 55%, transparent);
-    border-radius: 2px;
-    box-shadow: 8px 9px 0 color-mix(in srgb, var(--strong-rule) 35%, transparent);
-    overflow: hidden;
-  }
-  .publication-cover {
-    display: block;
-    width: 100%;
-    height: auto;
-  }
-  @media (max-width: 800px) {
-    .publication-cover-frame { width: min(300px, 76vw); }
-  }
-</style>
