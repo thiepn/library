@@ -2,6 +2,7 @@ import { ReaderController } from './controller';
 import { ReaderNavigationController } from './navigation';
 import { ReaderPageLayoutController, type ReaderPageLayoutOptions } from './page-layout';
 import { ReaderProgressController, type ReaderProgressIdentity } from './progress';
+import { ReaderProgressUxController } from './progress-ux';
 import type { ReaderPublicationCandidate } from './publication';
 import { ReaderReadingModeController, type ReaderReadingModeOptions } from './reading-mode';
 import { ReaderSettingsStore } from './settings';
@@ -24,6 +25,7 @@ export interface ReaderShellHarnessHandle extends ReaderHarnessHandle {
   theme: ReaderThemeController;
   settings: ReaderSettingsStore;
   progress?: ReaderProgressController;
+  progressUx?: ReaderProgressUxController;
 }
 
 /**
@@ -51,8 +53,8 @@ export async function mountReaderEngineHarness(
 
 /**
  * Connects the reader shell, persistent settings, version-aware reading position,
- * serialized navigation controls, reading-mode controller, typography engine,
- * page-layout controller, theme controller, and EPUB engine without exposing a book route.
+ * non-blocking whole-book progress UX, serialized navigation controls, reading-mode controller,
+ * typography engine, page-layout controller, theme controller, and EPUB engine without exposing a book route.
  */
 export async function mountReaderShellHarness(
   root: HTMLElement,
@@ -65,6 +67,9 @@ export async function mountReaderShellHarness(
   const controller = new ReaderController();
   const settings = new ReaderSettingsStore();
   const progress = progressIdentity ? new ReaderProgressController(controller, progressIdentity) : undefined;
+  const progressUx = progress && progressIdentity
+    ? new ReaderProgressUxController(controller, progress, shell, progressIdentity)
+    : undefined;
   const resolvedOptions = settings.resolveOpenOptions(options);
   const readingModeOptions: ReaderReadingModeOptions = {
     ...(resolvedOptions.flow ? { flow: resolvedOptions.flow } : {}),
@@ -96,6 +101,7 @@ export async function mountReaderShellHarness(
   let pageLayoutStarted = false;
   let themeStarted = false;
   let progressStarted = false;
+  let progressUxStarted = false;
 
   const currentOpenOptions = (): ReaderOpenOptions => ({
     ...resolvedOptions,
@@ -147,6 +153,13 @@ export async function mountReaderShellHarness(
         progressStarted = true;
         progress.start();
       }
+      if (progressUx) {
+        if (progressUxStarted) await progressUx.reapply();
+        else {
+          progressUxStarted = true;
+          progressUx.start();
+        }
+      }
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unable to open EPUB publication.';
       shell.setStatus('error', message);
@@ -182,11 +195,13 @@ export async function mountReaderShellHarness(
 
     if (state.location) {
       shell.setChapter(state.location.href || 'Current section');
-      const percentage = state.location.percentage;
-      shell.setProgress({
-        label: percentage === undefined ? 'Reading' : `${Math.round(percentage * 100)}%`,
-        ...(percentage === undefined ? {} : { percentage }),
-      });
+      if (!progressUx) {
+        const percentage = state.location.percentage;
+        shell.setProgress({
+          label: percentage === undefined ? 'Reading' : `${Math.round(percentage * 100)}%`,
+          ...(percentage === undefined ? {} : { percentage }),
+        });
+      }
     }
   }));
 
@@ -249,6 +264,7 @@ export async function mountReaderShellHarness(
     await open();
   } catch (error) {
     for (const cleanup of cleanups) cleanup();
+    progressUx?.destroy();
     progress?.destroy();
     navigation.destroy();
     pageLayout.destroy();
@@ -270,10 +286,12 @@ export async function mountReaderShellHarness(
     theme,
     settings,
     ...(progress ? { progress } : {}),
+    ...(progressUx ? { progressUx } : {}),
     destroy: () => {
       if (destroyed) return;
       destroyed = true;
       for (const cleanup of cleanups) cleanup();
+      progressUx?.destroy();
       progress?.destroy();
       navigation.destroy();
       pageLayout.destroy();
