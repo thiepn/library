@@ -15,12 +15,13 @@ const present = (await Promise.all(files.map(exists))).every(Boolean);
 pass('EPUB_READER_MIGRATION_P25', present, 'P25 migration resolver, public route, preserved legacy route, publication-aware layout, and permanent certification are present');
 
 if (present) {
-  const [migration, launcher, legacyChapter, layout, pkg] = await Promise.all([
+  const [migration, launcher, legacyChapter, layout, pkg, fallbackHarness] = await Promise.all([
     readFile('src/lib/reader/migration.ts', 'utf8'),
     readFile('src/pages/works/[slug]/read/index.astro', 'utf8'),
     readFile('src/pages/works/[slug]/read/[chapter].astro', 'utf8'),
     readFile('src/layouts/EpubReaderLayout.astro', 'utf8'),
     readFile('package.json', 'utf8'),
+    readFile('src/lib/reader/fallback-harness.ts', 'utf8').catch(() => ''),
   ]);
 
   const forbiddenTitles = ['ai-for-the-kingdom', 'how-to-love-god', 'the-unfinished-mission'];
@@ -62,18 +63,21 @@ if (present) {
 
   pass(
     'EPUB_READER_MIGRATION_FULL_STACK',
-    launcher.includes('mountReaderPublicationWithCompatibilityHarness')
+    launcher.includes('mountReaderPublicationWithFallbackHarness')
+      && fallbackHarness.includes('mountReaderPublicationWithCompatibilityHarness')
       && !launcher.includes('new EpubJsEngine(')
       && !launcher.includes("from 'epubjs'"),
-    'Migrated publications mount the complete P24 stack rather than bypassing reader controllers',
+    'Migrated publications still mount the complete P24 stack through the P26 recovery wrapper',
   );
 
   pass(
     'EPUB_READER_MIGRATION_RELEASE_IDENTITY',
     launcher.includes('data-reader-publication={JSON.stringify(publication)}')
       && launcher.includes('type ReaderPublicationCandidate')
-      && launcher.includes('mountReaderPublicationWithCompatibilityHarness(root, publication)'),
-    'The public route passes the resolved edition/release artifact identity unchanged into native progress, bookmarks, search, highlights, and notes',
+      && launcher.includes('mountReaderPublicationWithFallbackHarness(root, publication)')
+      && fallbackHarness.includes('this.publication')
+      && fallbackHarness.includes('mountReaderPublicationWithCompatibilityHarness'),
+    'The public route passes the resolved edition/release artifact identity unchanged through recovery into native progress, bookmarks, search, highlights, and notes',
   );
 
   pass(
@@ -96,8 +100,9 @@ if (present) {
   pass(
     'EPUB_READER_MIGRATION_NO_TITLE_LIST',
     forbiddenTitles.every((title) => !launcher.includes(title))
-      && forbiddenTitles.every((title) => !legacyChapter.includes(title)),
-    'Neither public reader routing path contains current-book-specific exceptions',
+      && forbiddenTitles.every((title) => !legacyChapter.includes(title))
+      && forbiddenTitles.every((title) => !fallbackHarness.includes(title)),
+    'Public reader routing and recovery contain no current-book-specific exceptions',
   );
 
   pass(
@@ -111,17 +116,18 @@ if (present) {
 
   pass(
     'EPUB_READER_MIGRATION_ERROR_SAFE',
-    launcher.includes('data-reader-error-message')
-      && launcher.includes("root.dataset.readerStatus = 'error'")
+    launcher.includes('setReaderFailureState')
       && launcher.includes("window.addEventListener('pagehide'")
-      && launcher.includes('mounted?.destroy()'),
-    'Public native launch failures surface in the reader shell and runtime resources are torn down on navigation',
+      && launcher.includes('mounted?.destroy()')
+      && fallbackHarness.includes('setReaderFailureState(failureShell, error)')
+      && fallbackHarness.includes('this.activeReader?.destroy()'),
+    'Public native launch failures surface in the reader shell and partial/runtime resources are torn down safely',
   );
 
   pass(
     'EPUB_READER_MIGRATION_CERT_CHAIN',
     pkg.includes('reader-compatibility.mjs && node scripts/certification/reader-migration.mjs'),
-    'P25 migration certification is chained immediately after the P24 compatibility gate',
+    'P25 migration certification remains chained immediately after the P24 compatibility gate',
   );
 }
 
