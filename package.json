@@ -15,7 +15,7 @@
     "prepare:deploy": "node scripts/prepare-deploy.mjs",
     "build": "pnpm validate && pnpm build:astro && pnpm index && pnpm prepare:deploy",
     "l17b:verify": "tsx scripts/l17b-verify.ts",
-    "certify:source": "node scripts/certification/source.mjs && node scripts/certification/reader-toc.mjs && node scripts/certification/reader-navigation.mjs && node scripts/certification/reader-progress.mjs && node scripts/certification/work-detail.mjs && node scripts/certification/library-home.mjs && node scripts/certification/reader-search.mjs && node scripts/certification/reader-bookmarks.mjs",
+    "certify:source": "node scripts/certification/source.mjs && node scripts/certification/reader-toc.mjs && node scripts/certification/reader-navigation.mjs && node scripts/certification/reader-progress.mjs && node scripts/certification/work-detail.mjs && node scripts/certification/library-home.mjs && node scripts/certification/reader-search.mjs && node scripts/certification/reader-bookmarks.mjs && node scripts/certification/reader-annotations.mjs",
     "certify:postbuild": "node scripts/certification/post-build.mjs",
     "release:certify": "pnpm certify:source && pnpm l17b:verify && pnpm build && pnpm certify:postbuild",
     "stage:media": "node scripts/stage-publication-media.mjs",
