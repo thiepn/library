@@ -1,0 +1,200 @@
+.reader-shell {
+  --reader-desktop-sidepanel-width: clamp(380px, 28vw, 460px);
+  --reader-desktop-toc-width: clamp(360px, 27vw, 430px);
+}
+
+@media (min-width: 761px) {
+  .reader-shell__bar--top {
+    grid-template-columns: minmax(52px, 1fr) minmax(0, auto) minmax(220px, 1fr);
+    padding-inline: calc(10px + var(--reader-safe-left)) calc(10px + var(--reader-safe-right));
+  }
+
+  .reader-shell__cluster--end {
+    gap: 2px;
+    flex-wrap: nowrap;
+  }
+
+  .reader-shell__identity {
+    max-width: min(40vw, 640px);
+  }
+
+  .reader-shell__icon-button,
+  .reader-shell__text-button,
+  .reader-shell__nav-button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .reader-shell__stage {
+    transition: left 120ms ease, right 120ms ease;
+  }
+
+  .reader-search-panel,
+  .reader-bookmarks-panel,
+  .reader-annotations-panel {
+    width: min(430px, 48vw);
+  }
+
+  .reader-toc { width: min(420px, 48vw); }
+
+  .reader-search-results,
+  .reader-bookmarks-list,
+  .reader-annotations-list,
+  .reader-toc__nav {
+    overscroll-behavior: contain;
+  }
+}
+
+@media (min-width: 761px) and (max-width: 1180px) {
+  .reader-shell__bar--top {
+    grid-template-columns: 48px minmax(120px, 1fr) auto;
+    gap: 6px;
+    padding-inline: calc(6px + var(--reader-safe-left)) calc(6px + var(--reader-safe-right));
+  }
+
+  .reader-shell__identity {
+    justify-self: start;
+    max-width: 30vw;
+    text-align: left;
+  }
+
+  .reader-shell__identity span { display: none; }
+
+  .reader-search-panel,
+  .reader-bookmarks-panel,
+  .reader-annotations-panel {
+    width: min(400px, 52vw);
+    padding: 18px;
+  }
+
+  .reader-toc { width: min(400px, 54vw); }
+
+  .reader-shell__appearance-panel {
+    right: calc(var(--reader-safe-right) + 54px);
+    width: min(380px, calc(100vw - var(--reader-safe-left) - var(--reader-safe-right) - 28px));
+  }
+
+  .reader-shell__mode-panel { width: min(330px, 44vw); }
+}
+
+@media (min-width: 761px) and (max-width: 980px) {
+  .reader-shell[data-reader-window-constrained="true"] .reader-shell__identity {
+    max-width: 22vw;
+  }
+
+  .reader-shell[data-reader-window-constrained="true"] .reader-shell__identity strong {
+    font-size: 0.78rem;
+  }
+
+  .reader-shell[data-reader-window-constrained="true"] .reader-search-panel,
+  .reader-shell[data-reader-window-constrained="true"] .reader-bookmarks-panel,
+  .reader-shell[data-reader-window-constrained="true"] .reader-annotations-panel {
+    width: min(380px, 58vw);
+  }
+}
+
+@media (min-width: 761px) and (orientation: portrait) and (max-width: 1180px) {
+  .reader-shell[data-reader-desktop-surface="tablet"] .reader-search-panel,
+  .reader-shell[data-reader-desktop-surface="tablet"] .reader-bookmarks-panel,
+  .reader-shell[data-reader-desktop-surface="tablet"] .reader-annotations-panel {
+    width: min(420px, 56vw);
+  }
+
+  .reader-shell[data-reader-desktop-surface="tablet"] .reader-toc {
+    width: min(410px, 58vw);
+  }
+}
+
+@media (min-width: 1181px) {
+  .reader-shell__appearance-panel { width: 400px; }
+  .reader-shell__mode-panel { width: 340px; }
+
+  .reader-search-panel,
+  .reader-bookmarks-panel,
+  .reader-annotations-panel {
+    width: var(--reader-desktop-sidepanel-width);
+  }
+
+  .reader-toc { width: var(--reader-desktop-toc-width); }
+}
+
+@media (min-width: 1440px) {
+  .reader-shell[data-reader-dock-side="right"] .reader-shell__stage {
+    right: calc(var(--reader-safe-right) + var(--reader-desktop-sidepanel-width));
+  }
+
+  .reader-shell[data-reader-dock-side="left"] .reader-shell__stage {
+    left: calc(var(--reader-safe-left) + var(--reader-desktop-toc-width));
+  }
+
+  .reader-shell[data-reader-dock-side="right"] .reader-search-panel,
+  .reader-shell[data-reader-dock-side="right"] .reader-bookmarks-panel,
+  .reader-shell[data-reader-dock-side="right"] .reader-annotations-panel {
+    box-shadow: -10px 0 26px rgb(0 0 0 / 0.08);
+  }
+
+  .reader-shell[data-reader-dock-side="left"] .reader-toc {
+    box-shadow: 10px 0 26px rgb(0 0 0 / 0.08);
+  }
+}
+
+@media (min-width: 1560px) {
+  .reader-shell[data-reader-desktop-surface="wide"] {
+    --reader-desktop-sidepanel-width: clamp(420px, 25vw, 500px);
+    --reader-desktop-toc-width: clamp(390px, 24vw, 460px);
+  }
+
+  .reader-shell[data-reader-desktop-surface="wide"] .reader-shell__identity {
+    max-width: min(42vw, 760px);
+  }
+
+  .reader-shell[data-reader-desktop-surface="wide"] .reader-shell__bar--top {
+    padding-inline: calc(16px + var(--reader-safe-left)) calc(16px + var(--reader-safe-right));
+  }
+}
+
+@media (min-width: 761px) and (max-height: 680px) {
+  .reader-shell[data-reader-window-compact="true"] {
+    --reader-topbar-height: 50px;
+    --reader-bottombar-height: 48px;
+  }
+
+  .reader-shell[data-reader-window-compact="true"] .reader-shell__identity span { display: none; }
+
+  .reader-shell[data-reader-window-compact="true"] .reader-search-panel,
+  .reader-shell[data-reader-window-compact="true"] .reader-bookmarks-panel,
+  .reader-shell[data-reader-window-compact="true"] .reader-annotations-panel {
+    padding: 14px;
+    gap: 10px;
+  }
+
+  .reader-shell[data-reader-window-compact="true"] .reader-shell__appearance-panel,
+  .reader-shell[data-reader-window-compact="true"] .reader-shell__mode-panel {
+    max-height: calc(100dvh - var(--reader-topbar-height) - var(--reader-bottombar-height) - 20px);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .reader-shell[data-reader-hover="true"] .reader-shell__nav-button:not(:disabled):hover,
+  .reader-shell[data-reader-hover="true"] .reader-shell__icon-button:not(:disabled):hover,
+  .reader-shell[data-reader-hover="true"] .reader-shell__text-button:not(:disabled):hover {
+    background: color-mix(in srgb, var(--reader-shell-ink) 9%, transparent);
+  }
+
+  .reader-shell[data-reader-fine-pointer="true"] .reader-search-result,
+  .reader-shell[data-reader-fine-pointer="true"] .reader-bookmark__open,
+  .reader-shell[data-reader-fine-pointer="true"] .reader-toc__target {
+    cursor: pointer;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reader-shell__stage { transition: none; }
+}
+
+@media (forced-colors: active) and (min-width: 761px) {
+  .reader-shell[data-reader-dock-side="right"] .reader-search-panel,
+  .reader-shell[data-reader-dock-side="right"] .reader-bookmarks-panel,
+  .reader-shell[data-reader-dock-side="right"] .reader-annotations-panel,
+  .reader-shell[data-reader-dock-side="left"] .reader-toc { border-color: CanvasText; }
+}
