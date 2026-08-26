@@ -1,9 +1,11 @@
 export { ReaderController } from './controller';
 export { EpubJsEngine } from './engines/epubjs';
 export { mountReaderEngineHarness, mountReaderShellHarness } from './harness';
+export { ReaderLocationCache } from './location-cache';
 export { ReaderNavigationController } from './navigation';
 export { ReaderPageLayoutController, READER_PAGE_LAYOUT_DEFAULTS } from './page-layout';
 export { ReaderProgressController } from './progress';
+export { ReaderProgressUxController } from './progress-ux';
 export { ReaderReadingModeController } from './reading-mode';
 export { resolveReaderPublicationCandidate } from './publication';
 export {
@@ -44,9 +46,22 @@ export type {
 } from './types';
 export type { ReaderControllerState, ReaderStatus } from './controller';
 export type { ReaderHarnessHandle, ReaderShellHarnessHandle } from './harness';
+export type { ReaderLocationCacheIdentity } from './location-cache';
 export type { ReaderNavigationDirection, ReaderNavigationOptions, ReaderNavigationState } from './navigation';
 export type { ReaderPageLayoutOptions, ReaderPageLayoutState } from './page-layout';
-export type { ReaderProgressControllerOptions, ReaderProgressIdentity, ReaderResumeCandidate, ReaderResumeStatus } from './progress';
+export type {
+  ReaderProgressControllerOptions,
+  ReaderProgressIdentity,
+  ReaderProgressState,
+  ReaderResumeCandidate,
+  ReaderResumeStatus,
+} from './progress';
+export type {
+  ReaderProgressMapStatus,
+  ReaderProgressStage,
+  ReaderProgressUxOptions,
+  ReaderProgressUxState,
+} from './progress-ux';
 export type { ReaderOrientation, ReaderReadingModeOptions, ReaderReadingModeState } from './reading-mode';
 export type { ReaderSettingsPatch, ReaderSettingsRecord } from './settings';
 export type { ReaderNavigationAvailability, ReaderProgressDisplay, ReaderShellCommand, ReaderShellStatus, ReaderTypographyIntent } from './shell';
