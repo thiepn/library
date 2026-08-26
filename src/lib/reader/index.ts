@@ -18,6 +18,19 @@ export {
 } from './bookmark-store';
 export { ReaderBookmarksController, READER_BOOKMARK_MAX_PER_RELEASE } from './bookmarks';
 export { mountReaderPublicationWithBookmarksHarness, mountReaderShellWithBookmarksHarness } from './bookmarks-harness';
+export {
+  deleteReaderAnnotation,
+  getReaderAnnotationsForWork,
+  isReaderAnnotationRecordV2,
+  putReaderAnnotation,
+  READER_ANNOTATION_MAX_NOTE,
+  READER_ANNOTATION_MAX_QUOTE,
+  READER_ANNOTATION_SCHEMA_VERSION,
+  subscribeReaderAnnotationChanges,
+} from './annotation-store';
+export { ReaderAnnotationHighlighter } from './annotation-highlighter';
+export { ReaderAnnotationsController, READER_ANNOTATION_MAX_PER_RELEASE } from './annotations';
+export { mountReaderPublicationWithAnnotationsHarness, mountReaderShellWithAnnotationsHarness } from './annotations-harness';
 export { ReaderSearchCache } from './search-cache';
 export { EpubSearchEngine, normalizeReaderSearchQuery } from './search-engine';
 export { ReaderSearchController, READER_SEARCH_MAX_RESULTS } from './search';
@@ -87,6 +100,15 @@ export type {
   ReaderBookmarksStatus,
 } from './bookmarks';
 export type { ReaderBookmarksHarnessHandle } from './bookmarks-harness';
+export type { ReaderAnnotationIdentity, ReaderAnnotationRecordV2 } from './annotation-store';
+export type {
+  ReaderAnnotationSort,
+  ReaderAnnotationStorageMode,
+  ReaderAnnotationsControllerOptions,
+  ReaderAnnotationsState,
+  ReaderAnnotationsStatus,
+} from './annotations';
+export type { ReaderAnnotationsHarnessHandle } from './annotations-harness';
 export type { ReaderSearchCacheIdentity } from './search-cache';
 export type { ReaderSearchMatch, ReaderSearchOptions, ReaderSearchProgress, ReaderSearchResponse } from './search-engine';
 export type { ReaderSearchControllerOptions, ReaderSearchResult, ReaderSearchState, ReaderSearchStatus } from './search';
