@@ -33,6 +33,8 @@ export { ReaderAnnotationsController, READER_ANNOTATION_MAX_PER_RELEASE } from '
 export { mountReaderPublicationWithAnnotationsHarness, mountReaderShellWithAnnotationsHarness } from './annotations-harness';
 export { ReaderMobileController, READER_MOBILE_DEFAULTS } from './mobile';
 export { mountReaderPublicationWithMobileHarness, mountReaderShellWithMobileHarness } from './mobile-harness';
+export { ReaderDesktopController, READER_DESKTOP_DEFAULTS } from './desktop';
+export { mountReaderPublicationWithDesktopHarness, mountReaderShellWithDesktopHarness } from './desktop-harness';
 export { ReaderSearchCache } from './search-cache';
 export { EpubSearchEngine, normalizeReaderSearchQuery } from './search-engine';
 export { ReaderSearchController, READER_SEARCH_MAX_RESULTS } from './search';
@@ -118,6 +120,15 @@ export type {
   ReaderMobileState,
 } from './mobile';
 export type { ReaderMobileHarnessHandle } from './mobile-harness';
+export type {
+  ReaderDesktopDockSide,
+  ReaderDesktopOptions,
+  ReaderDesktopOrientation,
+  ReaderDesktopPanel,
+  ReaderDesktopState,
+  ReaderDesktopSurface,
+} from './desktop';
+export type { ReaderDesktopHarnessHandle } from './desktop-harness';
 export type { ReaderSearchCacheIdentity } from './search-cache';
 export type { ReaderSearchMatch, ReaderSearchOptions, ReaderSearchProgress, ReaderSearchResponse } from './search-engine';
 export type { ReaderSearchControllerOptions, ReaderSearchResult, ReaderSearchState, ReaderSearchStatus } from './search';
