@@ -9,6 +9,7 @@ import { ReaderSettingsStore } from './settings';
 import { mountReaderShell, type ReaderShellController } from './shell';
 import { ReaderThemeController, type ReaderThemeOptions } from './theme';
 import { ReaderTypographyController, type ReaderTypographyOptions } from './typography';
+import { clearReaderFailureState, setReaderFailureState } from './fallback';
 import type { ReaderOpenOptions, Unsubscribe } from './types';
 
 export interface ReaderHarnessHandle {
@@ -121,6 +122,7 @@ export async function mountReaderShellHarness(
   };
 
   const open = async () => {
+    clearReaderFailureState(shell);
     shell.setStatus('loading', 'Opening book…');
     try {
       const openTarget = await resolveOpenTarget();
@@ -161,8 +163,7 @@ export async function mountReaderShellHarness(
         }
       }
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unable to open EPUB publication.';
-      shell.setStatus('error', message);
+      setReaderFailureState(shell, error);
       throw error;
     }
   };
@@ -190,8 +191,11 @@ export async function mountReaderShellHarness(
 
   cleanups.push(controller.subscribe((state) => {
     if (state.status === 'loading') shell.setStatus('loading');
-    if (state.status === 'ready') shell.setStatus('ready');
-    if (state.status === 'error') shell.setStatus('error', state.error?.message ?? 'Unable to open EPUB publication.');
+    if (state.status === 'ready') {
+      clearReaderFailureState(shell);
+      shell.setStatus('ready');
+    }
+    if (state.status === 'error') setReaderFailureState(shell, state.error);
 
     if (state.location) {
       shell.setChapter(state.location.href || 'Current section');
@@ -224,8 +228,7 @@ export async function mountReaderShellHarness(
       }
     };
     void run().catch((error) => {
-      const message = error instanceof Error ? error.message : 'Unable to change typography.';
-      shell.setStatus('error', message);
+      setReaderFailureState(shell, error);
     });
   }));
 
@@ -255,8 +258,7 @@ export async function mountReaderShellHarness(
     };
 
     void run().catch((error) => {
-      const message = error instanceof Error ? error.message : 'Unable to change reading layout.';
-      shell.setStatus('error', message);
+      setReaderFailureState(shell, error);
     });
   }));
 
