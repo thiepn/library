@@ -208,7 +208,7 @@ export class ReaderNavigationController {
 
   private hasOpenReaderPanel(): boolean {
     return Boolean(this.shell.root.querySelector(
-      '[data-reader-toc-panel]:not([hidden]), [data-reader-appearance-panel]:not([hidden]), [data-reader-mode-panel]:not([hidden])',
+      '[data-reader-toc-panel]:not([hidden]), [data-reader-appearance-panel]:not([hidden]), [data-reader-mode-panel]:not([hidden]), [data-reader-search-panel]:not([hidden]), [data-reader-bookmarks-panel]:not([hidden]), [data-reader-annotations-panel]:not([hidden]), [data-reader-selection-actions]:not([hidden])',
     ));
   }
 
