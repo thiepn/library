@@ -9,6 +9,12 @@ export { ReaderProgressUxController } from './progress-ux';
 export { ReaderReadingModeController } from './reading-mode';
 export { resolveReaderPublicationCandidate } from './publication';
 export {
+  clearReaderFailureState,
+  describeReaderFailure,
+  setReaderFailureState,
+} from './fallback';
+export { ReaderFallbackController, mountReaderPublicationWithFallbackHarness } from './fallback-harness';
+export {
   deleteReaderBookmark,
   getReaderBookmarksForWork,
   isReaderBookmarkRecordV2,
@@ -89,6 +95,8 @@ export type {
 } from './types';
 export type { ReaderControllerState, ReaderStatus } from './controller';
 export type { ReaderHarnessHandle, ReaderShellHarnessHandle } from './harness';
+export type { ReaderFailureDescription, ReaderFailureKind, ReaderFallbackTargets } from './fallback';
+export type { ReaderFallbackHarnessHandle } from './fallback-harness';
 export type { ReaderLocationCacheIdentity } from './location-cache';
 export type { ReaderNavigationDirection, ReaderNavigationOptions, ReaderNavigationState } from './navigation';
 export type { ReaderPageLayoutOptions, ReaderPageLayoutState } from './page-layout';
