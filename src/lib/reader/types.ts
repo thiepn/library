@@ -77,16 +77,6 @@ export type ReaderContentInteraction =
       hasSelection: boolean;
     }
   | {
-      type: 'wheel';
-      deltaX: number;
-      deltaY: number;
-      shiftKey: boolean;
-      ctrlKey: boolean;
-      metaKey: boolean;
-      interactive: boolean;
-      hasSelection: boolean;
-    }
-  | {
       type: 'key';
       key: string;
       code: string;
