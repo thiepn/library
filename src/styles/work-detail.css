@@ -1,0 +1,423 @@
+.book-detail {
+  --book-detail-max-copy: 760px;
+}
+
+.book-detail__hero {
+  display: grid;
+  grid-template-columns: minmax(220px, 360px) minmax(0, 1fr);
+  gap: clamp(42px, 8vw, 120px);
+  padding: clamp(54px, 7vw, 88px) 0 76px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.book-detail__cover-column {
+  align-self: start;
+  position: sticky;
+  top: 24px;
+}
+
+.book-detail__cover-frame {
+  width: 100%;
+  background: #0c0d0f;
+  border: 1px solid color-mix(in srgb, var(--strong-rule) 55%, transparent);
+  border-radius: 3px;
+  box-shadow: 10px 12px 0 color-mix(in srgb, var(--strong-rule) 35%, transparent);
+  overflow: hidden;
+}
+
+.book-detail__cover {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.book-detail__cover-caption {
+  margin: 22px 0 0;
+  color: var(--muted);
+  font-size: .72rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.book-detail__hero-copy {
+  min-width: 0;
+  align-self: center;
+}
+
+.book-detail__kicker-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.book-detail__kicker-row .eyebrow {
+  margin: 0;
+}
+
+.book-detail__release-state {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 10px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  color: var(--secondary);
+  font-size: .7rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.book-detail__release-state[data-release-state="available"]::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  margin-right: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.book-detail__hero h1 {
+  max-width: 12ch;
+  margin: 0;
+  font-family: var(--display);
+  font-size: clamp(3.7rem, 8vw, 8rem);
+  line-height: .88;
+  font-weight: 500;
+  letter-spacing: -.05em;
+}
+
+.book-detail__deck {
+  max-width: 34ch;
+  margin: 24px 0 0;
+  font-family: var(--display);
+  color: var(--secondary);
+  font-size: clamp(1.4rem, 2.5vw, 2.05rem);
+  line-height: 1.25;
+}
+
+.book-detail__description {
+  max-width: var(--book-detail-max-copy);
+  margin: 24px 0 0;
+  color: var(--secondary);
+  font-size: 1.02rem;
+  line-height: 1.75;
+}
+
+.book-detail__primary-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 30px;
+}
+
+.book-detail__primary {
+  min-width: 142px;
+}
+
+.book-detail__progress {
+  max-width: var(--book-detail-max-copy);
+  margin-top: 32px;
+  padding: 18px 0 0;
+  border-top: 1px solid var(--rule);
+}
+
+.book-detail__progress[hidden] {
+  display: none;
+}
+
+.book-detail__progress-copy {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.book-detail__progress-copy span {
+  color: var(--secondary);
+  font-size: .82rem;
+}
+
+.book-detail__progress-copy strong {
+  font-family: var(--display);
+  font-size: 1.35rem;
+  font-weight: 500;
+}
+
+.book-detail__progress-track {
+  position: relative;
+  height: 5px;
+  margin-top: 10px;
+  background: var(--rule);
+  overflow: visible;
+}
+
+.book-detail__progress-track span {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: var(--accent);
+}
+
+.book-detail__progress-track i {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 2px;
+  height: 13px;
+  background: var(--ink);
+  transform: translate(-1px, -50%);
+}
+
+.book-detail__progress p {
+  margin: 9px 0 0;
+  color: var(--muted);
+  font-size: .74rem;
+}
+
+.book-detail__facts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+  max-width: var(--book-detail-max-copy);
+  margin: 34px 0 0;
+  padding: 22px 0 0;
+  border-top: 1px solid var(--rule);
+}
+
+.book-detail__facts div,
+.book-detail__metadata-grid div {
+  min-width: 0;
+}
+
+.book-detail__facts dt,
+.book-detail__metadata-grid dt {
+  color: var(--muted);
+  font-size: .66rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.book-detail__facts dd,
+.book-detail__metadata-grid dd {
+  margin: 6px 0 0;
+  overflow-wrap: anywhere;
+}
+
+.book-detail__formats,
+.book-detail__metadata {
+  padding: 58px 0 72px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.book-detail__section-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 28px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.book-detail__section-heading h2 {
+  margin: 0;
+  font-family: var(--display);
+  font-size: clamp(2.2rem, 5vw, 4.3rem);
+  line-height: .95;
+  font-weight: 500;
+  letter-spacing: -.035em;
+}
+
+.book-detail__section-heading > p {
+  max-width: 32ch;
+  margin: 0;
+  color: var(--muted);
+  font-size: .78rem;
+  text-align: right;
+}
+
+.book-detail__format-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-left: 1px solid var(--rule);
+}
+
+.book-detail__format-card {
+  min-height: 250px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+
+.book-detail__format-card[data-format-state="unavailable"] {
+  background: color-mix(in srgb, var(--surface) 38%, transparent);
+}
+
+.book-detail__format-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.book-detail__format-heading h3 {
+  margin: 0;
+  font-family: var(--display);
+  font-size: 1.7rem;
+  font-weight: 500;
+}
+
+.book-detail__format-heading span {
+  color: var(--muted);
+  font-size: .64rem;
+  line-height: 1.35;
+  letter-spacing: .08em;
+  text-align: right;
+  text-transform: uppercase;
+}
+
+.book-detail__format-card[data-format-state="available"] .book-detail__format-heading span {
+  color: var(--accent);
+}
+
+.book-detail__format-card p {
+  margin: 20px 0 28px;
+  color: var(--secondary);
+  line-height: 1.62;
+}
+
+.book-detail__format-card > a,
+.book-detail__format-muted {
+  margin-top: auto;
+  font-size: .82rem;
+}
+
+.book-detail__format-card > a {
+  width: fit-content;
+  color: var(--ink);
+  font-weight: 650;
+  text-decoration-thickness: 1px;
+}
+
+.book-detail__format-card > a:hover {
+  color: var(--accent);
+}
+
+.book-detail__format-card > a small {
+  margin-left: 6px;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.book-detail__format-muted {
+  color: var(--muted);
+}
+
+.book-detail__metadata-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 28px 24px;
+  padding: 30px 0 0;
+}
+
+.book-detail__metadata-wide {
+  grid-column: span 2;
+}
+
+.book-detail__rights-notice {
+  max-width: 80ch;
+  margin: 34px 0 0;
+  padding-top: 20px;
+  border-top: 1px solid var(--rule);
+  color: var(--secondary);
+  font-size: .84rem;
+  line-height: 1.65;
+}
+
+@media (max-width: 980px) {
+  .book-detail__facts,
+  .book-detail__metadata-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .book-detail__format-grid {
+    grid-template-columns: 1fr;
+    border-left: 0;
+  }
+
+  .book-detail__format-card {
+    min-height: 0;
+    border-left: 1px solid var(--rule);
+  }
+}
+
+@media (max-width: 800px) {
+  .book-detail__hero {
+    grid-template-columns: 1fr;
+    gap: 48px;
+    padding-top: 48px;
+  }
+
+  .book-detail__cover-column {
+    position: static;
+  }
+
+  .book-detail__cover-frame {
+    width: min(300px, 76vw);
+  }
+
+  .book-detail__hero h1 {
+    font-size: clamp(3.6rem, 18vw, 7rem);
+  }
+}
+
+@media (max-width: 560px) {
+  .book-detail__kicker-row,
+  .book-detail__section-heading,
+  .book-detail__format-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .book-detail__section-heading > p,
+  .book-detail__format-heading span {
+    text-align: left;
+  }
+
+  .book-detail__facts,
+  .book-detail__metadata-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .book-detail__metadata-wide {
+    grid-column: auto;
+  }
+
+  .book-detail__primary-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .book-detail__primary-actions .primary-action,
+  .book-detail__primary-actions .secondary-action {
+    width: 100%;
+  }
+}
+
+@media (forced-colors: active) {
+  .book-detail__cover-frame,
+  .book-detail__release-state,
+  .book-detail__format-card {
+    border-color: CanvasText;
+  }
+
+  .book-detail__progress-track span,
+  .book-detail__progress-track i,
+  .book-detail__release-state[data-release-state="available"]::before {
+    background: CanvasText;
+  }
+}
