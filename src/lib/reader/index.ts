@@ -35,6 +35,8 @@ export { ReaderMobileController, READER_MOBILE_DEFAULTS } from './mobile';
 export { mountReaderPublicationWithMobileHarness, mountReaderShellWithMobileHarness } from './mobile-harness';
 export { ReaderDesktopController, READER_DESKTOP_DEFAULTS } from './desktop';
 export { mountReaderPublicationWithDesktopHarness, mountReaderShellWithDesktopHarness } from './desktop-harness';
+export { ReaderAccessibilityController, readerDialogIsModal, syncReaderDialogModality, trapReaderDialogFocus } from './accessibility';
+export { mountReaderPublicationWithAccessibilityHarness, mountReaderShellWithAccessibilityHarness } from './accessibility-harness';
 export { ReaderSearchCache } from './search-cache';
 export { EpubSearchEngine, normalizeReaderSearchQuery } from './search-engine';
 export { ReaderSearchController, READER_SEARCH_MAX_RESULTS } from './search';
@@ -129,6 +131,8 @@ export type {
   ReaderDesktopSurface,
 } from './desktop';
 export type { ReaderDesktopHarnessHandle } from './desktop-harness';
+export type { ReaderAccessibilityState } from './accessibility';
+export type { ReaderAccessibilityHarnessHandle } from './accessibility-harness';
 export type { ReaderSearchCacheIdentity } from './search-cache';
 export type { ReaderSearchMatch, ReaderSearchOptions, ReaderSearchProgress, ReaderSearchResponse } from './search-engine';
 export type { ReaderSearchControllerOptions, ReaderSearchResult, ReaderSearchState, ReaderSearchStatus } from './search';
