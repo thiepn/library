@@ -1,0 +1,189 @@
+/* P23 accessibility is intentionally the final staged-reader CSS layer. */
+.reader-shell[data-reader-accessibility="ready"] {
+  /* Muted UI text remains normal text, so keep it at the already-AA secondary contrast level. */
+  --reader-shell-muted: var(--reader-shell-secondary);
+}
+
+.reader-shell[data-reader-accessibility="ready"] :is(
+  button,
+  input,
+  select,
+  textarea,
+  [role="button"],
+  [tabindex]:not([tabindex="-1"])
+) {
+  min-block-size: 24px;
+}
+
+.reader-shell[data-reader-accessibility="ready"] :is(
+  input,
+  select,
+  textarea,
+  .reader-shell__error-actions a,
+  .reader-shell__error-actions button,
+  .reader-shell__mode-group button,
+  .reader-shell__alignment-group button,
+  .reader-shell__font-grid button,
+  .reader-shell__theme-grid button,
+  .reader-shell__page-layout-group button,
+  .reader-search-result,
+  .reader-bookmark__open,
+  .reader-bookmark__remove,
+  .reader-annotation-item__actions button
+) {
+  border-color: var(--reader-shell-secondary);
+}
+
+.reader-shell[data-reader-accessibility="ready"] :focus-visible,
+.reader-skip-link:focus-visible {
+  outline: 3px solid var(--reader-shell-accent);
+  outline-offset: 3px;
+  scroll-margin: 14px;
+}
+
+.reader-shell[data-reader-accessibility="ready"] [role="dialog"]:focus-visible {
+  outline-offset: -4px;
+}
+
+.reader-shell[data-reader-accessibility="ready"] :is(
+  [data-reader-appearance-panel],
+  [data-reader-mode-panel],
+  [data-reader-toc-panel],
+  [data-reader-search-panel],
+  [data-reader-bookmarks-panel],
+  [data-reader-annotations-panel]
+) {
+  max-inline-size: calc(100% - var(--reader-safe-left) - var(--reader-safe-right));
+  overscroll-behavior: contain;
+}
+
+.reader-shell[data-reader-accessibility="ready"] :is(input, select, textarea) {
+  font: inherit;
+  color: var(--reader-shell-ink);
+  background: var(--reader-shell-bg);
+}
+
+/* At 400% zoom a 1280px viewport resolves to 320 CSS px. Keep all reader chrome in one-dimensional flow. */
+@media (max-width: 320px) {
+  .reader-document { min-width: 0; }
+
+  .reader-shell[data-reader-accessibility="ready"] .reader-shell__bar--top {
+    grid-template-columns: 40px 0 minmax(0, 1fr);
+    gap: 0;
+    padding-inline: var(--reader-safe-left) var(--reader-safe-right);
+  }
+
+  .reader-shell[data-reader-accessibility="ready"] .reader-shell__identity {
+    width: 0;
+    max-width: 0;
+    overflow: hidden;
+    visibility: hidden;
+  }
+
+  .reader-shell[data-reader-accessibility="ready"] .reader-shell__cluster--end {
+    width: 100%;
+    min-width: 0;
+    justify-content: flex-end;
+    gap: 0;
+  }
+
+  .reader-shell[data-reader-accessibility="ready"] :is(
+    .reader-shell__icon-button,
+    .reader-shell__text-button,
+    .reader-shell__nav-button
+  ) {
+    min-width: 40px;
+    min-height: 44px;
+  }
+
+  .reader-shell[data-reader-accessibility="ready"] :is(
+    [data-reader-appearance-panel],
+    [data-reader-mode-panel],
+    [data-reader-toc-panel],
+    [data-reader-search-panel],
+    [data-reader-bookmarks-panel],
+    [data-reader-annotations-panel]
+  ) {
+    right: max(2px, var(--reader-safe-right));
+    left: max(2px, var(--reader-safe-left));
+    width: auto;
+    max-width: none;
+    min-width: 0;
+  }
+
+  .reader-shell[data-reader-accessibility="ready"] :is(
+    .reader-search-form__row,
+    .reader-bookmarks-tools,
+    .reader-annotations-tools,
+    .reader-annotation-editor__actions
+  ) {
+    grid-template-columns: minmax(0, 1fr);
+    flex-wrap: wrap;
+  }
+
+  .reader-shell[data-reader-accessibility="ready"] :is(input, select, textarea, button) {
+    max-width: 100%;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .reader-shell[data-reader-accessibility="ready"] {
+    --reader-shell-rule: var(--reader-shell-secondary);
+  }
+
+  .reader-shell[data-reader-accessibility="ready"] :is(
+    .reader-shell__bar,
+    [data-reader-appearance-panel],
+    [data-reader-mode-panel],
+    [data-reader-toc-panel],
+    [data-reader-search-panel],
+    [data-reader-bookmarks-panel],
+    [data-reader-annotations-panel],
+    .reader-selection-actions
+  ) {
+    border-color: var(--reader-shell-ink);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reader-shell[data-reader-accessibility="ready"],
+  .reader-shell[data-reader-accessibility="ready"] *,
+  .reader-shell[data-reader-accessibility="ready"] *::before,
+  .reader-shell[data-reader-accessibility="ready"] *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .reader-shell[data-reader-accessibility="ready"] {
+    forced-color-adjust: auto;
+  }
+
+  .reader-shell[data-reader-accessibility="ready"] :focus-visible,
+  .reader-skip-link:focus-visible {
+    outline: 3px solid Highlight !important;
+    outline-offset: 3px;
+  }
+
+  .reader-shell[data-reader-accessibility="ready"] :is(
+    button,
+    input,
+    select,
+    textarea,
+    [role="dialog"],
+    .reader-shell__bar,
+    .reader-selection-actions
+  ) {
+    border-color: CanvasText !important;
+  }
+
+  .reader-shell[data-reader-accessibility="ready"] [aria-pressed="true"],
+  .reader-shell[data-reader-accessibility="ready"] [aria-current="location"] {
+    outline: 2px solid Highlight;
+    outline-offset: -3px;
+  }
+}
