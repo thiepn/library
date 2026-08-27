@@ -1,10 +1,11 @@
 const DB_NAME = 'thiepn-library';
-const DB_VERSION = 6;
+const DB_VERSION = 7;
 const CHANNEL = 'thiepn-library';
 
 export type StoreName =
   | 'recent'
   | 'progress'
+  | 'legacyProgress'
   | 'bookmarks'
   | 'favorites'
   | 'history'
@@ -54,6 +55,7 @@ export interface AnnotationRecord {
 const storeDefinitions: Array<[StoreName, string]> = [
   ['recent', 'workId'],
   ['progress', 'workId'],
+  ['legacyProgress', 'workId'],
   ['bookmarks', 'id'],
   ['favorites', 'workId'],
   ['history', 'workId'],
@@ -69,13 +71,39 @@ function request<T>(value: IDBRequest<T>): Promise<T> {
   });
 }
 
+function isLegacyProgressRecord(value: unknown): value is ProgressRecord {
+  if (typeof value !== 'object' || value === null || isReaderProgressRecordV2(value)) return false;
+  const record = value as Partial<ProgressRecord>;
+  return typeof record.workId === 'string'
+    && typeof record.chapterId === 'string'
+    && typeof record.percent === 'number'
+    && Number.isFinite(record.percent)
+    && typeof record.updatedAt === 'string';
+}
+
 export function openLibraryDb(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     const open = indexedDB.open(DB_NAME, DB_VERSION);
-    open.addEventListener('upgradeneeded', () => {
+    open.addEventListener('upgradeneeded', (event) => {
       const db = open.result;
       for (const [name, keyPath] of storeDefinitions) {
         if (!db.objectStoreNames.contains(name)) db.createObjectStore(name, { keyPath });
+      }
+
+      // P29: preserve any pre-bridge Markdown position before native progress can
+      // replace the old shared `progress` value for the same workId.
+      const oldVersion = (event as IDBVersionChangeEvent).oldVersion;
+      const transaction = open.transaction;
+      if (oldVersion < 7 && transaction) {
+        const shared = transaction.objectStore('progress');
+        const legacy = transaction.objectStore('legacyProgress');
+        const cursorRequest = shared.openCursor();
+        cursorRequest.addEventListener('success', () => {
+          const cursor = cursorRequest.result;
+          if (!cursor) return;
+          if (isLegacyProgressRecord(cursor.value)) legacy.put(cursor.value);
+          cursor.continue();
+        });
       }
     });
     open.addEventListener('success', () => resolve(open.result));
@@ -131,16 +159,6 @@ export function isReaderProgressRecordV2(value: unknown): value is ReaderProgres
     && typeof record.updatedAt === 'string';
 }
 
-function isLegacyProgressRecord(value: unknown): value is ProgressRecord {
-  if (typeof value !== 'object' || value === null || isReaderProgressRecordV2(value)) return false;
-  const record = value as Partial<ProgressRecord>;
-  return typeof record.workId === 'string'
-    && typeof record.chapterId === 'string'
-    && typeof record.percent === 'number'
-    && Number.isFinite(record.percent)
-    && typeof record.updatedAt === 'string';
-}
-
 export async function getFavoriteWorkIds(): Promise<string[]> {
   return withStore('favorites', 'readonly', async (store) => {
     const values = await request<FavoriteRecord[]>(store.getAll());
@@ -166,30 +184,58 @@ export async function toggleFavorite(workId: string): Promise<boolean> {
   return next;
 }
 
-/** Legacy progress reader. Native EPUB records are intentionally invisible to the old chapter launcher. */
-export async function getProgress(workId: string): Promise<ProgressRecord | undefined> {
-  return withStore('progress', 'readonly', async (store) => {
+/**
+ * P29 legacy progress reader. The dedicated sidecar is authoritative after DB v7.
+ * A pre-P29 legacy record still in the shared progress store is imported lazily as
+ * an additional recovery path for browsers upgrading from an older cached build.
+ */
+export async function getLegacyProgress(workId: string): Promise<ProgressRecord | undefined> {
+  const sidecar = await withStore('legacyProgress', 'readonly', async (store) => {
+    const stored = await request<ProgressRecord | undefined>(store.get(workId));
+    return isLegacyProgressRecord(stored) ? stored : undefined;
+  });
+  if (sidecar) return sidecar;
+
+  const shared = await withStore('progress', 'readonly', async (store) => {
     const stored = await request<StoredProgressRecord | undefined>(store.get(workId));
     return isLegacyProgressRecord(stored) ? stored : undefined;
   });
+  if (!shared) return undefined;
+
+  try {
+    await withStore('legacyProgress', 'readwrite', async (store) => {
+      await request(store.put(shared));
+    });
+  } catch {
+    // The recovered value is still usable for this launch even if sidecar repair fails.
+  }
+  return shared;
 }
 
-/** Legacy progress writer. It never overwrites a newer native EPUB progress record. */
-export async function setProgress(workId: string, progress: ProgressRecord): Promise<void> {
+/** Legacy writer isolated from native EPUB progress. */
+export async function setLegacyProgress(workId: string, progress: ProgressRecord): Promise<void> {
   if (progress.workId !== workId) throw new Error('Progress work identity mismatch');
   const next: ProgressRecord = {
     ...progress,
     percent: Math.min(100, Math.max(0, Number.isFinite(progress.percent) ? progress.percent : 0)),
   };
   let changed = false;
-  await withStore('progress', 'readwrite', async (store) => {
-    const existing = await request<StoredProgressRecord | undefined>(store.get(workId));
-    if (isReaderProgressRecordV2(existing)) return;
+  await withStore('legacyProgress', 'readwrite', async (store) => {
+    const existing = await request<ProgressRecord | undefined>(store.get(workId));
     if (isLegacyProgressRecord(existing) && existing.percent > next.percent) return;
     await request(store.put(next));
     changed = true;
   });
-  if (changed) broadcast('progress', workId);
+  if (changed) broadcast('legacyProgress', workId);
+}
+
+/** Compatibility aliases retained for old ReaderLayout bundles and call sites. */
+export async function getProgress(workId: string): Promise<ProgressRecord | undefined> {
+  return getLegacyProgress(workId);
+}
+
+export async function setProgress(workId: string, progress: ProgressRecord): Promise<void> {
+  return setLegacyProgress(workId, progress);
 }
 
 export async function getReaderProgress(workId: string): Promise<ReaderProgressRecordV2 | undefined> {
