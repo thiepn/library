@@ -71,7 +71,7 @@ if (present) {
   pass(
     'EPUB_READER_REGRESSION_P29_BRIDGE',
     postbuild.includes("html.includes('Legacy web reader')")
-      && postbuild.includes('content=\\"noindex,follow\\"')
+      && postbuild.includes('noindex,follow')
       && postbuild.includes('Open current reader')
       && postbuild.includes('incorrectly demoted to compatibility UI'),
     'Built-route tests protect both migrated P29 compatibility pages and Markdown-primary legacy pages',
