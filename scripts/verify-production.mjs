@@ -26,6 +26,7 @@ async function requireRoute(url) {
   const bytes = await fetchBytes(url);
   if (!bytes.length) throw new Error(`Empty production response: ${url}`);
   console.log(`LIVE ${url}`);
+  return bytes;
 }
 
 for (const entry of await readdir(worksRoot, { withFileTypes: true })) {
@@ -51,4 +52,25 @@ await requireRoute(`${origin}/`);
 await requireRoute(`${origin}/search`);
 await requireRoute(`${origin}/subjects`);
 await requireRoute(`${origin}/collections`);
+
+const manifestBytes = await requireRoute(`${origin}/manifest.webmanifest`);
+const manifest = JSON.parse(manifestBytes.toString('utf8'));
+if (manifest.id !== '/library/' || manifest.start_url !== '/library/' || manifest.scope !== '/library/' || manifest.display !== 'standalone') {
+  throw new Error('Production P28 manifest scope/install metadata mismatch');
+}
+if (!Array.isArray(manifest.icons) || !manifest.icons.some((icon) => icon.purpose === 'maskable')) {
+  throw new Error('Production P28 manifest is missing its maskable install icon');
+}
+
+const serviceWorker = (await requireRoute(`${origin}/service-worker.js`)).toString('utf8');
+if (!serviceWorker.includes("const SW_VERSION = 'p28-v1'")
+  || !serviceWorker.includes("const CACHE_PREFIX = 'thiepn-library-pwa-'")
+  || !serviceWorker.includes("url.pathname.startsWith(scoped('media/'))")
+  || !serviceWorker.includes('/\\.epub$/i.test(url.pathname)')) {
+  throw new Error('Production P28 service-worker cache contract mismatch');
+}
+
+const offline = (await requireRoute(`${origin}/offline/`)).toString('utf8');
+if (!offline.includes('You’re offline.')) throw new Error('Production P28 offline fallback mismatch');
+
 console.log('PRODUCTION_VERIFICATION_PASS');

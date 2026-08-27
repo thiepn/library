@@ -13,6 +13,11 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).hr
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#F5F3EE" />
+    <meta name="application-name" content="Thiepn Library" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Thiepn Library" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="description" content={description} />
     {noindex && <meta name="robots" content="noindex,nofollow" />}
     <link rel="canonical" href={canonical} />
@@ -46,6 +51,10 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).hr
       <nav aria-label="Footer"><a href={href('/privacy')}>Privacy</a><a href={href('/annotations')}>Annotations</a><a href={href('/about')}>About</a></nav>
       <span>v1.0.0-rc.1</span>
     </footer>
+    <script>
+      import { registerLibraryPwa } from '../lib/client/pwa';
+      void registerLibraryPwa();
+    </script>
     <script>
       type Appearance = 'system' | 'light' | 'dark';
       interface LibrarySettings { appearance?: Appearance; [key: string]: unknown; }

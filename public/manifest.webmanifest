@@ -1,10 +1,38 @@
 {
+  "id": "/library/",
   "name": "Thiepn Library",
   "short_name": "Library",
+  "description": "Books, research, and durable digital editions with a native EPUB reader.",
   "start_url": "/library/",
   "scope": "/library/",
   "display": "standalone",
   "background_color": "#F5F3EE",
   "theme_color": "#F5F3EE",
-  "icons": [{ "src": "/library/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+  "categories": ["books", "education", "productivity"],
+  "icons": [
+    {
+      "src": "/library/app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/library/app-icon-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Saved books",
+      "short_name": "Saved",
+      "url": "/library/saved"
+    },
+    {
+      "name": "Search Library",
+      "short_name": "Search",
+      "url": "/library/search"
+    }
+  ]
 }
