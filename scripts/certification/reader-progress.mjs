@@ -23,7 +23,15 @@ if (present) {
   const publicApi = await readFile('src/lib/reader/index.ts', 'utf8');
 
   pass('EPUB_READER_PROGRESS_STATE', progress.includes('ReaderProgressState') && progress.includes('currentPercentage') && progress.includes('furthestPercentage') && progress.includes('subscribe(listener'), 'P12 persistence exposes reactive current and furthest progress without merging them');
-  pass('EPUB_READER_PROGRESS_LOCATIONS_NONBLOCKING', ux.includes('DEFAULT_GENERATION_DELAY_MS') && ux.includes('window.setTimeout') && harness.indexOf('await controller.open') < harness.indexOf('progressUx.start()'), 'Whole-book location generation begins only after first EPUB display and never blocks initial opening');
+  const asyncGenerationScheduler = ux.includes('scheduleReaderIdleTask') || ux.includes('window.setTimeout');
+  pass(
+    'EPUB_READER_PROGRESS_LOCATIONS_NONBLOCKING',
+    ux.includes('DEFAULT_GENERATION_DELAY_MS')
+      && asyncGenerationScheduler
+      && ux.includes("this.controllerState.status !== 'ready'")
+      && harness.indexOf('await controller.open') < harness.indexOf('progressUx.start()'),
+    'Whole-book location generation is scheduled asynchronously only after first EPUB display and never blocks initial opening',
+  );
   pass('EPUB_READER_PROGRESS_CACHE', cache.includes('thiepn-library-reader-locations-v1') && ['workId', 'edition', 'releaseVersion'].every((field) => cache.includes(field)) && cache.includes('globalThis.caches'), 'Serialized EPUB location maps are cached asynchronously and bound to the exact publication release');
   pass('EPUB_READER_PROGRESS_CACHE_SAFE', cache.includes('Reading remains functional without browser cache storage') && ux.includes("setMapStatus('unavailable')"), 'Cache or location generation failure degrades to ordinary reading instead of failing the reader');
   pass('EPUB_READER_PROGRESS_ACCURATE_PERCENT', controller.includes('generateLocations') && controller.includes('percentageFromCfi') && controller.includes('refreshCurrentPercentage') && ux.includes('location?.percentage'), 'Generated EPUB locations enrich the current CFI with whole-book percentage');
