@@ -9,7 +9,7 @@ const files = [
   'src/styles/work-detail.css',
 ];
 const present = (await Promise.all(files.map(exists))).every(Boolean);
-pass('BOOK_DETAIL_P16', present, 'P16 publication-aware work detail page and responsive styles are present');
+pass('BOOK_DETAIL_P16', present, 'Reader-first book detail page and responsive styles are present');
 
 if (present) {
   const page = await readFile('src/pages/works/[slug].astro', 'utf8');
@@ -22,23 +22,28 @@ if (present) {
   );
   pass(
     'BOOK_DETAIL_RELEASE_FORMATS',
-    page.includes('const release = work.release') && page.includes('release?.artifacts.pdf') && page.includes('release?.artifacts.epub') && page.includes('Verified release'),
-    'PDF and EPUB availability is derived from the active validated release rather than intended format flags alone',
+    page.includes('const release = work.release')
+      && page.includes('release?.artifacts.pdf')
+      && page.includes('release?.artifacts.epub')
+      && page.includes("epub ? 'EPUB' : null")
+      && page.includes("pdf ? 'PDF' : null"),
+    'PDF and EPUB availability remains derived from the active validated release while the UI presents reader-facing format status',
   );
   pass(
     'BOOK_DETAIL_READER_ROUTE_SAFE',
-    page.includes('const readHref = work.webMaterialized') && page.includes('No verified web edition is exposed.'),
-    'P16 does not expose the still-legacy public reader route when its web payload is absent',
+    page.includes('const readHref = work.webMaterialized')
+      && page.includes('This book is not currently available in the Library reader.'),
+    'The public reader action is exposed only when its reading route is materialized',
   );
   pass(
     'BOOK_DETAIL_INTELLIGENT_CTA',
     page.includes('getProgress') && page.includes("readerCta.textContent = legacy.percent >= 99 ? 'Read again' : 'Continue reading'") && page.includes('Start reading'),
-    'The current public web-reader CTA distinguishes start, continue, and completed/re-read states using compatible progress',
+    'The reader CTA distinguishes start, continue, and completed/re-read states using compatible progress',
   );
   pass(
     'BOOK_DETAIL_NATIVE_PROGRESS_RELEASE_BOUND',
     page.includes('getReaderProgress') && page.includes('native.edition === edition') && page.includes('native.releaseVersion === releaseVersion') && page.includes('furthestPercentage'),
-    'Native EPUB progress is displayed only when its edition and release version exactly match the active publication',
+    'Native EPUB progress remains bound to exact edition and release identity even though those internals are hidden from ordinary UI',
   );
   pass(
     'BOOK_DETAIL_PROGRESS_VISUAL',
@@ -48,27 +53,35 @@ if (present) {
   pass(
     'BOOK_DETAIL_FORMAT_ACTIONS',
     page.includes('Download EPUB') && page.includes('View PDF') && page.includes('Open reader') && page.includes('formatBytes'),
-    'Available formats expose intentional reader, EPUB-download, and PDF actions with useful artifact information',
+    'Available formats expose intentional reader, EPUB-download, and PDF actions with useful file information',
   );
   pass(
-    'BOOK_DETAIL_METADATA_HIERARCHY',
-    page.includes('Publication details') && page.includes('First published') && page.includes('Edition number') && page.includes('Release version') && page.includes('Subjects') && page.includes('Collections'),
-    'Edition, dates, language, rights, taxonomy, and release identity are organized as publication metadata',
+    'BOOK_DETAIL_READER_METADATA_HIERARCHY',
+    page.includes('Book details')
+      && page.includes('First published')
+      && page.includes('Last updated')
+      && page.includes('Subjects')
+      && page.includes('Collections')
+      && page.includes('Available formats')
+      && !page.includes('Release version')
+      && !page.includes('Verified release')
+      && !page.includes('No active binary release'),
+    'Book details expose useful reader metadata without release-engineering terminology',
   );
   pass(
     'BOOK_DETAIL_SAVE_LIBRARY',
-    page.includes('toggleFavorite') && page.includes('aria-pressed') && page.includes('Save to my library'),
-    'Existing save-to-library behavior remains available and accessible after redesign',
+    page.includes('toggleFavorite') && page.includes('aria-pressed') && page.includes('Add to My Library') && page.includes('Remove from My Library'),
+    'My Library save behavior remains available and accessible after reframing',
   );
   pass(
     'BOOK_DETAIL_RESPONSIVE',
     css.includes('@media (max-width: 980px)') && css.includes('@media (max-width: 800px)') && css.includes('@media (max-width: 560px)') && css.includes('@media (forced-colors: active)'),
-    'P16 cover, formats, metadata, actions, and progress adapt across desktop, tablet, phone, and forced-colors modes',
+    'Cover, formats, metadata, actions, and progress adapt across desktop, tablet, phone, and forced-colors modes',
   );
   pass(
     'BOOK_DETAIL_COVER_TREATMENT',
     css.includes('.book-detail__cover-frame') && css.includes('position: sticky') && page.includes('book-detail__cover-caption'),
-    'The edition cover has a dedicated editorial treatment with responsive behavior and edition context',
+    'The book cover retains its dedicated editorial treatment and edition context',
   );
 }
 

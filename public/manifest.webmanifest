@@ -2,7 +2,7 @@
   "id": "/library/",
   "name": "Thiepn Library",
   "short_name": "Library",
-  "description": "Books, research, and durable digital editions with a native EPUB reader.",
+  "description": "A personal digital library and ebook reader with saved progress, highlights, notes, and offline reading.",
   "start_url": "/library/",
   "scope": "/library/",
   "display": "standalone",
@@ -25,8 +25,8 @@
   ],
   "shortcuts": [
     {
-      "name": "Saved books",
-      "short_name": "Saved",
+      "name": "My Library",
+      "short_name": "My Library",
       "url": "/library/saved"
     },
     {

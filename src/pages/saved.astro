@@ -4,14 +4,14 @@ import WorkCard from '../components/WorkCard.astro';
 import { getWorks } from '../lib/content/repository';
 const works = await getWorks();
 ---
-<BaseLayout title="Saved" description="Your browser-local saved Library works." noindex>
+<BaseLayout title="My Library" description="Books you have saved to your browser-local personal library." noindex>
   <div class="page">
     <section class="section">
-      <div class="section-heading"><div><p class="eyebrow">Local / Saved</p><h1>My Library</h1></div><p class="micro" data-saved-count>Loading local state…</p></div>
+      <div class="section-heading"><div><p class="eyebrow">Your books</p><h1>My Library</h1></div><p class="micro" data-saved-count>Loading your books…</p></div>
       <div class="work-list saved-list" data-saved-list>
         {works.map((work, index) => <div class="saved-work" data-saved-work={work.id} hidden><WorkCard work={work} index={index + 1} /></div>)}
       </div>
-      <div class="empty" data-saved-empty hidden><h2>Nothing saved yet.</h2><p>Save a publication from its Work page. The saved list stays in this browser and does not require an account.</p></div>
+      <div class="empty" data-saved-empty hidden><h2>Your Library is empty.</h2><p>Add a book to My Library from the catalog or a book details page. Your saved list stays in this browser and does not require an account.</p></div>
     </section>
   </div>
   <script>
@@ -28,10 +28,10 @@ const works = await getWorks();
           node.hidden = !show;
           if (show) visible++;
         }
-        if (count) count.textContent = `${visible} saved`;
+        if (count) count.textContent = `${visible} book${visible === 1 ? '' : 's'}`;
         if (empty) empty.hidden = visible !== 0;
       } catch {
-        if (count) count.textContent = 'Local state unavailable';
+        if (count) count.textContent = 'Local library unavailable';
         if (empty) { empty.hidden = false; empty.querySelector('p')!.textContent = 'This browser did not allow the local Library database to open.'; }
       }
     }

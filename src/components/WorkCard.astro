@@ -8,6 +8,11 @@ const workUrl = `${base}/works/${work.slug}`;
 const coverUrl = /^https?:\/\//i.test(work.cover.src)
   ? work.cover.src
   : `${base}${work.cover.src.startsWith('/') ? work.cover.src : `/${work.cover.src}`}`;
+const formats = [
+  work.webMaterialized ? 'Reader' : null,
+  work.release?.artifacts.epub ? 'EPUB' : null,
+  work.release?.artifacts.pdf ? 'PDF' : null,
+].filter((value): value is string => Boolean(value));
 ---
 <article class="work-card" data-pagefind-ignore="all">
   <a class="publication-cover-link" href={workUrl} aria-label={`Open ${work.title}`}>
@@ -18,7 +23,7 @@ const coverUrl = /^https?:\/\//i.test(work.cover.src)
     <h2><a href={workUrl}>{work.title}</a></h2>
     {work.subtitle && <p class="work-subtitle">{work.subtitle}</p>}
     <p class="muted">{work.shortDescription}</p>
-    <p class="micro">{work.publication.editionLabel} · {work.publication.version}</p>
+    <p class="micro">{formats.length ? formats.join(' · ') : 'Book details'}</p>
   </div>
 </article>
 
