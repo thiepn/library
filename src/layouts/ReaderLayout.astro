@@ -8,7 +8,7 @@ interface Props {
   work: ResolvedWork;
   chapters: ResolvedChapter[];
   current: ResolvedChapter;
-  nativeReaderHref?: string;
+  nativeReaderHref?: string | undefined;
 }
 
 const { work, chapters, current, nativeReaderHref } = Astro.props;
