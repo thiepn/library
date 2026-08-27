@@ -2,6 +2,11 @@ const DB_NAME = 'thiepn-library';
 const DB_VERSION = 7;
 const CHANNEL = 'thiepn-library';
 
+// P12 compatibility history: before P29 the legacy/native bridge used `DB_VERSION = 6`.
+// Its Legacy progress writer protected native records with
+// `if (isReaderProgressRecordV2(existing)) return`. P29 keeps the same safety invariant
+// by moving legacy writes into a separate store, while preserving the old API aliases.
+
 export type StoreName =
   | 'recent'
   | 'progress'
