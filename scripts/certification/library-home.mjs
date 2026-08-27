@@ -9,7 +9,7 @@ const files = [
   'src/styles/library-home.css',
 ];
 const present = (await Promise.all(files.map(exists))).every(Boolean);
-pass('LIBRARY_HOME_P17', present, 'P17 publication-aware Library homepage and responsive styles are present');
+pass('LIBRARY_HOME_P17', present, 'Reader-first Library homepage and responsive styles are present');
 
 if (present) {
   const page = await readFile('src/pages/index.astro', 'utf8');
@@ -22,7 +22,7 @@ if (present) {
       && page.includes('release?.artifacts.epub')
       && !page.includes("work.formats.pdf.enabled ? 'PDF'")
       && !page.includes("work.formats.epub.enabled ? 'EPUB'"),
-    'Homepage format badges are derived from validated active-release artifacts rather than intended format flags',
+    'Reader format badges are derived from validated active-release artifacts rather than intended format flags',
   );
 
   pass(
@@ -30,7 +30,7 @@ if (present) {
     page.includes('const readHref = work.webMaterialized')
       && page.includes("data-web-readable={readHref ? 'true' : 'false'}")
       && page.includes('data-catalog-reader-cta'),
-    'Public web-reader actions remain gated by materialized legacy-reader availability during staged EPUB rollout',
+    'Reader actions remain gated by a materialized reading route during staged native-reader rollout',
   );
 
   pass(
@@ -38,7 +38,7 @@ if (present) {
     page.includes('getProgress')
       && page.includes("legacy.percent >= 99 ? 'Read again' : 'Continue reading'")
       && page.includes("'Start reading'"),
-    'Compatible public web-reader cards distinguish start, continue, and reread states from legacy progress',
+    'Readable book cards distinguish start, continue, and reread states from stored progress',
   );
 
   pass(
@@ -47,7 +47,7 @@ if (present) {
       && page.includes('native.edition === edition')
       && page.includes('native.releaseVersion === releaseVersion')
       && page.includes('furthestPercentage'),
-    'Native EPUB progress appears only when edition and releaseVersion exactly match the catalog publication',
+    'Native EPUB progress appears only when edition and releaseVersion exactly match the catalog book',
   );
 
   pass(
@@ -63,8 +63,9 @@ if (present) {
     page.includes('getFavoriteWorkIds')
       && page.includes('toggleFavorite')
       && page.includes('data-saved-badge')
-      && page.includes("card.dataset.saved = String(saved)"),
-    'Homepage cards react to Library saved state and support direct accessible save/un-save actions',
+      && page.includes("card.dataset.saved = String(saved)")
+      && page.includes('Add to My Library'),
+    'Homepage cards react to My Library state and support direct accessible save/un-save actions',
   );
 
   pass(
@@ -72,17 +73,21 @@ if (present) {
     page.includes('data-continue-section')
       && page.includes('renderContinue')
       && page.includes('legacy.percent > 0 && legacy.percent < 99.5')
-      && page.includes('matchingNative.percentage > 0 && matchingNative.percentage < .995'),
-    'Continue-reading section is driven by actual stored reading state rather than a server-only list of Markdown-readable works',
+      && page.includes('matchingNative.percentage > 0 && matchingNative.percentage < .995')
+      && page.indexOf('data-continue-section') < page.indexOf('id="books"'),
+    'Continue Reading is driven by stored state and appears before the full book catalog',
   );
 
   pass(
-    'LIBRARY_HOME_PUBLICATION_METADATA',
-    page.includes('work.publication.editionLabel')
-      && page.includes('Release ${release.version}')
-      && page.includes('Available formats')
-      && page.includes('Details only'),
-    'Catalog cards communicate edition, active release identity, and actual available formats',
+    'LIBRARY_HOME_READER_METADATA',
+    page.includes("work.webMaterialized ? 'Reader' : null")
+      && page.includes("epub ? 'EPUB' : null")
+      && page.includes("pdf ? 'PDF' : null")
+      && page.includes('Available reading formats')
+      && !page.includes('Release ${release.version}')
+      && !page.includes('No active binary release')
+      && !page.includes('work.publication.editionLabel'),
+    'Catalog exposes reader-facing format availability without internal release-engineering metadata',
   );
 
   pass(
@@ -90,7 +95,7 @@ if (present) {
     !page.includes('restoring')
       && !page.includes('Edition restoration')
       && !page.includes("work.id === 'ai-for-the-kingdom'"),
-    'Homepage contains no legacy restoration copy or title-specific publication exceptions',
+    'Homepage contains no legacy restoration copy or title-specific book exceptions',
   );
 
   pass(
@@ -108,7 +113,7 @@ if (present) {
       && css.includes('@media (max-width: 620px)')
       && css.includes('@media (max-width: 420px)')
       && css.includes('@media (forced-colors: active)'),
-    'Publication cards, search, progress, and continue-reading layout adapt across desktop, tablet, phone, and forced-colors modes',
+    'Book cards, search, progress, and continue-reading layout adapt across desktop, tablet, phone, and forced-colors modes',
   );
 }
 
