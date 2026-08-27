@@ -25,14 +25,14 @@ const publication = migration.publication
   ? localizeReaderPublication(migration.publication, base)
   : undefined;
 
-// Keep the verified Markdown payload available as an explicit P26 escape path even
-// when the active release normally opens through EPUB. This is never auto-selected.
+// Keep the verified Markdown payload available as an explicit compatibility/recovery
+// path even when the active release normally opens through EPUB. It is opt-in only.
 const legacyChapters = work.webMaterialized ? await getChaptersForWork(work.id) : [];
 const first = legacyChapters[0];
 const ids = legacyChapters.map((chapter) => chapter.entry.data.id);
 const bookHref = `${base}/works/${work.slug}`;
 const legacyFallbackHref = first
-  ? `${base}/works/${work.slug}/read/${first.entry.data.id}`
+  ? `${base}/works/${work.slug}/read?legacy=1`
   : undefined;
 const pdfFallback = work.release?.artifacts.pdf
   ? localizeReaderArtifact(work.release.artifacts.pdf, base)
@@ -47,6 +47,17 @@ const pdfFallback = work.release?.artifacts.pdf
     noindex
   >
     <div data-reader-publication={JSON.stringify(publication)} hidden></div>
+    {first && (
+      <div
+        data-reader-legacy-bridge
+        data-base={base}
+        data-work-id={work.id}
+        data-work-slug={work.slug}
+        data-first-chapter={first.entry.data.id}
+        data-chapter-ids={JSON.stringify(ids)}
+        hidden
+      ></div>
+    )}
     <ReaderShell
       title={publication.title}
       subtitle={publication.subtitle ?? ''}
@@ -60,11 +71,13 @@ const pdfFallback = work.release?.artifacts.pdf
       import { cacheReaderPublicationForOffline } from '../../../../lib/client/pwa';
       import { setReaderFailureState } from '../../../../lib/reader/fallback';
       import type { ReaderFallbackHarnessHandle } from '../../../../lib/reader/fallback-harness';
+      import { isLegacyReaderRequested, resolveLegacyResumeHref } from '../../../../lib/reader/legacy-bridge';
       import { ReaderPerformanceController } from '../../../../lib/reader/performance';
       import type { ReaderPublicationCandidate } from '../../../../lib/reader/publication';
       import { mountReaderShell } from '../../../../lib/reader/shell';
 
       const publicationNode = document.querySelector<HTMLElement>('[data-reader-publication]');
+      const legacyBridgeNode = document.querySelector<HTMLElement>('[data-reader-legacy-bridge]');
       const root = document.querySelector<HTMLElement>('[data-reader-shell]');
       const readerPerformance = root ? new ReaderPerformanceController(root) : undefined;
       let mounted: ReaderFallbackHarnessHandle | undefined;
@@ -72,6 +85,21 @@ const pdfFallback = work.release?.artifacts.pdf
       let pageClosing = false;
 
       readerPerformance?.start();
+
+      async function openRequestedLegacyReader(): Promise<boolean> {
+        if (!legacyBridgeNode || !isLegacyReaderRequested()) return false;
+        const { base, workId, workSlug, firstChapter, chapterIds } = legacyBridgeNode.dataset;
+        if (!workId || !workSlug || !firstChapter) return false;
+        const href = await resolveLegacyResumeHref({
+          base: base ?? '/library',
+          workId,
+          slug: workSlug,
+          firstChapter,
+          chapterIds: JSON.parse(chapterIds ?? '[]') as string[],
+        });
+        location.replace(href);
+        return true;
+      }
 
       function showBootstrapFailure(error: unknown) {
         if (!root) return;
@@ -114,8 +142,14 @@ const pdfFallback = work.release?.artifacts.pdf
           if (!raw) throw new Error('Reader publication metadata is missing.');
           const publication = JSON.parse(raw) as ReaderPublicationCandidate;
           requestAnimationFrame(() => {
-            readerPerformance?.markShellPainted();
-            void bootNativeReader(publication);
+            void openRequestedLegacyReader().then((redirected) => {
+              if (redirected || pageClosing) return;
+              readerPerformance?.markShellPainted();
+              void bootNativeReader(publication);
+            }).catch(() => {
+              readerPerformance?.markShellPainted();
+              void bootNativeReader(publication);
+            });
           });
         } catch (error) {
           showBootstrapFailure(error);
@@ -152,15 +186,16 @@ const pdfFallback = work.release?.artifacts.pdf
       </section>
     </div>
     <script>
-      import { getProgress } from '../../../../lib/client/library-db';
+      import { resolveLegacyResumeHref } from '../../../../lib/reader/legacy-bridge';
       const launch = document.querySelector<HTMLElement>('[data-reader-launch]');
       if (launch?.dataset.workId && launch.dataset.workSlug && launch.dataset.firstChapter) {
-        const ids = new Set<string>(JSON.parse(launch.dataset.chapterIds ?? '[]') as string[]);
-        const base = launch.dataset.base ?? '/library';
-        void getProgress(launch.dataset.workId).then((progress) => {
-          const chapter = progress?.chapterId && ids.has(progress.chapterId) ? progress.chapterId : launch.dataset.firstChapter;
-          location.replace(`${base}/works/${launch.dataset.workSlug}/read/${chapter}`);
-        }).catch(() => location.replace(`${base}/works/${launch.dataset.workSlug}/read/${launch.dataset.firstChapter}`));
+        void resolveLegacyResumeHref({
+          base: launch.dataset.base ?? '/library',
+          workId: launch.dataset.workId,
+          slug: launch.dataset.workSlug,
+          firstChapter: launch.dataset.firstChapter,
+          chapterIds: JSON.parse(launch.dataset.chapterIds ?? '[]') as string[],
+        }).then((href) => location.replace(href));
       }
     </script>
   </BaseLayout>
