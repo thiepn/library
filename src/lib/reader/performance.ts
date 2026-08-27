@@ -80,6 +80,12 @@ export function scheduleReaderIdleTask(
     document.removeEventListener('visibilitychange', handleVisibility);
   };
 
+  const bindVisibility = () => {
+    if (visibilityBound || cancelled) return;
+    visibilityBound = true;
+    document.addEventListener('visibilitychange', handleVisibility);
+  };
+
   const cancelScheduled = () => {
     if (delayHandle !== undefined) window.clearTimeout(delayHandle);
     delayHandle = undefined;
@@ -93,13 +99,19 @@ export function scheduleReaderIdleTask(
     void Promise.resolve(task()).catch(() => undefined);
   };
 
+  const runWhenVisible = () => {
+    if (cancelled) return;
+    if (visibleOnly && document.visibilityState === 'hidden') {
+      bindVisibility();
+      return;
+    }
+    run();
+  };
+
   const requestIdle = () => {
     if (cancelled) return;
     if (visibleOnly && document.visibilityState === 'hidden') {
-      if (!visibilityBound) {
-        visibilityBound = true;
-        document.addEventListener('visibilitychange', handleVisibility);
-      }
+      bindVisibility();
       return;
     }
 
@@ -107,7 +119,7 @@ export function scheduleReaderIdleTask(
     if (typeof win.requestIdleCallback === 'function') {
       idleHandle = win.requestIdleCallback(() => {
         idleHandle = undefined;
-        run();
+        runWhenVisible();
       }, { timeout: timeoutMs });
       return;
     }
@@ -116,7 +128,7 @@ export function scheduleReaderIdleTask(
     // being injected synchronously into the first reader-ready frame.
     delayHandle = window.setTimeout(() => {
       delayHandle = undefined;
-      run();
+      runWhenVisible();
     }, Math.min(250, timeoutMs));
   };
 
