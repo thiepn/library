@@ -23,7 +23,7 @@ interface IdleDeadlineLike {
   timeRemaining(): number;
 }
 
-interface IdleCapableWindow extends Window {
+interface IdleCapableWindow {
   requestIdleCallback?: (callback: (deadline: IdleDeadlineLike) => void, options?: { timeout?: number }) => number;
   cancelIdleCallback?: (handle: number) => void;
 }
@@ -68,7 +68,7 @@ export function scheduleReaderIdleTask(
   const delayMs = Math.max(0, Math.round(options.delayMs ?? 0));
   const timeoutMs = Math.max(250, Math.round(options.timeoutMs ?? 2500));
   const visibleOnly = options.visibleOnly ?? true;
-  const win = window as IdleCapableWindow;
+  const win = window as unknown as IdleCapableWindow;
   let cancelled = false;
   let delayHandle: number | undefined;
   let idleHandle: number | undefined;
