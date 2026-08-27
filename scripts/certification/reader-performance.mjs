@@ -32,11 +32,12 @@ if (present) {
 
   pass(
     'EPUB_READER_PERFORMANCE_SHELL_FIRST',
-    launcher.includes('requestAnimationFrame(() =>')
-      && launcher.includes('readerPerformance?.markShellPainted()')
+    launcher.includes('async function bootNativeReader(publication: ReaderPublicationCandidate)')
       && launcher.includes("await import('../../../../lib/reader/fallback-harness')")
-      && launcher.indexOf('requestAnimationFrame(() =>') < launcher.indexOf("await import('../../../../lib/reader/fallback-harness')"),
-    'The public route gives the static reader shell a paint opportunity before requesting the complete native-reader module',
+      && launcher.includes('requestAnimationFrame(() => {')
+      && launcher.includes('readerPerformance?.markShellPainted();')
+      && launcher.includes('void bootNativeReader(publication);'),
+    'The public route gives the static reader shell a paint opportunity before invoking the function that requests the complete native-reader module',
   );
 
   pass(
