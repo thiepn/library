@@ -85,10 +85,10 @@ if (present) {
   pass(
     'EPUB_READER_MIGRATION_LEGACY_FALLBACK',
     launcher.includes("migration.mode === 'legacy-web'")
-      && launcher.includes("import { getProgress } from '../../../../lib/client/library-db';")
+      && launcher.includes('resolveLegacyResumeHref')
       && launcher.includes('data-reader-launch')
-      && launcher.includes('/read/${chapter}`'),
-    'Works without an eligible active EPUB preserve the existing saved-position Markdown launcher',
+      && launcher.includes('data-chapter-ids'),
+    'Works without an eligible active EPUB preserve the existing saved-position Markdown launcher through the P29 compatibility bridge',
   );
 
   pass(

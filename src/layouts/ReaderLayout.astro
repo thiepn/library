@@ -8,14 +8,18 @@ interface Props {
   work: ResolvedWork;
   chapters: ResolvedChapter[];
   current: ResolvedChapter;
+  nativeReaderHref?: string | undefined;
 }
 
-const { work, chapters, current } = Astro.props;
+const { work, chapters, current, nativeReaderHref } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const currentIndex = chapters.findIndex((chapter) => chapter.entry.data.id === current.entry.data.id);
 const previous = chapters[currentIndex - 1];
 const next = chapters[currentIndex + 1];
-const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).href;
+const canonical = nativeReaderHref
+  ? new URL(nativeReaderHref, Astro.site ?? Astro.url.origin).href
+  : new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).href;
+const legacyCompatibility = Boolean(nativeReaderHref);
 ---
 <!doctype html>
 <html lang={work.language}>
@@ -23,13 +27,20 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).hr
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#F5F3EE" />
+    <meta name="application-name" content="Thiepn Library" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Thiepn Library" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="description" content={current.entry.data.description ?? `${current.entry.data.title} — ${work.title}`} />
+    {legacyCompatibility && <meta name="robots" content="noindex,follow" />}
     <link rel="canonical" href={canonical} />
     <meta property="og:site_name" content="Thiepn Library" />
     <meta property="og:type" content="article" />
     <meta property="og:title" content={`${current.entry.data.title} — ${work.title}`} />
     <meta property="og:url" content={canonical} />
     <link rel="icon" href={`${base}/favicon.svg`} type="image/svg+xml" />
+    <link rel="manifest" href={`${base}/manifest.webmanifest`} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
     <link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400;7..72,600&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -45,6 +56,16 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).hr
         <button type="button" data-reader-action="measure" aria-label="Change line length">Measure</button>
       </div>
     </header>
+
+    {nativeReaderHref && (
+      <aside class="reader-compatibility" data-pagefind-ignore="all" aria-label="Legacy reader compatibility">
+        <div>
+          <p class="eyebrow">Legacy web reader</p>
+          <p>This bookmarked chapter remains available for compatibility. The active publication now uses the native EPUB reader.</p>
+        </div>
+        <a href={nativeReaderHref}>Open current reader</a>
+      </aside>
+    )}
 
     <details class="reader-mobile-toc" data-pagefind-ignore="all">
       <summary>Contents · {currentIndex + 1} / {chapters.length}</summary>
@@ -72,7 +93,11 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).hr
     </main>
 
     <script>
-      import { setProgress } from '../lib/client/library-db';
+      import { registerLibraryPwa } from '../lib/client/pwa';
+      void registerLibraryPwa();
+    </script>
+    <script>
+      import { setLegacyProgress } from '../lib/client/library-db';
       type ReaderSettings = { scale: number; measure: number };
       const SETTINGS_KEY = 'thiepn.library.reader.v1';
       const root = document.documentElement;
@@ -110,7 +135,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).hr
         const readY = window.scrollY + window.innerHeight * 0.35 - articleTop;
         const chapterFraction = clamp(readY / readableDistance, 0, 1);
         const percent = ((chapterIndex + chapterFraction) / chapterCount) * 100;
-        void setProgress(article.dataset.workId, {
+        void setLegacyProgress(article.dataset.workId, {
           workId: article.dataset.workId,
           chapterId: article.dataset.chapterId,
           percent,

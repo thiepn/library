@@ -3,6 +3,7 @@ import { render } from 'astro:content';
 import ReaderLayout from '../../../../layouts/ReaderLayout.astro';
 import { getWorks, type ResolvedWork } from '../../../../lib/content/repository';
 import { getChaptersForWork } from '../../../../lib/content/chapters';
+import { resolveReaderMigration } from '../../../../lib/reader/migration';
 
 export async function getStaticPaths() {
   const paths: Array<{ params: { slug: string; chapter: string }; props: { work: ResolvedWork; chapterId: string } }> = [];
@@ -20,7 +21,12 @@ const chapters = await getChaptersForWork(work.id);
 const current = chapters.find((chapter) => chapter.entry.data.id === chapterId);
 if (!current) throw new Error(`Reader chapter not found: ${work.id}/${chapterId}`);
 const { Content } = await render(current.entry);
+const migration = resolveReaderMigration(work);
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const nativeReaderHref = migration.mode === 'native-epub'
+  ? `${base}/works/${work.slug}/read`
+  : undefined;
 ---
-<ReaderLayout work={work} chapters={chapters} current={current}>
+<ReaderLayout work={work} chapters={chapters} current={current} nativeReaderHref={nativeReaderHref}>
   <Content />
 </ReaderLayout>

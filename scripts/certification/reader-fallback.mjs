@@ -9,6 +9,7 @@ const files = [
   'src/lib/reader/fallback-harness.ts',
   'src/lib/reader/harness.ts',
   'src/lib/reader/migration.ts',
+  'src/lib/reader/legacy-bridge.ts',
   'src/components/reader/ReaderShell.astro',
   'src/pages/works/[slug]/read/index.astro',
   'src/pages/works/[slug]/read/[chapter].astro',
@@ -18,11 +19,12 @@ const present = (await Promise.all(files.map(exists))).every(Boolean);
 pass('EPUB_READER_FALLBACK_P26', present, 'P26 failure classification, recovery harness, alternate reading paths, public integration, and permanent certification are present');
 
 if (present) {
-  const [fallback, fallbackHarness, harness, migration, shell, launcher, legacyChapter, index, pkg] = await Promise.all([
+  const [fallback, fallbackHarness, harness, migration, legacyBridge, shell, launcher, legacyChapter, index, pkg] = await Promise.all([
     readFile('src/lib/reader/fallback.ts', 'utf8'),
     readFile('src/lib/reader/fallback-harness.ts', 'utf8'),
     readFile('src/lib/reader/harness.ts', 'utf8'),
     readFile('src/lib/reader/migration.ts', 'utf8'),
+    readFile('src/lib/reader/legacy-bridge.ts', 'utf8'),
     readFile('src/components/reader/ReaderShell.astro', 'utf8'),
     readFile('src/pages/works/[slug]/read/index.astro', 'utf8'),
     readFile('src/pages/works/[slug]/read/[chapter].astro', 'utf8'),
@@ -93,10 +95,11 @@ if (present) {
   pass(
     'EPUB_READER_FALLBACK_LEGACY_DIRECT',
     launcher.includes('const legacyFallbackHref = first')
-      && launcher.includes('/works/${work.slug}/read/${first.entry.data.id}`')
+      && launcher.includes('/works/${work.slug}/read?legacy=1`')
       && launcher.includes('fallbackWebHref={legacyFallbackHref ?? \'\'}')
+      && launcher.includes('isLegacyReaderRequested')
       && legacyChapter.includes('ReaderLayout'),
-    'A verified Markdown fallback points directly to a materialized chapter instead of looping through the EPUB-first /read launcher',
+    'A verified Markdown fallback enters the explicit P29 compatibility mode, which resolves a materialized legacy chapter before native EPUB bootstrap rather than looping back into the EPUB reader',
   );
 
   pass(
@@ -137,10 +140,13 @@ if (present) {
   pass(
     'EPUB_READER_FALLBACK_LEGACY_SAFE',
     launcher.includes("migration.mode === 'legacy-web' && first")
-      && launcher.includes('.catch(() => location.replace')
-      && launcher.includes('launch.dataset.firstChapter')
+      && launcher.includes('resolveLegacyResumeHref')
+      && legacyBridge.includes('try {')
+      && legacyBridge.includes('getLegacyProgress(request.workId)')
+      && legacyBridge.includes('chapterId = request.firstChapter')
+      && legacyBridge.includes('allowed.has(progress.chapterId)')
       && launcher.includes('This edition does not currently have a usable web reading path.'),
-    'Legacy progress-storage failure falls back to a known chapter, while an unexpectedly empty Markdown payload becomes an explicit unavailable state',
+    'Legacy progress-storage failure falls back to a verified first chapter through the P29 bridge, while an unexpectedly empty Markdown payload becomes an explicit unavailable state',
   );
 
   pass(
