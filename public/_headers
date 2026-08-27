@@ -7,5 +7,12 @@
   Cross-Origin-Opener-Policy: same-origin
   Content-Security-Policy: default-src 'self'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; object-src 'self' https://media.library.thiepn.dev; img-src 'self' data: blob: https://media.library.thiepn.dev; media-src 'self' blob: https://media.library.thiepn.dev; font-src 'self' https://fonts.gstatic.com; style-src 'self' https://fonts.googleapis.com; script-src 'self'; connect-src 'self' https://media.library.thiepn.dev; worker-src 'self' blob:
 
+/library/service-worker.js
+  Cache-Control: no-cache
+  Service-Worker-Allowed: /library/
+
+/library/manifest.webmanifest
+  Cache-Control: no-cache
+
 /library/_astro/*
   Cache-Control: public, max-age=31536000, immutable
