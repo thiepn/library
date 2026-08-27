@@ -10,12 +10,38 @@ const required = [
   'dist/library/search/index.html',
   'dist/library/sitemap.xml',
   'dist/library/pagefind/pagefind.js',
+  'dist/library/service-worker.js',
+  'dist/library/manifest.webmanifest',
+  'dist/library/app-icon.svg',
+  'dist/library/app-icon-maskable.svg',
+  'dist/library/offline/index.html',
 ];
 const missing = [];
 for (const file of required) if (!(await exists(file))) missing.push(file);
 if (missing.length) {
   console.error(`AUTOMATED_RC_BLOCKED missing: ${missing.join(', ')}`);
   process.exit(1);
+}
+
+const manifest = JSON.parse(await readFile('dist/library/manifest.webmanifest', 'utf8'));
+if (manifest.id !== '/library/' || manifest.start_url !== '/library/' || manifest.scope !== '/library/' || manifest.display !== 'standalone') {
+  throw new Error('AUTOMATED_RC_BLOCKED P28 manifest scope/install metadata is invalid');
+}
+if (!Array.isArray(manifest.icons) || !manifest.icons.some((icon) => icon.purpose === 'maskable')) {
+  throw new Error('AUTOMATED_RC_BLOCKED P28 manifest is missing its maskable install icon');
+}
+
+const serviceWorker = await readFile('dist/library/service-worker.js', 'utf8');
+if (!serviceWorker.includes("const SW_VERSION = 'p28-v1'")
+  || !serviceWorker.includes("const CACHE_PREFIX = 'thiepn-library-pwa-'")
+  || !serviceWorker.includes("url.pathname.startsWith(scoped('media/'))")
+  || !serviceWorker.includes('/\\.epub$/i.test(url.pathname)')) {
+  throw new Error('AUTOMATED_RC_BLOCKED P28 service-worker release-bound cache contract is missing');
+}
+
+const offlineHtml = await readFile('dist/library/offline/index.html', 'utf8');
+if (!offlineHtml.includes('You’re offline.') || !offlineHtml.includes('<style')) {
+  throw new Error('AUTOMATED_RC_BLOCKED P28 self-contained offline fallback was not built');
 }
 
 const worksRoot = 'src/content/works';
