@@ -85,7 +85,7 @@ test('appearance reflow preserves CFI while ordinary theme application can remai
 
 test('generated location maps enrich current percentage without replacing the CFI', async () => {
   const { controller, engine } = await openReady();
-  const location = regressionLocation({ cfi: 'epubcfi(/6/12!/4/2)', percentage: undefined });
+  const location = regressionLocation({ cfi: 'epubcfi(/6/12!/4/2)' });
   engine.emitLocation(location);
   engine.locationPercentages.set(location.cfi, 0.625);
   const map = await controller.generateLocations(1200);
@@ -98,7 +98,7 @@ test('generated location maps enrich current percentage without replacing the CF
 
 test('precomputed location maps can be loaded and immediately refresh current percentage', async () => {
   const { controller, engine } = await openReady();
-  const location = regressionLocation({ cfi: 'epubcfi(/6/14!/4/2)', percentage: undefined });
+  const location = regressionLocation({ cfi: 'epubcfi(/6/14!/4/2)' });
   engine.emitLocation(location);
   engine.locationPercentages.set(location.cfi, 0.8);
   controller.loadLocations('["synthetic"]');
