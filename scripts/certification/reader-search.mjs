@@ -50,14 +50,16 @@ if (present) {
       && search.includes('toLocaleLowerCase()'),
     'Queries account for canonical Unicode composition variants and case-insensitive snippet highlighting',
   );
+  const cooperativeYield = engine.includes('yieldReaderMainThread') || engine.includes('yieldToMainThread');
   pass(
     'EPUB_READER_SEARCH_LARGE_BOOK_SAFE',
     engine.includes('maxResults')
       && engine.includes('yieldEverySections')
       && engine.includes('AbortSignal')
-      && engine.includes('yieldToMainThread')
+      && cooperativeYield
+      && engine.includes('section.unload()')
       && search.includes('new AbortController()'),
-    'Large-book searches are cancellable, result-bounded, sequential, and periodically yield to the browser',
+    'Large-book searches are cancellable, result-bounded, sequential, unload sections, and periodically yield to the browser',
   );
   pass(
     'EPUB_READER_SEARCH_RELEASE_CACHE',
