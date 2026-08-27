@@ -57,6 +57,7 @@ const pdfFallback = work.release?.artifacts.pdf
       fallbackEpubHref={publication.epub.url}
     />
     <script>
+      import { cacheReaderPublicationForOffline } from '../../../../lib/client/pwa';
       import { setReaderFailureState } from '../../../../lib/reader/fallback';
       import type { ReaderFallbackHarnessHandle } from '../../../../lib/reader/fallback-harness';
       import { ReaderPerformanceController } from '../../../../lib/reader/performance';
@@ -98,7 +99,10 @@ const pdfFallback = work.release?.artifacts.pdf
           readerPerformance?.markOpening();
           const handle = await mountReaderPublicationWithFallbackHarness(root, publication);
           if (pageClosing) handle.destroy();
-          else mounted = handle;
+          else {
+            mounted = handle;
+            if (handle.reader) void cacheReaderPublicationForOffline(publication.epub.url);
+          }
         } catch (error) {
           showBootstrapFailure(error);
         }
