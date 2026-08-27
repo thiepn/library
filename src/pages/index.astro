@@ -16,7 +16,7 @@ const catalog = works.map((work) => {
   const readHref = work.webMaterialized ? `${base}/works/${work.slug}/read` : undefined;
   const pdfHref = pdf ? `${base}/works/${work.slug}/pdf` : undefined;
   const formats = [
-    work.webMaterialized ? 'Web' : null,
+    work.webMaterialized ? 'Reader' : null,
     epub ? 'EPUB' : null,
     pdf ? 'PDF' : null,
   ].filter((value): value is string => Boolean(value));
@@ -30,13 +30,13 @@ const catalog = works.map((work) => {
   return { work, coverUrl, release, readHref, pdfHref, epub, formats, primary };
 });
 ---
-<BaseLayout title="Library" description="Books and long-form publications available to read online or download.">
+<BaseLayout title="Library" description="A personal digital library for reading books online, offline, in EPUB, or in PDF.">
   <div class="page library-home" data-library-home>
     <header class="library-intro">
       <div class="library-intro-copy">
-        <p class="eyebrow">Library</p>
+        <p class="eyebrow">Your reading library</p>
         <h1>Books</h1>
-        <p>{works.length} publication{works.length === 1 ? '' : 's'} available. Browse verified editions, continue saved reading, or open each publication for its available formats.</p>
+        <p>{works.length} book{works.length === 1 ? '' : 's'} available. Pick up where you left off, browse your library, or find something new to read.</p>
       </div>
       <form class="catalog-search" action={`${base}/search`} method="get" role="search">
         <label class="sr-only" for="home-library-search">Search the Library</label>
@@ -45,13 +45,41 @@ const catalog = works.map((work) => {
       </form>
     </header>
 
-    <section class="catalog-section" id="publications" aria-labelledby="catalog-heading">
+    {catalog.length > 0 && (
+      <section class="resume-section" data-continue-section hidden aria-labelledby="resume-heading">
+        <div class="compact-heading">
+          <div><p class="eyebrow">Your reading</p><h2 id="resume-heading">Continue reading</h2></div>
+          <a href={`${base}/saved`}>My Library</a>
+        </div>
+        <div class="continue-list compact-continue" data-continue-list>
+          {catalog.map(({ work, release, readHref }) => (
+            <a
+              class="continue-item"
+              href={readHref ?? `${base}/works/${work.slug}`}
+              data-continue-work={work.id}
+              data-edition={work.publication.edition}
+              data-release-version={release?.version ?? ''}
+              data-web-readable={readHref ? 'true' : 'false'}
+              hidden
+            >
+              <span><strong>{work.title}</strong>{work.subtitle && <small>{work.subtitle}</small>}</span>
+              <span class="continue-item__status">
+                <span data-continue-context>Reading progress</span>
+                <span class="micro" data-continue-progress>Resume</span>
+              </span>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <section class="catalog-section" id="books" aria-labelledby="catalog-heading">
       <div class="catalog-toolbar">
         <div>
-          <p class="eyebrow">Catalog</p>
+          <p class="eyebrow">Library</p>
           <h2 id="catalog-heading">All books</h2>
         </div>
-        <nav class="catalog-links" aria-label="Catalog navigation">
+        <nav class="catalog-links" aria-label="Library navigation">
           <a href={`${base}/saved`}>My Library</a>
           <a href={`${base}/subjects`}>Subjects</a>
           <a href={`${base}/collections`}>Collections</a>
@@ -84,7 +112,7 @@ const catalog = works.map((work) => {
                       </>
                     ))}
                   </div>
-                  <span class="catalog-saved-badge" data-saved-badge hidden>Saved</span>
+                  <span class="catalog-saved-badge" data-saved-badge hidden>In My Library</span>
                 </div>
                 <h3><a href={`${base}/works/${work.slug}`}>{work.title}</a></h3>
                 {work.subtitle && <p class="catalog-subtitle">{work.subtitle}</p>}
@@ -102,14 +130,10 @@ const catalog = works.map((work) => {
                 </div>
 
                 <div class="catalog-meta">
-                  <div class="catalog-meta__edition">
-                    <span>{work.publication.editionLabel}</span>
-                    <span>{release ? `Release ${release.version}` : 'No active binary release'}</span>
-                  </div>
-                  <div class="catalog-format-list" aria-label="Available formats">
+                  <div class="catalog-format-list" aria-label="Available reading formats">
                     {formats.length
                       ? formats.map((format) => <span>{format}</span>)
-                      : <span>Details only</span>}
+                      : <span>Book details</span>}
                   </div>
                 </div>
 
@@ -123,45 +147,17 @@ const catalog = works.map((work) => {
                       {primary.label}
                     </a>
                   )}
-                  <a href={`${base}/works/${work.slug}`}>Details</a>
-                  <button type="button" data-save-work={work.id} aria-pressed="false">Save</button>
+                  <a href={`${base}/works/${work.slug}`}>Book details</a>
+                  <button type="button" data-save-work={work.id} aria-pressed="false">Add to My Library</button>
                 </div>
               </div>
             </article>
           ))}
         </div>
       ) : (
-        <div class="empty compact-empty"><h2>No books yet.</h2><p>No public publication is currently available.</p></div>
+        <div class="empty compact-empty"><h2>No books yet.</h2><p>Your Library does not contain any books yet.</p></div>
       )}
     </section>
-
-    {catalog.length > 0 && (
-      <section class="resume-section" data-continue-section hidden aria-labelledby="resume-heading">
-        <div class="compact-heading">
-          <div><p class="eyebrow">Your reading</p><h2 id="resume-heading">Continue reading</h2></div>
-          <a href={`${base}/saved`}>My Library</a>
-        </div>
-        <div class="continue-list compact-continue" data-continue-list>
-          {catalog.map(({ work, release, readHref }) => (
-            <a
-              class="continue-item"
-              href={readHref ?? `${base}/works/${work.slug}`}
-              data-continue-work={work.id}
-              data-edition={work.publication.edition}
-              data-release-version={release?.version ?? ''}
-              data-web-readable={readHref ? 'true' : 'false'}
-              hidden
-            >
-              <span><strong>{work.title}</strong>{work.subtitle && <small>{work.subtitle}</small>}</span>
-              <span class="continue-item__status">
-                <span data-continue-context>Reading progress</span>
-                <span class="micro" data-continue-progress>Resume</span>
-              </span>
-            </a>
-          ))}
-        </div>
-      </section>
-    )}
   </div>
 
   <script>
@@ -194,13 +190,13 @@ const catalog = works.map((work) => {
         : undefined;
     }
 
-    function renderCardProgress(card: HTMLElement, current: number, furthest: number, context: string) {
+    function renderCardProgress(card: HTMLElement, current: number, furthest: number) {
       const panel = card.querySelector<HTMLElement>('[data-catalog-progress]');
       if (!panel) return;
       const normalizedCurrent = clamp01(current);
       const normalizedFurthest = Math.max(normalizedCurrent, clamp01(furthest));
       panel.hidden = false;
-      panel.querySelector<HTMLElement>('[data-catalog-progress-context]')!.textContent = context;
+      panel.querySelector<HTMLElement>('[data-catalog-progress-context]')!.textContent = 'Reading progress';
       panel.querySelector<HTMLElement>('[data-catalog-progress-label]')!.textContent = `${Math.round(normalizedCurrent * 100)}%`;
       panel.querySelector<HTMLElement>('[data-catalog-progress-fill]')!.style.width = `${normalizedCurrent * 100}%`;
       panel.querySelector<HTMLElement>('[data-catalog-progress-furthest]')!.style.left = `${normalizedFurthest * 100}%`;
@@ -218,7 +214,7 @@ const catalog = works.map((work) => {
         if (badge) badge.hidden = !saved;
         const saveButton = card.querySelector<HTMLButtonElement>('[data-save-work]');
         if (saveButton) {
-          saveButton.textContent = saved ? 'Saved' : 'Save';
+          saveButton.textContent = saved ? 'In My Library' : 'Add to My Library';
           saveButton.setAttribute('aria-pressed', String(saved));
         }
 
@@ -231,10 +227,10 @@ const catalog = works.map((work) => {
         if (progressPanel) progressPanel.hidden = true;
 
         if (matchingNative && matchingNative.percentage > 0) {
-          renderCardProgress(card, matchingNative.percentage, matchingNative.furthestPercentage, 'EPUB progress');
+          renderCardProgress(card, matchingNative.percentage, matchingNative.furthestPercentage);
         } else if (legacy && legacy.percent > 0) {
           const current = clamp01(legacy.percent / 100);
-          renderCardProgress(card, current, current, 'Web reader progress');
+          renderCardProgress(card, current, current);
         }
 
         const readerCta = card.querySelector<HTMLAnchorElement>('[data-catalog-reader-cta]');
@@ -263,7 +259,7 @@ const catalog = works.map((work) => {
         if (legacy && webReadable && legacy.percent > 0 && legacy.percent < 99.5) {
           node.hidden = false;
           visible++;
-          if (contextLabel) contextLabel.textContent = 'Web reader';
+          if (contextLabel) contextLabel.textContent = 'Reading progress';
           if (progressLabel) progressLabel.textContent = `${Math.max(1, Math.round(legacy.percent))}% · Resume`;
           return;
         }
@@ -271,8 +267,8 @@ const catalog = works.map((work) => {
         if (matchingNative && matchingNative.percentage > 0 && matchingNative.percentage < .995) {
           node.hidden = false;
           visible++;
-          if (contextLabel) contextLabel.textContent = webReadable ? 'EPUB edition' : 'EPUB progress';
-          if (progressLabel) progressLabel.textContent = `${Math.max(1, Math.round(matchingNative.percentage * 100))}% · ${webReadable ? 'View edition' : 'Details'}`;
+          if (contextLabel) contextLabel.textContent = 'Reading progress';
+          if (progressLabel) progressLabel.textContent = `${Math.max(1, Math.round(matchingNative.percentage * 100))}% · ${webReadable ? 'Resume' : 'Open book'}`;
           return;
         }
 
