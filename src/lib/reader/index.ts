@@ -4,6 +4,7 @@ export { mountReaderEngineHarness, mountReaderShellHarness } from './harness';
 export { ReaderLocationCache } from './location-cache';
 export { ReaderNavigationController } from './navigation';
 export { ReaderPageLayoutController, READER_PAGE_LAYOUT_DEFAULTS } from './page-layout';
+export { ReaderPerformanceController, scheduleReaderIdleTask, yieldReaderMainThread } from './performance';
 export { ReaderProgressController } from './progress';
 export { ReaderProgressUxController } from './progress-ux';
 export { ReaderReadingModeController } from './reading-mode';
@@ -100,6 +101,7 @@ export type { ReaderFallbackHarnessHandle } from './fallback-harness';
 export type { ReaderLocationCacheIdentity } from './location-cache';
 export type { ReaderNavigationDirection, ReaderNavigationOptions, ReaderNavigationState } from './navigation';
 export type { ReaderPageLayoutOptions, ReaderPageLayoutState } from './page-layout';
+export type { ReaderIdleTaskOptions, ReaderLoadPhase, ReaderPerformanceState } from './performance';
 export type {
   ReaderProgressControllerOptions,
   ReaderProgressIdentity,

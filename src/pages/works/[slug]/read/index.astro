@@ -43,6 +43,7 @@ const pdfFallback = work.release?.artifacts.pdf
     title={`Read ${work.title}`}
     description={work.shortDescription}
     language={work.language}
+    epubHref={publication.epub.url}
     noindex
   >
     <div data-reader-publication={JSON.stringify(publication)} hidden></div>
@@ -56,19 +57,20 @@ const pdfFallback = work.release?.artifacts.pdf
       fallbackEpubHref={publication.epub.url}
     />
     <script>
-      import {
-        mountReaderPublicationWithFallbackHarness,
-        mountReaderShell,
-        setReaderFailureState,
-        type ReaderFallbackHarnessHandle,
-        type ReaderPublicationCandidate,
-      } from '../../../../lib/reader';
+      import { setReaderFailureState } from '../../../../lib/reader/fallback';
+      import type { ReaderFallbackHarnessHandle } from '../../../../lib/reader/fallback-harness';
+      import { ReaderPerformanceController } from '../../../../lib/reader/performance';
+      import type { ReaderPublicationCandidate } from '../../../../lib/reader/publication';
+      import { mountReaderShell } from '../../../../lib/reader/shell';
 
       const publicationNode = document.querySelector<HTMLElement>('[data-reader-publication]');
       const root = document.querySelector<HTMLElement>('[data-reader-shell]');
+      const readerPerformance = root ? new ReaderPerformanceController(root) : undefined;
       let mounted: ReaderFallbackHarnessHandle | undefined;
       let bootstrapRetry: ((event: MouseEvent) => void) | undefined;
       let pageClosing = false;
+
+      readerPerformance?.start();
 
       function showBootstrapFailure(error: unknown) {
         if (!root) return;
@@ -87,17 +89,30 @@ const pdfFallback = work.release?.artifacts.pdf
         root.addEventListener('click', bootstrapRetry);
       }
 
+      async function bootNativeReader(publication: ReaderPublicationCandidate) {
+        if (!root || pageClosing) return;
+        try {
+          readerPerformance?.markModuleLoading();
+          const { mountReaderPublicationWithFallbackHarness } = await import('../../../../lib/reader/fallback-harness');
+          if (pageClosing) return;
+          readerPerformance?.markOpening();
+          const handle = await mountReaderPublicationWithFallbackHarness(root, publication);
+          if (pageClosing) handle.destroy();
+          else mounted = handle;
+        } catch (error) {
+          showBootstrapFailure(error);
+        }
+      }
+
       if (publicationNode && root) {
         try {
           const raw = publicationNode.dataset.readerPublication;
           if (!raw) throw new Error('Reader publication metadata is missing.');
           const publication = JSON.parse(raw) as ReaderPublicationCandidate;
-          void mountReaderPublicationWithFallbackHarness(root, publication)
-            .then((handle) => {
-              if (pageClosing) handle.destroy();
-              else mounted = handle;
-            })
-            .catch(showBootstrapFailure);
+          requestAnimationFrame(() => {
+            readerPerformance?.markShellPainted();
+            void bootNativeReader(publication);
+          });
         } catch (error) {
           showBootstrapFailure(error);
         }
@@ -109,6 +124,7 @@ const pdfFallback = work.release?.artifacts.pdf
         bootstrapRetry = undefined;
         mounted?.destroy();
         mounted = undefined;
+        readerPerformance?.destroy();
       }, { once: true });
     </script>
   </EpubReaderLayout>

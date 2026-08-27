@@ -70,10 +70,12 @@ if (present) {
     'Migrated publications still mount the complete P24 stack through the P26 recovery wrapper',
   );
 
+  const publicationTypeImported = launcher.includes('ReaderPublicationCandidate')
+    && launcher.includes("from '../../../../lib/reader/publication'");
   pass(
     'EPUB_READER_MIGRATION_RELEASE_IDENTITY',
     launcher.includes('data-reader-publication={JSON.stringify(publication)}')
-      && launcher.includes('type ReaderPublicationCandidate')
+      && publicationTypeImported
       && launcher.includes('mountReaderPublicationWithFallbackHarness(root, publication)')
       && fallbackHarness.includes('this.publication')
       && fallbackHarness.includes('mountReaderPublicationWithCompatibilityHarness'),

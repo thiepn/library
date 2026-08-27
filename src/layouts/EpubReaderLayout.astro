@@ -13,6 +13,7 @@ interface Props {
   title?: string;
   description?: string;
   language?: string;
+  epubHref?: string;
   noindex?: boolean;
 }
 
@@ -20,6 +21,7 @@ const {
   title = 'Reader',
   description = 'Native EPUB reading experience in Thiepn Library.',
   language = 'en',
+  epubHref,
   noindex = true,
 } = Astro.props;
 const pageTitle = `${title} — Thiepn Library`;
@@ -37,6 +39,16 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).hr
     {noindex && <meta name="robots" content="noindex,nofollow" />}
     <link rel="canonical" href={canonical} />
     <link rel="icon" href={href('/favicon.svg')} type="image/svg+xml" />
+    {epubHref && (
+      <link
+        rel="preload"
+        href={epubHref}
+        as="fetch"
+        type="application/epub+zip"
+        crossorigin="anonymous"
+        fetchpriority="high"
+      />
+    )}
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
     <link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400;7..72,600&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
