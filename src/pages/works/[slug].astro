@@ -20,6 +20,9 @@ const pdf = release?.artifacts.pdf;
 const epub = release?.artifacts.epub;
 const readHref = work.webMaterialized ? `${base}/works/${work.slug}/read` : undefined;
 const pdfHref = pdf ? `${base}/works/${work.slug}/pdf` : undefined;
+const availableFormats = [work.webMaterialized ? 'Reader' : null, epub ? 'EPUB' : null, pdf ? 'PDF' : null]
+  .filter((value): value is string => Boolean(value));
+const editionLabel = work.publication.edition === 1 ? 'First edition' : `Edition ${work.publication.edition}`;
 
 function formatBytes(bytes: number): string {
   if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
@@ -63,14 +66,14 @@ const primaryAction = readHref
         <div class="book-detail__cover-frame">
           <img class="book-detail__cover" src={coverUrl} alt={work.cover.alt} decoding="async" />
         </div>
-        <p class="book-detail__cover-caption">{work.publication.editionLabel}</p>
+        <p class="book-detail__cover-caption">{editionLabel}</p>
       </div>
 
       <div class="book-detail__hero-copy">
         <div class="book-detail__kicker-row">
           <p class="eyebrow">{work.type}</p>
-          <span class="book-detail__release-state" data-release-state={release ? 'available' : 'unavailable'}>
-            {release ? `Release ${release.version}` : 'No active binary release'}
+          <span class="book-detail__release-state" data-release-state={primaryAction ? 'available' : 'unavailable'}>
+            {primaryAction ? 'Available to read' : 'Book details only'}
           </span>
         </div>
 
@@ -78,8 +81,8 @@ const primaryAction = readHref
         {work.subtitle && <p class="book-detail__deck">{work.subtitle}</p>}
         <p class="book-detail__description">{work.description}</p>
 
-        {primaryAction && (
-          <div class="book-detail__primary-actions">
+        <div class="book-detail__primary-actions">
+          {primaryAction && (
             <a
               class="primary-action book-detail__primary"
               href={primaryAction.href}
@@ -87,14 +90,9 @@ const primaryAction = readHref
             >
               {primaryAction.label}
             </a>
-            <button class="secondary-action" type="button" data-save-work={work.id} aria-pressed="false">Save to my library</button>
-          </div>
-        )}
-        {!primaryAction && (
-          <div class="book-detail__primary-actions">
-            <button class="secondary-action" type="button" data-save-work={work.id} aria-pressed="false">Save to my library</button>
-          </div>
-        )}
+          )}
+          <button class="secondary-action" type="button" data-save-work={work.id} aria-pressed="false">Add to My Library</button>
+        </div>
 
         <section class="book-detail__progress" data-publication-progress hidden aria-live="polite">
           <div class="book-detail__progress-copy">
@@ -108,11 +106,11 @@ const primaryAction = readHref
           <p data-progress-detail></p>
         </section>
 
-        <dl class="book-detail__facts" aria-label="Publication details">
-          <div><dt>Edition</dt><dd>{work.publication.editionLabel}</dd></div>
+        <dl class="book-detail__facts" aria-label="Book details">
+          <div><dt>Edition</dt><dd>{editionLabel}</dd></div>
           <div><dt>Updated</dt><dd><time datetime={String(work.publication.lastUpdated)}>{formatDate(work.publication.lastUpdated)}</time></dd></div>
           <div><dt>Language</dt><dd>{languageLabel(work.language)}</dd></div>
-          <div><dt>Version</dt><dd>{work.publication.version}</dd></div>
+          <div><dt>Formats</dt><dd>{availableFormats.length ? availableFormats.join(' · ') : 'Details only'}</dd></div>
         </dl>
       </div>
     </section>
@@ -120,42 +118,42 @@ const primaryAction = readHref
     <section class="book-detail__formats" aria-labelledby="formats-heading">
       <div class="book-detail__section-heading">
         <div>
-          <p class="eyebrow">Formats</p>
-          <h2 id="formats-heading">Read this edition</h2>
+          <p class="eyebrow">Read</p>
+          <h2 id="formats-heading">Available formats</h2>
         </div>
-        {release && <p>Active release · {formatDate(release.releasedAt)}</p>}
+        <p>Choose how you want to read this book.</p>
       </div>
 
       <div class="book-detail__format-grid">
         <article class="book-detail__format-card" data-format="web" data-format-state={work.webMaterialized ? 'available' : 'unavailable'}>
           <div class="book-detail__format-heading">
-            <h3>Web reader</h3>
-            <span>{work.webMaterialized ? 'Available' : 'Not currently available'}</span>
+            <h3>Library reader</h3>
+            <span>{work.webMaterialized ? 'Available' : 'Unavailable'}</span>
           </div>
-          <p>Read in the Library with saved position and browser-based reading controls.</p>
-          {readHref ? <a href={readHref} data-reader-format-link>Open reader</a> : <span class="book-detail__format-muted">No verified web edition is exposed.</span>}
+          <p>Read here with saved progress, reading controls, search, bookmarks, highlights, and notes.</p>
+          {readHref ? <a href={readHref} data-reader-format-link>Open reader</a> : <span class="book-detail__format-muted">This book is not currently available in the Library reader.</span>}
         </article>
 
         <article class="book-detail__format-card" data-format="epub" data-format-state={epub ? 'available' : 'unavailable'}>
           <div class="book-detail__format-heading">
             <h3>EPUB</h3>
-            <span>{epub ? 'Verified release' : 'Not currently available'}</span>
+            <span>{epub ? 'Available' : 'Unavailable'}</span>
           </div>
-          <p>Reflowable ebook for compatible reading apps and the Library’s native EPUB reader architecture.</p>
+          <p>Download the reflowable ebook for compatible reading apps.</p>
           {epub
             ? <a href={epub.url}>Download EPUB <small>{formatBytes(epub.sizeBytes)}</small></a>
-            : <span class="book-detail__format-muted">No EPUB artifact is in the active release.</span>}
+            : <span class="book-detail__format-muted">EPUB is not currently available for this book.</span>}
         </article>
 
         <article class="book-detail__format-card" data-format="pdf" data-format-state={pdf ? 'available' : 'unavailable'}>
           <div class="book-detail__format-heading">
             <h3>PDF</h3>
-            <span>{pdf ? 'Verified release' : 'Not currently available'}</span>
+            <span>{pdf ? 'Available' : 'Unavailable'}</span>
           </div>
-          <p>Fixed-layout edition for viewing, printing, and archival reference.</p>
+          <p>Open the fixed-layout edition for viewing, printing, or reference.</p>
           {pdfHref && pdf
             ? <a href={pdfHref}>View PDF <small>{formatBytes(pdf.sizeBytes)}</small></a>
-            : <span class="book-detail__format-muted">No PDF artifact is in the active release.</span>}
+            : <span class="book-detail__format-muted">PDF is not currently available for this book.</span>}
         </article>
       </div>
     </section>
@@ -163,15 +161,15 @@ const primaryAction = readHref
     <section class="book-detail__metadata" aria-labelledby="details-heading">
       <div class="book-detail__section-heading">
         <div>
-          <p class="eyebrow">About this edition</p>
-          <h2 id="details-heading">Publication details</h2>
+          <p class="eyebrow">About</p>
+          <h2 id="details-heading">Book details</h2>
         </div>
       </div>
 
       <dl class="book-detail__metadata-grid">
         <div><dt>First published</dt><dd><time datetime={String(work.publication.firstPublished)}>{formatDate(work.publication.firstPublished)}</time></dd></div>
-        <div><dt>Edition number</dt><dd>{work.publication.edition}</dd></div>
-        <div><dt>Release version</dt><dd>{release?.version ?? '—'}</dd></div>
+        <div><dt>Edition</dt><dd>{editionLabel}</dd></div>
+        <div><dt>Last updated</dt><dd><time datetime={String(work.publication.lastUpdated)}>{formatDate(work.publication.lastUpdated)}</time></dd></div>
         <div><dt>Rights</dt><dd>{work.rights.status}</dd></div>
         <div class="book-detail__metadata-wide"><dt>Subjects</dt><dd class="taxonomy-inline">{work.classification.subjects.map((subject, index) => <><a href={`${base}/subjects/${subject}`}>{taxonomyLabel(subject)}</a>{index < work.classification.subjects.length - 1 && <span>, </span>}</>)}</dd></div>
         <div class="book-detail__metadata-wide"><dt>Collections</dt><dd class="taxonomy-inline">{work.classification.collections.length ? work.classification.collections.map((collection, index) => <><a href={`${base}/collections/${collection}`}>{taxonomyLabel(collection)}</a>{index < work.classification.collections.length - 1 && <span>, </span>}</>) : '—'}</dd></div>
@@ -195,12 +193,12 @@ const primaryAction = readHref
       return Math.min(1, Math.max(0, Number.isFinite(value) ? value : 0));
     }
 
-    function renderProgress(current: number, furthest: number, context: string, detail: string) {
+    function renderProgress(current: number, furthest: number, detail: string) {
       if (!progressPanel) return;
       const normalizedCurrent = clamp01(current);
       const normalizedFurthest = Math.max(normalizedCurrent, clamp01(furthest));
       progressPanel.hidden = false;
-      progressPanel.querySelector<HTMLElement>('[data-progress-context]')!.textContent = context;
+      progressPanel.querySelector<HTMLElement>('[data-progress-context]')!.textContent = 'Reading progress';
       progressPanel.querySelector<HTMLElement>('[data-progress-label]')!.textContent = `${Math.round(normalizedCurrent * 100)}%`;
       progressPanel.querySelector<HTMLElement>('[data-progress-detail]')!.textContent = detail;
       progressPanel.querySelector<HTMLElement>('[data-progress-fill]')!.style.width = `${normalizedCurrent * 100}%`;
@@ -211,10 +209,10 @@ const primaryAction = readHref
       if (!control || !workId) return;
       try {
         const saved = await isFavorite(workId);
-        control.textContent = saved ? 'Remove from my library' : 'Save to my library';
+        control.textContent = saved ? 'Remove from My Library' : 'Add to My Library';
         control.setAttribute('aria-pressed', String(saved));
       } catch {
-        control.textContent = 'Save to my library';
+        control.textContent = 'Add to My Library';
       }
     }
 
@@ -238,12 +236,11 @@ const primaryAction = readHref
         renderProgress(
           native.percentage,
           native.furthestPercentage,
-          'EPUB edition progress',
           `Furthest reached ${Math.round(native.furthestPercentage * 100)}%${chapter}`,
         );
       } else if (legacy && legacy.percent > 0) {
         const current = clamp01(legacy.percent / 100);
-        renderProgress(current, current, 'Web reader progress', `Saved in the current web reader · ${Math.round(legacy.percent)}%`);
+        renderProgress(current, current, `Saved at ${Math.round(legacy.percent)}%`);
       }
 
       if (readerCta && legacy && legacy.percent > 0) {
