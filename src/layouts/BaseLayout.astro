@@ -40,6 +40,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).hr
       <nav aria-label="Primary">
         <a href={href()}>Library</a>
         <a href={href('/saved')}>My Library</a>
+        <a href={href('/downloads')}>Offline</a>
         <a href={href('/search')}>Search</a>
         <a href={href('/about')}>About</a>
       </nav>
