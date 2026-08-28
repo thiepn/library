@@ -137,6 +137,15 @@ async function cacheOfflineReaderDocument(rawUrl) {
   await cache.put(request, response.clone());
 }
 
+async function preparePersonalReaders(urls) {
+  if (!Array.isArray(urls) || !urls.length || urls.length > 32) throw new Error('Personal reader route list is invalid.');
+  await cacheOfflineApplicationAssets();
+  for (const raw of urls) {
+    if (typeof raw !== 'string') throw new Error('Personal reader route is invalid.');
+    await cacheOfflineReaderDocument(raw);
+  }
+}
+
 function offlineRecord(url, response, legacy = false) {
   const format = publicationFormat(url);
   if (!format) return undefined;
@@ -388,6 +397,13 @@ self.addEventListener('message', (event) => {
 
   if (data.type === 'CACHE_DOCUMENT_URLS' && Array.isArray(data.urls)) {
     event.waitUntil(cacheUrls(data.urls.filter((url) => typeof url === 'string')));
+    return;
+  }
+
+  if (data.type === 'PREPARE_PERSONAL_READERS') {
+    event.waitUntil(preparePersonalReaders(data.urls)
+      .then(() => post(port, { type: 'OFFLINE_RESULT', ok: true }))
+      .catch((error) => post(port, { type: 'OFFLINE_RESULT', ok: false, error: error instanceof Error ? error.message : 'Unable to prepare personal readers for offline use.' })));
     return;
   }
 
