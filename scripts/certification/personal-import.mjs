@@ -28,14 +28,17 @@ if (present) {
     storage.includes("PERSONAL_DB_NAME = 'thiepn-library-personal-books'")
       && storage.includes("PERSONAL_STORE = 'books'")
       && !storage.includes("PERSONAL_DB_NAME = 'thiepn-library'"),
-    'Large personal publication blobs use a dedicated IndexedDB database instead of changing the mature reading-state database',
+    'Large personal publication files use a dedicated IndexedDB database instead of changing the mature reading-state database',
   );
   pass(
     'PERSONAL_IMPORT_ER2_LOCAL_BLOB',
     storage.includes('file: Blob')
-      && storage.includes('file: new Blob([buffer]')
-      && storage.includes('store.put(record)'),
-    'Imported publication bytes are retained locally as browser Blob data',
+      && storage.includes('file: Blob | ArrayBuffer')
+      && storage.includes('file: buffer.slice(0)')
+      && storage.includes('store.put(storedRecord)')
+      && storage.includes('normalizeStoredRecord')
+      && storage.includes('new Blob([record.file]'),
+    'Imported publication bytes are retained locally in a WebKit-safe structured-clone form and exposed to both readers through the existing Blob API',
   );
   pass(
     'PERSONAL_IMPORT_ER2_FORMATS',
@@ -115,8 +118,17 @@ if (present) {
     'PERSONAL_IMPORT_ER2_STORAGE_FAILURE',
     storage.includes('QuotaExceededError')
       && storage.includes('Not enough browser storage')
+      && storage.includes("error.name === 'UnknownError'")
+      && storage.includes('site-storage or private-browsing settings')
       && saved.includes('Local library unavailable'),
-    'Quota and unavailable-storage failures are surfaced rather than misrepresented as an empty successful library',
+    'Quota and browser-storage failures are distinguished and surfaced rather than misrepresented as an empty successful library',
+  );
+  pass(
+    'PERSONAL_IMPORT_ER2_TRANSACTION_LIFECYCLE',
+    storage.includes('function transactionCompletion(transaction: IDBTransaction)')
+      && storage.includes('const completion = transactionCompletion(transaction)')
+      && storage.includes('await completion'),
+    'IndexedDB completion listeners are installed before requests settle so fast WebKit transactions cannot outrun lifecycle ownership',
   );
   pass(
     'PERSONAL_IMPORT_ER2_PRIVACY_COPY',
