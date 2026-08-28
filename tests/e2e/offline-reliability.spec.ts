@@ -94,9 +94,13 @@ test('@rr5 removal and simulated cache eviction become explicit unavailable stat
   await expect(page.locator('[data-offline-global-status]')).toContainText('No hosted publication files');
 });
 
-test('@rr5 waiting worker preserves active controller, migrates caches, and can roll back', async ({ page }) => {
+test('@rr5 waiting worker preserves active controller, reader routes, cache migration, and rollback', async ({ page, context }) => {
   test.skip(test.info().project.name !== 'chromium-offline', 'Service-worker update lifecycle is kept on one deterministic engine; offline reopen runs cross-engine.');
   await ensureControlled(page);
+  const downloadedRow = await download(page, fixtures.epub, 'EPUB');
+  const readerUrl = await downloadedRow.getAttribute('data-offline-reader-url');
+  expect(readerUrl).toBeTruthy();
+
   const initialController = await page.evaluate(() => navigator.serviceWorker.controller?.scriptURL ?? '');
   expect(initialController).toContain('/library/service-worker.js');
 
@@ -141,6 +145,11 @@ test('@rr5 waiting worker preserves active controller, migrates caches, and can 
   });
   expect(migration).toEqual({ migrated: true, legacyPreserved: true, staleRemoved: true });
 
+  await context.setOffline(true);
+  await page.goto(readerUrl!, { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('[data-reader-shell]')).toHaveAttribute('data-reader-status', 'ready', { timeout: 30_000 });
+  await context.setOffline(false);
+
   const nextController = await page.evaluate(() => navigator.serviceWorker.controller?.scriptURL ?? '');
   await page.evaluate(async () => {
     await navigator.serviceWorker.register('/library/service-worker.js', { scope: '/library/', updateViaCache: 'none' });
@@ -154,4 +163,9 @@ test('@rr5 waiting worker preserves active controller, migrates caches, and can 
   await page.waitForFunction((previous) => Boolean(navigator.serviceWorker.controller?.scriptURL) && navigator.serviceWorker.controller?.scriptURL !== previous, nextController);
   expect(await page.evaluate(() => navigator.serviceWorker.controller?.scriptURL ?? '')).toContain('/library/service-worker.js');
   expect(await page.evaluate(async ({ stableCache, url }) => Boolean(await (await caches.open(stableCache)).match(url)), { stableCache: STABLE_PUBLICATION_CACHE, url: fixtures.epub.urlPath })).toBe(true);
+
+  await context.setOffline(true);
+  await page.goto(readerUrl!, { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('[data-reader-shell]')).toHaveAttribute('data-reader-status', 'ready', { timeout: 30_000 });
+  await context.setOffline(false);
 });
