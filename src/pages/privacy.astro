@@ -2,5 +2,14 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 <BaseLayout title="Privacy">
-  <div class="page"><section class="section"><div class="section-heading"><div><p class="eyebrow">04 / Privacy</p><h1>Privacy</h1></div></div><div class="empty"><p>The public Library is static-first and uses no behavioral analytics in the v1 architecture. Reading state, saved works, offline state, and annotations are designed to remain in the browser. The optional Ask Library service is separate from the public application and must be owner-authenticated before provider work occurs.</p></div></section></div>
+  <div class="page">
+    <section class="section">
+      <div class="section-heading"><div><p class="eyebrow">04 / Privacy</p><h1>Privacy</h1></div></div>
+      <div class="empty">
+        <p>The public Library is static-first and uses no behavioral analytics in the v1 architecture. Reading state, saved works, offline state, annotations, and personal book imports are designed to remain in the browser.</p>
+        <p>When you import an EPUB or PDF into My Library, the file is stored in this browser’s local IndexedDB storage. Thiepn Library does not upload the personal book to a server. EPUB metadata and covers are read locally for display in My Library; personal EPUB reading also occurs from the locally stored file.</p>
+        <p>Clearing browser site data can remove locally imported books and reading state. Browser storage may also be subject to device storage policies. The optional Ask Library service is separate from the public application and must be owner-authenticated before provider work occurs.</p>
+      </div>
+    </section>
+  </div>
 </BaseLayout>
