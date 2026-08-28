@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "phase": "RR4",
+  "profile": {
+    "id": "chromium-low-end-ci",
+    "evidenceClass": "synthetic-browser-profile",
+    "browser": "chromium",
+    "viewport": { "width": 390, "height": 844 },
+    "deviceScaleFactor": 1,
+    "cpuThrottleRate": 4,
+    "network": "local-static-preview",
+    "serviceWorkers": "blocked",
+    "notes": "Release-blocking CI profile. It is intentionally slower than an ordinary desktop but is not represented as physical-device evidence."
+  },
+  "fixtures": {
+    "smallEpub": { "maximumBytes": 524288, "minimumSpineItems": 4 },
+    "ordinaryEpub": { "maximumBytes": 4194304, "minimumSpineItems": 36 },
+    "largeEpub": { "maximumBytes": 16777216, "minimumSpineItems": 180 },
+    "imageHeavyEpub": { "maximumBytes": 16777216, "minimumImageResources": 24 },
+    "longPdf": { "maximumBytes": 8388608, "minimumPages": 180 }
+  },
+  "budgetsMs": {
+    "importSmallEpub": 5000,
+    "importOrdinaryEpub": 9000,
+    "importLargeEpub": 18000,
+    "importImageHeavyEpub": 18000,
+    "importLongPdf": 12000,
+    "firstReadySmallEpub": 7000,
+    "firstReadyOrdinaryEpub": 11000,
+    "firstReadyLargeEpub": 20000,
+    "firstReadyImageHeavyEpub": 20000,
+    "firstReadyLongPdf": 16000,
+    "epubPageTurnP95": 1800,
+    "pdfPageTurnP95": 1800,
+    "epubSearchFirstProgress": 7000,
+    "epubSearchComplete": 28000,
+    "pdfSearchFirstProgress": 7000,
+    "pdfSearchComplete": 28000,
+    "resumeReady": 11000,
+    "rotationStable": 6000,
+    "searchCancellation": 1500,
+    "navigationDuringSearch": 1800
+  },
+  "responsiveness": {
+    "longTaskThresholdMs": 50,
+    "maximumJourneyLongTasks": 60,
+    "maximumJourneyLongTaskTotalMs": 22000,
+    "maximumSingleLongTaskMs": 3000
+  },
+  "memory": {
+    "openCloseCycles": 6,
+    "maximumHeapGrowthBytes": 50331648,
+    "maximumDomNodeGrowth": 900,
+    "maximumFrameGrowth": 1,
+    "garbageCollectionSamples": 3
+  },
+  "policy": {
+    "absoluteTimingEvidence": "CI thresholds detect large regressions; they are not hardware guarantees.",
+    "memoryEvidence": "Chromium CDP metrics are collected after explicit garbage collection and compared as growth, not as a fixed heap ceiling.",
+    "physicalDeviceBoundary": "RR4 does not replace RR2 sustained-session testing on the named lower-performance physical target."
+  }
+}
