@@ -5,7 +5,8 @@ export {
   type PdfCanonicalCandidate,
   type PdfReaderIdentity,
 } from './canonical';
-export { mountPdfReader, type PdfReaderHandle } from './runtime';
+export { mountCompatiblePdfReader as mountPdfReader } from './compatibility-runtime';
+export { type PdfReaderHandle } from './runtime';
 export {
   PDF_DEVICE_DEFAULTS,
   PdfDeviceController,
