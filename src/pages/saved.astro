@@ -2,41 +2,250 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import WorkCard from '../components/WorkCard.astro';
 import { getWorks } from '../lib/content/repository';
+import '../styles/personal-library.css';
 const works = await getWorks();
 ---
-<BaseLayout title="My Library" description="Books you have saved to your browser-local personal library." noindex>
+<BaseLayout title="My Library" description="Books you have saved or imported into your browser-local personal library." noindex>
   <div class="page">
     <section class="section">
       <div class="section-heading"><div><p class="eyebrow">Your books</p><h1>My Library</h1></div><p class="micro" data-saved-count>Loading your books…</p></div>
+
+      <section class="personal-import" aria-labelledby="personal-import-title">
+        <div class="personal-import__copy">
+          <p class="eyebrow">Personal books</p>
+          <h2 id="personal-import-title">Add your own books</h2>
+          <p>Import an EPUB or PDF from this device and keep it in My Library.</p>
+          <p class="personal-import__privacy">Files stay in this browser. Thiepn Library does not upload your personal books.</p>
+        </div>
+        <div class="personal-import__actions">
+          <input data-personal-file-input type="file" accept=".epub,.pdf,application/epub+zip,application/pdf" multiple hidden />
+          <button class="personal-import__button" type="button" data-personal-file-button>Choose EPUB or PDF</button>
+        </div>
+        <div class="personal-import__drop" data-personal-drop tabindex="0">Or drop EPUB/PDF files here</div>
+        <p class="personal-import__status" data-personal-import-status aria-live="polite"></p>
+      </section>
+
+      <section class="personal-books" data-personal-books-section hidden aria-labelledby="personal-books-title">
+        <div class="personal-books__heading">
+          <div><p class="eyebrow">On this device</p><h2 id="personal-books-title">Imported books</h2></div>
+          <p class="micro" data-personal-count></p>
+        </div>
+        <div class="personal-books__grid" data-personal-books-list></div>
+      </section>
+
       <div class="work-list saved-list" data-saved-list>
         {works.map((work, index) => <div class="saved-work" data-saved-work={work.id} hidden><WorkCard work={work} index={index + 1} /></div>)}
       </div>
-      <div class="empty" data-saved-empty hidden><h2>Your Library is empty.</h2><p>Add a book to My Library from the catalog or a book details page. Your saved list stays in this browser and does not require an account.</p></div>
+      <div class="empty" data-saved-empty hidden><h2>Your Library is empty.</h2><p>Import an EPUB or PDF above, or add a book from the Library catalog. Your personal library stays in this browser and does not require an account.</p></div>
     </section>
   </div>
   <script>
     import { getFavoriteWorkIds, subscribeLibraryState } from '../lib/client/library-db';
+    import {
+      deletePersonalBook,
+      getPersonalBooks,
+      importPersonalBook,
+      requestPersonalLibraryPersistence,
+      subscribePersonalBooks,
+      type PersonalBookSummary,
+    } from '../lib/client/personal-books';
+
+    const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     const count = document.querySelector<HTMLElement>('[data-saved-count]');
     const empty = document.querySelector<HTMLElement>('[data-saved-empty]');
-    const nodes = [...document.querySelectorAll<HTMLElement>('[data-saved-work]')];
+    const hostedNodes = [...document.querySelectorAll<HTMLElement>('[data-saved-work]')];
+    const personalSection = document.querySelector<HTMLElement>('[data-personal-books-section]');
+    const personalList = document.querySelector<HTMLElement>('[data-personal-books-list]');
+    const personalCount = document.querySelector<HTMLElement>('[data-personal-count]');
+    const input = document.querySelector<HTMLInputElement>('[data-personal-file-input]');
+    const chooseButton = document.querySelector<HTMLButtonElement>('[data-personal-file-button]');
+    const drop = document.querySelector<HTMLElement>('[data-personal-drop]');
+    const status = document.querySelector<HTMLElement>('[data-personal-import-status]');
+    const coverUrls = new Set<string>();
+    let personalTotal = 0;
+    let hostedTotal = 0;
+
+    const formatBytes = (bytes: number) => {
+      if (bytes < 1024) return `${bytes} B`;
+      if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
+      return `${(bytes / (1024 * 1024)).toFixed(bytes >= 10 * 1024 * 1024 ? 0 : 1)} MB`;
+    };
+
+    function updateTotal() {
+      const total = personalTotal + hostedTotal;
+      if (count) count.textContent = `${total} book${total === 1 ? '' : 's'}`;
+      if (empty) empty.hidden = total !== 0;
+    }
+
+    function clearCoverUrls() {
+      for (const url of coverUrls) URL.revokeObjectURL(url);
+      coverUrls.clear();
+    }
+
+    function personalRoute(book: PersonalBookSummary): string {
+      return book.format === 'epub'
+        ? `${base}/personal/read?id=${encodeURIComponent(book.id)}`
+        : `${base}/personal/pdf?id=${encodeURIComponent(book.id)}`;
+    }
+
+    function renderPersonalCard(book: PersonalBookSummary): HTMLElement {
+      const article = document.createElement('article');
+      article.className = 'personal-book';
+      article.dataset.personalBook = book.id;
+
+      const cover = document.createElement('div');
+      cover.className = 'personal-book__cover';
+      if (book.cover) {
+        const url = URL.createObjectURL(book.cover);
+        coverUrls.add(url);
+        const image = document.createElement('img');
+        image.src = url;
+        image.alt = '';
+        cover.append(image);
+      } else {
+        cover.textContent = book.format.toUpperCase();
+        cover.setAttribute('aria-hidden', 'true');
+      }
+
+      const body = document.createElement('div');
+      body.className = 'personal-book__body';
+      const format = document.createElement('p');
+      format.className = 'personal-book__format';
+      format.textContent = `Personal ${book.format.toUpperCase()}`;
+      const title = document.createElement('h3');
+      title.className = 'personal-book__title';
+      title.textContent = book.title;
+      body.append(format, title);
+
+      if (book.creator) {
+        const creator = document.createElement('p');
+        creator.className = 'personal-book__creator';
+        creator.textContent = book.creator;
+        body.append(creator);
+      }
+
+      const meta = document.createElement('p');
+      meta.className = 'personal-book__meta';
+      meta.textContent = `${formatBytes(book.size)} · stored on this device`;
+      body.append(meta);
+
+      const actions = document.createElement('div');
+      actions.className = 'personal-book__actions';
+      const open = document.createElement('a');
+      open.className = 'personal-book__action';
+      open.href = personalRoute(book);
+      open.textContent = book.format === 'epub' ? 'Read' : 'Open PDF';
+      const remove = document.createElement('button');
+      remove.className = 'personal-book__action personal-book__action--remove';
+      remove.type = 'button';
+      remove.textContent = 'Remove';
+      remove.addEventListener('click', async () => {
+        if (!confirm(`Remove “${book.title}” from My Library on this device?`)) return;
+        remove.disabled = true;
+        try {
+          await deletePersonalBook(book.id);
+          if (status) { status.dataset.state = 'ok'; status.textContent = `Removed “${book.title}”.`; }
+          await renderPersonal();
+        } catch (error) {
+          remove.disabled = false;
+          if (status) { status.dataset.state = 'error'; status.textContent = error instanceof Error ? error.message : 'Unable to remove this book.'; }
+        }
+      });
+      actions.append(open, remove);
+      body.append(actions);
+      article.append(cover, body);
+      return article;
+    }
+
+    async function renderPersonal() {
+      if (!personalList || !personalSection) return;
+      clearCoverUrls();
+      const books = await getPersonalBooks();
+      personalList.replaceChildren(...books.map(renderPersonalCard));
+      personalTotal = books.length;
+      personalSection.hidden = books.length === 0;
+      if (personalCount) personalCount.textContent = `${books.length} imported`;
+      updateTotal();
+    }
+
+    async function renderHosted() {
+      const ids = new Set(await getFavoriteWorkIds());
+      hostedTotal = 0;
+      for (const node of hostedNodes) {
+        const show = Boolean(node.dataset.savedWork && ids.has(node.dataset.savedWork));
+        node.hidden = !show;
+        if (show) hostedTotal++;
+      }
+      updateTotal();
+    }
+
     async function render() {
       try {
-        const ids = new Set(await getFavoriteWorkIds());
-        let visible = 0;
-        for (const node of nodes) {
-          const show = Boolean(node.dataset.savedWork && ids.has(node.dataset.savedWork));
-          node.hidden = !show;
-          if (show) visible++;
-        }
-        if (count) count.textContent = `${visible} book${visible === 1 ? '' : 's'}`;
-        if (empty) empty.hidden = visible !== 0;
+        await Promise.all([renderPersonal(), renderHosted()]);
       } catch {
         if (count) count.textContent = 'Local library unavailable';
-        if (empty) { empty.hidden = false; empty.querySelector('p')!.textContent = 'This browser did not allow the local Library database to open.'; }
+        if (empty) {
+          empty.hidden = false;
+          const paragraph = empty.querySelector('p');
+          if (paragraph) paragraph.textContent = 'This browser did not allow the local Library database to open.';
+        }
       }
     }
-    const unsubscribe = subscribeLibraryState(() => { void render(); });
-    window.addEventListener('pagehide', unsubscribe, { once: true });
+
+    async function importFiles(files: File[]) {
+      if (!files.length) return;
+      chooseButton?.setAttribute('disabled', '');
+      let imported = 0;
+      let duplicates = 0;
+      const errors: string[] = [];
+      for (const file of files) {
+        if (status) { status.dataset.state = 'working'; status.textContent = `Importing ${file.name}…`; }
+        try {
+          const result = await importPersonalBook(file);
+          if (result.duplicate) duplicates++;
+          else imported++;
+        } catch (error) {
+          errors.push(`${file.name}: ${error instanceof Error ? error.message : 'Import failed.'}`);
+        }
+      }
+      chooseButton?.removeAttribute('disabled');
+      if (input) input.value = '';
+      if (imported > 0) void requestPersonalLibraryPersistence();
+      await renderPersonal();
+      if (status) {
+        status.dataset.state = errors.length ? 'error' : 'ok';
+        const parts = [
+          imported ? `${imported} imported` : '',
+          duplicates ? `${duplicates} already in My Library` : '',
+          errors.length ? errors.join(' ') : '',
+        ].filter(Boolean);
+        status.textContent = parts.join(' · ');
+      }
+    }
+
+    chooseButton?.addEventListener('click', () => input?.click());
+    input?.addEventListener('change', () => { void importFiles([...input.files ?? []]); });
+
+    const hasFiles = (event: DragEvent) => [...(event.dataTransfer?.types ?? [])].includes('Files');
+    drop?.addEventListener('dragenter', (event) => { if (hasFiles(event)) { event.preventDefault(); drop.dataset.dragging = 'true'; } });
+    drop?.addEventListener('dragover', (event) => { if (hasFiles(event)) { event.preventDefault(); event.dataTransfer!.dropEffect = 'copy'; drop.dataset.dragging = 'true'; } });
+    drop?.addEventListener('dragleave', () => { drop.dataset.dragging = 'false'; });
+    drop?.addEventListener('drop', (event) => {
+      event.preventDefault();
+      drop.dataset.dragging = 'false';
+      void importFiles([...(event.dataTransfer?.files ?? [])]);
+    });
+    drop?.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); input?.click(); }
+    });
+
+    const unsubscribeLibrary = subscribeLibraryState(() => { void renderHosted(); });
+    const unsubscribePersonal = subscribePersonalBooks(() => { void renderPersonal(); });
+    window.addEventListener('pagehide', () => {
+      unsubscribeLibrary();
+      unsubscribePersonal();
+      clearCoverUrls();
+    }, { once: true });
     void render();
   </script>
 </BaseLayout>
