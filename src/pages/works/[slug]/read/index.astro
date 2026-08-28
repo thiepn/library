@@ -2,6 +2,7 @@
 import BaseLayout from '../../../../layouts/BaseLayout.astro';
 import EpubReaderLayout from '../../../../layouts/EpubReaderLayout.astro';
 import ReaderShell from '../../../../components/reader/ReaderShell.astro';
+import ReaderFormatSwitch from '../../../../components/ReaderFormatSwitch.astro';
 import { getWorks, type ResolvedWork } from '../../../../lib/content/repository';
 import { getChaptersForWork } from '../../../../lib/content/chapters';
 import {
@@ -37,6 +38,9 @@ const legacyFallbackHref = first
 const pdfFallback = work.release?.artifacts.pdf
   ? localizeReaderArtifact(work.release.artifacts.pdf, base)
   : undefined;
+const pdfReaderHref = work.release?.artifacts.pdf
+  ? `${base}/works/${work.slug}/pdf`
+  : undefined;
 ---
 {migration.mode === 'native-epub' && publication ? (
   <EpubReaderLayout
@@ -47,6 +51,7 @@ const pdfFallback = work.release?.artifacts.pdf
     noindex
   >
     <div data-reader-publication={JSON.stringify(publication)} hidden></div>
+    {pdfReaderHref && <ReaderFormatSwitch current="epub" href={pdfReaderHref} />}
     {first && (
       <div
         data-reader-legacy-bridge
@@ -208,7 +213,8 @@ const pdfFallback = work.release?.artifacts.pdf
           <h2>This edition does not currently have a usable web reading path.</h2>
           <p>The Library did not silently switch this title to a different edition or format.</p>
           <div class="actions">
-            {pdfFallback && <a class="button" href={pdfFallback.url}>Open PDF</a>}
+            {pdfReaderHref && <a class="button" href={pdfReaderHref}>Open PDF reader</a>}
+            {pdfFallback && <a class="button secondary" href={pdfFallback.url}>Open original PDF</a>}
             <a class="button secondary" href={bookHref}>Return to the book page</a>
           </div>
         </div>
