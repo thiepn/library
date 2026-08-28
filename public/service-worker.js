@@ -224,6 +224,24 @@ async function migrateLegacyPublicationCaches() {
   }
 }
 
+async function migrateRuntimeDocumentCaches() {
+  const keys = await caches.keys();
+  const staleRuntimeCaches = keys.filter((key) => key.startsWith(`${CACHE_PREFIX}runtime-`) && key !== RUNTIME_CACHE);
+  if (!staleRuntimeCaches.length) return;
+
+  const current = await caches.open(RUNTIME_CACHE);
+  for (const cacheName of staleRuntimeCaches) {
+    const previous = await caches.open(cacheName);
+    for (const request of await previous.keys()) {
+      const url = new URL(request.url);
+      if (!isSameOriginScoped(url) || publicationFormat(url) || isImmutableBuildAsset(url)) continue;
+      if (await current.match(request)) continue;
+      const response = await previous.match(request);
+      if (response && cacheableResponse(response)) await current.put(request, response.clone());
+    }
+  }
+}
+
 async function downloadOfflinePublication(data, port) {
   const operationId = typeof data.operationId === 'string' ? data.operationId : '';
   const artifact = data.artifact && typeof data.artifact === 'object' ? data.artifact : {};
@@ -249,7 +267,13 @@ async function downloadOfflinePublication(data, port) {
   const cache = await caches.open(HOSTED_PUBLICATION_CACHE);
   const existing = await cache.match(request);
   if (existing) {
-    post(port, { type: 'OFFLINE_RESULT', ok: true, record: offlineRecord(url, existing) });
+    try {
+      await cacheOfflineApplicationAssets();
+      await cacheOfflineReaderDocument(rawReaderUrl);
+      post(port, { type: 'OFFLINE_RESULT', ok: true, record: offlineRecord(url, existing) });
+    } catch (error) {
+      post(port, { type: 'OFFLINE_RESULT', ok: false, error: error instanceof Error ? error.message : 'Unable to prepare the cached publication reader for offline use.' });
+    }
     return;
   }
 
@@ -406,13 +430,14 @@ self.addEventListener('install', (event) => {
   event.waitUntil((async () => {
     const core = await caches.open(CORE_CACHE);
     await core.addAll(CORE_URLS);
-    await cacheOfflineApplicationAssets().catch(() => undefined);
+    await cacheOfflineApplicationAssets();
   })());
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil((async () => {
     await migrateLegacyPublicationCaches();
+    await migrateRuntimeDocumentCaches();
     const keys = await caches.keys();
     await Promise.all(keys
       .filter((key) => key.startsWith(CACHE_PREFIX) && !OWN_CACHES.has(key) && !LEGACY_PUBLICATION_CACHES.has(key))
