@@ -10,10 +10,13 @@ test.beforeAll(async () => {
 
 async function ensureControlled(page: Page) {
   await page.goto('/library/downloads');
-  await page.evaluate(() => navigator.serviceWorker.ready);
+  await page.waitForFunction(async () => {
+    const registration = await navigator.serviceWorker.getRegistration('/library/');
+    return Boolean(registration?.active || navigator.serviceWorker.controller);
+  }, undefined, { timeout: 15_000 });
   if (!(await page.evaluate(() => Boolean(navigator.serviceWorker.controller)))) {
-    await page.reload();
-    await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller));
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller), undefined, { timeout: 15_000 });
   }
   await expect(page.getByRole('heading', { level: 1, name: 'Offline downloads' })).toBeVisible();
 }
@@ -43,11 +46,14 @@ test('@rr5 visited catalog and My Library reopen after restart-style offline nav
   await expect(page.getByRole('heading', { level: 1, name: 'My Library' })).toBeVisible();
 
   await context.setOffline(true);
-  await page.goto('/library/', { waitUntil: 'domcontentloaded' });
-  await expect(page.getByRole('heading', { level: 1, name: 'Books' })).toBeVisible();
-  await page.goto('/library/saved', { waitUntil: 'domcontentloaded' });
-  await expect(page.getByRole('heading', { level: 1, name: 'My Library' })).toBeVisible();
-  await context.setOffline(false);
+  try {
+    await page.goto('/library/', { waitUntil: 'domcontentloaded' });
+    await expect(page.getByRole('heading', { level: 1, name: 'Books' })).toBeVisible();
+    await page.goto('/library/saved', { waitUntil: 'domcontentloaded' });
+    await expect(page.getByRole('heading', { level: 1, name: 'My Library' })).toBeVisible();
+  } finally {
+    await context.setOffline(false);
+  }
 });
 
 test('@rr5 explicit EPUB download survives restart-style offline navigation', async ({ page, context }) => {
@@ -57,12 +63,15 @@ test('@rr5 explicit EPUB download survives restart-style offline navigation', as
   expect(readerUrl).toBeTruthy();
 
   await context.setOffline(true);
-  await page.reload({ waitUntil: 'domcontentloaded' });
-  await expect(page.getByRole('heading', { level: 1, name: 'Offline downloads' })).toBeVisible();
-  await page.goto(readerUrl!, { waitUntil: 'domcontentloaded' });
-  await expect(page.locator('[data-reader-shell]')).toHaveAttribute('data-reader-status', 'ready', { timeout: 30_000 });
-  await expect(page.locator('[data-reader-viewport] iframe')).toBeVisible();
-  await context.setOffline(false);
+  try {
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await expect(page.getByRole('heading', { level: 1, name: 'Offline downloads' })).toBeVisible();
+    await page.goto(readerUrl!, { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('[data-reader-shell]')).toHaveAttribute('data-reader-status', 'ready', { timeout: 30_000 });
+    await expect(page.locator('[data-reader-viewport] iframe')).toBeVisible();
+  } finally {
+    await context.setOffline(false);
+  }
 });
 
 test('@rr5 explicit PDF download reopens offline with cached byte-range support', async ({ page, context }) => {
@@ -72,10 +81,13 @@ test('@rr5 explicit PDF download reopens offline with cached byte-range support'
   expect(readerUrl).toBeTruthy();
 
   await context.setOffline(true);
-  await page.goto(readerUrl!, { waitUntil: 'domcontentloaded' });
-  await expect(page.locator('[data-pdf-reader-root]')).toHaveAttribute('data-pdf-reader-state', 'ready', { timeout: 30_000 });
-  await expect.poll(async () => Number(await page.locator('[data-pdf-page-count]').textContent())).toBeGreaterThan(0);
-  await context.setOffline(false);
+  try {
+    await page.goto(readerUrl!, { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('[data-pdf-reader-root]')).toHaveAttribute('data-pdf-reader-state', 'ready', { timeout: 30_000 });
+    await expect.poll(async () => Number(await page.locator('[data-pdf-page-count]').textContent())).toBeGreaterThan(0);
+  } finally {
+    await context.setOffline(false);
+  }
 });
 
 test('@rr5 removal and simulated cache eviction become explicit unavailable states', async ({ page }) => {
@@ -147,9 +159,12 @@ test('@rr5 waiting worker preserves active controller, reader routes, cache migr
   expect(migration).toEqual({ migrated: true, legacyPreserved: true, staleRemoved: true, staleMarkerAbsent: true });
 
   await context.setOffline(true);
-  await page.goto(readerUrl!, { waitUntil: 'domcontentloaded' });
-  await expect(page.locator('[data-reader-shell]')).toHaveAttribute('data-reader-status', 'ready', { timeout: 30_000 });
-  await context.setOffline(false);
+  try {
+    await page.goto(readerUrl!, { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('[data-reader-shell]')).toHaveAttribute('data-reader-status', 'ready', { timeout: 30_000 });
+  } finally {
+    await context.setOffline(false);
+  }
 
   const nextController = await page.evaluate(() => navigator.serviceWorker.controller?.scriptURL ?? '');
   await page.evaluate(async () => {
@@ -166,7 +181,10 @@ test('@rr5 waiting worker preserves active controller, reader routes, cache migr
   expect(await page.evaluate(async ({ stableCache, url }) => Boolean(await (await caches.open(stableCache)).match(url)), { stableCache: STABLE_PUBLICATION_CACHE, url: fixtures.epub.urlPath })).toBe(true);
 
   await context.setOffline(true);
-  await page.goto(readerUrl!, { waitUntil: 'domcontentloaded' });
-  await expect(page.locator('[data-reader-shell]')).toHaveAttribute('data-reader-status', 'ready', { timeout: 30_000 });
-  await context.setOffline(false);
+  try {
+    await page.goto(readerUrl!, { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('[data-reader-shell]')).toHaveAttribute('data-reader-status', 'ready', { timeout: 30_000 });
+  } finally {
+    await context.setOffline(false);
+  }
 });
