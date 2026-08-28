@@ -76,13 +76,15 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
           edition: 1,
           releaseVersion: personalReaderReleaseVersion(book),
         };
-        void recordReadingOpen({ ...identity, format: 'epub', source: 'personal' }).catch(() => {});
         const handle = await mountReaderSourceWithFallbackHarness(root, {
           source,
           identity,
         });
         if (closing) handle.destroy();
-        else mounted = handle;
+        else {
+          mounted = handle;
+          void recordReadingOpen({ ...identity, format: 'epub', source: 'personal' }).catch(() => {});
+        }
       } catch (error) {
         fail(error);
       }

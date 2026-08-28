@@ -4,6 +4,7 @@ import WorkCard from '../components/WorkCard.astro';
 import { getWorks } from '../lib/content/repository';
 import '../styles/personal-library.css';
 const works = await getWorks();
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 <BaseLayout title="My Library" description="Books you have saved or imported into your browser-local personal library." noindex>
   <div class="page">

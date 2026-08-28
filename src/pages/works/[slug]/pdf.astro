@@ -82,12 +82,12 @@ const metadata = `PDF · edition ${release.edition} · ${Math.max(1, Math.round(
       if (!root || !encoded) return bootstrapFailure('The PDF reader could not read its publication identity.');
       try {
         const candidate = JSON.parse(encoded) as PdfCanonicalCandidate;
+        mounted = await mountPdfReader(root, candidate);
         void recordReadingOpen({
           ...candidate.identity,
           format: 'pdf',
           source: 'hosted',
         }).catch(() => {});
-        mounted = await mountPdfReader(root, candidate);
       } catch (error) {
         bootstrapFailure(error instanceof Error ? error.message : 'Unable to start the PDF reader.');
       }

@@ -135,6 +135,13 @@ const pdfReaderHref = work.release?.artifacts.pdf
           if (pageClosing) handle.destroy();
           else {
             mounted = handle;
+            void recordReadingOpen({
+              workId: publication.workId,
+              edition: publication.edition,
+              releaseVersion: publication.version,
+              format: 'epub',
+              source: 'hosted',
+            }).catch(() => {});
             if (handle.reader) void cacheReaderPublicationForOffline(publication.epub.url);
           }
         } catch (error) {
@@ -150,13 +157,6 @@ const pdfReaderHref = work.release?.artifacts.pdf
           requestAnimationFrame(() => {
             void openRequestedLegacyReader().then((redirected) => {
               if (redirected || pageClosing) return;
-              void recordReadingOpen({
-                workId: publication.workId,
-                edition: publication.edition,
-                releaseVersion: publication.version,
-                format: 'epub',
-                source: 'hosted',
-              }).catch(() => {});
               readerPerformance?.markShellPainted();
               void bootNativeReader(publication);
             }).catch(() => {

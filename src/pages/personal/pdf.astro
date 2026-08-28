@@ -73,7 +73,6 @@ const backHref = `${base}/saved`;
           edition: 1,
           releaseVersion: personalReaderReleaseVersion(book),
         };
-        void recordReadingOpen({ ...identity, format: 'pdf', source: 'personal' }).catch(() => {});
         const candidate: PdfCanonicalCandidate = {
           source,
           identity,
@@ -83,6 +82,7 @@ const backHref = `${base}/saved`;
           backHref: location.pathname.replace(/\/personal\/pdf\/?$/, '/saved'),
         };
         mounted = await mountPdfReader(root, candidate);
+        void recordReadingOpen({ ...identity, format: 'pdf', source: 'personal' }).catch(() => {});
       } catch (error) {
         bootstrapFailure(error instanceof Error ? error.message : 'Unable to open this personal PDF.');
       }

@@ -344,11 +344,17 @@ export async function recordReadingActivity(
     source: input.source,
     openedAt: input.openedAt ?? new Date().toISOString(),
   };
+  let committed = record;
   await withStore('readingActivity', 'readwrite', async (store) => {
+    const existing = await request<ReadingActivityRecordV1 | undefined>(store.get(input.workId));
+    if (isReadingActivityRecordV1(existing) && existing.openedAt > record.openedAt) {
+      committed = existing;
+      return;
+    }
     await request(store.put(record));
   });
-  broadcast('readingActivity', input.workId);
-  return record;
+  if (committed === record) broadcast('readingActivity', input.workId);
+  return committed;
 }
 
 export async function deleteReadingActivity(workId: string): Promise<void> {

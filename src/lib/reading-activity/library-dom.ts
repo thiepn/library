@@ -153,7 +153,7 @@ function renderRecent(states: Map<string, ReadingLibraryState>) {
 
   const ranked = [...list.querySelectorAll<HTMLAnchorElement>('[data-recent-work]')]
     .map((node) => ({ node, state: node.dataset.recentWork ? states.get(node.dataset.recentWork) : undefined }))
-    .filter((item): item is { node: HTMLAnchorElement; state: ReadingLibraryState } => Boolean(item.state && hasReadingActivity(item.state)))
+    .filter((item): item is { node: HTMLAnchorElement; state: ReadingLibraryState } => Boolean(item.state && hasReadingActivity(item.state) && item.state.status !== 'in-progress'))
     .sort((a, b) => compareReadingRecency(a.state, b.state));
 
   const visible = new Set(ranked.slice(0, 5).map((item) => item.node));
@@ -200,7 +200,8 @@ function ensureItemStateLabel(node: HTMLElement, anchorSelector: string): HTMLEl
   label.className = 'library-item-state micro';
   label.dataset.libraryItemState = '';
   const anchor = node.querySelector<HTMLElement>(anchorSelector);
-  if (anchor?.parentElement) anchor.parentElement.insertBefore(label, anchor);
+  if (anchor?.matches('.work-card')) anchor.insertAdjacentElement('afterend', label);
+  else if (anchor?.parentElement) anchor.parentElement.insertBefore(label, anchor);
   else node.append(label);
   return label;
 }
