@@ -1,0 +1,315 @@
+---
+import type { ResolvedWork } from '../lib/content/repository';
+
+interface Props { works: ResolvedWork[]; }
+const { works } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const artifactRows = works.flatMap((work) => {
+  const release = work.release;
+  if (!release) return [];
+  const rows = [];
+  if (release.artifacts.epub) rows.push({ work, release, format: 'epub' as const, artifact: release.artifacts.epub, readerUrl: `${base}/works/${work.slug}/read` });
+  if (release.artifacts.pdf) rows.push({ work, release, format: 'pdf' as const, artifact: release.artifacts.pdf, readerUrl: `${base}/works/${work.slug}/pdf` });
+  return rows;
+});
+const localMediaUrl = (url: string) => new URL(url).pathname;
+---
+<section class="offline-library" data-offline-library aria-labelledby="offline-library-title">
+  <div class="offline-library__heading">
+    <div>
+      <p class="eyebrow">Offline reading</p>
+      <h2 id="offline-library-title">Offline downloads</h2>
+      <p>Download an exact published EPUB or PDF for this browser. Personal imports remain in IndexedDB and are never copied into the service-worker cache.</p>
+    </div>
+    <p class="micro" data-offline-storage aria-live="polite">Checking browser storage…</p>
+  </div>
+
+  <div class="offline-update" data-offline-update hidden>
+    <div>
+      <strong>Library update ready.</strong>
+      <span>The current version stays active until you choose to replace it.</span>
+    </div>
+    <button type="button" data-offline-update-button>Update and reload</button>
+  </div>
+
+  <p class="offline-library__status" data-offline-global-status aria-live="polite"></p>
+  <div class="offline-library__list">
+    {works.filter((work) => work.release).map((work) => {
+      const rows = artifactRows.filter((row) => row.work.id === work.id);
+      return (
+        <article class="offline-work" data-offline-work={work.id}>
+          <div class="offline-work__title">
+            <h3>{work.title}</h3>
+            <span>Release {work.release?.version}</span>
+          </div>
+          <div class="offline-work__formats">
+            {rows.map(({ release, format, artifact, readerUrl }) => (
+              <div
+                class="offline-format"
+                data-offline-artifact
+                data-offline-work-id={work.id}
+                data-offline-title={work.title}
+                data-offline-version={release.version}
+                data-offline-format={format}
+                data-offline-url={localMediaUrl(artifact.url)}
+                data-offline-reader-url={readerUrl}
+                data-offline-filename={artifact.filename}
+                data-offline-mime={artifact.mimeType}
+                data-offline-size={artifact.sizeBytes}
+                data-offline-sha256={artifact.sha256}
+              >
+                <div>
+                  <strong>{format.toUpperCase()}</strong>
+                  <span>{(artifact.sizeBytes / 1024 / 1024).toFixed(1)} MB</span>
+                  <span data-offline-artifact-status>Checking…</span>
+                </div>
+                <button type="button" data-offline-artifact-action disabled>Checking…</button>
+              </div>
+            ))}
+          </div>
+        </article>
+      );
+    })}
+  </div>
+</section>
+
+<script>
+  import {
+    getOfflineStorageEstimate,
+    listOfflinePublications,
+    removeOfflinePublication,
+    startOfflinePublicationDownload,
+    subscribeOfflineLibrary,
+    type OfflinePublicationArtifact,
+  } from '../lib/client/offline-library';
+  import {
+    activateWaitingLibraryWorker,
+    registerLibraryPwa,
+    subscribeLibraryPwaState,
+  } from '../lib/client/pwa';
+
+  const root = document.querySelector<HTMLElement>('[data-offline-library]');
+  const storage = root?.querySelector<HTMLElement>('[data-offline-storage]');
+  const globalStatus = root?.querySelector<HTMLElement>('[data-offline-global-status]');
+  const update = root?.querySelector<HTMLElement>('[data-offline-update]');
+  const updateButton = root?.querySelector<HTMLButtonElement>('[data-offline-update-button]');
+  const rows = root ? [...root.querySelectorAll<HTMLElement>('[data-offline-artifact]')] : [];
+  const active = new Map<string, ReturnType<typeof startOfflinePublicationDownload>>();
+  let cachedUrls = new Set<string>();
+
+  const formatBytes = (bytes: number) => {
+    if (!Number.isFinite(bytes) || bytes <= 0) return 'unknown size';
+    if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
+    return `${(bytes / 1024 / 1024).toFixed(bytes >= 10 * 1024 * 1024 ? 0 : 1)} MB`;
+  };
+
+  const absolute = (value: string) => new URL(value, location.href).href;
+
+  function artifactFrom(row: HTMLElement): OfflinePublicationArtifact | undefined {
+    const { offlineWorkId, offlineTitle, offlineVersion, offlineFormat, offlineUrl, offlineReaderUrl, offlineFilename, offlineMime, offlineSize, offlineSha256 } = row.dataset;
+    const sizeBytes = Number(offlineSize);
+    if (!offlineWorkId || !offlineTitle || !offlineVersion || !offlineUrl || !offlineReaderUrl || !offlineFilename || !offlineMime || !offlineSha256 || !Number.isFinite(sizeBytes)) return undefined;
+    if (offlineFormat !== 'epub' && offlineFormat !== 'pdf') return undefined;
+    return {
+      workId: offlineWorkId,
+      title: offlineTitle,
+      version: offlineVersion,
+      format: offlineFormat,
+      url: absolute(offlineUrl),
+      readerUrl: absolute(offlineReaderUrl),
+      filename: offlineFilename,
+      mimeType: offlineMime,
+      sizeBytes,
+      sha256: offlineSha256,
+    };
+  }
+
+  function setRowState(row: HTMLElement) {
+    const artifact = artifactFrom(row);
+    const button = row.querySelector<HTMLButtonElement>('[data-offline-artifact-action]');
+    const label = row.querySelector<HTMLElement>('[data-offline-artifact-status]');
+    if (!artifact || !button || !label) return;
+    const operation = active.get(artifact.url);
+    const isCached = cachedUrls.has(artifact.url);
+
+    if (operation) {
+      button.disabled = false;
+      button.textContent = 'Cancel';
+      button.dataset.action = 'cancel';
+      return;
+    }
+
+    if (isCached) {
+      label.textContent = `Available offline · ${formatBytes(artifact.sizeBytes)}`;
+      button.disabled = false;
+      button.textContent = 'Remove download';
+      button.dataset.action = 'remove';
+      return;
+    }
+
+    label.textContent = navigator.onLine ? 'Not downloaded' : 'Unavailable offline';
+    button.disabled = !navigator.onLine;
+    button.textContent = `Download ${artifact.format.toUpperCase()}`;
+    button.dataset.action = 'download';
+  }
+
+  async function renderStorage() {
+    if (!storage) return;
+    const estimate = await getOfflineStorageEstimate();
+    if (!estimate.supported) {
+      storage.textContent = 'Browser storage estimate unavailable';
+      return;
+    }
+    if (estimate.availableBytes === undefined || estimate.quotaBytes === undefined) {
+      storage.textContent = estimate.persisted ? 'Persistent browser storage granted' : 'Browser storage managed automatically';
+      return;
+    }
+    storage.textContent = `${formatBytes(estimate.availableBytes)} available of ${formatBytes(estimate.quotaBytes)}${estimate.persisted ? ' · persistent' : ' · browser may evict under pressure'}`;
+  }
+
+  async function renderInventory() {
+    if (!root) return;
+    try {
+      const records = await listOfflinePublications();
+      cachedUrls = new Set(records.map((record) => record.url));
+      for (const row of rows) setRowState(row);
+      if (globalStatus) {
+        globalStatus.dataset.state = 'ok';
+        globalStatus.textContent = records.length
+          ? `${records.length} publication file${records.length === 1 ? '' : 's'} available offline on this browser.`
+          : 'No hosted publication files are downloaded for offline use.';
+      }
+    } catch (error) {
+      cachedUrls = new Set();
+      for (const row of rows) {
+        const button = row.querySelector<HTMLButtonElement>('[data-offline-artifact-action]');
+        const label = row.querySelector<HTMLElement>('[data-offline-artifact-status]');
+        if (button) { button.disabled = true; button.textContent = 'Unavailable'; }
+        if (label) label.textContent = 'Offline storage unavailable';
+      }
+      if (globalStatus) {
+        globalStatus.dataset.state = 'error';
+        globalStatus.textContent = error instanceof Error ? error.message : 'Offline storage is unavailable.';
+      }
+    }
+    await renderStorage();
+  }
+
+  async function startDownload(row: HTMLElement, artifact: OfflinePublicationArtifact) {
+    const estimate = await getOfflineStorageEstimate();
+    if (estimate.availableBytes !== undefined && estimate.availableBytes < artifact.sizeBytes) {
+      if (globalStatus) {
+        globalStatus.dataset.state = 'error';
+        globalStatus.textContent = `Not enough browser storage is available for ${artifact.title} ${artifact.format.toUpperCase()}. Remove another download or personal book first.`;
+      }
+      return;
+    }
+
+    const button = row.querySelector<HTMLButtonElement>('[data-offline-artifact-action]');
+    const label = row.querySelector<HTMLElement>('[data-offline-artifact-status]');
+    const handle = startOfflinePublicationDownload(artifact, (progress) => {
+      if (!label) return;
+      if (progress.phase === 'preparing') label.textContent = 'Preparing reader for offline use…';
+      else if (progress.phase === 'finalizing') label.textContent = 'Finalizing…';
+      else if (progress.totalBytes && progress.totalBytes > 0) {
+        const percent = Math.min(100, Math.round(progress.loadedBytes / progress.totalBytes * 100));
+        label.textContent = `Downloading… ${percent}%`;
+      } else label.textContent = `Downloading… ${formatBytes(progress.loadedBytes)}`;
+    });
+    active.set(artifact.url, handle);
+    setRowState(row);
+    if (globalStatus) { globalStatus.dataset.state = 'working'; globalStatus.textContent = `Downloading ${artifact.title} ${artifact.format.toUpperCase()}…`; }
+
+    const result = await handle.promise;
+    active.delete(artifact.url);
+    if (result.ok) {
+      if (globalStatus) { globalStatus.dataset.state = 'ok'; globalStatus.textContent = `${artifact.title} ${artifact.format.toUpperCase()} is ready offline.`; }
+    } else if (result.cancelled) {
+      if (globalStatus) { globalStatus.dataset.state = 'ok'; globalStatus.textContent = 'Download cancelled; no partial publication was retained.'; }
+    } else if (globalStatus) {
+      globalStatus.dataset.state = 'error';
+      globalStatus.textContent = result.error ?? 'Offline download failed.';
+    }
+    if (button) button.disabled = false;
+    await renderInventory();
+  }
+
+  for (const row of rows) {
+    const button = row.querySelector<HTMLButtonElement>('[data-offline-artifact-action]');
+    button?.addEventListener('click', async () => {
+      const artifact = artifactFrom(row);
+      if (!artifact) return;
+      const operation = active.get(artifact.url);
+      if (operation) {
+        operation.cancel();
+        button.disabled = true;
+        return;
+      }
+      if (cachedUrls.has(artifact.url)) {
+        button.disabled = true;
+        try {
+          await removeOfflinePublication(artifact.url);
+          if (globalStatus) { globalStatus.dataset.state = 'ok'; globalStatus.textContent = `Removed the offline ${artifact.format.toUpperCase()} copy of ${artifact.title}.`; }
+        } catch (error) {
+          if (globalStatus) { globalStatus.dataset.state = 'error'; globalStatus.textContent = error instanceof Error ? error.message : 'Unable to remove the offline download.'; }
+        }
+        await renderInventory();
+        return;
+      }
+      await startDownload(row, artifact);
+    });
+  }
+
+  updateButton?.addEventListener('click', async () => {
+    updateButton.disabled = true;
+    const activated = await activateWaitingLibraryWorker();
+    if (!activated) {
+      updateButton.disabled = false;
+      if (globalStatus) { globalStatus.dataset.state = 'error'; globalStatus.textContent = 'The waiting Library update is no longer available.'; }
+      return;
+    }
+    navigator.serviceWorker.addEventListener('controllerchange', () => location.reload(), { once: true });
+  });
+
+  const unsubscribePwa = subscribeLibraryPwaState((state) => {
+    if (update) update.hidden = state.updateState !== 'update-ready';
+    for (const row of rows) setRowState(row);
+  });
+  const unsubscribeOffline = subscribeOfflineLibrary(() => { void renderInventory(); });
+  window.addEventListener('online', () => { void renderInventory(); });
+  window.addEventListener('offline', () => { void renderInventory(); });
+  window.addEventListener('pagehide', () => {
+    unsubscribePwa();
+    unsubscribeOffline();
+    for (const operation of active.values()) operation.cancel();
+    active.clear();
+  }, { once: true });
+
+  void registerLibraryPwa().then(() => renderInventory());
+</script>
+
+<style>
+  .offline-library { margin: 2rem 0; padding: 1.25rem; border: 1px solid var(--border, #d7d2c8); border-radius: .75rem; background: var(--surface, #fff); }
+  .offline-library__heading { display: flex; justify-content: space-between; gap: 1.5rem; align-items: start; }
+  .offline-library__heading h2, .offline-work h3 { margin: .15rem 0 .35rem; }
+  .offline-library__heading > div > p:last-child { max-width: 62ch; margin: 0; }
+  .offline-library__status { min-height: 1.4em; margin: 1rem 0; }
+  .offline-library__status[data-state="error"] { font-weight: 600; }
+  .offline-update { display: flex; justify-content: space-between; gap: 1rem; align-items: center; margin-top: 1rem; padding: .8rem 1rem; border: 1px solid currentColor; border-radius: .5rem; }
+  .offline-update div { display: grid; gap: .15rem; }
+  .offline-update button, .offline-format button { min-height: 2.75rem; padding: .55rem .85rem; border: 1px solid currentColor; border-radius: .4rem; background: transparent; color: inherit; font: inherit; cursor: pointer; }
+  .offline-update button:disabled, .offline-format button:disabled { cursor: default; opacity: .55; }
+  .offline-library__list { display: grid; gap: .8rem; }
+  .offline-work { border-top: 1px solid var(--border, #d7d2c8); padding-top: .9rem; }
+  .offline-work__title { display: flex; justify-content: space-between; gap: 1rem; align-items: baseline; }
+  .offline-work__title span { font-size: .85rem; opacity: .72; }
+  .offline-work__formats { display: grid; gap: .55rem; margin-top: .65rem; }
+  .offline-format { display: flex; justify-content: space-between; gap: 1rem; align-items: center; padding: .65rem .75rem; background: color-mix(in srgb, currentColor 4%, transparent); border-radius: .45rem; }
+  .offline-format > div { display: flex; gap: .65rem; align-items: baseline; flex-wrap: wrap; }
+  .offline-format > div span { font-size: .85rem; opacity: .75; }
+  @media (max-width: 700px) {
+    .offline-library { padding: 1rem; }
+    .offline-library__heading, .offline-update, .offline-work__title, .offline-format { align-items: stretch; flex-direction: column; }
+    .offline-format button, .offline-update button { width: 100%; }
+  }
+</style>
