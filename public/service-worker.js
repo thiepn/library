@@ -44,6 +44,14 @@ function personalReaderBaseUrl(url) {
   return normalized;
 }
 
+function isReaderDocumentUrl(url) {
+  if (!isSameOriginScoped(url)) return false;
+  if (personalReaderBaseUrl(url)) return true;
+  const pathname = url.pathname.replace(/\/$/, '');
+  const relative = pathname.startsWith(scopePath) ? pathname.slice(scopePath.length) : '';
+  return /^works\/[^/]+\/(read|pdf)$/.test(relative);
+}
+
 function isImmutableBuildAsset(url) {
   return isSameOriginScoped(url)
     && (url.pathname.startsWith(scoped('_astro/')) || url.pathname.startsWith(scoped('pagefind/')));
@@ -159,7 +167,7 @@ async function cacheOfflineApplicationAssets() {
 
 async function cacheOfflineReaderDocument(rawUrl) {
   const url = new URL(rawUrl, scopeUrl.origin);
-  if (!isSameOriginScoped(url) || publicationFormat(url)) throw new Error('The reader route is outside the Library application scope.');
+  if (!isReaderDocumentUrl(url) || publicationFormat(url)) throw new Error('The reader route is outside the supported Library reader scope.');
   const cacheUrl = personalReaderBaseUrl(url) ?? url;
   const request = new Request(cacheUrl.href, { credentials: 'same-origin' });
   const cache = await caches.open(RUNTIME_CACHE);
@@ -234,7 +242,7 @@ async function migrateRuntimeDocumentCaches() {
     const previous = await caches.open(cacheName);
     for (const request of await previous.keys()) {
       const url = new URL(request.url);
-      if (!isSameOriginScoped(url) || publicationFormat(url) || isImmutableBuildAsset(url)) continue;
+      if (!isReaderDocumentUrl(url)) continue;
       if (await current.match(request)) continue;
       const response = await previous.match(request);
       if (response && cacheableResponse(response)) await current.put(request, response.clone());
