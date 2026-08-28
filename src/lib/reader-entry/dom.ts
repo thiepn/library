@@ -43,7 +43,7 @@ function requestForCatalog(card: HTMLElement) {
   const epubHref = hasFormat(card, 'EPUB') ? readerHref : undefined;
   const webHref = readerHref && !epubHref ? readerHref : undefined;
   const pdfHref = hasFormat(card, 'PDF') ? `${base}/works/${slug}/pdf` : undefined;
-  return { workId, edition, releaseVersion, epubHref, webHref, pdfHref };
+  return { workId, edition, releaseVersion, ...(epubHref ? { epubHref } : {}), ...(webHref ? { webHref } : {}), ...(pdfHref ? { pdfHref } : {}) };
 }
 
 function requestForDetail(root: HTMLElement) {
@@ -56,7 +56,7 @@ function requestForDetail(root: HTMLElement) {
   const epubHref = epubAvailable ? readerLink?.href : undefined;
   const webHref = readerLink?.href && !epubHref ? readerLink.href : undefined;
   const pdfHref = root.querySelector<HTMLAnchorElement>('[data-format="pdf"] a')?.href;
-  return { workId, edition, releaseVersion, epubHref, webHref, pdfHref };
+  return { workId, edition, releaseVersion, ...(epubHref ? { epubHref } : {}), ...(webHref ? { webHref } : {}), ...(pdfHref ? { pdfHref } : {}) };
 }
 
 function preferredProgress(snapshot: ReadingContinuitySnapshot): ReadingEntryState | undefined {

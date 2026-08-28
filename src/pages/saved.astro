@@ -134,7 +134,7 @@ const works = await getWorks();
       const open = document.createElement('a');
       open.className = 'personal-book__action';
       open.href = personalRoute(book);
-      open.textContent = book.format === 'epub' ? 'Read' : 'Open PDF';
+      open.textContent = 'Read';
       const remove = document.createElement('button');
       remove.className = 'personal-book__action personal-book__action--remove';
       remove.type = 'button';

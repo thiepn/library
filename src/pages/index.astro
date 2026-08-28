@@ -203,81 +203,23 @@ const catalog = works.map((work) => {
     }
 
     async function renderCards() {
-      const favorites = new Set(await getFavoriteWorkIds().catch(() => []));
-      await Promise.all(cards.map(async (card) => {
-        const workId = card.dataset.catalogWork;
-        if (!workId) return;
-
-        const saved = favorites.has(workId);
-        card.dataset.saved = String(saved);
-        const badge = card.querySelector<HTMLElement>('[data-saved-badge]');
-        if (badge) badge.hidden = !saved;
-        const saveButton = card.querySelector<HTMLButtonElement>('[data-save-work]');
-        if (saveButton) {
-          saveButton.textContent = saved ? 'In My Library' : 'Add to My Library';
-          saveButton.setAttribute('aria-pressed', String(saved));
-        }
-
-        const [native, legacy] = await Promise.all([
-          getReaderProgress(workId).catch(() => undefined),
-          getProgress(workId).catch(() => undefined),
-        ]);
-        const matchingNative = exactNativeProgress(card, native);
-        const progressPanel = card.querySelector<HTMLElement>('[data-catalog-progress]');
-        if (progressPanel) progressPanel.hidden = true;
-
-        if (matchingNative && matchingNative.percentage > 0) {
-          renderCardProgress(card, matchingNative.percentage, matchingNative.furthestPercentage);
-        } else if (legacy && legacy.percent > 0) {
-          const current = clamp01(legacy.percent / 100);
-          renderCardProgress(card, current, current);
-        }
-
-        const readerCta = card.querySelector<HTMLAnchorElement>('[data-catalog-reader-cta]');
-        if (readerCta) {
-          readerCta.textContent = legacy && legacy.percent > 0
-            ? legacy.percent >= 99 ? 'Read again' : 'Continue reading'
-            : 'Start reading';
-        }
-      }));
+    const favorites = new Set(await getFavoriteWorkIds().catch(() => []));
+    for (const card of cards) {
+      const workId = card.dataset.catalogWork;
+      if (!workId) continue;
+      const saved = favorites.has(workId);
+      card.dataset.saved = String(saved);
+      const badge = card.querySelector<HTMLElement>('[data-saved-badge]');
+      if (badge) badge.hidden = !saved;
+      const saveButton = card.querySelector<HTMLButtonElement>('[data-save-work]');
+      if (saveButton) {
+        saveButton.textContent = saved ? 'In My Library' : 'Add to My Library';
+        saveButton.setAttribute('aria-pressed', String(saved));
+      }
     }
+  }
 
-    async function renderContinue() {
-      let visible = 0;
-      await Promise.all(continueNodes.map(async (node) => {
-        const workId = node.dataset.continueWork;
-        if (!workId) return;
-        const [native, legacy] = await Promise.all([
-          getReaderProgress(workId).catch(() => undefined),
-          getProgress(workId).catch(() => undefined),
-        ]);
-        const matchingNative = exactNativeProgress(node, native);
-        const progressLabel = node.querySelector<HTMLElement>('[data-continue-progress]');
-        const contextLabel = node.querySelector<HTMLElement>('[data-continue-context]');
-        const webReadable = node.dataset.webReadable === 'true';
-
-        if (legacy && webReadable && legacy.percent > 0 && legacy.percent < 99.5) {
-          node.hidden = false;
-          visible++;
-          if (contextLabel) contextLabel.textContent = 'Reading progress';
-          if (progressLabel) progressLabel.textContent = `${Math.max(1, Math.round(legacy.percent))}% · Resume`;
-          return;
-        }
-
-        if (matchingNative && matchingNative.percentage > 0 && matchingNative.percentage < .995) {
-          node.hidden = false;
-          visible++;
-          if (contextLabel) contextLabel.textContent = 'Reading progress';
-          if (progressLabel) progressLabel.textContent = `${Math.max(1, Math.round(matchingNative.percentage * 100))}% · ${webReadable ? 'Resume' : 'Open book'}`;
-          return;
-        }
-
-        node.hidden = true;
-      }));
-      if (continueSection) continueSection.hidden = visible === 0;
-    }
-
-    root?.addEventListener('click', (event) => {
+  root?.addEventListener('click', (event) => {
       const button = (event.target as Element | null)?.closest<HTMLButtonElement>('[data-save-work]');
       const workId = button?.dataset.saveWork;
       if (!button || !workId) return;
@@ -289,7 +231,7 @@ const catalog = works.map((work) => {
     });
 
     async function renderLibraryState() {
-      await Promise.all([renderCards(), renderContinue()]);
+      await renderCards();
     }
 
     const unsubscribe = subscribeLibraryState(() => { void renderLibraryState(); });

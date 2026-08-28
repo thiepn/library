@@ -216,38 +216,6 @@ const primaryAction = readHref
       }
     }
 
-    async function renderReadingState() {
-      if (!workId) return;
-      const [native, legacy] = await Promise.all([
-        getReaderProgress(workId).catch(() => undefined),
-        getProgress(workId).catch(() => undefined),
-      ]);
-
-      const nativeMatchesRelease = Boolean(
-        native
-        && releaseVersion
-        && Number.isFinite(edition)
-        && native.edition === edition
-        && native.releaseVersion === releaseVersion,
-      );
-
-      if (native && nativeMatchesRelease) {
-        const chapter = native.chapterLabel ? ` · ${native.chapterLabel}` : '';
-        renderProgress(
-          native.percentage,
-          native.furthestPercentage,
-          `Furthest reached ${Math.round(native.furthestPercentage * 100)}%${chapter}`,
-        );
-      } else if (legacy && legacy.percent > 0) {
-        const current = clamp01(legacy.percent / 100);
-        renderProgress(current, current, `Saved at ${Math.round(legacy.percent)}%`);
-      }
-
-      if (readerCta && legacy && legacy.percent > 0) {
-        readerCta.textContent = legacy.percent >= 99 ? 'Read again' : 'Continue reading';
-      }
-    }
-
     control?.addEventListener('click', async () => {
       if (!control || !workId) return;
       control.disabled = true;
@@ -260,6 +228,5 @@ const primaryAction = readHref
     });
 
     void renderSavedState();
-    void renderReadingState();
   </script>
 </BaseLayout>
