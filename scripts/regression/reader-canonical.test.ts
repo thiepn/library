@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { readerCanonicalCandidateFromPublication } from '../../src/lib/reader/canonical';
+import { readerCanonicalCandidateFromPublication } from '../../src/lib/reader/source';
 import type { ReaderPublicationCandidate } from '../../src/lib/reader/publication';
 
 test('ER3 hosted publication adapter preserves exact source and release identity', () => {
