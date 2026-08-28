@@ -142,7 +142,13 @@ test('@rr5 waiting worker preserves active controller, reader routes, cache migr
   await page.waitForFunction((previous) => Boolean(navigator.serviceWorker.controller?.scriptURL) && navigator.serviceWorker.controller?.scriptURL !== previous, initialController);
   expect(await page.evaluate(() => navigator.serviceWorker.controller?.scriptURL ?? '')).toContain('service-worker-next.js');
 
-  const migration = await page.evaluate(async ({ stableCache, legacyCache, staleCache, url }) => {
+  const migrationArgs = {
+    stableCache: STABLE_PUBLICATION_CACHE,
+    legacyCache: 'thiepn-library-pwa-publication-p28-v1',
+    staleCache: 'thiepn-library-pwa-runtime-stale-rr5-test',
+    url: fixtures.epub.urlPath,
+  };
+  await expect.poll(() => page.evaluate(async ({ stableCache, legacyCache, staleCache, url }) => {
     const stable = await caches.open(stableCache);
     return {
       migrated: Boolean(await stable.match(url)),
@@ -150,13 +156,12 @@ test('@rr5 waiting worker preserves active controller, reader routes, cache migr
       staleRemoved: !(await caches.keys()).includes(staleCache),
       staleMarkerAbsent: !(await caches.match('/library/rr5-stale-marker')),
     };
-  }, {
-    stableCache: STABLE_PUBLICATION_CACHE,
-    legacyCache: 'thiepn-library-pwa-publication-p28-v1',
-    staleCache: 'thiepn-library-pwa-runtime-stale-rr5-test',
-    url: fixtures.epub.urlPath,
+  }, migrationArgs), { timeout: 10_000 }).toEqual({
+    migrated: true,
+    legacyPreserved: true,
+    staleRemoved: true,
+    staleMarkerAbsent: true,
   });
-  expect(migration).toEqual({ migrated: true, legacyPreserved: true, staleRemoved: true, staleMarkerAbsent: true });
 
   await context.setOffline(true);
   try {
