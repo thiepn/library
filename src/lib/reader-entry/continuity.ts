@@ -94,5 +94,6 @@ export function readingFurthestLabel(entry: ReadingEntryState): string {
 
 export function createReadingContinuitySnapshot(entries: ReadingEntryState[]): ReadingContinuitySnapshot {
   const normalized = entries.map(normalizeReadingEntry);
-  return { entries: normalized, primary: choosePrimaryReadingEntry(normalized) };
+  const primary = choosePrimaryReadingEntry(normalized);
+  return { entries: normalized, ...(primary ? { primary } : {}) };
 }
