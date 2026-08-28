@@ -1,10 +1,21 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import { personalEpubFixture, personalPdfFixture, secondPersonalPdfFixture } from './offline-fixtures';
 
 const PERSONAL_DB = 'thiepn-library-personal-books';
 const STABLE_PUBLICATION_CACHE = 'thiepn-library-offline-publications-v1';
 
 const filePayload = (name: string, buffer: Buffer, mimeType = 'application/pdf') => ({ name, mimeType, buffer });
+
+async function ensureWorkerControlled(page: Page) {
+  await page.waitForFunction(async () => {
+    const registration = await navigator.serviceWorker.getRegistration('/library/');
+    return Boolean(registration?.active || navigator.serviceWorker.controller);
+  }, undefined, { timeout: 15_000 });
+  if (!(await page.evaluate(() => Boolean(navigator.serviceWorker.controller)))) {
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller), undefined, { timeout: 15_000 });
+  }
+}
 
 test('@rr5 quota exhaustion is explicit and leaves no partial personal book', async ({ page }) => {
   await page.goto('/library/saved');
@@ -115,11 +126,7 @@ test('@rr5 personal books stay in IndexedDB and never enter hosted service-worke
 
 test('@rr5 personal EPUB and PDF readers reopen offline while private files remain IndexedDB-only', async ({ page, context }) => {
   await page.goto('/library/saved');
-  await page.evaluate(() => navigator.serviceWorker.ready);
-  if (!(await page.evaluate(() => Boolean(navigator.serviceWorker.controller)))) {
-    await page.reload();
-    await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller));
-  }
+  await ensureWorkerControlled(page);
 
   await page.locator('[data-personal-file-input]').setInputFiles([
     filePayload('RR5 Personal Offline.epub', personalEpubFixture, 'application/epub+zip'),
