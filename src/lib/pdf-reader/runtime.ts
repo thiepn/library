@@ -509,7 +509,8 @@ class PdfReaderController {
 
   private closeSearch() {
     if (this.elements.searchPanel.hidden) return;
-    this.cancelSearch('Search cancelled.');
+    const wasSearching = Boolean(this.searchAbort);
+    this.cancelSearch(wasSearching ? 'Search cancelled.' : undefined);
     this.setPanel(null);
     this.elements.searchToggle.focus();
   }
@@ -583,7 +584,10 @@ class PdfReaderController {
     } catch (error) {
       if (!controller.signal.aborted) this.elements.searchStatus.textContent = `Search unavailable: ${safeMessage(error)}`;
     } finally {
-      if (this.searchAbort === controller) this.elements.searchSubmit.disabled = false;
+      if (this.searchAbort === controller) {
+        delete this.searchAbort;
+        this.elements.searchSubmit.disabled = false;
+      }
     }
   }
 

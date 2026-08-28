@@ -116,8 +116,8 @@ async function importFixture(page: Page, fixture: BrowserFixtureFile, title: str
   const elapsed = await measureMs(page, async () => {
     await page.locator('[data-personal-file-input]').setInputFiles(fixture);
     await expect(status).toContainText('1 imported');
+    await expect(titleCard(page, title)).toHaveCount(1);
   });
-  await expect(titleCard(page, title)).toHaveCount(1);
   return elapsed;
 }
 
@@ -200,7 +200,7 @@ test.beforeEach(async ({ page }) => {
   await installLongTaskObserver(page);
 });
 
-test('RR4 fixture classes remain deterministic and bounded', async (_fixtures, testInfo) => {
+test('RR4 fixture classes remain deterministic and bounded', async ({}, testInfo) => {
   expect(performanceFixtureMetadata.smallEpub.bytes).toBeLessThanOrEqual(budgets.fixtures.smallEpub.maximumBytes);
   expect(performanceFixtureMetadata.smallEpub.spineItems).toBeGreaterThanOrEqual(budgets.fixtures.smallEpub.minimumSpineItems);
   expect(performanceFixtureMetadata.ordinaryEpub.bytes).toBeLessThanOrEqual(budgets.fixtures.ordinaryEpub.maximumBytes);
