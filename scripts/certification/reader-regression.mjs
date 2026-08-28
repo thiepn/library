@@ -85,10 +85,11 @@ if (present) {
   pass(
     'EPUB_READER_REGRESSION_NODE_NATIVE',
     pkg.includes('"test:reader": "node --import tsx --test scripts/regression/*.test.ts"')
-      && !pkg.includes('playwright')
+      && pkg.includes('"test:reader:postbuild": "node scripts/regression/reader-postbuild.mjs"')
+      && !pkg.includes('"test:reader": "playwright')
       && !pkg.includes('vitest')
       && !pkg.includes('jest'),
-    'P30 uses the Node test runner with the existing tsx toolchain and adds no heavyweight browser/test framework dependency',
+    'P30 remains a fast Node-native regression layer; the additive Playwright suite is isolated behind its own browser-acceptance command and workflow',
   );
   pass(
     'EPUB_READER_REGRESSION_POSTBUILD_SCRIPT',
@@ -123,7 +124,7 @@ if (present) {
       && docs.includes('P31')
       && docs.includes('does not replace')
       && docs.includes('production verification'),
-    'P30 documentation keeps regression automation distinct from P31 cross-browser certification and existing production verification',
+    'P30 documentation keeps regression automation distinct from cross-browser certification and existing production verification',
   );
   pass(
     'EPUB_READER_REGRESSION_CERT_CHAIN',

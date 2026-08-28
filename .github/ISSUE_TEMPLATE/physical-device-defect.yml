@@ -1,0 +1,101 @@
+name: Physical-device defect
+description: Record a defect discovered while running the RR2 physical-device matrix.
+title: "[RR2][P?][target-id] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use the exact build and target identifiers from the RR2 evidence record. Do not attach private imported-book pages, credentials, or unredacted personal information.
+
+  - type: input
+    id: target
+    attributes:
+      label: Target ID
+      description: Target from evidence/physical-devices/matrix.json
+      placeholder: android-chrome
+    validations:
+      required: true
+
+  - type: input
+    id: build
+    attributes:
+      label: Build SHA
+      description: Exact 40-character Git SHA that was physically tested
+      placeholder: 0123456789abcdef0123456789abcdef01234567
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - P0 — data loss, security boundary failure, widespread crash, or reader cannot open
+        - P1 — core reading, navigation, resume, import, accessibility, or exit path broken
+        - P2 — important degradation with a usable workaround
+        - P3 — cosmetic or optional polish
+    validations:
+      required: true
+
+  - type: input
+    id: journey
+    attributes:
+      label: Journey ID
+      description: RR2 journey where the defect occurred
+      placeholder: hosted-epub-start-resume
+    validations:
+      required: true
+
+  - type: input
+    id: device
+    attributes:
+      label: Device and operating system
+      placeholder: Samsung Galaxy S21+ · Android 16
+    validations:
+      required: true
+
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and version
+      placeholder: Chrome 151.0.x
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+      description: Include the starting route, book format, reader mode, orientation, and exact actions.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: state
+    attributes:
+      label: State and data impact
+      description: Note whether progress, bookmarks, annotations, imports, or offline data changed or were lost.
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence links
+      description: HTTPS screenshot, recording, log, or related evidence record. Redact unrelated personal information.
+    validations:
+      required: true

@@ -3,6 +3,8 @@ dist/
 .astro/
 .build/
 .wrangler/
+playwright-report/
+test-results/
 .dev.vars
 .env
 .DS_Store

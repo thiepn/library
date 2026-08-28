@@ -24,6 +24,10 @@ export interface PersonalBookRecord {
   cover?: Blob;
 }
 
+type StoredPersonalBookRecord = Omit<PersonalBookRecord, 'file'> & {
+  file: Blob | ArrayBuffer;
+};
+
 export interface PersonalBookSummary extends Omit<PersonalBookRecord, 'file' | 'cover'> {
   cover?: Blob;
 }
@@ -48,17 +52,28 @@ function request<T>(value: IDBRequest<T>): Promise<T> {
   });
 }
 
+function transactionCompletion(transaction: IDBTransaction): Promise<void> {
+  return new Promise((resolve, reject) => {
+    transaction.addEventListener('complete', () => resolve(), { once: true });
+    transaction.addEventListener('abort', () => reject(transaction.error ?? new Error('Personal book storage transaction aborted.')), { once: true });
+    transaction.addEventListener('error', () => reject(transaction.error ?? new Error('Personal book storage transaction failed.')), { once: true });
+  });
+}
+
 async function withStore<T>(mode: IDBTransactionMode, operation: (store: IDBObjectStore) => Promise<T>): Promise<T> {
   const db = await openPersonalBookDb();
   try {
     const transaction = db.transaction(PERSONAL_STORE, mode);
-    const result = await operation(transaction.objectStore(PERSONAL_STORE));
-    await new Promise<void>((resolve, reject) => {
-      transaction.addEventListener('complete', () => resolve());
-      transaction.addEventListener('abort', () => reject(transaction.error ?? new Error('Personal book storage transaction aborted.')));
-      transaction.addEventListener('error', () => reject(transaction.error ?? new Error('Personal book storage transaction failed.')));
-    });
-    return result;
+    const completion = transactionCompletion(transaction);
+    try {
+      const result = await operation(transaction.objectStore(PERSONAL_STORE));
+      await completion;
+      return result;
+    } catch (error) {
+      try { transaction.abort(); } catch {}
+      try { await completion; } catch {}
+      throw error;
+    }
   } finally {
     db.close();
   }
@@ -125,9 +140,19 @@ async function extractEpubMetadata(buffer: ArrayBuffer): Promise<Pick<PersonalBo
   }
 }
 
+function normalizeStoredRecord(record: StoredPersonalBookRecord): PersonalBookRecord {
+  const file = record.file instanceof Blob
+    ? record.file
+    : new Blob([record.file], { type: record.mimeType });
+  return { ...record, file };
+}
+
 function storageError(error: unknown): Error {
-  if (error instanceof DOMException && (error.name === 'QuotaExceededError' || error.name === 'UnknownError')) {
+  if (error instanceof DOMException && error.name === 'QuotaExceededError') {
     return new Error('Not enough browser storage is available to keep this book locally.');
+  }
+  if (error instanceof DOMException && error.name === 'UnknownError') {
+    return new Error('This browser could not save the book locally. Check site-storage or private-browsing settings and try again.');
   }
   return error instanceof Error ? error : new Error('Unable to import this book.');
 }
@@ -157,6 +182,7 @@ export async function importPersonalBook(file: File): Promise<{ record: Personal
     ? await extractEpubMetadata(buffer)
     : { title: cleanFileTitle(file.name) };
   const title = metadata.title === 'Untitled book' ? cleanFileTitle(file.name) : metadata.title;
+  const mimeType = format === 'epub' ? 'application/epub+zip' : 'application/pdf';
   const record: PersonalBookRecord = {
     id,
     format,
@@ -164,17 +190,21 @@ export async function importPersonalBook(file: File): Promise<{ record: Personal
     ...('creator' in metadata && metadata.creator ? { creator: metadata.creator } : {}),
     ...('language' in metadata && metadata.language ? { language: metadata.language } : {}),
     fileName: file.name,
-    mimeType: format === 'epub' ? 'application/epub+zip' : 'application/pdf',
+    mimeType,
     size: file.size,
     sha256: digest,
     importedAt: now,
     updatedAt: now,
-    file: new Blob([buffer], { type: format === 'epub' ? 'application/epub+zip' : 'application/pdf' }),
+    file: new Blob([buffer], { type: mimeType }),
     ...('cover' in metadata && metadata.cover ? { cover: metadata.cover } : {}),
+  };
+  const storedRecord: StoredPersonalBookRecord = {
+    ...record,
+    file: buffer.slice(0),
   };
 
   try {
-    await withStore('readwrite', async (store) => { await request(store.put(record)); });
+    await withStore('readwrite', async (store) => { await request(store.put(storedRecord)); });
   } catch (error) {
     throw storageError(error);
   }
@@ -184,12 +214,13 @@ export async function importPersonalBook(file: File): Promise<{ record: Personal
 
 export async function getPersonalBook(id: string): Promise<PersonalBookRecord | undefined> {
   if (!id) return undefined;
-  return withStore('readonly', (store) => request<PersonalBookRecord | undefined>(store.get(id)));
+  const record = await withStore('readonly', (store) => request<StoredPersonalBookRecord | undefined>(store.get(id)));
+  return record ? normalizeStoredRecord(record) : undefined;
 }
 
 export async function getPersonalBooks(): Promise<PersonalBookSummary[]> {
   return withStore('readonly', async (store) => {
-    const records = await request<PersonalBookRecord[]>(store.getAll());
+    const records = await request<StoredPersonalBookRecord[]>(store.getAll());
     return records
       .map(({ file: _file, ...summary }) => summary)
       .sort((a, b) => b.importedAt.localeCompare(a.importedAt));

@@ -258,6 +258,18 @@ function currentFilter(): LibraryFilter {
   return active && validFilters.has(active) ? active as LibraryFilter : 'all';
 }
 
+function isCurrentLibraryItem(node: HTMLElement): boolean {
+  if (node.matches('[data-saved-work]')) {
+    const list = document.querySelector<HTMLElement>('[data-saved-list]');
+    return Boolean(list && node.parentElement === list);
+  }
+  if (node.matches('[data-personal-book]')) {
+    const list = document.querySelector<HTMLElement>('[data-personal-books-list]');
+    return Boolean(list && node.parentElement === list);
+  }
+  return false;
+}
+
 function applyLibraryFilter(items: Array<{ node: HTMLElement; state: ReadingLibraryState }>) {
   const filter = currentFilter();
   for (const { node, state } of items) {
@@ -273,18 +285,22 @@ function sortLibraryItems(items: Array<{ node: HTMLElement; state: ReadingLibrar
     const rank = readingLibraryStatusRank(a.state.status) - readingLibraryStatusRank(b.state.status);
     return rank || compareReadingRecency(a.state, b.state);
   };
-  const hosted = items.filter(({ node }) => node.matches('[data-saved-work]')).sort(compare);
-  const personal = items.filter(({ node }) => node.matches('[data-personal-book]')).sort(compare);
   const hostedList = document.querySelector<HTMLElement>('[data-saved-list]');
   const personalList = document.querySelector<HTMLElement>('[data-personal-books-list]');
+  const hosted = hostedList
+    ? items.filter(({ node }) => node.matches('[data-saved-work]') && node.parentElement === hostedList).sort(compare)
+    : [];
+  const personal = personalList
+    ? items.filter(({ node }) => node.matches('[data-personal-book]') && node.parentElement === personalList).sort(compare)
+    : [];
   if (hostedList) {
     const desired = hosted.map(({ node }) => node);
-    const current = [...hostedList.querySelectorAll<HTMLElement>('[data-saved-work]')];
+    const current = [...hostedList.querySelectorAll<HTMLElement>(':scope > [data-saved-work]')];
     if (desired.some((node, index) => current[index] !== node)) hostedList.append(...desired);
   }
   if (personalList) {
     const desired = personal.map(({ node }) => node);
-    const current = [...personalList.querySelectorAll<HTMLElement>('[data-personal-book]')];
+    const current = [...personalList.querySelectorAll<HTMLElement>(':scope > [data-personal-book]')];
     if (desired.some((node, index) => current[index] !== node)) personalList.append(...desired);
   }
 }
@@ -302,7 +318,7 @@ function renderLibrarySummary(items: Array<{ node: HTMLElement; state: ReadingLi
 async function renderMyLibrary() {
   if (!document.querySelector('[data-reading-filter]')) return;
   const [hosted, personal] = await Promise.all([decorateSavedHosted(), decoratePersonalBooks()]);
-  const items = [...hosted, ...personal];
+  const items = [...hosted, ...personal].filter(({ node }) => isCurrentLibraryItem(node));
   sortLibraryItems(items);
   applyLibraryFilter(items);
   renderLibrarySummary(items);

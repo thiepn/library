@@ -1,0 +1,74 @@
+name: Phase 1 Browser Bootstrap
+
+on:
+  push:
+    branches: [release/phase-1-browser-baseline]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phase1-browser-bootstrap
+  cancel-in-progress: true
+
+jobs:
+  integrate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Checkout phase branch
+        uses: actions/checkout@v5
+        with:
+          ref: release/phase-1-browser-baseline
+          fetch-depth: 0
+
+      - name: Setup pnpm and Node
+        uses: pnpm/setup@v2
+        with:
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+          cache: true
+
+      - name: Resolve and lock Phase 1 dependency
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Commit the generated lockfile
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add pnpm-lock.yaml
+          git diff --cached --quiet && exit 0
+          git commit -m 'Phase 1 lock browser acceptance dependencies'
+          git push origin HEAD:release/phase-1-browser-baseline
+
+      - name: Install browser engines and system dependencies
+        run: pnpm exec playwright install --with-deps chromium firefox webkit
+
+      - name: Run complete source, reader, and build certification
+        run: pnpm release:certify
+
+      - name: Run Phase 1 browser acceptance
+        id: e2e
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          pnpm test:e2e -- --reporter=line 2>&1 | tee phase1-e2e.log
+
+      - name: Upload Phase 1 browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase1-browser-evidence-${{ github.run_id }}
+          path: |
+            phase1-e2e.log
+            playwright-report
+            test-results
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Enforce browser acceptance result
+        if: steps.e2e.outcome == 'failure'
+        run: exit 1

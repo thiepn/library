@@ -62,9 +62,41 @@ pnpm certify:source
 pnpm release:certify
 ```
 
-Production is fail-closed: source, reader behavior, release registries, built routes, and immutable media hashes must pass before deployment.
+Cross-browser acceptance uses deterministic personal EPUB/PDF fixtures and the real browser reader routes:
 
-ER7 device certification distinguishes deterministic device-profile coverage from physical-device evidence. See `docs/ER7_REAL_DEVICE_UX.md` for the exact boundary.
+```bash
+pnpm exec playwright install --with-deps chromium firefox webkit
+pnpm build
+pnpm test:e2e
+```
+
+The Playwright matrix covers Chromium, Firefox, and WebKit on desktop and phone-sized contexts. It is browser-engine evidence, not a substitute for named physical-device evidence.
+
+### Physical-device evidence
+
+RR2 stores manual evidence as exact-build JSON records. Structural validation confirms that the matrix and submitted records are honest and well-formed while allowing an incomplete physical campaign:
+
+```bash
+pnpm certify:physical:structure
+```
+
+The release gate is deliberately stricter. It passes only when all 12 required physical targets have current passing evidence for one exact build:
+
+```bash
+pnpm certify:physical:release -- --expected-sha <40-character-build-sha>
+```
+
+The checked-in template never counts as evidence. Current physical certification remains **0/12** until named devices are operated and records are committed.
+
+Production is fail-closed for source, reader behavior, release registries, built routes, and immutable media hashes. Browser Acceptance and Physical Device Evidence are separate release signals; production builds do not install test browsers or fabricate physical runs.
+
+Release planning and support boundaries:
+
+- `docs/RELEASE_READINESS_ROADMAP.md`
+- `docs/RELEASE_SUPPORT_CONTRACT.md`
+- `docs/RR2_PHYSICAL_DEVICE_ACCEPTANCE.md`
+- `evidence/physical-devices/README.md`
+- `docs/ER7_REAL_DEVICE_UX.md`
 
 ## Maintainer publication infrastructure
 
@@ -117,4 +149,4 @@ This pipeline exists to protect the reader from incomplete or mutable hosted rel
 - integrated PDF edition: available
 - first-edition release candidate: `1.0.0-rc1`
 
-The catalog, book pages, readers, search, local activity state, media staging, and production verification discover canonical works and releases generically. No current title requires a separate application implementation.
+The catalog, book pages, readers, search, local activity state, media staging, production verification, and release evidence systems discover canonical works and releases generically. No current title requires a separate application implementation.
