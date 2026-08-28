@@ -28,7 +28,7 @@ const {
     <nav class="pdf-reader__tools" aria-label="PDF tools">
       <button type="button" data-pdf-search-toggle aria-haspopup="dialog">Search</button>
       <button type="button" data-pdf-bookmark-toggle aria-haspopup="dialog">Bookmarks</button>
-      {fallbackHref && <a href={fallbackHref} target="_blank" rel="noopener noreferrer">Open original</a>}
+      <a data-pdf-fallback href={fallbackHref ?? '#'} target="_blank" rel="noopener noreferrer" hidden={!fallbackHref}>Open original</a>
     </nav>
   </header>
 
@@ -79,7 +79,7 @@ const {
       <p data-pdf-error-message></p>
       <div class="pdf-reader__error-actions">
         <button type="button" data-pdf-retry>Try again</button>
-        {fallbackHref && <a href={fallbackHref} target="_blank" rel="noopener noreferrer">Open original PDF</a>}
+        <a data-pdf-fallback href={fallbackHref ?? '#'} target="_blank" rel="noopener noreferrer" hidden={!fallbackHref}>Open original PDF</a>
       </div>
     </section>
   </section>
