@@ -35,6 +35,21 @@ async function download(page: Page, fixture: { urlPath: string; sizeBytes: numbe
   return row;
 }
 
+test('@rr5 visited catalog and My Library reopen after restart-style offline navigation', async ({ page, context }) => {
+  await ensureControlled(page);
+  await page.goto('/library/');
+  await expect(page.getByRole('heading', { level: 1, name: 'Books' })).toBeVisible();
+  await page.goto('/library/saved');
+  await expect(page.getByRole('heading', { level: 1, name: 'My Library' })).toBeVisible();
+
+  await context.setOffline(true);
+  await page.goto('/library/', { waitUntil: 'domcontentloaded' });
+  await expect(page.getByRole('heading', { level: 1, name: 'Books' })).toBeVisible();
+  await page.goto('/library/saved', { waitUntil: 'domcontentloaded' });
+  await expect(page.getByRole('heading', { level: 1, name: 'My Library' })).toBeVisible();
+  await context.setOffline(false);
+});
+
 test('@rr5 explicit EPUB download survives restart-style offline navigation', async ({ page, context }) => {
   await ensureControlled(page);
   const row = await download(page, fixtures.epub, 'EPUB');
