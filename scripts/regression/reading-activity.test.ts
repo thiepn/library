@@ -59,7 +59,7 @@ test('ER6 activity-only open is recent without fabricating progress', () => {
 test('ER6 in-progress format wins status over a completed alternate format', () => {
   const entries = [epub(1), pdf(0.42)];
   assert.equal(deriveReadingLibraryStatus(entries), 'in-progress');
-  const state = deriveReadingLibraryState({ entries, primary: entries[1] }, activity({ format: 'pdf' }));
+  const state = deriveReadingLibraryState({ entries, primary: entries[1]! }, activity({ format: 'pdf' }));
   assert.equal(state.status, 'in-progress');
 });
 
@@ -70,14 +70,14 @@ test('ER6 completed status is format-neutral when no format remains in progress'
 
 test('ER6 later progress activity can become the last-used format', () => {
   const entries = [epub(0.2, '2026-08-28T11:00:00.000Z'), pdf(0.3, '2026-08-28T09:00:00.000Z')];
-  const state = deriveReadingLibraryState({ entries, primary: entries[0] }, activity({ format: 'pdf', openedAt: '2026-08-28T10:00:00.000Z' }));
+  const state = deriveReadingLibraryState({ entries, primary: entries[0]! }, activity({ format: 'pdf', openedAt: '2026-08-28T10:00:00.000Z' }));
   assert.equal(state.lastFormat, 'epub');
   assert.equal(state.lastActivityAt, '2026-08-28T11:00:00.000Z');
 });
 
 test('ER6 later explicit open becomes last-used format without translating positions', () => {
   const entries = [epub(0.2, '2026-08-28T08:00:00.000Z'), pdf(0.3, '2026-08-28T09:00:00.000Z')];
-  const state = deriveReadingLibraryState({ entries, primary: entries[1] }, activity({ format: 'epub', openedAt: '2026-08-28T12:00:00.000Z' }));
+  const state = deriveReadingLibraryState({ entries, primary: entries[1]! }, activity({ format: 'epub', openedAt: '2026-08-28T12:00:00.000Z' }));
   assert.equal(state.lastFormat, 'epub');
   assert.equal(state.continuity.entries[0]?.current, 0.2);
   assert.equal(state.continuity.entries[1]?.page, 30);
