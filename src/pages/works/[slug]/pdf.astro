@@ -1,6 +1,9 @@
 ---
-import BaseLayout from '../../../layouts/BaseLayout.astro';
+import PdfReaderLayout from '../../../layouts/PdfReaderLayout.astro';
+import PdfReaderShell from '../../../components/PdfReaderShell.astro';
 import { getWorks, type ResolvedWork } from '../../../lib/content/repository';
+import { localizeReaderArtifact } from '../../../lib/reader/migration';
+import type { PdfCanonicalCandidate } from '../../../lib/pdf-reader/canonical';
 
 export async function getStaticPaths() {
   return (await getWorks())
@@ -11,17 +14,82 @@ export async function getStaticPaths() {
 interface Props { work: ResolvedWork; }
 const { work } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-const pdf = work.release?.artifacts.pdf;
-if (!pdf) throw new Error(`PDF release missing for ${work.id}`);
+const release = work.release;
+const pdf = release?.artifacts.pdf;
+if (!release || !pdf) throw new Error(`PDF release missing for ${work.id}`);
+const localizedPdf = localizeReaderArtifact({ ...pdf }, base);
+const backHref = `${base}/works/${work.slug}`;
+const candidate: PdfCanonicalCandidate = {
+  source: localizedPdf.url,
+  identity: {
+    workId: work.id,
+    edition: release.edition,
+    releaseVersion: release.version,
+  },
+  title: work.title,
+  language: work.language,
+  fallbackUrl: localizedPdf.url,
+  backHref,
+};
+const metadata = `PDF · edition ${release.edition} · ${Math.max(1, Math.round(pdf.sizeBytes / 1024 / 1024 * 10) / 10)} MB`;
 ---
-<BaseLayout title={`${work.title} — PDF`} description={`PDF edition of ${work.title}`} noindex>
-  <div class="document-shell">
-    <header class="document-bar">
-      <a href={`${base}/works/${work.slug}`}>← {work.title}</a>
-      <a href={pdf.url} target="_blank" rel="noopener noreferrer">Open PDF directly</a>
-    </header>
-    <object class="pdf-object" data={pdf.url} type="application/pdf">
-      <div class="page"><div class="empty"><h2>This browser cannot embed the PDF.</h2><p><a href={pdf.url}>Open the verified PDF edition directly.</a></p></div></div>
-    </object>
-  </div>
-</BaseLayout>
+<PdfReaderLayout
+  title={`${work.title} — PDF`}
+  description={`Integrated PDF edition of ${work.title}`}
+  language={work.language}
+  pdfHref={localizedPdf.url}
+  noindex
+>
+  <PdfReaderShell
+    title={work.title}
+    backHref={backHref}
+    backLabel={`Back to ${work.title}`}
+    fallbackHref={localizedPdf.url}
+    metadata={metadata}
+  />
+  <div hidden data-pdf-candidate={JSON.stringify(candidate)}></div>
+  <script>
+    import { mountPdfReader, type PdfReaderHandle } from '../../../lib/pdf-reader';
+    import type { PdfCanonicalCandidate } from '../../../lib/pdf-reader/canonical';
+
+    const root = document.querySelector<HTMLElement>('[data-pdf-reader-root]');
+    const encoded = document.querySelector<HTMLElement>('[data-pdf-candidate]')?.dataset.pdfCandidate;
+    let mounted: PdfReaderHandle | undefined;
+    let reload: (() => void) | undefined;
+
+    function bootstrapFailure(message: string) {
+      if (!root) return;
+      root.dataset.pdfReaderState = 'error';
+      root.removeAttribute('aria-busy');
+      const error = root.querySelector<HTMLElement>('[data-pdf-error]');
+      const errorMessage = root.querySelector<HTMLElement>('[data-pdf-error-message]');
+      const status = root.querySelector<HTMLElement>('[data-pdf-status]');
+      const retry = root.querySelector<HTMLButtonElement>('[data-pdf-retry]');
+      if (errorMessage) errorMessage.textContent = message;
+      if (error) error.hidden = false;
+      if (status) status.hidden = true;
+      if (retry) {
+        reload = () => location.reload();
+        retry.addEventListener('click', reload, { once: true });
+      }
+    }
+
+    async function boot() {
+      if (!root || !encoded) return bootstrapFailure('The PDF reader could not read its publication identity.');
+      try {
+        const candidate = JSON.parse(encoded) as PdfCanonicalCandidate;
+        mounted = await mountPdfReader(root, candidate);
+      } catch (error) {
+        bootstrapFailure(error instanceof Error ? error.message : 'Unable to start the PDF reader.');
+      }
+    }
+
+    requestAnimationFrame(() => void boot());
+    window.addEventListener('pagehide', () => {
+      const retry = root?.querySelector<HTMLButtonElement>('[data-pdf-retry]');
+      if (retry && reload) retry.removeEventListener('click', reload);
+      void mounted?.destroy();
+      mounted = undefined;
+    }, { once: true });
+  </script>
+</PdfReaderLayout>
