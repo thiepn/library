@@ -1,0 +1,70 @@
+---
+import EpubReaderLayout from '../../layouts/EpubReaderLayout.astro';
+import ReaderShell from '../../components/reader/ReaderShell.astro';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+<EpubReaderLayout title="Read personal book" description="Read a personal EPUB stored locally in this browser." noindex>
+  <ReaderShell
+    title="Personal book"
+    subtitle="Stored on this device"
+    backHref={`${base}/saved`}
+    backLabel="Back to My Library"
+    loadingMessage="Opening personal book…"
+  />
+  <script>
+    import { getPersonalBook, personalReaderReleaseVersion, personalReaderWorkId } from '../../lib/client/personal-books';
+    import { setReaderFailureState } from '../../lib/reader/fallback';
+    import { mountReaderShellHarness, type ReaderShellHarnessHandle } from '../../lib/reader/harness';
+    import { mountReaderShell } from '../../lib/reader/shell';
+
+    const root = document.querySelector<HTMLElement>('[data-reader-shell]');
+    let mounted: ReaderShellHarnessHandle | undefined;
+    let closing = false;
+
+    function setIdentity(title: string, creator?: string) {
+      const titleNode = root?.querySelector<HTMLElement>('[data-reader-title]');
+      const subtitle = root?.querySelector<HTMLElement>('.reader-shell__identity span');
+      if (titleNode) titleNode.textContent = title;
+      if (subtitle) subtitle.textContent = creator || 'Personal EPUB · stored on this device';
+      document.title = `${title} — Thiepn Library`;
+    }
+
+    function fail(error: unknown) {
+      if (!root) return;
+      const shell = mountReaderShell(root);
+      setReaderFailureState(shell, error);
+    }
+
+    async function boot() {
+      if (!root) return;
+      try {
+        const id = new URL(location.href).searchParams.get('id')?.trim();
+        if (!id) throw new Error('No personal book was selected. Return to My Library and choose a book.');
+        const book = await getPersonalBook(id);
+        if (!book) throw new Error('This personal book is no longer stored in this browser.');
+        if (book.format !== 'epub') throw new Error('This personal book is not an EPUB.');
+        if (closing) return;
+
+        setIdentity(book.title, book.creator);
+        const source = await book.file.arrayBuffer();
+        if (closing) return;
+        const handle = await mountReaderShellHarness(root, source, {}, undefined, {
+          workId: personalReaderWorkId(book),
+          edition: 1,
+          releaseVersion: personalReaderReleaseVersion(book),
+        });
+        if (closing) handle.destroy();
+        else mounted = handle;
+      } catch (error) {
+        fail(error);
+      }
+    }
+
+    requestAnimationFrame(() => { void boot(); });
+    window.addEventListener('pagehide', () => {
+      closing = true;
+      mounted?.destroy();
+      mounted = undefined;
+    }, { once: true });
+  </script>
+</EpubReaderLayout>
