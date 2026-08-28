@@ -17,7 +17,7 @@ const CRC_TABLE = Array.from({ length: 256 }, (_, value) => {
 
 function crc32(bytes: Buffer): number {
   let value = 0xffffffff;
-  for (const byte of bytes) value = CRC_TABLE[(value ^ byte) & 0xff] ^ (value >>> 8);
+  for (const byte of bytes) value = CRC_TABLE[(value ^ byte) & 0xff]! ^ (value >>> 8);
   return (value ^ 0xffffffff) >>> 0;
 }
 
@@ -228,9 +228,10 @@ export const zipBombEpubFixture = file('rr3-zip-bomb.epub', zip([
 interface PdfObject { id: number; body: string }
 
 function pdf(objects: PdfObject[], root = 1): Buffer {
-  const chunks: Buffer[] = [Buffer.from('%PDF-1.7\n%\xe2\xe3\xcf\xd3\n', 'binary')];
+  const header = Buffer.from('%PDF-1.7\n%\xe2\xe3\xcf\xd3\n', 'binary');
+  const chunks: Buffer[] = [header];
   const offsets = new Map<number, number>();
-  let length = chunks[0].length;
+  let length = header.length;
   for (const object of objects) {
     offsets.set(object.id, length);
     const chunk = Buffer.from(`${object.id} 0 obj\n${object.body}\nendobj\n`, 'binary');

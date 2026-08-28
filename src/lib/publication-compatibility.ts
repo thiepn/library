@@ -195,7 +195,8 @@ async function inflateRaw(bytes: Uint8Array, maximum: number): Promise<Uint8Arra
   if (typeof DecompressionStream === 'undefined') {
     failure('epub-unsupported-compression', 'This browser cannot inspect compressed EPUB packages safely.');
   }
-  const source = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+  const owned = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
+  const source = new Blob([owned]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
   const reader = source.getReader();
   const chunks: Uint8Array[] = [];
   let total = 0;
