@@ -1,0 +1,437 @@
+from pathlib import Path
+
+
+def replace_once(text: str, old: str, new: str, label: str) -> str:
+    count = text.count(old)
+    if count != 1:
+        raise SystemExit(f'{label}: expected 1 match, got {count}')
+    return text.replace(old, new, 1)
+
+
+# Dedicated metadata-only reading activity store in the mature Library DB.
+path = Path('src/lib/client/library-db.ts')
+text = path.read_text()
+text = replace_once(text, "const DB_VERSION = 7;", "const DB_VERSION = 8;", 'db version')
+text = replace_once(text, "  | 'readingSessions';", "  | 'readingSessions'\n  | 'readingActivity';", 'store union')
+text = replace_once(
+    text,
+    "export type StoredProgressRecord = ProgressRecord | ReaderProgressRecordV2;",
+    """export type ReadingActivityFormat = 'epub' | 'pdf' | 'web';
+export type ReadingActivitySource = 'hosted' | 'personal';
+
+export interface ReadingActivityRecordV1 {
+  schemaVersion: 1;
+  workId: string;
+  edition: number;
+  releaseVersion: string;
+  format: ReadingActivityFormat;
+  source: ReadingActivitySource;
+  openedAt: string;
+}
+
+export type StoredProgressRecord = ProgressRecord | ReaderProgressRecordV2;""",
+    'activity interface',
+)
+text = replace_once(
+    text,
+    "  ['readingSessions', 'id'],\n];",
+    "  ['readingSessions', 'id'],\n  ['readingActivity', 'workId'],\n];",
+    'activity store definition',
+)
+marker = "export async function getAnnotations(): Promise<AnnotationRecord[]> {"
+activity_api = """function isReadingActivityRecordV1(value: unknown): value is ReadingActivityRecordV1 {
+  if (typeof value !== 'object' || value === null) return false;
+  const record = value as Partial<ReadingActivityRecordV1>;
+  return record.schemaVersion === 1
+    && typeof record.workId === 'string'
+    && typeof record.edition === 'number'
+    && Number.isFinite(record.edition)
+    && typeof record.releaseVersion === 'string'
+    && (record.format === 'epub' || record.format === 'pdf' || record.format === 'web')
+    && (record.source === 'hosted' || record.source === 'personal')
+    && typeof record.openedAt === 'string';
+}
+
+export async function getReadingActivity(workId: string): Promise<ReadingActivityRecordV1 | undefined> {
+  return withStore('readingActivity', 'readonly', async (store) => {
+    const stored = await request<ReadingActivityRecordV1 | undefined>(store.get(workId));
+    return isReadingActivityRecordV1(stored) ? stored : undefined;
+  });
+}
+
+export async function getReadingActivities(): Promise<ReadingActivityRecordV1[]> {
+  return withStore('readingActivity', 'readonly', async (store) => {
+    const values = await request<ReadingActivityRecordV1[]>(store.getAll());
+    return values
+      .filter(isReadingActivityRecordV1)
+      .sort((a, b) => b.openedAt.localeCompare(a.openedAt));
+  });
+}
+
+export async function recordReadingActivity(
+  input: Omit<ReadingActivityRecordV1, 'schemaVersion' | 'openedAt'> & { openedAt?: string },
+): Promise<ReadingActivityRecordV1> {
+  if (!input.workId.trim()) throw new Error('Reading activity requires a work identity');
+  if (!Number.isFinite(input.edition)) throw new Error('Reading activity requires a valid edition');
+  const record: ReadingActivityRecordV1 = {
+    schemaVersion: 1,
+    workId: input.workId,
+    edition: input.edition,
+    releaseVersion: input.releaseVersion,
+    format: input.format,
+    source: input.source,
+    openedAt: input.openedAt ?? new Date().toISOString(),
+  };
+  await withStore('readingActivity', 'readwrite', async (store) => {
+    await request(store.put(record));
+  });
+  broadcast('readingActivity', input.workId);
+  return record;
+}
+
+export async function deleteReadingActivity(workId: string): Promise<void> {
+  await withStore('readingActivity', 'readwrite', async (store) => {
+    await request(store.delete(workId));
+  });
+  broadcast('readingActivity', workId);
+}
+
+"""
+text = replace_once(text, marker, activity_api + marker, 'activity API')
+path.write_text(text)
+
+# BaseLayout mounts derived activity presentation after ER5 entry ownership.
+path = Path('src/layouts/BaseLayout.astro')
+text = path.read_text()
+old = """    <script>
+      import { mountUnifiedReaderEntry } from '../lib/reader-entry/dom';
+      const unmountUnifiedReaderEntry = mountUnifiedReaderEntry();
+      window.addEventListener('pagehide', unmountUnifiedReaderEntry, { once: true });
+    </script>
+"""
+new = old + """    <script>
+      import { mountReadingActivityLibraryState } from '../lib/reading-activity/library-dom';
+      const unmountReadingActivityLibraryState = mountReadingActivityLibraryState();
+      window.addEventListener('pagehide', unmountReadingActivityLibraryState, { once: true });
+    </script>
+"""
+text = replace_once(text, old, new, 'BaseLayout mount')
+path.write_text(text)
+
+# Legacy Markdown reader records a format-neutral open without touching progress semantics.
+path = Path('src/layouts/ReaderLayout.astro')
+text = path.read_text()
+text = replace_once(
+    text,
+    "data-chapter-count={chapters.length}>",
+    "data-chapter-count={chapters.length} data-edition={work.publication.edition} data-release-version={work.release?.version ?? ''}>",
+    'legacy activity identity attrs',
+)
+text = replace_once(
+    text,
+    "      import { setLegacyProgress } from '../lib/client/library-db';",
+    "      import { setLegacyProgress } from '../lib/client/library-db';\n      import { recordReadingOpen } from '../lib/reading-activity/client';",
+    'legacy activity import',
+)
+text = replace_once(
+    text,
+    "      const article = document.querySelector<HTMLElement>('[data-work-id][data-chapter-id]');\n      const clamp =",
+    """      const article = document.querySelector<HTMLElement>('[data-work-id][data-chapter-id]');
+      if (article?.dataset.workId) {
+        const edition = Number(article.dataset.edition ?? '');
+        if (Number.isFinite(edition)) {
+          void recordReadingOpen({
+            workId: article.dataset.workId,
+            edition,
+            releaseVersion: article.dataset.releaseVersion ?? '',
+            format: 'web',
+            source: 'hosted',
+          }).catch(() => {});
+        }
+      }
+      const clamp =""",
+    'legacy activity call',
+)
+path.write_text(text)
+
+# Hosted EPUB open activity: only after the explicit legacy redirect decision.
+path = Path('src/pages/works/[slug]/read/index.astro')
+text = path.read_text()
+text = replace_once(
+    text,
+    "      import { ReaderPerformanceController } from '../../../../lib/reader/performance';",
+    "      import { ReaderPerformanceController } from '../../../../lib/reader/performance';\n      import { recordReadingOpen } from '../../../../lib/reading-activity/client';",
+    'hosted epub activity import',
+)
+text = replace_once(
+    text,
+    "              if (redirected || pageClosing) return;\n              readerPerformance?.markShellPainted();",
+    """              if (redirected || pageClosing) return;
+              void recordReadingOpen({
+                workId: publication.workId,
+                edition: publication.edition,
+                releaseVersion: publication.version,
+                format: 'epub',
+                source: 'hosted',
+              }).catch(() => {});
+              readerPerformance?.markShellPainted();""",
+    'hosted epub activity call',
+)
+path.write_text(text)
+
+# Hosted PDF activity.
+path = Path('src/pages/works/[slug]/pdf.astro')
+text = path.read_text()
+text = replace_once(
+    text,
+    "    import type { PdfCanonicalCandidate } from '../../../lib/pdf-reader/canonical';",
+    "    import type { PdfCanonicalCandidate } from '../../../lib/pdf-reader/canonical';\n    import { recordReadingOpen } from '../../../lib/reading-activity/client';",
+    'hosted pdf activity import',
+)
+text = replace_once(
+    text,
+    "        const candidate = JSON.parse(encoded) as PdfCanonicalCandidate;\n        mounted = await mountPdfReader(root, candidate);",
+    """        const candidate = JSON.parse(encoded) as PdfCanonicalCandidate;
+        void recordReadingOpen({
+          ...candidate.identity,
+          format: 'pdf',
+          source: 'hosted',
+        }).catch(() => {});
+        mounted = await mountPdfReader(root, candidate);""",
+    'hosted pdf activity call',
+)
+path.write_text(text)
+
+# Personal EPUB activity uses the same content-derived identity as native state.
+path = Path('src/pages/personal/read.astro')
+text = path.read_text()
+text = replace_once(
+    text,
+    "    import { mountReaderShell } from '../../lib/reader/shell';",
+    "    import { mountReaderShell } from '../../lib/reader/shell';\n    import { recordReadingOpen } from '../../lib/reading-activity/client';",
+    'personal epub activity import',
+)
+old = """        const handle = await mountReaderSourceWithFallbackHarness(root, {
+          source,
+          identity: {
+            workId: personalReaderWorkId(book),
+            edition: 1,
+            releaseVersion: personalReaderReleaseVersion(book),
+          },
+        });"""
+new = """        const identity = {
+          workId: personalReaderWorkId(book),
+          edition: 1,
+          releaseVersion: personalReaderReleaseVersion(book),
+        };
+        void recordReadingOpen({ ...identity, format: 'epub', source: 'personal' }).catch(() => {});
+        const handle = await mountReaderSourceWithFallbackHarness(root, {
+          source,
+          identity,
+        });"""
+text = replace_once(text, old, new, 'personal epub activity call')
+path.write_text(text)
+
+# Personal PDF activity uses the same content-derived identity as ER4 state.
+path = Path('src/pages/personal/pdf.astro')
+text = path.read_text()
+text = replace_once(
+    text,
+    "    import type { PdfCanonicalCandidate } from '../../lib/pdf-reader/canonical';",
+    "    import type { PdfCanonicalCandidate } from '../../lib/pdf-reader/canonical';\n    import { recordReadingOpen } from '../../lib/reading-activity/client';",
+    'personal pdf activity import',
+)
+old = """        const candidate: PdfCanonicalCandidate = {
+          source,
+          identity: {
+            workId: personalReaderWorkId(book),
+            edition: 1,
+            releaseVersion: personalReaderReleaseVersion(book),
+          },"""
+new = """        const identity = {
+          workId: personalReaderWorkId(book),
+          edition: 1,
+          releaseVersion: personalReaderReleaseVersion(book),
+        };
+        void recordReadingOpen({ ...identity, format: 'pdf', source: 'personal' }).catch(() => {});
+        const candidate: PdfCanonicalCandidate = {
+          source,
+          identity,"""
+text = replace_once(text, old, new, 'personal pdf activity call')
+path.write_text(text)
+
+# Homepage: add recency across completed/opened works and activity metadata on cards.
+path = Path('src/pages/index.astro')
+text = path.read_text()
+recent = """    {catalog.length > 0 && (
+      <section class="resume-section" data-recent-section hidden aria-labelledby="recent-heading">
+        <div class="compact-heading">
+          <div><p class="eyebrow">Recent activity</p><h2 id="recent-heading">Recently read</h2></div>
+          <a href={`${base}/saved`}>My Library</a>
+        </div>
+        <div class="continue-list compact-continue" data-recent-list>
+          {catalog.map(({ work }) => (
+            <a class="continue-item" href={`${base}/works/${work.slug}`} data-recent-work={work.id} hidden>
+              <span><strong>{work.title}</strong>{work.subtitle && <small>{work.subtitle}</small>}</span>
+              <span class="continue-item__status">
+                <span data-recent-context>Recent reading</span>
+                <span class="micro" data-recent-detail>Recently opened</span>
+              </span>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+"""
+text = replace_once(
+    text,
+    "    <section class=\"catalog-section\" id=\"books\" aria-labelledby=\"catalog-heading\">",
+    recent + "    <section class=\"catalog-section\" id=\"books\" aria-labelledby=\"catalog-heading\">",
+    'home recent section',
+)
+text = replace_once(
+    text,
+    "                <p class=\"catalog-description\">{work.shortDescription}</p>\n\n                <div class=\"catalog-progress\"",
+    "                <p class=\"catalog-description\">{work.shortDescription}</p>\n                <p class=\"micro catalog-activity\" data-catalog-activity hidden></p>\n\n                <div class=\"catalog-progress\"",
+    'home activity line',
+)
+path.write_text(text)
+
+# Book detail gets one derived activity summary in addition to exact ER5 progress.
+path = Path('src/pages/works/[slug].astro')
+text = path.read_text()
+text = replace_once(
+    text,
+    "        <section class=\"book-detail__progress\" data-publication-progress hidden aria-live=\"polite\">",
+    "        <p class=\"micro\" data-reading-activity hidden aria-live=\"polite\"></p>\n\n        <section class=\"book-detail__progress\" data-publication-progress hidden aria-live=\"polite\">",
+    'detail activity line',
+)
+path.write_text(text)
+
+# My Library: shared filters/status summary and exact hosted identity attributes.
+path = Path('src/pages/saved.astro')
+text = path.read_text()
+filters = """      <div class="reading-state-toolbar" data-reading-filters aria-label="Filter My Library by reading status">
+        <div class="reading-state-filters">
+          <button type="button" data-reading-filter="all" aria-pressed="true">All</button>
+          <button type="button" data-reading-filter="in-progress" aria-pressed="false">Reading</button>
+          <button type="button" data-reading-filter="not-started" aria-pressed="false">Saved for later</button>
+          <button type="button" data-reading-filter="completed" aria-pressed="false">Finished</button>
+        </div>
+        <p class="micro" data-reading-state-summary aria-live="polite">Reading state loading…</p>
+      </div>
+
+"""
+text = replace_once(
+    text,
+    "      <section class=\"personal-import\" aria-labelledby=\"personal-import-title\">",
+    filters + "      <section class=\"personal-import\" aria-labelledby=\"personal-import-title\">",
+    'saved filters',
+)
+old = "{works.map((work, index) => <div class=\"saved-work\" data-saved-work={work.id} hidden><WorkCard work={work} index={index + 1} /></div>)}"
+new = """{works.map((work, index) => <div
+          class="saved-work"
+          data-saved-work={work.id}
+          data-edition={work.publication.edition}
+          data-release-version={work.release?.version ?? ''}
+          data-reader-href={work.webMaterialized ? `${base}/works/${work.slug}/read` : undefined}
+          data-has-epub={work.release?.artifacts.epub ? 'true' : 'false'}
+          data-pdf-href={work.release?.artifacts.pdf ? `${base}/works/${work.slug}/pdf` : undefined}
+          hidden
+        ><WorkCard work={work} index={index + 1} /></div>)}"""
+text = replace_once(text, old, new, 'saved hosted attrs')
+text = replace_once(
+    text,
+    "    import { getFavoriteWorkIds } from '../lib/client/library-db';",
+    "    import { deleteReadingActivity, getFavoriteWorkIds } from '../lib/client/library-db';",
+    'saved delete activity import',
+)
+text = replace_once(
+    text,
+    "          await deletePersonalBook(book.id);\n          if (status)",
+    "          await deletePersonalBook(book.id);\n          await deleteReadingActivity(personalReaderWorkId(book)).catch(() => {});\n          if (status)",
+    'saved personal activity cleanup',
+)
+path.write_text(text)
+
+# My Library filter styling; filtering is separate from membership `hidden` state.
+path = Path('src/styles/personal-library.css')
+text = path.read_text()
+addition = """.reading-state-toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  margin: 0 0 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--line, #d7d2c8);
+}
+.reading-state-toolbar p { margin: 0; }
+.reading-state-filters { display: flex; flex-wrap: wrap; gap: .45rem; }
+.reading-state-filters button {
+  min-height: 2.5rem;
+  padding: .45rem .7rem;
+  border: 1px solid var(--line-strong, #aaa399);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.reading-state-filters button[aria-pressed="true"] { border-color: currentColor; font-weight: 700; }
+.reading-state-filters button:focus-visible { outline: 3px solid currentColor; outline-offset: 2px; }
+.library-item-state { margin: .45rem 0 .2rem; }
+[data-activity-filter-hidden="true"] { display: none !important; }
+
+"""
+text = addition + text
+text = text.replace(
+    "  .personal-pdf-toolbar { align-items: flex-start; flex-direction: column; }",
+    "  .personal-pdf-toolbar { align-items: flex-start; flex-direction: column; }\n  .reading-state-toolbar { align-items: flex-start; flex-direction: column; }",
+)
+text = text.replace(
+    "  .personal-import__button,\n  .personal-book__action { border: 1px solid ButtonText; }",
+    "  .personal-import__button,\n  .personal-book__action,\n  .reading-state-filters button { border: 1px solid ButtonText; }",
+)
+path.write_text(text)
+
+# P29 remains valid under the additive DB v8 schema.
+path = Path('scripts/certification/reader-legacy-bridge.mjs')
+text = path.read_text()
+text = replace_once(text, '    db.includes("const DB_VERSION = 7")', '    db.includes("const DB_VERSION = 8")', 'P29 db version certification')
+text = replace_once(
+    text,
+    "    'DB v7 migrates pre-P29 Markdown progress into a dedicated legacyProgress sidecar',",
+    "    'The current DB schema retains the v7 P29 migration that moves pre-P29 Markdown progress into a dedicated legacyProgress sidecar',",
+    'P29 db version detail',
+)
+path.write_text(text)
+
+# Permanent certification chain.
+path = Path('package.json')
+text = path.read_text()
+text = replace_once(
+    text,
+    'node scripts/certification/reader-entry.mjs\"',
+    'node scripts/certification/reader-entry.mjs && node scripts/certification/reading-activity.mjs\"',
+    'ER6 cert chain',
+)
+path.write_text(text)
+
+# Avoid a MutationObserver refresh loop when Library order is already correct.
+path = Path('src/lib/reading-activity/library-dom.ts')
+text = path.read_text()
+old = """  if (hostedList) hostedList.append(...hosted.map(({ node }) => node));
+  if (personalList) personalList.append(...personal.map(({ node }) => node));"""
+new = """  if (hostedList) {
+    const desired = hosted.map(({ node }) => node);
+    const current = [...hostedList.querySelectorAll<HTMLElement>('[data-saved-work]')];
+    if (desired.some((node, index) => current[index] !== node)) hostedList.append(...desired);
+  }
+  if (personalList) {
+    const desired = personal.map(({ node }) => node);
+    const current = [...personalList.querySelectorAll<HTMLElement>('[data-personal-book]')];
+    if (desired.some((node, index) => current[index] !== node)) personalList.append(...desired);
+  }"""
+text = replace_once(text, old, new, 'activity sort loop guard')
+path.write_text(text)
