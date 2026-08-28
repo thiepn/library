@@ -1,27 +1,32 @@
 import {
-  mountReaderPublicationWithCompatibilityHarness,
-  type ReaderCompatibilityHarnessHandle,
-} from './compatibility-harness';
+  mountCanonicalEpubReader,
+  readerCanonicalCandidateFromPublication,
+  type ReaderCanonicalEpubCandidate,
+} from './canonical';
 import { clearReaderFailureState, setReaderFailureState } from './fallback';
 import { mountReaderShell } from './shell';
+import type { ReaderCompatibilityHarnessHandle } from './compatibility-harness';
 import type { ReaderDesktopOptions } from './desktop';
 import type { ReaderPublicationCandidate } from './publication';
 import type { ReaderOpenOptions } from './types';
 
-export interface ReaderFallbackHarnessHandle {
-  readonly publication: ReaderPublicationCandidate;
+export interface ReaderSourceFallbackHarnessHandle {
+  readonly candidate: ReaderCanonicalEpubCandidate;
   readonly reader: ReaderCompatibilityHarnessHandle | undefined;
   retry(): Promise<boolean>;
   destroy(): void;
 }
 
-/**
- * Owns initial native-reader boot recovery without weakening the publication contract.
- * A failed EPUB never auto-redirects to another format or edition: P26 leaves alternate
- * reading paths as explicit user choices rendered by ReaderShell.
- */
-export class ReaderFallbackController implements ReaderFallbackHarnessHandle {
+export interface ReaderFallbackHarnessHandle extends ReaderSourceFallbackHarnessHandle {
   readonly publication: ReaderPublicationCandidate;
+}
+
+/**
+ * ER3 source-neutral recovery owner. Hosted URLs and browser-local ArrayBuffers use exactly
+ * the same complete reader mount, retry, partial-cleanup, and failure-presentation behavior.
+ */
+export class ReaderSourceFallbackController implements ReaderSourceFallbackHarnessHandle {
+  readonly candidate: ReaderCanonicalEpubCandidate;
 
   private activeReader: ReaderCompatibilityHarnessHandle | undefined;
   private readonly root: HTMLElement;
@@ -35,13 +40,13 @@ export class ReaderFallbackController implements ReaderFallbackHarnessHandle {
 
   constructor(
     root: HTMLElement,
-    publication: ReaderPublicationCandidate,
+    candidate: ReaderCanonicalEpubCandidate,
     openOptions: ReaderOpenOptions = {},
     target?: string,
     desktopOptions: ReaderDesktopOptions = {},
   ) {
     this.root = root;
-    this.publication = publication;
+    this.candidate = candidate;
     this.openOptions = openOptions;
     this.target = target;
     this.desktopOptions = desktopOptions;
@@ -70,9 +75,9 @@ export class ReaderFallbackController implements ReaderFallbackHarnessHandle {
     shell.setStatus('loading', this.attempt > 1 ? 'Trying the book again…' : 'Opening book…');
 
     try {
-      const reader = await mountReaderPublicationWithCompatibilityHarness(
+      const reader = await mountCanonicalEpubReader(
         this.root,
-        this.publication,
+        this.candidate,
         this.openOptions,
         this.target,
         this.desktopOptions,
@@ -89,8 +94,8 @@ export class ReaderFallbackController implements ReaderFallbackHarnessHandle {
     } catch (error) {
       if (this.destroyed || attempt !== this.attempt) return false;
 
-      // The P5-P24 harness deliberately destroys partial runtime state on failed boot.
-      // Recreate only the inert shell so the recovery UI and explicit fallback links remain live.
+      // The complete reader stack destroys partial runtime state on failed boot. Recreate only
+      // the inert shell so retry and explicit recovery actions remain available.
       const failureShell = mountReaderShell(this.root);
       setReaderFailureState(failureShell, error);
       this.bindFailureRetry();
@@ -131,8 +136,65 @@ export class ReaderFallbackController implements ReaderFallbackHarnessHandle {
 }
 
 /**
- * Public-route-ready P26 wrapper around the complete P24 reader stack.
- * It resolves boot failures into a stable recovery state instead of rejecting the page launch.
+ * Backward-compatible hosted-publication recovery controller. It now adapts the publication
+ * once, then delegates every mount/retry to the same source-neutral ER3 runtime used locally.
+ */
+export class ReaderFallbackController implements ReaderFallbackHarnessHandle {
+  readonly publication: ReaderPublicationCandidate;
+  readonly candidate: ReaderCanonicalEpubCandidate;
+  private readonly sourceController: ReaderSourceFallbackController;
+
+  constructor(
+    root: HTMLElement,
+    publication: ReaderPublicationCandidate,
+    openOptions: ReaderOpenOptions = {},
+    target?: string,
+    desktopOptions: ReaderDesktopOptions = {},
+  ) {
+    this.publication = publication;
+    this.candidate = readerCanonicalCandidateFromPublication(publication);
+    this.sourceController = new ReaderSourceFallbackController(
+      root,
+      this.candidate,
+      openOptions,
+      target,
+      desktopOptions,
+    );
+  }
+
+  get reader(): ReaderCompatibilityHarnessHandle | undefined {
+    return this.sourceController.reader;
+  }
+
+  start(): Promise<void> {
+    return this.sourceController.start();
+  }
+
+  retry(): Promise<boolean> {
+    return this.sourceController.retry();
+  }
+
+  destroy(): void {
+    this.sourceController.destroy();
+  }
+}
+
+/** Complete public-reader recovery stack for a source-neutral EPUB candidate. */
+export async function mountReaderSourceWithFallbackHarness(
+  root: HTMLElement,
+  candidate: ReaderCanonicalEpubCandidate,
+  options: ReaderOpenOptions = {},
+  target?: string,
+  desktopOptions: ReaderDesktopOptions = {},
+): Promise<ReaderSourceFallbackHarnessHandle> {
+  const fallback = new ReaderSourceFallbackController(root, candidate, options, target, desktopOptions);
+  await fallback.start();
+  return fallback;
+}
+
+/**
+ * Public hosted-publication wrapper. Publication identity remains stable across retries while the
+ * underlying mount is the same canonical source-neutral reader used by personal EPUBs.
  */
 export async function mountReaderPublicationWithFallbackHarness(
   root: HTMLElement,
