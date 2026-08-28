@@ -69,6 +69,7 @@ test('@rr4 large EPUB stays responsive under the controlled CPU profile', async 
     await imported.card.getByRole('link', { name: /Start reading|Continue reading|Read again/ }).click();
     const shell = page.locator('[data-reader-shell]');
     await expect(shell).toHaveAttribute('data-reader-status', 'ready', { timeout: 30_000 });
+    await expect(shell).toHaveAttribute('data-reader-location-cfi', /^epubcfi\(/, { timeout: 5_000 });
     const openMs = Date.now() - openedAt;
     metrics.epubOpenMs = openMs;
     expect(openMs).toBeLessThanOrEqual(BUDGETS.epubOpenMs);
@@ -77,16 +78,19 @@ test('@rr4 large EPUB stays responsive under the controlled CPU profile', async 
 
     const next = page.locator('[data-reader-command="next"]');
     await expect(next).toBeEnabled();
-    const progress = page.locator('[data-reader-progress]');
-    const before = (await progress.textContent()) ?? '';
+    const beforeCfi = await shell.getAttribute('data-reader-location-cfi');
+    expect(beforeCfi).toMatch(/^epubcfi\(/);
     const nextAt = Date.now();
     await next.click();
-    await expect.poll(async () => (await progress.textContent()) ?? '', { timeout: BUDGETS.epubNextMs })
-      .not.toBe(before);
+    await expect.poll(() => shell.getAttribute('data-reader-location-cfi'), { timeout: BUDGETS.epubNextMs })
+      .not.toBe(beforeCfi);
     const nextMs = Date.now() - nextAt;
     metrics.epubNextMs = nextMs;
     expect(nextMs).toBeLessThanOrEqual(BUDGETS.epubNextMs);
 
+    const afterCfi = await shell.getAttribute('data-reader-location-cfi');
+    if (beforeCfi) metrics.epubBeforeCfi = beforeCfi;
+    if (afterCfi) metrics.epubAfterCfi = afterCfi;
     const bootMs = Number(await shell.getAttribute('data-reader-boot-ms'));
     if (Number.isFinite(bootMs) && bootMs > 0) metrics.readerBootMs = Math.round(bootMs);
     await attachMetrics(metrics);
@@ -154,7 +158,6 @@ test('@rr4 oversized PDF fit and raster allocation remain bounded', async ({ pag
   const root = page.locator('[data-pdf-reader-root]');
   await expect(root).toHaveAttribute('data-pdf-reader-state', 'ready', { timeout: 30_000 });
   const canvas = page.locator('[data-pdf-canvas]');
-  const viewport = page.locator('[data-pdf-viewport]');
   const geometry = await page.evaluate(() => {
     const canvas = document.querySelector<HTMLCanvasElement>('[data-pdf-canvas]');
     const viewport = document.querySelector<HTMLElement>('[data-pdf-viewport]');
