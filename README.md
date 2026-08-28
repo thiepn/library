@@ -62,9 +62,23 @@ pnpm certify:source
 pnpm release:certify
 ```
 
-Production is fail-closed: source, reader behavior, release registries, built routes, and immutable media hashes must pass before deployment.
+Cross-browser acceptance uses deterministic personal EPUB/PDF fixtures and the real browser reader routes:
 
-ER7 device certification distinguishes deterministic device-profile coverage from physical-device evidence. See `docs/ER7_REAL_DEVICE_UX.md` for the exact boundary.
+```bash
+pnpm exec playwright install --with-deps chromium firefox webkit
+pnpm build
+pnpm test:e2e
+```
+
+The Playwright matrix covers Chromium, Firefox, and WebKit on desktop and phone-sized contexts. It is browser-engine evidence, not a substitute for named physical-device evidence.
+
+Production is fail-closed: source, reader behavior, release registries, built routes, and immutable media hashes must pass before deployment. Browser Acceptance is a separate release signal so production builds do not install test browsers.
+
+Release planning and support boundaries:
+
+- `docs/RELEASE_READINESS_ROADMAP.md`
+- `docs/RELEASE_SUPPORT_CONTRACT.md`
+- `docs/ER7_REAL_DEVICE_UX.md`
 
 ## Maintainer publication infrastructure
 
