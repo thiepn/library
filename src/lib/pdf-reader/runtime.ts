@@ -541,14 +541,14 @@ class PdfReaderController {
   private async resetDocument() {
     this.renderTask?.cancel();
     this.textLayer?.cancel();
-    this.renderTask = undefined;
-    this.textLayer = undefined;
+    delete this.renderTask;
+    delete this.textLayer;
     this.searchAbort?.abort();
-    this.searchAbort = undefined;
+    delete this.searchAbort;
     const loading = this.loadingTask;
-    this.loadingTask = undefined;
+    delete this.loadingTask;
     const document = this.document;
-    this.document = undefined;
+    delete this.document;
     try { await loading?.destroy(); } catch {}
     try { await document?.destroy(); } catch {}
   }
