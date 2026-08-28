@@ -10,7 +10,7 @@ test('@rr5 quota exhaustion is explicit and leaves no partial personal book', as
   await page.goto('/library/saved');
   await page.evaluate((dbName) => {
     const original = IDBObjectStore.prototype.put;
-    (IDBObjectStore.prototype as unknown as { put: typeof IDBObjectStore.prototype.put }).put = function(value: unknown, key?: IDBValidKey) {
+    (IDBObjectStore.prototype as unknown as { put: typeof IDBObjectStore.prototype.put }).put = function(this: IDBObjectStore, value: unknown, key?: IDBValidKey) {
       if (this.transaction.db.name === dbName) throw new DOMException('RR5 quota simulation', 'QuotaExceededError');
       return key === undefined ? original.call(this, value) : original.call(this, value, key);
     } as typeof IDBObjectStore.prototype.put;
@@ -30,7 +30,7 @@ test('@rr5 interrupted write keeps the previously committed personal book intact
 
   await page.evaluate((dbName) => {
     const original = IDBObjectStore.prototype.put;
-    (IDBObjectStore.prototype as unknown as { put: typeof IDBObjectStore.prototype.put }).put = function(value: unknown, key?: IDBValidKey) {
+    (IDBObjectStore.prototype as unknown as { put: typeof IDBObjectStore.prototype.put }).put = function(this: IDBObjectStore, value: unknown, key?: IDBValidKey) {
       if (this.transaction.db.name === dbName) throw new DOMException('RR5 interrupted write simulation', 'AbortError');
       return key === undefined ? original.call(this, value) : original.call(this, value, key);
     } as typeof IDBObjectStore.prototype.put;
@@ -45,7 +45,7 @@ test('@rr5 interrupted write keeps the previously committed personal book intact
 test('@rr5 denied IndexedDB becomes an explicit unavailable/private-session state', async ({ page }) => {
   await page.addInitScript((dbName) => {
     const original = IDBFactory.prototype.open;
-    (IDBFactory.prototype as unknown as { open: typeof IDBFactory.prototype.open }).open = function(name: string, version?: number) {
+    (IDBFactory.prototype as unknown as { open: typeof IDBFactory.prototype.open }).open = function(this: IDBFactory, name: string, version?: number) {
       if (name === dbName) throw new DOMException('RR5 storage denial simulation', 'SecurityError');
       return version === undefined ? original.call(this, name) : original.call(this, name, version);
     } as typeof IDBFactory.prototype.open;
