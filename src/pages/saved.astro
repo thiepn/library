@@ -34,6 +34,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         </div>
         <div class="personal-import__drop" data-personal-drop tabindex="0">Or drop EPUB/PDF files here</div>
         <p class="personal-import__status" data-personal-import-status aria-live="polite"></p>
+        <p class="personal-import__status" data-personal-offline-status aria-live="polite"></p>
       </section>
 
       <section class="personal-books" data-personal-books-section hidden aria-labelledby="personal-books-title">
@@ -86,9 +87,11 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     const chooseButton = document.querySelector<HTMLButtonElement>('[data-personal-file-button]');
     const drop = document.querySelector<HTMLElement>('[data-personal-drop]');
     const status = document.querySelector<HTMLElement>('[data-personal-import-status]');
+    const offlineStatus = document.querySelector<HTMLElement>('[data-personal-offline-status]');
     const coverUrls = new Set<string>();
     let personalTotal = 0;
     let hostedTotal = 0;
+    let offlinePreparationBatch = 0;
 
     const formatBytes = (bytes: number) => {
       if (bytes < 1024) return `${bytes} B`;
@@ -235,6 +238,35 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       }
     }
 
+    function prepareImportedReaders(readerRoutes: string[]) {
+      if (!readerRoutes.length) {
+        if (offlineStatus) { offlineStatus.dataset.state = ''; offlineStatus.textContent = ''; }
+        return;
+      }
+
+      const batch = ++offlinePreparationBatch;
+      if (offlineStatus) {
+        offlineStatus.dataset.state = 'working';
+        offlineStatus.textContent = readerRoutes.length === 1
+          ? 'Preparing reader for offline use…'
+          : `Preparing ${readerRoutes.length} readers for offline use…`;
+      }
+
+      void preparePersonalReadersForOffline(readerRoutes).then(() => {
+        if (batch !== offlinePreparationBatch || !offlineStatus) return;
+        offlineStatus.dataset.state = 'ok';
+        offlineStatus.textContent = readerRoutes.length === 1
+          ? 'Reader ready for offline use.'
+          : `${readerRoutes.length} readers ready for offline use.`;
+      }).catch((error) => {
+        if (batch !== offlinePreparationBatch || !offlineStatus) return;
+        offlineStatus.dataset.state = 'error';
+        offlineStatus.textContent = error instanceof Error
+          ? `Offline reader setup did not finish: ${error.message}`
+          : 'Offline reader setup did not finish.';
+      });
+    }
+
     async function importFiles(files: File[]) {
       if (!files.length) return;
       chooseButton?.setAttribute('disabled', '');
@@ -257,28 +289,18 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       if (input) input.value = '';
       if (imported > 0) void requestPersonalLibraryPersistence();
 
-      let offlineWarning = '';
-      if (readerRoutes.length) {
-        try {
-          await preparePersonalReadersForOffline(readerRoutes);
-        } catch (error) {
-          offlineWarning = error instanceof Error
-            ? `Reader offline setup did not finish: ${error.message}`
-            : 'Reader offline setup did not finish.';
-        }
-      }
-
       await renderPersonal();
       if (status) {
-        status.dataset.state = errors.length || offlineWarning ? 'error' : 'ok';
+        status.dataset.state = errors.length ? 'error' : 'ok';
         const parts = [
           imported ? `${imported} imported` : '',
           duplicates ? `${duplicates} already in My Library` : '',
           errors.length ? errors.join(' ') : '',
-          offlineWarning,
         ].filter(Boolean);
         status.textContent = parts.join(' · ');
       }
+
+      prepareImportedReaders(readerRoutes);
     }
 
     chooseButton?.addEventListener('click', () => input?.click());
@@ -300,6 +322,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     const unsubscribeReading = subscribeUnifiedReadingState(() => { void render(); });
     const unsubscribePersonal = subscribePersonalBooks(() => { void renderPersonal(); });
     window.addEventListener('pagehide', () => {
+      offlinePreparationBatch++;
       unsubscribeReading();
       unsubscribePersonal();
       clearCoverUrls();
