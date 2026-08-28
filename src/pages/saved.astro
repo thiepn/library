@@ -302,7 +302,6 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       if (input) input.value = '';
       if (imported > 0) void requestPersonalLibraryPersistence();
 
-      await renderPersonal();
       if (status) {
         status.dataset.state = errors.length ? 'error' : 'ok';
         const parts = [
@@ -313,6 +312,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         status.textContent = parts.join(' · ');
       }
 
+      await render();
       prepareImportedReaders(readerRoutes);
     }
 
