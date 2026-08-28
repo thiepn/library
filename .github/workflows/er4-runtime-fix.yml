@@ -1,0 +1,47 @@
+name: ER4 strict optional lifecycle fix
+
+on:
+  push:
+    branches: [er4-integrated-pdf-reader]
+    paths:
+      - .github/workflows/er4-runtime-fix.yml
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: er4-integrated-pdf-reader
+          fetch-depth: 0
+      - name: Apply exactOptionalPropertyTypes-safe teardown
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('src/lib/pdf-reader/runtime.ts')
+          text = path.read_text()
+          replacements = {
+              '    this.renderTask = undefined;': '    delete this.renderTask;',
+              '    this.textLayer = undefined;': '    delete this.textLayer;',
+              '    this.searchAbort = undefined;': '    delete this.searchAbort;',
+              '    this.loadingTask = undefined;': '    delete this.loadingTask;',
+              '    this.document = undefined;': '    delete this.document;',
+          }
+          for old, new in replacements.items():
+              if old not in text:
+                  raise SystemExit(f'missing expected source: {old}')
+              text = text.replace(old, new, 1)
+          path.write_text(text)
+          PY
+      - name: Commit fix
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/lib/pdf-reader/runtime.ts
+          git diff --cached --quiet && exit 0
+          git commit -m "ER4 make PDF teardown strict-optional safe"
+          git pull --rebase origin er4-integrated-pdf-reader
+          git push origin HEAD:er4-integrated-pdf-reader
