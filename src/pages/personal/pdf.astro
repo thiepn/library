@@ -1,73 +1,98 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import '../../styles/personal-library.css';
+import PdfReaderLayout from '../../layouts/PdfReaderLayout.astro';
+import PdfReaderShell from '../../components/PdfReaderShell.astro';
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const backHref = `${base}/saved`;
 ---
-<BaseLayout title="Personal PDF" description="Open a personal PDF stored locally in this browser." noindex>
-  <div class="page">
-    <section class="section personal-pdf-page">
-      <div class="personal-pdf-toolbar">
-        <div>
-          <p class="eyebrow">Personal PDF</p>
-          <h1 data-personal-pdf-title>Opening PDF…</h1>
-          <p data-personal-pdf-meta>Stored on this device</p>
-        </div>
-        <a class="personal-book__action" href={`${base}/saved`}>Back to My Library</a>
-      </div>
-      <iframe class="personal-pdf-frame" data-personal-pdf-frame title="Personal PDF" hidden></iframe>
-      <div class="personal-pdf-error" data-personal-pdf-error hidden>
-        <h2>Unable to open this PDF</h2>
-        <p data-personal-pdf-error-message></p>
-        <p>This phase uses your browser’s built-in PDF viewer. A fully integrated Library PDF reader is planned for ER4.</p>
-      </div>
-    </section>
-  </div>
+<PdfReaderLayout title="Personal PDF" description="Open a personal PDF stored locally in this browser." noindex>
+  <PdfReaderShell
+    title="Personal PDF"
+    backHref={backHref}
+    backLabel="Back to My Library"
+    metadata="Stored on this device"
+  />
   <script>
-    import { getPersonalBook } from '../../lib/client/personal-books';
+    import { getPersonalBook, personalReaderReleaseVersion, personalReaderWorkId } from '../../lib/client/personal-books';
+    import { mountPdfReader, type PdfReaderHandle } from '../../lib/pdf-reader';
+    import type { PdfCanonicalCandidate } from '../../lib/pdf-reader/canonical';
 
-    const title = document.querySelector<HTMLElement>('[data-personal-pdf-title]');
-    const meta = document.querySelector<HTMLElement>('[data-personal-pdf-meta]');
-    const frame = document.querySelector<HTMLIFrameElement>('[data-personal-pdf-frame]');
-    const errorBox = document.querySelector<HTMLElement>('[data-personal-pdf-error]');
-    const errorMessage = document.querySelector<HTMLElement>('[data-personal-pdf-error-message]');
+    const root = document.querySelector<HTMLElement>('[data-pdf-reader-root]');
+    const title = root?.querySelector<HTMLElement>('.pdf-reader__title');
+    const meta = root?.querySelector<HTMLElement>('.pdf-reader__meta');
+    let mounted: PdfReaderHandle | undefined;
     let objectUrl: string | undefined;
+    let reload: (() => void) | undefined;
 
     const formatBytes = (bytes: number) => bytes < 1024 * 1024
       ? `${Math.max(1, Math.round(bytes / 1024))} KB`
       : `${(bytes / (1024 * 1024)).toFixed(bytes >= 10 * 1024 * 1024 ? 0 : 1)} MB`;
 
-    function fail(message: string) {
-      if (title) title.textContent = 'PDF unavailable';
+    function configureFallback(url: string) {
+      for (const anchor of root?.querySelectorAll<HTMLAnchorElement>('[data-pdf-fallback]') ?? []) {
+        anchor.href = url;
+        anchor.hidden = false;
+      }
+    }
+
+    function bootstrapFailure(message: string) {
+      if (!root) return;
+      root.dataset.pdfReaderState = 'error';
+      root.removeAttribute('aria-busy');
+      const error = root.querySelector<HTMLElement>('[data-pdf-error]');
+      const errorMessage = root.querySelector<HTMLElement>('[data-pdf-error-message]');
+      const status = root.querySelector<HTMLElement>('[data-pdf-status]');
+      const retry = root.querySelector<HTMLButtonElement>('[data-pdf-retry]');
       if (errorMessage) errorMessage.textContent = message;
-      if (errorBox) errorBox.hidden = false;
-      if (frame) frame.hidden = true;
+      if (error) error.hidden = false;
+      if (status) status.hidden = true;
+      if (retry) {
+        reload = () => location.reload();
+        retry.addEventListener('click', reload, { once: true });
+      }
     }
 
     async function boot() {
       try {
+        if (!root) throw new Error('The PDF reader shell is unavailable.');
         const id = new URL(location.href).searchParams.get('id')?.trim();
-        if (!id) return fail('No personal book was selected.');
+        if (!id) throw new Error('No personal book was selected.');
         const book = await getPersonalBook(id);
-        if (!book) return fail('This personal book is no longer stored in this browser.');
-        if (book.format !== 'pdf') return fail('This personal book is not a PDF.');
-        if (!frame) return fail('The PDF viewing surface is unavailable.');
+        if (!book) throw new Error('This personal book is no longer stored in this browser.');
+        if (book.format !== 'pdf') throw new Error('This personal book is not a PDF.');
 
         if (title) title.textContent = book.title;
-        if (meta) meta.textContent = `${formatBytes(book.size)} · browser PDF viewer · stored on this device`;
+        if (meta) meta.textContent = `${formatBytes(book.size)} · local PDF · stored on this device`;
         document.title = `${book.title} — Thiepn Library`;
-        frame.title = `PDF: ${book.title}`;
+
         objectUrl = URL.createObjectURL(book.file);
-        frame.src = objectUrl;
-        frame.hidden = false;
+        configureFallback(objectUrl);
+        const source = await book.file.arrayBuffer();
+        const candidate: PdfCanonicalCandidate = {
+          source,
+          identity: {
+            workId: personalReaderWorkId(book),
+            edition: 1,
+            releaseVersion: personalReaderReleaseVersion(book),
+          },
+          title: book.title,
+          ...(book.language ? { language: book.language } : {}),
+          fallbackUrl: objectUrl,
+          backHref: location.pathname.replace(/\/personal\/pdf\/?$/, '/saved'),
+        };
+        mounted = await mountPdfReader(root, candidate);
       } catch (error) {
-        fail(error instanceof Error ? error.message : 'Unable to open this personal PDF.');
+        bootstrapFailure(error instanceof Error ? error.message : 'Unable to open this personal PDF.');
       }
     }
 
-    void boot();
+    requestAnimationFrame(() => void boot());
     window.addEventListener('pagehide', () => {
+      const retry = root?.querySelector<HTMLButtonElement>('[data-pdf-retry]');
+      if (retry && reload) retry.removeEventListener('click', reload);
+      void mounted?.destroy();
+      mounted = undefined;
       if (objectUrl) URL.revokeObjectURL(objectUrl);
       objectUrl = undefined;
     }, { once: true });
   </script>
-</BaseLayout>
+</PdfReaderLayout>
