@@ -62,17 +62,37 @@ function operationId(): string {
   catch { return `rr5-${Date.now()}-${Math.random().toString(36).slice(2)}`; }
 }
 
-async function activeWorker(): Promise<ServiceWorker | undefined> {
-  const registration = await registerLibraryPwa();
+async function waitForActiveWorker(registration: ServiceWorkerRegistration | undefined, timeoutMs = 8_000): Promise<ServiceWorker | undefined> {
   const immediate = registration?.active ?? navigator.serviceWorker?.controller ?? undefined;
   if (immediate) return immediate;
-  if (!('serviceWorker' in navigator)) return undefined;
-  try {
-    const ready = await navigator.serviceWorker.ready;
-    return ready.active ?? navigator.serviceWorker.controller ?? undefined;
-  } catch {
-    return undefined;
-  }
+  if (!registration || !('serviceWorker' in navigator)) return undefined;
+
+  return new Promise((resolve) => {
+    let settled = false;
+    const finish = (worker?: ServiceWorker) => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timer);
+      registration.installing?.removeEventListener('statechange', check);
+      navigator.serviceWorker.removeEventListener('controllerchange', check);
+      resolve(worker);
+    };
+    const check = () => {
+      const worker = registration.active ?? navigator.serviceWorker.controller ?? undefined;
+      if (worker) finish(worker);
+      else if (registration.installing?.state === 'redundant') finish(undefined);
+    };
+    const timer = window.setTimeout(() => finish(undefined), timeoutMs);
+    registration.installing?.addEventListener('statechange', check);
+    navigator.serviceWorker.addEventListener('controllerchange', check);
+    check();
+  });
+}
+
+async function activeWorker(): Promise<ServiceWorker | undefined> {
+  if (typeof navigator === 'undefined' || !('serviceWorker' in navigator)) return undefined;
+  const registration = await registerLibraryPwa();
+  return waitForActiveWorker(registration);
 }
 
 function attachServiceWorkerListener(): void {
@@ -118,15 +138,12 @@ export async function removeOfflinePublication(url: string): Promise<boolean> {
   return true;
 }
 
-/**
- * Cache only the application/runtime needed to open already-local personal books.
- * The personal EPUB/PDF bytes remain exclusively in IndexedDB.
- */
-export async function preparePersonalReadersForOffline(readerUrls: string[]): Promise<void> {
-  const urls = [...new Set(readerUrls.filter(Boolean).map((url) => new URL(url, location.href).href))];
-  if (!urls.length) return;
-  const reply = await requestWorker('PREPARE_PERSONAL_READERS', { urls });
-  if (!reply.ok) throw new Error(reply.error ?? 'Unable to prepare the personal-book reader for offline use.');
+export async function preparePersonalReadersForOffline(urls: string[]): Promise<boolean> {
+  const normalized = [...new Set(urls.filter((url) => typeof url === 'string' && url.trim()))];
+  if (!normalized.length) return true;
+  const reply = await requestWorker('PREPARE_PERSONAL_READERS', { urls: normalized });
+  if (!reply.ok) throw new Error(reply.error ?? 'Unable to prepare personal readers for offline use.');
+  return true;
 }
 
 export function startOfflinePublicationDownload(
