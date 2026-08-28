@@ -1,5 +1,7 @@
 {
-  "status": "preparing",
+  "packageUrl": "https://drive.google.com/uc?export=download&id=1RVK_fXV7wQUA9BgFAGUNyEh2xWDCUCqE",
+  "packageSha256": "5a18b8767b6e4f4c88c90e8493c6451c4c34018ab417f2979f51c434d7a633a1",
+  "packageBytes": 3935992,
   "workId": "how-to-love-god",
   "version": "1.1.0"
 }
