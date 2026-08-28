@@ -19,6 +19,7 @@ const files = [
   'tests/e2e/offline-fixtures.ts',
   'tests/e2e/offline-reliability.spec.ts',
   'tests/e2e/storage-reliability.spec.ts',
+  'playwright.config.ts',
   'playwright.offline.config.ts',
   '.github/workflows/offline-reliability.yml',
   '.github/workflows/deploy.yml',
@@ -28,7 +29,7 @@ const present = (await Promise.all(files.map(exists))).every(Boolean);
 pass('RR5_FILES', present, 'RR5 offline manager, worker protocol, storage hardening, browser corpus, workflow, docs, post-build/live verification, and production gate are present');
 
 if (present) {
-  const [doc, offlineClient, storage, pwa, personal, manager, downloadsPage, sw, prepare, postbuild, verifier, fixtures, offlineTests, storageTests, config, workflow, deployment, pkg] = await Promise.all([
+  const [doc, offlineClient, storage, pwa, personal, manager, downloadsPage, sw, prepare, postbuild, verifier, fixtures, offlineTests, storageTests, baselineConfig, config, workflow, deployment, pkg] = await Promise.all([
     readFile('docs/RR5_OFFLINE_STORAGE_RELIABILITY.md', 'utf8'),
     readFile('src/lib/client/offline-library.ts', 'utf8'),
     readFile('src/lib/client/storage-reliability.ts', 'utf8'),
@@ -43,6 +44,7 @@ if (present) {
     readFile('tests/e2e/offline-fixtures.ts', 'utf8'),
     readFile('tests/e2e/offline-reliability.spec.ts', 'utf8'),
     readFile('tests/e2e/storage-reliability.spec.ts', 'utf8'),
+    readFile('playwright.config.ts', 'utf8'),
     readFile('playwright.offline.config.ts', 'utf8'),
     readFile('.github/workflows/offline-reliability.yml', 'utf8'),
     readFile('.github/workflows/deploy.yml', 'utf8'),
@@ -91,8 +93,9 @@ if (present) {
       && prepare.includes("path.join(libraryRoot, '_astro')")
       && sw.includes('cacheOfflineApplicationAssets()')
       && sw.includes('cacheOfflineReaderDocument(rawReaderUrl)')
+      && sw.includes('migrateRuntimeDocumentCaches()')
       && doc.includes('exact asset set plus the corresponding reader route'),
-    'A completed publication download also owns the exact reader route and hashed application runtime required after restart');
+    'A completed publication download owns the reader route and hashed runtime, and versioned updates migrate cached reader documents before stale cleanup');
 
   pass('RR5_PERSONAL_IDB_ONLY',
     personal.includes("const PERSONAL_DB_NAME = 'thiepn-library-personal-books'")
@@ -131,12 +134,14 @@ if (present) {
     pwa.includes("setWorkerState('update-ready')")
       && pwa.includes('activateWaitingLibraryWorker')
       && sw.includes("data.type === 'SKIP_WAITING'")
+      && sw.includes('async function migrateRuntimeDocumentCaches()')
+      && sw.includes('await migrateRuntimeDocumentCaches()')
       && manager.includes('Update and reload')
-      && offlineTests.includes('waiting worker preserves active controller')
+      && offlineTests.includes('waiting worker preserves active controller, reader routes, cache migration, and rollback')
       && offlineTests.includes('service-worker-next.js')
       && offlineTests.includes("register('/library/service-worker.js'")
       && !sw.includes('self.skipWaiting();\n});'),
-    'Waiting workers remain user-activated, active control is preserved until explicit activation, and migration/rollback are browser-tested');
+    'Waiting workers remain user-activated, cached reader routes migrate before stale cleanup, and update/rollback offline continuity is browser-tested');
 
   pass('RR5_CROSS_ENGINE_PROFILE',
     config.includes("name: 'chromium-offline'")
@@ -146,6 +151,12 @@ if (present) {
       && config.includes("'**/offline-reliability.spec.ts'")
       && config.includes("'**/storage-reliability.spec.ts'"),
     'RR5 has a service-worker-enabled Chromium/Firefox/WebKit browser profile; lifecycle-only checks are explicitly sampled once where appropriate');
+
+  pass('RR5_BROWSER_CONFIG_ISOLATION',
+    baselineConfig.includes("serviceWorkers: 'block'")
+      && baselineConfig.includes("testIgnore: ['**/offline-reliability.spec.ts', '**/storage-reliability.spec.ts']")
+      && config.includes("serviceWorkers: 'allow'"),
+    'Service-worker-required RR5 journeys run only in the dedicated allow-enabled profile and cannot time out inside the blocked baseline browser matrix');
 
   pass('RR5_DETERMINISTIC_FIXTURES',
     fixtures.includes('RR5 OFFLINE EPUB MARKER')
