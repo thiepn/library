@@ -1,4 +1,4 @@
-import { getHostedReadingContinuity, subscribeUnifiedReadingState } from './client';
+import { getReadingContinuity, subscribeUnifiedReadingState } from './client';
 import {
   formatReadingFormat,
   isReadingInProgress,
@@ -94,7 +94,7 @@ function entryFor(snapshot: ReadingContinuitySnapshot, format: ReadingEntryState
 async function renderCatalogCard(card: HTMLElement): Promise<ReadingContinuitySnapshot | undefined> {
   const request = requestForCatalog(card);
   if (!request) return undefined;
-  const snapshot = await getHostedReadingContinuity(request);
+  const snapshot = await getReadingContinuity(request);
   const primary = snapshot.primary;
   const cta = card.querySelector<HTMLAnchorElement>('.catalog-primary');
   if (cta && primary) {
@@ -151,7 +151,7 @@ async function renderDetail() {
   if (!root) return;
   const request = requestForDetail(root);
   if (!request) return;
-  const snapshot = await getHostedReadingContinuity(request);
+  const snapshot = await getReadingContinuity(request);
   const primary = snapshot.primary;
   const cta = root.querySelector<HTMLAnchorElement>('.book-detail__primary');
   if (cta && primary) {
