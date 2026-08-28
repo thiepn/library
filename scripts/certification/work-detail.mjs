@@ -7,13 +7,21 @@ const exists = async (file) => { try { await access(file); return true; } catch 
 const files = [
   'src/pages/works/[slug].astro',
   'src/styles/work-detail.css',
+  'src/lib/reader-entry/dom.ts',
+  'src/lib/reader-entry/client.ts',
+  'src/lib/reader-entry/continuity.ts',
 ];
 const present = (await Promise.all(files.map(exists))).every(Boolean);
-pass('BOOK_DETAIL_P16', present, 'Reader-first book detail page and responsive styles are present');
+pass('BOOK_DETAIL_P16', present, 'Reader-first book detail page, responsive styles, and ER5 continuity boundary are present');
 
 if (present) {
-  const page = await readFile('src/pages/works/[slug].astro', 'utf8');
-  const css = await readFile('src/styles/work-detail.css', 'utf8');
+  const [page, css, dom, client, continuity] = await Promise.all([
+    readFile('src/pages/works/[slug].astro', 'utf8'),
+    readFile('src/styles/work-detail.css', 'utf8'),
+    readFile('src/lib/reader-entry/dom.ts', 'utf8'),
+    readFile('src/lib/reader-entry/client.ts', 'utf8'),
+    readFile('src/lib/reader-entry/continuity.ts', 'utf8'),
+  ]);
 
   pass(
     'BOOK_DETAIL_NO_TITLE_EXCEPTIONS',
@@ -32,28 +40,44 @@ if (present) {
   pass(
     'BOOK_DETAIL_READER_ROUTE_SAFE',
     page.includes('const readHref = work.webMaterialized')
-      && page.includes('This book is not currently available in the Library reader.'),
-    'The public reader action is exposed only when its reading route is materialized',
+      && page.includes('This book is not currently available in the Library reader.')
+      && dom.includes("root.querySelector<HTMLAnchorElement>('[data-format=\"web\"] a')"),
+    'The public reader action remains gated by a materialized reader route before ER5 considers it for unified entry',
   );
   pass(
     'BOOK_DETAIL_INTELLIGENT_CTA',
-    page.includes('getProgress') && page.includes("readerCta.textContent = legacy.percent >= 99 ? 'Read again' : 'Continue reading'") && page.includes('Start reading'),
-    'The reader CTA distinguishes start, continue, and completed/re-read states using compatible progress',
+    dom.includes('getReadingContinuity(request)')
+      && dom.includes('readingActionLabel(primary)')
+      && continuity.includes("return 'Start reading'")
+      && continuity.includes("'Continue reading'")
+      && continuity.includes("'Read again'"),
+    'The primary action distinguishes start, continue, and reread across exact EPUB/PDF/web continuity state',
   );
   pass(
     'BOOK_DETAIL_NATIVE_PROGRESS_RELEASE_BOUND',
-    page.includes('getReaderProgress') && page.includes('native.edition === edition') && page.includes('native.releaseVersion === releaseVersion') && page.includes('furthestPercentage'),
-    'Native EPUB progress remains bound to exact edition and release identity even though those internals are hidden from ordinary UI',
+    client.includes('getReaderProgress(request.workId)')
+      && client.includes('epubProgress.edition === identity.edition')
+      && client.includes('epubProgress.releaseVersion === identity.releaseVersion')
+      && client.includes('furthestPercentage'),
+    'Native EPUB progress remains exact-edition/release bound behind the ER5 continuity adapter',
   );
   pass(
     'BOOK_DETAIL_PROGRESS_VISUAL',
-    page.includes('data-publication-progress') && page.includes('data-progress-furthest') && css.includes('.book-detail__progress-track'),
+    page.includes('data-publication-progress')
+      && page.includes('data-progress-furthest')
+      && dom.includes('renderTrack(progressPanel, progress')
+      && css.includes('.book-detail__progress-track'),
     'Book page presents current and furthest reading progress without conflating them',
   );
   pass(
     'BOOK_DETAIL_FORMAT_ACTIONS',
-    page.includes('Download EPUB') && page.includes('View PDF') && page.includes('Open reader') && page.includes('formatBytes'),
-    'Available formats expose intentional reader, EPUB-download, and PDF actions with useful file information',
+    page.includes('Download EPUB')
+      && page.includes('View PDF')
+      && page.includes('Open reader')
+      && page.includes('formatBytes')
+      && dom.includes("entryFor(snapshot, 'epub')")
+      && dom.includes("entryFor(snapshot, 'pdf')"),
+    'Available formats keep explicit reader/download/PDF actions while ER5 annotates each integrated format with its own saved position',
   );
   pass(
     'BOOK_DETAIL_READER_METADATA_HIERARCHY',
