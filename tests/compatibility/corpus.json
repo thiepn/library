@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "phaseId": "RR3",
+  "name": "EPUB and PDF Compatibility Corpus",
+  "limits": {
+    "maximumImportBytes": 262144000,
+    "maximumArchiveEntries": 10000,
+    "maximumExpandedBytes": 536870912,
+    "maximumExpandedEntryBytes": 134217728,
+    "maximumCompressionRatio": 500,
+    "runtimeResolutionSeconds": 30
+  },
+  "entries": [
+    { "id": "rr3-epub3-rich.epub", "format": "epub", "class": "epub3-rich-reflowable", "expected": "pass", "signals": ["nested-navigation", "landmarks", "page-list", "notes", "internal-links", "external-links", "svg", "tables", "code", "mathml", "publisher-css"] },
+    { "id": "rr3-epub2-ncx.epub", "format": "epub", "class": "epub2-ncx", "expected": "pass", "signals": ["epub2-ncx"] },
+    { "id": "rr3-fixed-layout.epub", "format": "epub", "class": "fixed-layout", "expected": "degraded", "signals": ["fixed-layout", "limited-reflow-controls"] },
+    { "id": "rr3-rtl-vertical.epub", "format": "epub", "class": "rtl-cjk-vertical", "expected": "pass", "signals": ["rtl", "cjk", "vertical-writing"] },
+    { "id": "rr3-missing-nav.epub", "format": "epub", "class": "missing-navigation", "expected": "degraded", "signals": ["bounded-navigation-limitation"] },
+    { "id": "rr3-scripted.epub", "format": "epub", "class": "scripted-content", "expected": "degraded", "signals": ["script-disabled", "reader-ready"] },
+    { "id": "rr3-remote-resource.epub", "format": "epub", "class": "remote-resource-attempt", "expected": "reject", "code": "epub-remote-resource" },
+    { "id": "rr3-missing-package.epub", "format": "epub", "class": "missing-package", "expected": "reject", "code": "epub-package-missing" },
+    { "id": "rr3-missing-spine.epub", "format": "epub", "class": "missing-spine", "expected": "reject", "code": "epub-spine-missing" },
+    { "id": "rr3-missing-resource.epub", "format": "epub", "class": "missing-resource", "expected": "reject", "code": "epub-resource-missing" },
+    { "id": "rr3-encrypted.epub", "format": "epub", "class": "drm-encryption", "expected": "reject", "code": "epub-encryption-unsupported" },
+    { "id": "rr3-traversal.epub", "format": "epub", "class": "path-traversal", "expected": "reject", "code": "epub-path-unsafe" },
+    { "id": "rr3-zip-bomb.epub", "format": "epub", "class": "archive-expansion", "expected": "reject", "code": "epub-compression-ratio-limit" },
+    { "id": "rr3-text-mixed-pages.pdf", "format": "pdf", "class": "text-mixed-size-rotation-form-link", "expected": "pass", "signals": ["searchable-text", "mixed-size", "rotation", "forms", "links"] },
+    { "id": "rr3-image-only.pdf", "format": "pdf", "class": "image-only", "expected": "pass", "signals": ["no-searchable-text-message", "no-selectable-text-message"] },
+    { "id": "rr3-large-page.pdf", "format": "pdf", "class": "large-page", "expected": "pass", "signals": ["bounded-canvas", "fit-width"] },
+    { "id": "rr3-incremental.pdf", "format": "pdf", "class": "incremental-update", "expected": "bounded", "signals": ["ready-or-explicit-error", "no-hang"] },
+    { "id": "rr3-corrupt-xref.pdf", "format": "pdf", "class": "corrupt-xref", "expected": "bounded", "signals": ["ready-or-explicit-error", "no-hang"] },
+    { "id": "rr3-encrypted.pdf", "format": "pdf", "class": "password-encryption", "expected": "reject", "code": "pdf-encrypted" },
+    { "id": "rr3-active-content.pdf", "format": "pdf", "class": "active-content", "expected": "reject", "code": "pdf-active-content" },
+    { "id": "rr3-truncated.pdf", "format": "pdf", "class": "truncated-corrupt", "expected": "reject", "code": "pdf-eof-missing" }
+  ]
+}
