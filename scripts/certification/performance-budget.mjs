@@ -9,20 +9,22 @@ const files = [
   'playwright.performance.config.ts',
   'tests/e2e/performance-fixtures.ts',
   'tests/e2e/performance-budget.perf.ts',
+  'src/lib/reader/compatibility-harness.ts',
   'src/lib/pdf-reader/runtime.ts',
   '.github/workflows/performance-budget.yml',
   '.github/workflows/deploy.yml',
   'package.json',
 ];
 const present = (await Promise.all(files.map(exists))).every(Boolean);
-pass('RR4_FILES', present, 'RR4 budgets, deterministic workloads, runtime hardening, controlled browser profile, workflow, production gate, and package ownership are present');
+pass('RR4_FILES', present, 'RR4 budgets, deterministic workloads, EPUB relocation evidence, runtime hardening, controlled browser profile, workflow, production gate, and package ownership are present');
 
 if (present) {
-  const [doc, config, fixtures, tests, runtime, workflow, deployment, pkg] = await Promise.all([
+  const [doc, config, fixtures, tests, epubHarness, runtime, workflow, deployment, pkg] = await Promise.all([
     readFile('docs/RR4_PERFORMANCE_BUDGETS.md', 'utf8'),
     readFile('playwright.performance.config.ts', 'utf8'),
     readFile('tests/e2e/performance-fixtures.ts', 'utf8'),
     readFile('tests/e2e/performance-budget.perf.ts', 'utf8'),
+    readFile('src/lib/reader/compatibility-harness.ts', 'utf8'),
     readFile('src/lib/pdf-reader/runtime.ts', 'utf8'),
     readFile('.github/workflows/performance-budget.yml', 'utf8'),
     readFile('.github/workflows/deploy.yml', 'utf8'),
@@ -58,14 +60,25 @@ if (present) {
       && !fixtures.includes('WebSocket'),
     'RR4 workloads are deterministic local 96-section EPUB, 160-page PDF, and oversized-page PDF fixtures with no runtime network dependency; XML namespace URIs are permitted publication metadata');
 
+  pass('RR4_EPUB_RELOCATION_SIGNAL',
+    epubHarness.includes('base.controller.subscribe((state) =>')
+      && epubHarness.includes('root.dataset.readerLocationCfi = location.cfi')
+      && epubHarness.includes('root.dataset.readerLocationIndex = String(location.index)')
+      && epubHarness.includes('unsubscribeLocationDiagnostic()')
+      && tests.includes("data-reader-location-cfi")
+      && tests.includes('beforeCfi')
+      && tests.includes(".not.toBe(beforeCfi)"),
+    'EPUB navigation timing waits for an exact CFI relocation signal instead of rounded visible percentage text, and diagnostic ownership is removed on teardown');
+
   pass('RR4_CPU_TIMING',
     tests.includes("'Emulation.setCPUThrottlingRate'")
       && tests.includes('rate = 4')
       && tests.includes('epubImportMs: 20_000')
+      && tests.includes('epubNextMs: 3_000')
       && tests.includes('pdfSearchMs: 20_000')
       && tests.includes("test('@rr4 large EPUB")
       && tests.includes("test('@rr4 160-page PDF"),
-    'Large EPUB/PDF import, open, interaction, navigation, and search budgets execute under a 4x CPU-throttled Chromium profile');
+    'Large EPUB/PDF import, open, exact relocation, navigation, and search budgets execute under a 4x CPU-throttled Chromium profile');
 
   pass('RR4_HEAP_GATE',
     tests.includes("'HeapProfiler.collectGarbage'")
