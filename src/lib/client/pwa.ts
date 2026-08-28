@@ -9,18 +9,27 @@ export interface LibraryPwaState {
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 let registrationPromise: Promise<ServiceWorkerRegistration | undefined> | undefined;
+const stateListeners = new Set<(state: LibraryPwaState) => void>();
+let lifecycleListenersAttached = false;
 
 function root(): HTMLElement {
   return document.documentElement;
 }
 
+function emitState(): void {
+  const state = getLibraryPwaState();
+  for (const listener of stateListeners) listener(state);
+}
+
 function setOnlineState(): void {
   root().dataset.libraryConnectivity = navigator.onLine ? 'online' : 'offline';
+  emitState();
 }
 
 function setWorkerState(state: LibraryPwaUpdateState): void {
   root().dataset.libraryPwa = state;
   root().dataset.libraryPwaControlled = navigator.serviceWorker?.controller ? 'true' : 'false';
+  emitState();
 }
 
 function localDocumentUrls(): string[] {
@@ -67,6 +76,14 @@ function watchRegistration(registration: ServiceWorkerRegistration): void {
   });
 }
 
+function attachLifecycleListeners(): void {
+  if (lifecycleListenersAttached || typeof window === 'undefined' || !('serviceWorker' in navigator)) return;
+  lifecycleListenersAttached = true;
+  window.addEventListener('online', setOnlineState);
+  window.addEventListener('offline', setOnlineState);
+  navigator.serviceWorker.addEventListener('controllerchange', () => setWorkerState('ready'));
+}
+
 export function getLibraryPwaState(): LibraryPwaState {
   const supported = typeof navigator !== 'undefined' && 'serviceWorker' in navigator;
   const state = typeof document !== 'undefined' ? document.documentElement.dataset.libraryPwa : undefined;
@@ -76,6 +93,12 @@ export function getLibraryPwaState(): LibraryPwaState {
     online: typeof navigator === 'undefined' ? true : navigator.onLine,
     updateState: supported && state ? state as LibraryPwaUpdateState : supported ? 'idle' : 'unsupported',
   };
+}
+
+export function subscribeLibraryPwaState(listener: (state: LibraryPwaState) => void): () => void {
+  stateListeners.add(listener);
+  listener(getLibraryPwaState());
+  return () => stateListeners.delete(listener);
 }
 
 export function registerLibraryPwa(): Promise<ServiceWorkerRegistration | undefined> {
@@ -90,9 +113,7 @@ export function registerLibraryPwa(): Promise<ServiceWorkerRegistration | undefi
     const hadController = Boolean(navigator.serviceWorker.controller);
     setOnlineState();
     setWorkerState('idle');
-    window.addEventListener('online', setOnlineState);
-    window.addEventListener('offline', setOnlineState);
-    navigator.serviceWorker.addEventListener('controllerchange', () => setWorkerState('ready'));
+    attachLifecycleListeners();
 
     try {
       const registration = await navigator.serviceWorker.register(`${base}/service-worker.js`, {
@@ -120,8 +141,8 @@ export function registerLibraryPwa(): Promise<ServiceWorkerRegistration | undefi
 }
 
 /**
- * P28 never activates a waiting worker automatically: a future update UI can call
- * this explicit bridge after the reader has saved position and the user accepts it.
+ * RR5 keeps active reading sessions stable: waiting workers never activate by
+ * themselves. Catalog/My Library UI may call this only after an explicit user action.
  */
 export async function activateWaitingLibraryWorker(): Promise<boolean> {
   const registration = await registerLibraryPwa();
@@ -131,14 +152,9 @@ export async function activateWaitingLibraryWorker(): Promise<boolean> {
 }
 
 /**
- * Best-effort offline preparation for the exact immutable EPUB already selected by
- * the release resolver. Service-worker validation rejects cross-origin, non-media,
- * non-EPUB, and PDF requests, so this cannot silently cache another publication.
+ * P28 compatibility alias. RR5 intentionally disables automatic publication caching;
+ * hosted EPUB/PDF files enter offline storage only through the explicit download UI.
  */
-export async function cacheReaderPublicationForOffline(epubUrl: string): Promise<boolean> {
-  const registration = await registerLibraryPwa();
-  const worker = registration?.active ?? navigator.serviceWorker.controller;
-  if (!worker) return false;
-  worker.postMessage({ type: 'CACHE_READER_EPUB', url: epubUrl });
-  return true;
+export async function cacheReaderPublicationForOffline(_epubUrl: string): Promise<boolean> {
+  return false;
 }
