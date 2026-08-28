@@ -6,17 +6,21 @@ const exists = async (file) => { try { await access(file); return true; } catch 
 
 const files = [
   'src/lib/reader/migration.ts',
+  'src/lib/reader/source.ts',
+  'src/lib/reader/canonical.ts',
   'src/pages/works/[slug]/read/index.astro',
   'src/pages/works/[slug]/read/[chapter].astro',
   'src/layouts/EpubReaderLayout.astro',
   'scripts/certification/reader-migration.mjs',
 ];
 const present = (await Promise.all(files.map(exists))).every(Boolean);
-pass('EPUB_READER_MIGRATION_P25', present, 'P25 migration resolver, public route, preserved legacy route, publication-aware layout, and permanent certification are present');
+pass('EPUB_READER_MIGRATION_P25', present, 'P25 migration resolver, pure canonical source adapter, browser mount, public route, preserved legacy route, publication-aware layout, and permanent certification are present');
 
 if (present) {
-  const [migration, launcher, legacyChapter, layout, pkg, fallbackHarness] = await Promise.all([
+  const [migration, source, canonical, launcher, legacyChapter, layout, pkg, fallbackHarness] = await Promise.all([
     readFile('src/lib/reader/migration.ts', 'utf8'),
+    readFile('src/lib/reader/source.ts', 'utf8'),
+    readFile('src/lib/reader/canonical.ts', 'utf8'),
     readFile('src/pages/works/[slug]/read/index.astro', 'utf8'),
     readFile('src/pages/works/[slug]/read/[chapter].astro', 'utf8'),
     readFile('src/layouts/EpubReaderLayout.astro', 'utf8'),
@@ -64,10 +68,11 @@ if (present) {
   pass(
     'EPUB_READER_MIGRATION_FULL_STACK',
     launcher.includes('mountReaderPublicationWithFallbackHarness')
-      && fallbackHarness.includes('mountReaderPublicationWithCompatibilityHarness')
+      && fallbackHarness.includes('mountCanonicalEpubReader(')
+      && canonical.includes('mountReaderShellWithCompatibilityHarness')
       && !launcher.includes('new EpubJsEngine(')
       && !launcher.includes("from 'epubjs'"),
-    'Migrated publications still mount the complete P24 stack through the P26 recovery wrapper',
+    'Migrated publications still mount the complete compatibility stack through the P26 recovery wrapper and ER3 canonical source boundary',
   );
 
   const publicationTypeImported = launcher.includes('ReaderPublicationCandidate')
@@ -78,8 +83,12 @@ if (present) {
       && publicationTypeImported
       && launcher.includes('mountReaderPublicationWithFallbackHarness(root, publication)')
       && fallbackHarness.includes('this.publication')
-      && fallbackHarness.includes('mountReaderPublicationWithCompatibilityHarness'),
-    'The public route passes the resolved edition/release artifact identity unchanged through recovery into native progress, bookmarks, search, highlights, and notes',
+      && fallbackHarness.includes('readerCanonicalCandidateFromPublication(publication)')
+      && source.includes('source: publication.epub.url')
+      && source.includes('workId: publication.workId')
+      && source.includes('edition: publication.edition')
+      && source.includes('releaseVersion: publication.version'),
+    'The public route passes the resolved edition/release artifact identity unchanged through the pure source adapter and canonical recovery into native progress, bookmarks, search, highlights, and notes',
   );
 
   pass(

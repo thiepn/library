@@ -7,6 +7,7 @@ const exists = async (file) => { try { await access(file); return true; } catch 
 const files = [
   'src/lib/reader/fallback.ts',
   'src/lib/reader/fallback-harness.ts',
+  'src/lib/reader/canonical.ts',
   'src/lib/reader/harness.ts',
   'src/lib/reader/migration.ts',
   'src/lib/reader/legacy-bridge.ts',
@@ -16,12 +17,13 @@ const files = [
   'scripts/certification/reader-fallback.mjs',
 ];
 const present = (await Promise.all(files.map(exists))).every(Boolean);
-pass('EPUB_READER_FALLBACK_P26', present, 'P26 failure classification, recovery harness, alternate reading paths, public integration, and permanent certification are present');
+pass('EPUB_READER_FALLBACK_P26', present, 'P26 failure classification, recovery harness, canonical source runtime, alternate reading paths, public integration, and permanent certification are present');
 
 if (present) {
-  const [fallback, fallbackHarness, harness, migration, legacyBridge, shell, launcher, legacyChapter, index, pkg] = await Promise.all([
+  const [fallback, fallbackHarness, canonical, harness, migration, legacyBridge, shell, launcher, legacyChapter, index, pkg] = await Promise.all([
     readFile('src/lib/reader/fallback.ts', 'utf8'),
     readFile('src/lib/reader/fallback-harness.ts', 'utf8'),
+    readFile('src/lib/reader/canonical.ts', 'utf8'),
     readFile('src/lib/reader/harness.ts', 'utf8'),
     readFile('src/lib/reader/migration.ts', 'utf8'),
     readFile('src/lib/reader/legacy-bridge.ts', 'utf8'),
@@ -56,7 +58,7 @@ if (present) {
 
   pass(
     'EPUB_READER_FALLBACK_BOOT_RETRY',
-    fallbackHarness.includes('class ReaderFallbackController')
+    fallbackHarness.includes('class ReaderSourceFallbackController')
       && fallbackHarness.includes('async retry(): Promise<boolean>')
       && fallbackHarness.includes('const failureShell = mountReaderShell(this.root)')
       && fallbackHarness.includes('this.bindFailureRetry()')
@@ -66,19 +68,21 @@ if (present) {
 
   pass(
     'EPUB_READER_FALLBACK_FULL_STACK',
-    fallbackHarness.includes('mountReaderPublicationWithCompatibilityHarness')
+    fallbackHarness.includes('mountCanonicalEpubReader(')
+      && canonical.includes('mountReaderShellWithCompatibilityHarness')
       && launcher.includes('mountReaderPublicationWithFallbackHarness(root, publication)')
       && !fallbackHarness.includes('new EpubJsEngine('),
-    'Recovery remounts the complete P24 publication stack rather than a reduced emergency reader',
+    'Recovery remounts the complete compatibility reader stack through the ER3 canonical source boundary rather than a reduced emergency reader',
   );
 
   pass(
     'EPUB_READER_FALLBACK_RELEASE_STABLE',
     fallbackHarness.includes('readonly publication: ReaderPublicationCandidate')
-      && fallbackHarness.includes('this.publication')
+      && fallbackHarness.includes('readerCanonicalCandidateFromPublication(publication)')
+      && fallbackHarness.includes('readonly candidate: ReaderCanonicalEpubCandidate')
       && !fallbackHarness.includes('resolveReaderPublicationCandidate')
       && !fallbackHarness.includes('activeRelease'),
-    'Retries reuse the already-resolved publication identity and do not silently switch editions or releases',
+    'Hosted retries reuse the already-resolved publication identity and local-source retries reuse their exact source identity without switching editions or releases',
   );
 
   pass(
@@ -182,8 +186,10 @@ if (present) {
     index.includes("from './fallback';")
       && index.includes("from './fallback-harness';")
       && index.includes('ReaderFallbackController')
-      && index.includes('ReaderFallbackHarnessHandle'),
-    'Failure descriptions and recovery harness are exported through the stable reader API',
+      && index.includes('ReaderSourceFallbackController')
+      && index.includes('ReaderFallbackHarnessHandle')
+      && index.includes('ReaderSourceFallbackHarnessHandle'),
+    'Failure descriptions plus hosted and source-neutral recovery harnesses are exported through the stable reader API',
   );
 
   pass(

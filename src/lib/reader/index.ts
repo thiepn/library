@@ -9,12 +9,18 @@ export { ReaderProgressController } from './progress';
 export { ReaderProgressUxController } from './progress-ux';
 export { ReaderReadingModeController } from './reading-mode';
 export { resolveReaderPublicationCandidate } from './publication';
+export { mountCanonicalEpubReader, readerCanonicalCandidateFromPublication } from './canonical';
 export {
   clearReaderFailureState,
   describeReaderFailure,
   setReaderFailureState,
 } from './fallback';
-export { ReaderFallbackController, mountReaderPublicationWithFallbackHarness } from './fallback-harness';
+export {
+  ReaderFallbackController,
+  ReaderSourceFallbackController,
+  mountReaderPublicationWithFallbackHarness,
+  mountReaderSourceWithFallbackHarness,
+} from './fallback-harness';
 export {
   deleteReaderBookmark,
   getReaderBookmarksForWork,
@@ -96,8 +102,9 @@ export type {
 } from './types';
 export type { ReaderControllerState, ReaderStatus } from './controller';
 export type { ReaderHarnessHandle, ReaderShellHarnessHandle } from './harness';
+export type { ReaderCanonicalEpubCandidate } from './canonical';
 export type { ReaderFailureDescription, ReaderFailureKind, ReaderFallbackTargets } from './fallback';
-export type { ReaderFallbackHarnessHandle } from './fallback-harness';
+export type { ReaderFallbackHarnessHandle, ReaderSourceFallbackHarnessHandle } from './fallback-harness';
 export type { ReaderLocationCacheIdentity } from './location-cache';
 export type { ReaderNavigationDirection, ReaderNavigationOptions, ReaderNavigationState } from './navigation';
 export type { ReaderPageLayoutOptions, ReaderPageLayoutState } from './page-layout';

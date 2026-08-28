@@ -11,21 +11,23 @@ const files = [
   'src/pages/works/[slug]/read/index.astro',
   'src/layouts/EpubReaderLayout.astro',
   'src/lib/reader/fallback-harness.ts',
+  'src/lib/reader/canonical.ts',
   'src/lib/reader/index.ts',
   'docs/READER_PERFORMANCE_P27.md',
   'scripts/certification/reader-performance.mjs',
 ];
 const present = (await Promise.all(files.map(exists))).every(Boolean);
-pass('EPUB_READER_PERFORMANCE_P27', present, 'P27 scheduler, bootstrap, preload, search yielding, local evidence, documentation, and permanent certification are present');
+pass('EPUB_READER_PERFORMANCE_P27', present, 'P27 scheduler, bootstrap, preload, search yielding, canonical reader path, local evidence, documentation, and permanent certification are present');
 
 if (present) {
-  const [performanceSource, progressUx, searchEngine, launcher, layout, fallbackHarness, index, pkg] = await Promise.all([
+  const [performanceSource, progressUx, searchEngine, launcher, layout, fallbackHarness, canonical, index, pkg] = await Promise.all([
     readFile('src/lib/reader/performance.ts', 'utf8'),
     readFile('src/lib/reader/progress-ux.ts', 'utf8'),
     readFile('src/lib/reader/search-engine.ts', 'utf8'),
     readFile('src/pages/works/[slug]/read/index.astro', 'utf8'),
     readFile('src/layouts/EpubReaderLayout.astro', 'utf8'),
     readFile('src/lib/reader/fallback-harness.ts', 'utf8'),
+    readFile('src/lib/reader/canonical.ts', 'utf8'),
     readFile('src/lib/reader/index.ts', 'utf8'),
     readFile('package.json', 'utf8'),
   ]);
@@ -134,10 +136,11 @@ if (present) {
   pass(
     'EPUB_READER_PERFORMANCE_P26_PRESERVED',
     launcher.includes('mountReaderPublicationWithFallbackHarness(root, publication)')
-      && fallbackHarness.includes('mountReaderPublicationWithCompatibilityHarness')
+      && fallbackHarness.includes('mountCanonicalEpubReader(')
+      && canonical.includes('mountReaderShellWithCompatibilityHarness')
       && launcher.includes('showBootstrapFailure')
       && launcher.includes('location.reload()'),
-    'Code splitting still enters through the P26 recovery wrapper and preserves the complete P24 stack plus bootstrap recovery',
+    'Code splitting still enters through the P26 recovery wrapper and ER3 canonical boundary, preserving the complete P24 stack plus bootstrap recovery',
   );
 
   const forbiddenTitles = ['ai-for-the-kingdom', 'how-to-love-god', 'the-unfinished-mission'];

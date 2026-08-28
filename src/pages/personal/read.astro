@@ -14,12 +14,17 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   <script>
     import { getPersonalBook, personalReaderReleaseVersion, personalReaderWorkId } from '../../lib/client/personal-books';
     import { setReaderFailureState } from '../../lib/reader/fallback';
-    import { mountReaderShellHarness, type ReaderShellHarnessHandle } from '../../lib/reader/harness';
+    import type { ReaderSourceFallbackHarnessHandle } from '../../lib/reader/fallback-harness';
+    import { ReaderPerformanceController } from '../../lib/reader/performance';
     import { mountReaderShell } from '../../lib/reader/shell';
 
     const root = document.querySelector<HTMLElement>('[data-reader-shell]');
-    let mounted: ReaderShellHarnessHandle | undefined;
+    const readerPerformance = root ? new ReaderPerformanceController(root) : undefined;
+    let mounted: ReaderSourceFallbackHarnessHandle | undefined;
+    let bootstrapRetry: ((event: MouseEvent) => void) | undefined;
     let closing = false;
+
+    readerPerformance?.start();
 
     function setIdentity(title: string, creator?: string) {
       const titleNode = root?.querySelector<HTMLElement>('[data-reader-title]');
@@ -32,11 +37,22 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     function fail(error: unknown) {
       if (!root) return;
       const shell = mountReaderShell(root);
-      setReaderFailureState(shell, error);
+      const failure = setReaderFailureState(shell, error);
+      const retry = root.querySelector<HTMLButtonElement>('[data-reader-command="retry"]');
+      if (!failure.retryable || !retry) return;
+      retry.textContent = 'Reload page';
+      bootstrapRetry = (event: MouseEvent) => {
+        const origin = event.target instanceof Element ? event.target : null;
+        const button = origin?.closest<HTMLElement>('[data-reader-command="retry"]');
+        if (!button || !root.contains(button)) return;
+        event.preventDefault();
+        location.reload();
+      };
+      root.addEventListener('click', bootstrapRetry);
     }
 
     async function boot() {
-      if (!root) return;
+      if (!root || closing) return;
       try {
         const id = new URL(location.href).searchParams.get('id')?.trim();
         if (!id) throw new Error('No personal book was selected. Return to My Library and choose a book.');
@@ -48,10 +64,19 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         setIdentity(book.title, book.creator);
         const source = await book.file.arrayBuffer();
         if (closing) return;
-        const handle = await mountReaderShellHarness(root, source, {}, undefined, {
-          workId: personalReaderWorkId(book),
-          edition: 1,
-          releaseVersion: personalReaderReleaseVersion(book),
+
+        readerPerformance?.markModuleLoading();
+        const { mountReaderSourceWithFallbackHarness } = await import('../../lib/reader/fallback-harness');
+        if (closing) return;
+        readerPerformance?.markOpening();
+
+        const handle = await mountReaderSourceWithFallbackHarness(root, {
+          source,
+          identity: {
+            workId: personalReaderWorkId(book),
+            edition: 1,
+            releaseVersion: personalReaderReleaseVersion(book),
+          },
         });
         if (closing) handle.destroy();
         else mounted = handle;
@@ -60,11 +85,18 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       }
     }
 
-    requestAnimationFrame(() => { void boot(); });
+    requestAnimationFrame(() => {
+      readerPerformance?.markShellPainted();
+      void boot();
+    });
+
     window.addEventListener('pagehide', () => {
       closing = true;
+      if (root && bootstrapRetry) root.removeEventListener('click', bootstrapRetry);
+      bootstrapRetry = undefined;
       mounted?.destroy();
       mounted = undefined;
+      readerPerformance?.destroy();
     }, { once: true });
   </script>
 </EpubReaderLayout>

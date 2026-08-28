@@ -89,12 +89,12 @@ if (present) {
   );
   pass(
     'PERSONAL_IMPORT_ER2_EPUB_NATIVE_READER',
-    epub.includes('mountReaderShellHarness')
+    epub.includes('mountReaderSourceWithFallbackHarness')
       && epub.includes('const source = await book.file.arrayBuffer()')
       && epub.includes('workId: personalReaderWorkId(book)')
       && epub.includes('releaseVersion: personalReaderReleaseVersion(book)')
       && epub.includes('edition: 1'),
-    'Personal EPUBs open from local bytes through the existing native reader with exact content-bound progress identity',
+    'Personal EPUBs open from local bytes through the canonical native reader with exact content-bound progress identity',
   );
   pass(
     'PERSONAL_IMPORT_ER2_PDF_LOCAL_URL',
