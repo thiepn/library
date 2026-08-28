@@ -6,6 +6,7 @@ const exists = async (file) => { try { await access(file); return true; } catch 
 
 const files = [
   'src/lib/client/personal-books.ts',
+  'src/lib/client/storage-reliability.ts',
   'src/pages/saved.astro',
   'src/pages/personal/read.astro',
   'src/pages/personal/pdf.astro',
@@ -13,10 +14,11 @@ const files = [
   'src/pages/privacy.astro',
 ];
 const present = (await Promise.all(files.map(exists))).every(Boolean);
-pass('PERSONAL_IMPORT_ER2_FILES', present, 'ER2 local personal-book storage, library UI, EPUB/PDF routes, styles, and privacy copy are present');
+pass('PERSONAL_IMPORT_ER2_FILES', present, 'ER2 local personal-book storage, shared storage failure classifier, library UI, EPUB/PDF routes, styles, and privacy copy are present');
 
 if (present) {
   const storage = await readFile('src/lib/client/personal-books.ts', 'utf8');
+  const reliability = await readFile('src/lib/client/storage-reliability.ts', 'utf8');
   const saved = await readFile('src/pages/saved.astro', 'utf8');
   const epub = await readFile('src/pages/personal/read.astro', 'utf8');
   const pdf = await readFile('src/pages/personal/pdf.astro', 'utf8');
@@ -116,12 +118,13 @@ if (present) {
   );
   pass(
     'PERSONAL_IMPORT_ER2_STORAGE_FAILURE',
-    storage.includes('QuotaExceededError')
-      && storage.includes('Not enough browser storage')
-      && storage.includes("error.name === 'UnknownError'")
-      && storage.includes('site-storage or private-browsing settings')
+    storage.includes("normalizeLibraryStorageError(error, 'Personal book storage')")
+      && reliability.includes("name === 'QuotaExceededError'")
+      && reliability.includes('browser storage is full')
+      && reliability.includes("name === 'UnknownError'")
+      && reliability.includes('private-browsing restrictions')
       && saved.includes('Local library unavailable'),
-    'Quota and browser-storage failures are distinguished and surfaced rather than misrepresented as an empty successful library',
+    'Quota and browser-storage failures remain explicit through the shared RR5 classifier rather than being misrepresented as an empty successful library',
   );
   pass(
     'PERSONAL_IMPORT_ER2_TRANSACTION_LIFECYCLE',
@@ -129,6 +132,13 @@ if (present) {
       && storage.includes('const completion = transactionCompletion(transaction)')
       && storage.includes('await completion'),
     'IndexedDB completion listeners are installed before requests settle so fast WebKit transactions cannot outrun lifecycle ownership',
+  );
+  pass(
+    'PERSONAL_IMPORT_ER2_VERSIONCHANGE',
+    storage.includes('const PERSONAL_DB_VERSION = 2')
+      && storage.includes("db.addEventListener('versionchange', () => db.close())")
+      && storage.includes("'blocked'"),
+    'RR5 extends personal-book storage through a non-destructive schema version and closes older connections when a newer tab requests an upgrade',
   );
   pass(
     'PERSONAL_IMPORT_ER2_PRIVACY_COPY',
