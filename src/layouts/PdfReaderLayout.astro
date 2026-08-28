@@ -1,0 +1,60 @@
+---
+import '../styles/pdf-reader.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  language?: string;
+  pdfHref?: string;
+  noindex?: boolean;
+}
+
+const {
+  title = 'PDF Reader',
+  description = 'Integrated PDF reading experience in Thiepn Library.',
+  language = 'en',
+  pdfHref,
+  noindex = true,
+} = Astro.props;
+const pageTitle = `${title} — Thiepn Library`;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const href = (path = '') => `${base}${path}`;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).href;
+---
+<!doctype html>
+<html lang={language} data-pdf-reader-document>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f5f4f0" />
+    <meta name="application-name" content="Thiepn Library" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Thiepn Library" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex,nofollow" />}
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href={href('/favicon.svg')} type="image/svg+xml" />
+    <link rel="manifest" href={href('/manifest.webmanifest')} />
+    {pdfHref && (
+      <link
+        rel="preload"
+        href={pdfHref}
+        as="fetch"
+        type="application/pdf"
+        crossorigin="anonymous"
+        fetchpriority="high"
+      />
+    )}
+    <title>{pageTitle}</title>
+  </head>
+  <body class="pdf-reader-document">
+    <a class="pdf-reader__skip" href="#pdf-reader-viewport">Skip to PDF page</a>
+    <slot />
+    <script>
+      import { registerLibraryPwa } from '../lib/client/pwa';
+      void registerLibraryPwa();
+    </script>
+  </body>
+</html>
