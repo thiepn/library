@@ -26,8 +26,12 @@ GlobalWorkerOptions.workerSrc = workerUrl;
 
 const MIN_ZOOM = 0.5;
 const MAX_ZOOM = 3;
+const MIN_FIT_SCALE = 0.01;
 const ZOOM_STEP = 0.15;
 const MAX_SEARCH_RESULTS = 250;
+const MAX_CANVAS_PIXELS = 16_000_000;
+const MAX_CANVAS_DIMENSION = 8_192;
+const MAX_DEVICE_PIXEL_RATIO = 2;
 
 export interface PdfReaderHandle {
   destroy(): Promise<void>;
@@ -144,6 +148,21 @@ function trapPanelFocus(panel: HTMLElement, event: KeyboardEvent): void {
 
 function clampZoom(value: number): number {
   return Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, value));
+}
+
+function clampFitScale(value: number): number {
+  return Math.min(MAX_ZOOM, Math.max(MIN_FIT_SCALE, value));
+}
+
+function rasterRatio(width: number, height: number): number {
+  const desired = Math.min(MAX_DEVICE_PIXEL_RATIO, Math.max(1, window.devicePixelRatio || 1));
+  const area = Math.max(1, width * height);
+  const byPixels = Math.sqrt(MAX_CANVAS_PIXELS / area);
+  const byDimension = Math.min(
+    MAX_CANVAS_DIMENSION / Math.max(1, width),
+    MAX_CANVAS_DIMENSION / Math.max(1, height),
+  );
+  return Math.max(0.01, Math.min(desired, byPixels, byDimension));
 }
 
 function safeMessage(error: unknown): string {
@@ -345,12 +364,12 @@ class PdfReaderController {
 
   private viewportForPage(page: PDFPageProxy) {
     const base = page.getViewport({ scale: 1 });
-    const availableWidth = Math.max(240, this.elements.viewport.clientWidth - 32);
-    const availableHeight = Math.max(240, this.elements.viewport.clientHeight - 32);
+    const availableWidth = Math.max(1, this.elements.viewport.clientWidth - 32);
+    const availableHeight = Math.max(1, this.elements.viewport.clientHeight - 32);
     let scale = this.settings.zoom;
     if (this.settings.fit === 'width') scale = availableWidth / base.width;
     if (this.settings.fit === 'page') scale = Math.min(availableWidth / base.width, availableHeight / base.height);
-    scale = clampZoom(scale);
+    scale = this.settings.fit === 'custom' ? clampZoom(scale) : clampFitScale(scale);
     return page.getViewport({ scale });
   }
 
@@ -358,14 +377,16 @@ class PdfReaderController {
     const canvas = this.elements.canvas;
     const context = canvas.getContext('2d', { alpha: false });
     if (!context) throw new Error('Canvas rendering is unavailable in this browser.');
-    const ratio = Math.min(2, Math.max(1, window.devicePixelRatio || 1));
-    canvas.width = Math.floor(viewport.width * ratio);
-    canvas.height = Math.floor(viewport.height * ratio);
+    const ratio = rasterRatio(viewport.width, viewport.height);
+    canvas.width = Math.max(1, Math.floor(viewport.width * ratio));
+    canvas.height = Math.max(1, Math.floor(viewport.height * ratio));
     canvas.style.width = `${viewport.width}px`;
     canvas.style.height = `${viewport.height}px`;
     this.elements.textLayer.style.width = `${viewport.width}px`;
     this.elements.textLayer.style.height = `${viewport.height}px`;
     this.elements.textLayer.style.setProperty('--scale-factor', String(viewport.scale));
+    this.root.dataset.pdfRasterRatio = ratio.toFixed(3);
+    this.root.dataset.pdfRasterPixels = String(canvas.width * canvas.height);
 
     this.renderTask = page.render({
       canvasContext: context,
