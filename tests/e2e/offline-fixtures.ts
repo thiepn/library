@@ -1,5 +1,5 @@
 import { deflateRawSync } from 'node:zlib';
-import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, readdir, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import YAML from 'yaml';
 
@@ -128,16 +128,22 @@ async function firstArtifact(kind: 'epub' | 'pdf'): Promise<{ url: string }> {
   throw new Error(`No ${kind} release artifact exists for RR5 fixture staging.`);
 }
 
-async function stageAtCanonicalPath(kind: 'epub' | 'pdf', buffer: Buffer): Promise<HostedFixture> {
+async function stageAtCanonicalPath(kind: 'epub' | 'pdf', synthetic: Buffer): Promise<HostedFixture> {
   const artifact = await firstArtifact(kind);
   const url = new URL(artifact.url);
   const urlPath = url.pathname;
   if (!urlPath.startsWith('/library/media/')) throw new Error(`Unexpected canonical ${kind} path: ${urlPath}`);
   const relative = urlPath.slice('/library/'.length);
   const target = path.join(process.cwd(), 'dist/library', relative);
-  await mkdir(path.dirname(target), { recursive: true });
-  await writeFile(target, buffer);
-  return { urlPath, sizeBytes: buffer.byteLength, format: kind };
+
+  if (process.env.RR5_USE_SYNTHETIC_MEDIA === '1') {
+    await mkdir(path.dirname(target), { recursive: true });
+    await writeFile(target, synthetic);
+  } else {
+    await stat(target).catch(() => { throw new Error(`Production RR5 expected staged canonical media at ${target}`); });
+  }
+
+  return { urlPath, sizeBytes: (await stat(target)).size, format: kind };
 }
 
 export const personalPdfFixture = buildOfflinePdf('RR5 Personal PDF A', 2);
