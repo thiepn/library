@@ -21,6 +21,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     const root = document.querySelector<HTMLElement>('[data-reader-shell]');
     const readerPerformance = root ? new ReaderPerformanceController(root) : undefined;
     let mounted: ReaderSourceFallbackHarnessHandle | undefined;
+    let bootstrapRetry: ((event: MouseEvent) => void) | undefined;
     let closing = false;
 
     readerPerformance?.start();
@@ -36,7 +37,18 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     function fail(error: unknown) {
       if (!root) return;
       const shell = mountReaderShell(root);
-      setReaderFailureState(shell, error);
+      const failure = setReaderFailureState(shell, error);
+      const retry = root.querySelector<HTMLButtonElement>('[data-reader-command="retry"]');
+      if (!failure.retryable || !retry) return;
+      retry.textContent = 'Reload page';
+      bootstrapRetry = (event: MouseEvent) => {
+        const origin = event.target instanceof Element ? event.target : null;
+        const button = origin?.closest<HTMLElement>('[data-reader-command="retry"]');
+        if (!button || !root.contains(button)) return;
+        event.preventDefault();
+        location.reload();
+      };
+      root.addEventListener('click', bootstrapRetry);
     }
 
     async function boot() {
@@ -80,6 +92,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
     window.addEventListener('pagehide', () => {
       closing = true;
+      if (root && bootstrapRetry) root.removeEventListener('click', bootstrapRetry);
+      bootstrapRetry = undefined;
       mounted?.destroy();
       mounted = undefined;
       readerPerformance?.destroy();
