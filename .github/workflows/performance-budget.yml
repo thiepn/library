@@ -1,0 +1,69 @@
+name: Performance Budget
+
+on:
+  pull_request:
+    paths:
+      - 'src/lib/pdf-reader/**'
+      - 'src/lib/reader/**'
+      - 'src/pages/personal/**'
+      - 'tests/e2e/performance-*'
+      - 'playwright.performance.config.ts'
+      - 'scripts/certification/performance-budget.mjs'
+      - 'docs/RR4_PERFORMANCE_BUDGETS.md'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/performance-budget.yml'
+      - '.github/workflows/deploy.yml'
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: performance-budget-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  performance-budget:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup pnpm and Node
+        uses: pnpm/setup@v2
+        with:
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+          cache: true
+
+      - name: Install frozen dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Certify RR4 source ownership and hard limits
+        run: pnpm certify:performance
+
+      - name: Install Chromium and system dependencies
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Build static Library
+        run: pnpm build
+
+      - name: Run controlled large-document performance and heap budgets
+        id: performance
+        run: pnpm test:performance
+
+      - name: Upload failed performance evidence
+        if: failure() && steps.performance.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-budget-failure-${{ github.run_id }}
+          path: |
+            playwright-performance-report
+            test-results
+          if-no-files-found: ignore
+          retention-days: 30

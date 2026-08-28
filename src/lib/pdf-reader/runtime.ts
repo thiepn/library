@@ -165,6 +165,11 @@ function rasterRatio(width: number, height: number): number {
   return Math.max(0.01, Math.min(desired, byPixels, byDimension));
 }
 
+function isRenderingCancelled(error: unknown): boolean {
+  return error instanceof Error
+    && (error.name === 'RenderingCancelledException' || error.message.toLowerCase().includes('rendering cancelled'));
+}
+
 function safeMessage(error: unknown): string {
   if (error instanceof Error && error.message.trim()) return error.message;
   return 'The PDF could not be opened in the integrated reader.';
@@ -191,6 +196,7 @@ class PdfReaderController {
   private searchResults: SearchResult[] = [];
   private activeQuery = '';
   private openGeneration = 0;
+  private renderGeneration = 0;
   private destroyed = false;
 
   constructor(root: HTMLElement, candidate: PdfCanonicalCandidate) {
@@ -331,17 +337,28 @@ class PdfReaderController {
   private async renderCurrentPage() {
     const pdf = this.document;
     if (!pdf || this.destroyed) return;
+    const generation = ++this.renderGeneration;
     const requestedPage = Math.min(this.pageCount, Math.max(1, this.page));
     this.page = requestedPage;
     this.showBusy(`Rendering page ${requestedPage}…`);
     this.renderTask?.cancel();
     this.textLayer?.cancel();
-    const page = await pdf.getPage(requestedPage);
-    if (this.destroyed || requestedPage !== this.page) return;
-    const viewport = this.viewportForPage(page);
-    await this.renderPage(page, viewport);
-    if (this.destroyed || requestedPage !== this.page) return;
 
+    const page = await pdf.getPage(requestedPage);
+    if (this.destroyed || generation !== this.renderGeneration || requestedPage !== this.page) {
+      page.cleanup();
+      return;
+    }
+    const viewport = this.viewportForPage(page);
+    try {
+      await this.renderPage(page, viewport, generation);
+    } catch (error) {
+      if (this.destroyed || generation !== this.renderGeneration || isRenderingCancelled(error)) return;
+      throw error;
+    }
+    if (this.destroyed || generation !== this.renderGeneration || requestedPage !== this.page) return;
+
+    this.root.dataset.pdfRenderGeneration = String(generation);
     this.elements.pageInput.value = String(requestedPage);
     this.elements.previous.disabled = requestedPage <= 1;
     this.elements.next.disabled = requestedPage >= this.pageCount;
@@ -355,6 +372,7 @@ class PdfReaderController {
 
     try {
       const progress = await setPdfProgress(this.candidate.identity, requestedPage, this.pageCount);
+      if (generation !== this.renderGeneration || requestedPage !== this.page) return;
       this.furthestPage = progress.furthestPage;
       this.elements.progress.textContent = `${Math.round((requestedPage / this.pageCount) * 100)}% · furthest ${Math.round((this.furthestPage / this.pageCount) * 100)}%`;
     } catch {
@@ -373,7 +391,11 @@ class PdfReaderController {
     return page.getViewport({ scale });
   }
 
-  private async renderPage(page: PDFPageProxy, viewport: ReturnType<PDFPageProxy['getViewport']>) {
+  private async renderPage(
+    page: PDFPageProxy,
+    viewport: ReturnType<PDFPageProxy['getViewport']>,
+    generation: number,
+  ) {
     const canvas = this.elements.canvas;
     const context = canvas.getContext('2d', { alpha: false });
     if (!context) throw new Error('Canvas rendering is unavailable in this browser.');
@@ -388,21 +410,29 @@ class PdfReaderController {
     this.root.dataset.pdfRasterRatio = ratio.toFixed(3);
     this.root.dataset.pdfRasterPixels = String(canvas.width * canvas.height);
 
-    this.renderTask = page.render({
-      canvasContext: context,
-      viewport,
-      transform: ratio === 1 ? undefined : [ratio, 0, 0, ratio, 0, 0],
-    });
-    await this.renderTask.promise;
+    try {
+      const renderTask = page.render({
+        canvasContext: context,
+        viewport,
+        transform: ratio === 1 ? undefined : [ratio, 0, 0, ratio, 0, 0],
+      });
+      this.renderTask = renderTask;
+      await renderTask.promise;
+      if (this.destroyed || generation !== this.renderGeneration) return;
 
-    this.elements.textLayer.replaceChildren();
-    const textContent = await page.getTextContent();
-    this.textLayer = new TextLayer({
-      textContentSource: textContent,
-      container: this.elements.textLayer,
-      viewport,
-    });
-    await this.textLayer.render();
+      this.elements.textLayer.replaceChildren();
+      const textContent = await page.getTextContent();
+      if (this.destroyed || generation !== this.renderGeneration) return;
+      const textLayer = new TextLayer({
+        textContentSource: textContent,
+        container: this.elements.textLayer,
+        viewport,
+      });
+      this.textLayer = textLayer;
+      await textLayer.render();
+    } finally {
+      page.cleanup();
+    }
   }
 
   private async goToPage(page: number) {
@@ -530,12 +560,18 @@ class PdfReaderController {
       for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
         if (controller.signal.aborted) return;
         const page = await pdf.getPage(pageNumber);
-        const text = await page.getTextContent();
-        const plain = text.items
-          .map((item) => ('str' in item ? item.str : ''))
-          .join(' ')
-          .replace(/\s+/g, ' ')
-          .trim();
+        let plain = '';
+        try {
+          const text = await page.getTextContent();
+          plain = text.items
+            .map((item) => ('str' in item ? item.str : ''))
+            .join(' ')
+            .replace(/\s+/g, ' ')
+            .trim();
+        } finally {
+          page.cleanup();
+        }
+        if (controller.signal.aborted) return;
         const normalized = normalizeSearch(plain);
         const index = normalized.indexOf(normalizedQuery);
         if (index >= 0) {
@@ -616,6 +652,7 @@ class PdfReaderController {
   }
 
   private async resetDocument() {
+    this.renderGeneration += 1;
     this.renderTask?.cancel();
     this.textLayer?.cancel();
     delete this.renderTask;
@@ -627,12 +664,23 @@ class PdfReaderController {
     const document = this.document;
     delete this.document;
     try { await loading?.destroy(); } catch {}
+    try { await document?.cleanup(); } catch {}
     try { await document?.destroy(); } catch {}
+    this.elements.canvas.width = 1;
+    this.elements.canvas.height = 1;
+    this.elements.canvas.style.width = '';
+    this.elements.canvas.style.height = '';
+    this.elements.textLayer.replaceChildren();
+    this.elements.textLayer.style.width = '';
+    this.elements.textLayer.style.height = '';
+    delete this.root.dataset.pdfRasterPixels;
+    delete this.root.dataset.pdfRasterRatio;
   }
 
   async destroy() {
     if (this.destroyed) return;
     this.destroyed = true;
+    this.openGeneration += 1;
     this.device.destroy();
     this.abort.abort();
     this.resizeObserver?.disconnect();
