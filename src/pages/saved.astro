@@ -61,6 +61,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   </div>
   <script>
     import { deleteReadingActivity, getFavoriteWorkIds } from '../lib/client/library-db';
+    import { preparePersonalReadersForOffline } from '../lib/client/offline-library';
     import {
       deletePersonalBook,
       getPersonalBooks,
@@ -240,10 +241,12 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       let imported = 0;
       let duplicates = 0;
       const errors: string[] = [];
+      const readerRoutes: string[] = [];
       for (const file of files) {
         if (status) { status.dataset.state = 'working'; status.textContent = `Importing ${file.name}…`; }
         try {
           const result = await importPersonalBook(file);
+          readerRoutes.push(personalRoute(result.record));
           if (result.duplicate) duplicates++;
           else imported++;
         } catch (error) {
@@ -253,13 +256,26 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       chooseButton?.removeAttribute('disabled');
       if (input) input.value = '';
       if (imported > 0) void requestPersonalLibraryPersistence();
+
+      let offlineWarning = '';
+      if (readerRoutes.length) {
+        try {
+          await preparePersonalReadersForOffline(readerRoutes);
+        } catch (error) {
+          offlineWarning = error instanceof Error
+            ? `Reader offline setup did not finish: ${error.message}`
+            : 'Reader offline setup did not finish.';
+        }
+      }
+
       await renderPersonal();
       if (status) {
-        status.dataset.state = errors.length ? 'error' : 'ok';
+        status.dataset.state = errors.length || offlineWarning ? 'error' : 'ok';
         const parts = [
           imported ? `${imported} imported` : '',
           duplicates ? `${duplicates} already in My Library` : '',
           errors.length ? errors.join(' ') : '',
+          offlineWarning,
         ].filter(Boolean);
         status.textContent = parts.join(' · ');
       }
