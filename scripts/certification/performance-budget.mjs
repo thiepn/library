@@ -53,9 +53,10 @@ if (present) {
       && fixtures.includes('RR4 FINAL EPUB PERFORMANCE MARKER')
       && fixtures.includes('RR4 FINAL PDF PERFORMANCE MARKER')
       && fixtures.includes('12_000, 18_000')
-      && !fixtures.includes('http://')
-      && !fixtures.includes('https://'),
-    'RR4 workloads are deterministic local 96-section EPUB, 160-page PDF, and oversized-page PDF fixtures with no network corpus dependency');
+      && !fixtures.includes('fetch(')
+      && !fixtures.includes('XMLHttpRequest')
+      && !fixtures.includes('WebSocket'),
+    'RR4 workloads are deterministic local 96-section EPUB, 160-page PDF, and oversized-page PDF fixtures with no runtime network dependency; XML namespace URIs are permitted publication metadata');
 
   pass('RR4_CPU_TIMING',
     tests.includes("'Emulation.setCPUThrottlingRate'")
