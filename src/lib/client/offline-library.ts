@@ -64,7 +64,15 @@ function operationId(): string {
 
 async function activeWorker(): Promise<ServiceWorker | undefined> {
   const registration = await registerLibraryPwa();
-  return registration?.active ?? navigator.serviceWorker?.controller ?? undefined;
+  const immediate = registration?.active ?? navigator.serviceWorker?.controller ?? undefined;
+  if (immediate) return immediate;
+  if (!('serviceWorker' in navigator)) return undefined;
+  try {
+    const ready = await navigator.serviceWorker.ready;
+    return ready.active ?? navigator.serviceWorker.controller ?? undefined;
+  } catch {
+    return undefined;
+  }
 }
 
 function attachServiceWorkerListener(): void {
