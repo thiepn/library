@@ -40,7 +40,7 @@ export function normalizeLibraryStorageError(error: unknown, context = 'Library 
   if (name === 'QuotaExceededError') {
     return new LibraryStorageError(
       'quota',
-      `${context} is full. Remove an offline download or unused personal book, then try again.`,
+      `${context} cannot save because browser storage is full. Remove an offline download or unused personal book, then try again.`,
       { cause: error },
     );
   }
