@@ -7,13 +7,21 @@ const exists = async (file) => { try { await access(file); return true; } catch 
 const files = [
   'src/pages/index.astro',
   'src/styles/library-home.css',
+  'src/lib/reader-entry/dom.ts',
+  'src/lib/reader-entry/client.ts',
+  'src/lib/reader-entry/continuity.ts',
 ];
 const present = (await Promise.all(files.map(exists))).every(Boolean);
-pass('LIBRARY_HOME_P17', present, 'Reader-first Library homepage and responsive styles are present');
+pass('LIBRARY_HOME_P17', present, 'Reader-first Library homepage, responsive styles, and ER5 continuity boundary are present');
 
 if (present) {
-  const page = await readFile('src/pages/index.astro', 'utf8');
-  const css = await readFile('src/styles/library-home.css', 'utf8');
+  const [page, css, dom, client, continuity] = await Promise.all([
+    readFile('src/pages/index.astro', 'utf8'),
+    readFile('src/styles/library-home.css', 'utf8'),
+    readFile('src/lib/reader-entry/dom.ts', 'utf8'),
+    readFile('src/lib/reader-entry/client.ts', 'utf8'),
+    readFile('src/lib/reader-entry/continuity.ts', 'utf8'),
+  ]);
 
   pass(
     'LIBRARY_HOME_RELEASE_FORMATS',
@@ -29,31 +37,35 @@ if (present) {
     'LIBRARY_HOME_READER_ROUTE_SAFE',
     page.includes('const readHref = work.webMaterialized')
       && page.includes("data-web-readable={readHref ? 'true' : 'false'}")
-      && page.includes('data-catalog-reader-cta'),
-    'Reader actions remain gated by a materialized reading route during staged native-reader rollout',
+      && page.includes('data-catalog-reader-cta')
+      && dom.includes("card.dataset.webReadable === 'true'"),
+    'Reader actions remain gated by a materialized reading route while ER5 resolves the format-aware entry behind that route',
   );
 
   pass(
     'LIBRARY_HOME_INTELLIGENT_CTA',
-    page.includes('getProgress')
-      && page.includes("legacy.percent >= 99 ? 'Read again' : 'Continue reading'")
-      && page.includes("'Start reading'"),
-    'Readable book cards distinguish start, continue, and reread states from stored progress',
+    dom.includes('getReadingContinuity(request)')
+      && dom.includes('readingActionLabel(primary)')
+      && continuity.includes("return 'Start reading'")
+      && continuity.includes("'Continue reading'")
+      && continuity.includes("'Read again'"),
+    'Readable book cards distinguish start, continue, and reread states through the unified ER5 continuity model',
   );
 
   pass(
     'LIBRARY_HOME_NATIVE_PROGRESS_RELEASE_BOUND',
-    page.includes('getReaderProgress')
-      && page.includes('native.edition === edition')
-      && page.includes('native.releaseVersion === releaseVersion')
-      && page.includes('furthestPercentage'),
-    'Native EPUB progress appears only when edition and releaseVersion exactly match the catalog book',
+    client.includes('getReaderProgress(request.workId)')
+      && client.includes('epubProgress.edition === identity.edition')
+      && client.includes('epubProgress.releaseVersion === identity.releaseVersion')
+      && client.includes('furthestPercentage'),
+    'Native EPUB progress remains exact-edition/release bound after ownership moves behind the ER5 continuity adapter',
   );
 
   pass(
     'LIBRARY_HOME_PROGRESS_VISUAL',
     page.includes('data-catalog-progress')
       && page.includes('data-catalog-progress-furthest')
+      && dom.includes('renderTrack(panel, progress')
       && css.includes('.catalog-progress__track'),
     'Catalog cards present current and furthest progress as distinct visual states',
   );
@@ -71,11 +83,11 @@ if (present) {
   pass(
     'LIBRARY_HOME_CONTINUE_SECTION',
     page.includes('data-continue-section')
-      && page.includes('renderContinue')
-      && page.includes('legacy.percent > 0 && legacy.percent < 99.5')
-      && page.includes('matchingNative.percentage > 0 && matchingNative.percentage < .995')
+      && dom.includes("document.querySelectorAll<HTMLAnchorElement>('[data-continue-work]')")
+      && dom.includes('isReadingInProgress(entry)')
+      && dom.includes('node.href = entry.href')
       && page.indexOf('data-continue-section') < page.indexOf('id="books"'),
-    'Continue Reading is driven by stored state and appears before the full book catalog',
+    'Continue Reading is driven by the selected in-progress EPUB/PDF/web continuity entry and appears before the full catalog',
   );
 
   pass(
@@ -101,9 +113,10 @@ if (present) {
   pass(
     'LIBRARY_HOME_STATE_SUBSCRIPTION',
     page.includes('subscribeLibraryState')
-      && page.includes('renderLibraryState')
+      && dom.includes('subscribeUnifiedReadingState(refresh)')
+      && client.includes("new BroadcastChannel(PDF_CHANNEL)")
       && page.includes("window.addEventListener('pagehide', unsubscribe"),
-    'Saved/progress catalog state reacts to cross-tab Library updates and cleans up its subscription',
+    'Saved state and cross-format reading state refresh through their authoritative channels with lifecycle cleanup',
   );
 
   pass(

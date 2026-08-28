@@ -40,15 +40,19 @@ const works = await getWorks();
     </section>
   </div>
   <script>
-    import { getFavoriteWorkIds, subscribeLibraryState } from '../lib/client/library-db';
+    import { getFavoriteWorkIds } from '../lib/client/library-db';
     import {
       deletePersonalBook,
       getPersonalBooks,
       importPersonalBook,
+      personalReaderReleaseVersion,
+      personalReaderWorkId,
       requestPersonalLibraryPersistence,
       subscribePersonalBooks,
       type PersonalBookSummary,
     } from '../lib/client/personal-books';
+    import { getReadingContinuity, subscribeUnifiedReadingState } from '../lib/reader-entry/client';
+    import { readingActionLabel, readingPositionLabel } from '../lib/reader-entry/continuity';
 
     const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     const count = document.querySelector<HTMLElement>('[data-saved-count]');
@@ -88,7 +92,7 @@ const works = await getWorks();
         : `${base}/personal/pdf?id=${encodeURIComponent(book.id)}`;
     }
 
-    function renderPersonalCard(book: PersonalBookSummary): HTMLElement {
+    async function renderPersonalCard(book: PersonalBookSummary): Promise<HTMLElement> {
       const article = document.createElement('article');
       article.className = 'personal-book';
       article.dataset.personalBook = book.id;
@@ -129,12 +133,28 @@ const works = await getWorks();
       meta.textContent = `${formatBytes(book.size)} · stored on this device`;
       body.append(meta);
 
+      const route = personalRoute(book);
+      const continuity = await getReadingContinuity({
+        workId: personalReaderWorkId(book),
+        edition: 1,
+        releaseVersion: personalReaderReleaseVersion(book),
+        ...(book.format === 'epub' ? { epubHref: route } : { pdfHref: route }),
+      });
+      const reading = continuity.primary;
+      if (reading?.current) {
+        const position = document.createElement('p');
+        position.className = 'personal-book__meta';
+        position.textContent = readingPositionLabel(reading);
+        body.append(position);
+      }
+
       const actions = document.createElement('div');
       actions.className = 'personal-book__actions';
       const open = document.createElement('a');
       open.className = 'personal-book__action';
-      open.href = personalRoute(book);
-      open.textContent = book.format === 'epub' ? 'Read' : 'Open PDF';
+      open.href = route;
+      open.textContent = readingActionLabel(reading);
+      if (reading) open.setAttribute('aria-label', `${readingActionLabel(reading)} ${book.title} in ${book.format.toUpperCase()}`);
       const remove = document.createElement('button');
       remove.className = 'personal-book__action personal-book__action--remove';
       remove.type = 'button';
@@ -161,7 +181,8 @@ const works = await getWorks();
       if (!personalList || !personalSection) return;
       clearCoverUrls();
       const books = await getPersonalBooks();
-      personalList.replaceChildren(...books.map(renderPersonalCard));
+      const cards = await Promise.all(books.map(renderPersonalCard));
+      personalList.replaceChildren(...cards);
       personalTotal = books.length;
       personalSection.hidden = books.length === 0;
       if (personalCount) personalCount.textContent = `${books.length} imported`;
@@ -239,10 +260,10 @@ const works = await getWorks();
       if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); input?.click(); }
     });
 
-    const unsubscribeLibrary = subscribeLibraryState(() => { void renderHosted(); });
+    const unsubscribeReading = subscribeUnifiedReadingState(() => { void render(); });
     const unsubscribePersonal = subscribePersonalBooks(() => { void renderPersonal(); });
     window.addEventListener('pagehide', () => {
-      unsubscribeLibrary();
+      unsubscribeReading();
       unsubscribePersonal();
       clearCoverUrls();
     }, { once: true });

@@ -1,6 +1,7 @@
 ---
 import PdfReaderLayout from '../../../layouts/PdfReaderLayout.astro';
 import PdfReaderShell from '../../../components/PdfReaderShell.astro';
+import ReaderFormatSwitch from '../../../components/ReaderFormatSwitch.astro';
 import { getWorks, type ResolvedWork } from '../../../lib/content/repository';
 import { localizeReaderArtifact } from '../../../lib/reader/migration';
 import type { PdfCanonicalCandidate } from '../../../lib/pdf-reader/canonical';
@@ -19,6 +20,7 @@ const pdf = release?.artifacts.pdf;
 if (!release || !pdf) throw new Error(`PDF release missing for ${work.id}`);
 const localizedPdf = localizeReaderArtifact({ ...pdf }, base);
 const backHref = `${base}/works/${work.slug}`;
+const epubReaderHref = release.artifacts.epub ? `${base}/works/${work.slug}/read` : undefined;
 const candidate: PdfCanonicalCandidate = {
   source: localizedPdf.url,
   identity: {
@@ -40,6 +42,7 @@ const metadata = `PDF · edition ${release.edition} · ${Math.max(1, Math.round(
   pdfHref={localizedPdf.url}
   noindex
 >
+  {epubReaderHref && <ReaderFormatSwitch current="pdf" href={epubReaderHref} />}
   <PdfReaderShell
     title={work.title}
     backHref={backHref}

@@ -179,31 +179,11 @@ const primaryAction = readHref
   </article>
 
   <script>
-    import { getProgress, getReaderProgress, isFavorite, toggleFavorite } from '../../lib/client/library-db';
+    import { isFavorite, toggleFavorite } from '../../lib/client/library-db';
 
     const root = document.querySelector<HTMLElement>('[data-work-detail]');
     const control = root?.querySelector<HTMLButtonElement>('[data-save-work]');
-    const readerCta = root?.querySelector<HTMLAnchorElement>('[data-reader-cta]');
-    const progressPanel = root?.querySelector<HTMLElement>('[data-publication-progress]');
     const workId = root?.dataset.workId;
-    const edition = Number(root?.dataset.edition ?? '');
-    const releaseVersion = root?.dataset.releaseVersion ?? '';
-
-    function clamp01(value: number): number {
-      return Math.min(1, Math.max(0, Number.isFinite(value) ? value : 0));
-    }
-
-    function renderProgress(current: number, furthest: number, detail: string) {
-      if (!progressPanel) return;
-      const normalizedCurrent = clamp01(current);
-      const normalizedFurthest = Math.max(normalizedCurrent, clamp01(furthest));
-      progressPanel.hidden = false;
-      progressPanel.querySelector<HTMLElement>('[data-progress-context]')!.textContent = 'Reading progress';
-      progressPanel.querySelector<HTMLElement>('[data-progress-label]')!.textContent = `${Math.round(normalizedCurrent * 100)}%`;
-      progressPanel.querySelector<HTMLElement>('[data-progress-detail]')!.textContent = detail;
-      progressPanel.querySelector<HTMLElement>('[data-progress-fill]')!.style.width = `${normalizedCurrent * 100}%`;
-      progressPanel.querySelector<HTMLElement>('[data-progress-furthest]')!.style.left = `${normalizedFurthest * 100}%`;
-    }
 
     async function renderSavedState() {
       if (!control || !workId) return;
@@ -213,38 +193,6 @@ const primaryAction = readHref
         control.setAttribute('aria-pressed', String(saved));
       } catch {
         control.textContent = 'Add to My Library';
-      }
-    }
-
-    async function renderReadingState() {
-      if (!workId) return;
-      const [native, legacy] = await Promise.all([
-        getReaderProgress(workId).catch(() => undefined),
-        getProgress(workId).catch(() => undefined),
-      ]);
-
-      const nativeMatchesRelease = Boolean(
-        native
-        && releaseVersion
-        && Number.isFinite(edition)
-        && native.edition === edition
-        && native.releaseVersion === releaseVersion,
-      );
-
-      if (native && nativeMatchesRelease) {
-        const chapter = native.chapterLabel ? ` · ${native.chapterLabel}` : '';
-        renderProgress(
-          native.percentage,
-          native.furthestPercentage,
-          `Furthest reached ${Math.round(native.furthestPercentage * 100)}%${chapter}`,
-        );
-      } else if (legacy && legacy.percent > 0) {
-        const current = clamp01(legacy.percent / 100);
-        renderProgress(current, current, `Saved at ${Math.round(legacy.percent)}%`);
-      }
-
-      if (readerCta && legacy && legacy.percent > 0) {
-        readerCta.textContent = legacy.percent >= 99 ? 'Read again' : 'Continue reading';
       }
     }
 
@@ -260,6 +208,5 @@ const primaryAction = readHref
     });
 
     void renderSavedState();
-    void renderReadingState();
   </script>
 </BaseLayout>
