@@ -9,7 +9,7 @@ import {
 
 const PDF_CHANNEL = 'thiepn-library-pdf-reader';
 
-export interface HostedReadingContinuityRequest {
+export interface ReadingContinuityRequest {
   workId: string;
   edition: number;
   releaseVersion: string;
@@ -18,7 +18,7 @@ export interface HostedReadingContinuityRequest {
   webHref?: string;
 }
 
-function validIdentity(request: HostedReadingContinuityRequest): PdfReaderIdentity | undefined {
+function validIdentity(request: ReadingContinuityRequest): PdfReaderIdentity | undefined {
   if (!request.releaseVersion || !Number.isFinite(request.edition)) return undefined;
   return {
     workId: request.workId,
@@ -27,8 +27,8 @@ function validIdentity(request: HostedReadingContinuityRequest): PdfReaderIdenti
   };
 }
 
-export async function getHostedReadingContinuity(
-  request: HostedReadingContinuityRequest,
+export async function getReadingContinuity(
+  request: ReadingContinuityRequest,
 ): Promise<ReadingContinuitySnapshot> {
   const identity = validIdentity(request);
   const [epubProgress, pdfProgress, webProgress] = await Promise.all([
@@ -76,8 +76,8 @@ export async function getHostedReadingContinuity(
   }
 
   // Legacy Markdown continuity remains a distinct format. It is included only when
-  // the work does not have an active native EPUB entry, so old web progress cannot
-  // silently override a current release-bound EPUB position.
+  // there is no native EPUB entry, so old web progress cannot silently override a
+  // current release-bound EPUB position.
   if (request.webHref && !request.epubHref) {
     entries.push({
       format: 'web',
