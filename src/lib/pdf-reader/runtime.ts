@@ -9,6 +9,7 @@ import {
 } from 'pdfjs-dist';
 import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 import type { PdfCanonicalCandidate } from './canonical';
+import { PdfDeviceController } from './device';
 import {
   getPdfBookmarks,
   getPdfProgress,
@@ -36,6 +37,9 @@ export interface PdfReaderHandle {
 type SearchResult = { page: number; snippet: string };
 
 type PdfReaderElements = {
+  topbar: HTMLElement;
+  controlbar: HTMLElement;
+  backdrop: HTMLButtonElement;
   viewport: HTMLElement;
   canvas: HTMLCanvasElement;
   textLayer: HTMLElement;
@@ -74,6 +78,9 @@ function required<T extends Element>(root: ParentNode, selector: string): T {
 
 function collectElements(root: HTMLElement): PdfReaderElements {
   return {
+    topbar: required(root, '[data-pdf-topbar]'),
+    controlbar: required(root, '[data-pdf-controlbar]'),
+    backdrop: required(root, '[data-pdf-panel-backdrop]'),
     viewport: required(root, '[data-pdf-viewport]'),
     canvas: required(root, '[data-pdf-canvas]'),
     textLayer: required(root, '[data-pdf-text-layer]'),
@@ -116,6 +123,25 @@ function isTypingTarget(target: EventTarget | null): boolean {
     || (target instanceof HTMLElement && target.isContentEditable);
 }
 
+const PANEL_FOCUSABLE = 'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+function trapPanelFocus(panel: HTMLElement, event: KeyboardEvent): void {
+  if (event.key !== 'Tab') return;
+  const controls = [...panel.querySelectorAll<HTMLElement>(PANEL_FOCUSABLE)]
+    .filter((control) => !control.hidden && control.getClientRects().length > 0);
+  const first = controls[0];
+  const last = controls.at(-1);
+  if (!first || !last) return;
+  const active = document.activeElement;
+  if (event.shiftKey && (active === first || !panel.contains(active))) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && (active === last || !panel.contains(active))) {
+    event.preventDefault();
+    first.focus();
+  }
+}
+
 function clampZoom(value: number): number {
   return Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, value));
 }
@@ -129,6 +155,7 @@ class PdfReaderController {
   private readonly root: HTMLElement;
   private readonly candidate: PdfCanonicalCandidate;
   private readonly elements: PdfReaderElements;
+  private readonly device: PdfDeviceController;
   private readonly abort = new AbortController();
   private loadingTask?: PDFDocumentLoadingTask;
   private document?: PDFDocumentProxy;
@@ -151,6 +178,8 @@ class PdfReaderController {
     this.root = root;
     this.candidate = candidate;
     this.elements = collectElements(root);
+    this.device = new PdfDeviceController(root);
+    this.device.start();
     this.bind();
   }
 
@@ -174,6 +203,7 @@ class PdfReaderController {
     this.elements.bookmarkClose.addEventListener('click', () => this.closeBookmarks(), { signal });
     this.elements.searchToggle.addEventListener('click', () => this.openSearch(), { signal });
     this.elements.searchClose.addEventListener('click', () => this.closeSearch(), { signal });
+    this.elements.backdrop.addEventListener('click', () => this.closeActivePanel(), { signal });
     this.elements.searchSubmit.addEventListener('click', () => void this.search(this.elements.searchInput.value), { signal });
     this.elements.searchInput.addEventListener('keydown', (event) => {
       if (event.key === 'Enter') {
@@ -182,9 +212,19 @@ class PdfReaderController {
       }
     }, { signal });
     document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape') {
-        if (!this.elements.searchPanel.hidden) return this.closeSearch();
-        if (!this.elements.bookmarkPanel.hidden) return this.closeBookmarks();
+      const openPanel = !this.elements.searchPanel.hidden
+        ? this.elements.searchPanel
+        : !this.elements.bookmarkPanel.hidden
+          ? this.elements.bookmarkPanel
+          : null;
+      if (openPanel) {
+        if (event.key === 'Escape') {
+          event.preventDefault();
+          this.closeActivePanel();
+        } else {
+          trapPanelFocus(openPanel, event);
+        }
+        return;
       }
       if (isTypingTarget(event.target)) return;
       if (event.key === 'ArrowLeft' || event.key === 'PageUp') {
@@ -402,32 +442,47 @@ class PdfReaderController {
     }
   }
 
+  private setPanel(kind: 'search' | 'bookmarks' | null) {
+    const panelOpen = kind !== null;
+    this.elements.searchPanel.hidden = kind !== 'search';
+    this.elements.searchPanel.setAttribute('aria-hidden', String(kind !== 'search'));
+    this.elements.bookmarkPanel.hidden = kind !== 'bookmarks';
+    this.elements.bookmarkPanel.setAttribute('aria-hidden', String(kind !== 'bookmarks'));
+    this.elements.searchToggle.setAttribute('aria-expanded', String(kind === 'search'));
+    this.elements.bookmarkToggle.setAttribute('aria-expanded', String(kind === 'bookmarks'));
+    this.elements.backdrop.hidden = !panelOpen;
+    this.elements.backdrop.setAttribute('aria-hidden', String(!panelOpen));
+    this.elements.topbar.inert = panelOpen;
+    this.elements.controlbar.inert = panelOpen;
+    this.elements.viewport.inert = panelOpen;
+    this.root.dataset.pdfPanel = kind ?? 'closed';
+  }
+
   private openBookmarks() {
-    this.closeSearch();
-    this.elements.bookmarkPanel.hidden = false;
-    this.elements.bookmarkPanel.setAttribute('aria-hidden', 'false');
+    this.setPanel('bookmarks');
     this.elements.bookmarkClose.focus();
   }
 
   private closeBookmarks() {
     if (this.elements.bookmarkPanel.hidden) return;
-    this.elements.bookmarkPanel.hidden = true;
-    this.elements.bookmarkPanel.setAttribute('aria-hidden', 'true');
+    this.setPanel(null);
     this.elements.bookmarkToggle.focus();
   }
 
   private openSearch() {
-    this.closeBookmarks();
-    this.elements.searchPanel.hidden = false;
-    this.elements.searchPanel.setAttribute('aria-hidden', 'false');
+    this.setPanel('search');
     this.elements.searchInput.focus();
   }
 
   private closeSearch() {
     if (this.elements.searchPanel.hidden) return;
-    this.elements.searchPanel.hidden = true;
-    this.elements.searchPanel.setAttribute('aria-hidden', 'true');
+    this.setPanel(null);
     this.elements.searchToggle.focus();
+  }
+
+  private closeActivePanel() {
+    if (!this.elements.searchPanel.hidden) this.closeSearch();
+    else if (!this.elements.bookmarkPanel.hidden) this.closeBookmarks();
   }
 
   private async search(rawQuery: string) {
@@ -507,6 +562,7 @@ class PdfReaderController {
       snippet.textContent = result.snippet;
       button.append(page, snippet);
       button.addEventListener('click', () => {
+        this.closeSearch();
         void this.goToPage(result.page);
       }, { signal: this.abort.signal });
       list.append(button);
@@ -556,6 +612,7 @@ class PdfReaderController {
   async destroy() {
     if (this.destroyed) return;
     this.destroyed = true;
+    this.device.destroy();
     this.abort.abort();
     this.resizeObserver?.disconnect();
     if (this.resizeTimer) window.clearTimeout(this.resizeTimer);

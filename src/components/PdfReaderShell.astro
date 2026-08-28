@@ -15,8 +15,8 @@ const {
   metadata = 'Integrated PDF reader',
 } = Astro.props;
 ---
-<main class="pdf-reader" data-pdf-reader-root aria-busy="true">
-  <header class="pdf-reader__topbar">
+<main class="pdf-reader" data-pdf-reader-root data-pdf-panel="closed" aria-busy="true">
+  <header class="pdf-reader__topbar" data-pdf-topbar>
     <div class="pdf-reader__identity">
       <a class="pdf-reader__back" href={backHref} aria-label={backLabel}>←</a>
       <div class="pdf-reader__title-wrap">
@@ -26,13 +26,13 @@ const {
     </div>
 
     <nav class="pdf-reader__tools" aria-label="PDF tools">
-      <button type="button" data-pdf-search-toggle aria-haspopup="dialog">Search</button>
-      <button type="button" data-pdf-bookmark-toggle aria-haspopup="dialog">Bookmarks</button>
+      <button type="button" data-pdf-search-toggle aria-haspopup="dialog" aria-controls="pdf-search-panel" aria-expanded="false">Search</button>
+      <button type="button" data-pdf-bookmark-toggle aria-haspopup="dialog" aria-controls="pdf-bookmarks-panel" aria-expanded="false">Saved</button>
       <a data-pdf-fallback href={fallbackHref ?? '#'} target="_blank" rel="noopener noreferrer" hidden={!fallbackHref}>Open original</a>
     </nav>
   </header>
 
-  <div class="pdf-reader__controlbar" aria-label="Page and zoom controls">
+  <div class="pdf-reader__controlbar" data-pdf-controlbar aria-label="Page and zoom controls">
     <div class="pdf-reader__page-controls">
       <button type="button" data-pdf-previous aria-label="Previous page">‹</button>
       <label>
@@ -84,7 +84,9 @@ const {
     </section>
   </section>
 
-  <aside class="pdf-reader__panel" data-pdf-search-panel role="dialog" aria-labelledby="pdf-search-title" aria-hidden="true" hidden>
+  <button type="button" class="pdf-reader__backdrop" data-pdf-panel-backdrop tabindex="-1" aria-label="Close open PDF panel" aria-hidden="true" hidden></button>
+
+  <aside id="pdf-search-panel" class="pdf-reader__panel" data-pdf-search-panel role="dialog" aria-labelledby="pdf-search-title" aria-hidden="true" hidden>
     <header>
       <div>
         <p class="pdf-reader__eyebrow">In-document</p>
@@ -100,7 +102,7 @@ const {
     <div class="pdf-reader__results" data-pdf-search-results></div>
   </aside>
 
-  <aside class="pdf-reader__panel" data-pdf-bookmark-panel role="dialog" aria-labelledby="pdf-bookmarks-title" aria-hidden="true" hidden>
+  <aside id="pdf-bookmarks-panel" class="pdf-reader__panel" data-pdf-bookmark-panel role="dialog" aria-labelledby="pdf-bookmarks-title" aria-hidden="true" hidden>
     <header>
       <div>
         <p class="pdf-reader__eyebrow">Saved locally</p>

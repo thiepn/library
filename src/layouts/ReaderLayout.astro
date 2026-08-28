@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import '../styles/reader.css';
+import '../styles/reader-device-ux.css';
 import type { ResolvedWork } from '../lib/content/repository';
 import type { ResolvedChapter } from '../lib/content/chapters';
 
@@ -25,7 +26,7 @@ const legacyCompatibility = Boolean(nativeReaderHref);
 <html lang={work.language}>
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#F5F3EE" />
     <meta name="application-name" content="Thiepn Library" />
     <meta name="mobile-web-app-capable" content="yes" />
