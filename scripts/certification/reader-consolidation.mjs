@@ -5,6 +5,7 @@ const pass = (id, ok, detail) => checks.push({ id, ok, detail });
 const exists = async (file) => { try { await access(file); return true; } catch { return false; } };
 
 const files = [
+  'src/lib/reader/source.ts',
   'src/lib/reader/canonical.ts',
   'src/lib/reader/fallback-harness.ts',
   'src/pages/works/[slug]/read/index.astro',
@@ -12,9 +13,10 @@ const files = [
   'src/lib/reader/index.ts',
 ];
 const present = (await Promise.all(files.map(exists))).every(Boolean);
-pass('EPUB_READER_ER3_FILES', present, 'ER3 canonical source boundary, shared fallback runtime, hosted route, personal route, and public API are present');
+pass('EPUB_READER_ER3_FILES', present, 'ER3 pure source/identity boundary, canonical browser mount, shared fallback runtime, hosted route, personal route, and public API are present');
 
 if (present) {
+  const source = await readFile('src/lib/reader/source.ts', 'utf8');
   const canonical = await readFile('src/lib/reader/canonical.ts', 'utf8');
   const fallback = await readFile('src/lib/reader/fallback-harness.ts', 'utf8');
   const hosted = await readFile('src/pages/works/[slug]/read/index.astro', 'utf8');
@@ -23,10 +25,20 @@ if (present) {
 
   pass(
     'EPUB_READER_ER3_SOURCE_NEUTRAL',
-    canonical.includes('source: string | ArrayBuffer')
-      && canonical.includes('identity: ReaderAnnotationIdentity')
-      && canonical.includes('readerCanonicalCandidateFromPublication'),
-    'Hosted URLs and local ArrayBuffers are represented by one source-neutral EPUB candidate with exact-release identity',
+    source.includes('source: string | ArrayBuffer')
+      && source.includes('identity: ReaderAnnotationIdentity')
+      && source.includes('readerCanonicalCandidateFromPublication'),
+    'Hosted URLs and local ArrayBuffers are represented by one pure source-neutral EPUB candidate with exact-release identity',
+  );
+
+  pass(
+    'EPUB_READER_ER3_SOURCE_PURE',
+    !source.includes("from './compatibility-harness'")
+      && !source.includes("from 'epubjs'")
+      && !source.includes('.css')
+      && !source.includes('document.')
+      && !source.includes('window.'),
+    'Source/identity conversion is independently testable without loading DOM, EPUB engine, or reader styles',
   );
 
   pass(
@@ -34,7 +46,7 @@ if (present) {
     canonical.includes('mountReaderShellWithCompatibilityHarness')
       && canonical.includes('candidate.source')
       && canonical.includes('candidate.identity'),
-    'The canonical mount enters the complete compatibility harness rather than a reduced reader shell',
+    'The canonical browser mount enters the complete compatibility harness rather than a reduced reader shell',
   );
 
   pass(
@@ -48,9 +60,13 @@ if (present) {
 
   pass(
     'EPUB_READER_ER3_HOSTED_ADAPTER',
-    fallback.includes('readerCanonicalCandidateFromPublication(publication)')
+    source.includes('source: publication.epub.url')
+      && source.includes('workId: publication.workId')
+      && source.includes('edition: publication.edition')
+      && source.includes('releaseVersion: publication.version')
+      && fallback.includes('readerCanonicalCandidateFromPublication(publication)')
       && hosted.includes('mountReaderPublicationWithFallbackHarness(root, publication)'),
-    'Hosted immutable publications adapt into the canonical source contract before mounting',
+    'Hosted immutable publications adapt into the canonical source contract without changing exact release identity',
   );
 
   pass(
@@ -94,6 +110,16 @@ if (present) {
       && personal.includes('mounted?.destroy()')
       && personal.includes('readerPerformance?.destroy()'),
     'Both public EPUB routes explicitly destroy reader and performance runtime on page lifecycle exit',
+  );
+
+  pass(
+    'EPUB_READER_ER3_BOOTSTRAP_RECOVERY_PARITY',
+    hosted.includes("retry.textContent = 'Reload page'")
+      && hosted.includes('location.reload()')
+      && personal.includes("retry.textContent = 'Reload page'")
+      && personal.includes('location.reload()')
+      && personal.includes('root.removeEventListener(\'click\', bootstrapRetry)'),
+    'Failures before the shared runtime mounts retain a working reload recovery action on both hosted and personal routes',
   );
 
   pass(
