@@ -90,7 +90,7 @@ async function putIfCacheable(cacheName, request, response) {
 
 async function cacheFirst(request, cacheName) {
   const cache = await caches.open(cacheName);
-  const cached = await cache.match(request);
+  const cached = await cache.match(request, { ignoreVary: true });
   if (cached) return cached;
 
   const response = await fetch(request);
@@ -156,7 +156,7 @@ async function cacheOfflineApplicationAssets() {
       const url = new URL(raw, scopeUrl.origin);
       if (!isImmutableBuildAsset(url)) throw new Error('The offline asset manifest contains an unsupported path.');
       const request = new Request(url.href, { credentials: 'same-origin' });
-      const cached = await cache.match(request);
+      const cached = await cache.match(request, { ignoreVary: true });
       if (cached) return;
       const asset = await fetch(request);
       if (!cacheableResponse(asset)) throw new Error(`Unable to cache application asset ${url.pathname}.`);
