@@ -97,11 +97,12 @@ if (present) {
     'Personal EPUBs open from local bytes through the canonical native reader with exact content-bound progress identity',
   );
   pass(
-    'PERSONAL_IMPORT_ER2_PDF_LOCAL_URL',
-    pdf.includes('URL.createObjectURL(book.file)')
-      && pdf.includes('URL.revokeObjectURL(objectUrl)')
-      && pdf.includes('browser PDF viewer'),
-    'ER2 personal PDFs use a revocable local Blob URL and honestly defer integrated PDF reading to ER4',
+    'PERSONAL_IMPORT_ER2_PDF_LOCAL_SOURCE',
+    pdf.includes('const source = await book.file.arrayBuffer()')
+      && pdf.includes('mountPdfReader(root, candidate)')
+      && pdf.includes('URL.createObjectURL(book.file)')
+      && pdf.includes('URL.revokeObjectURL(objectUrl)'),
+    'Personal PDFs remain locally sourced while ER4 upgrades their route to the shared integrated PDF reader and keeps a revocable original-file fallback',
   );
   pass(
     'PERSONAL_IMPORT_ER2_OBJECT_URL_CLEANUP',
