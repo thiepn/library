@@ -30,13 +30,13 @@ if (present) {
 
   pass(
     'EPUB_READER_LEGACY_PROGRESS_SIDECAR',
-    db.includes("const DB_VERSION = 7")
+    db.includes("const DB_VERSION = 8")
       && db.includes("| 'legacyProgress'")
       && db.includes("['legacyProgress', 'workId']")
       && db.includes("transaction.objectStore('legacyProgress')")
       && db.includes('isLegacyProgressRecord(cursor.value)')
       && db.includes('legacy.put(cursor.value)'),
-    'DB v7 migrates pre-P29 Markdown progress into a dedicated legacyProgress sidecar',
+    'The current DB schema retains the v7 P29 migration that moves pre-P29 Markdown progress into a dedicated legacyProgress sidecar',
   );
 
   pass(

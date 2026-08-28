@@ -78,7 +78,7 @@ const legacyCompatibility = Boolean(nativeReaderHref);
         <ol>{chapters.map((chapter) => <li class:list={{ active: chapter.entry.data.id === current.entry.data.id }}><a href={`${base}/works/${work.slug}/read/${chapter.entry.data.id}`}>{chapter.entry.data.title}</a></li>)}</ol>
       </aside>
 
-      <article id="reader-content" class="reader-document" data-pagefind-body data-work-id={work.id} data-chapter-id={current.entry.data.id} data-chapter-index={currentIndex} data-chapter-count={chapters.length}>
+      <article id="reader-content" class="reader-document" data-pagefind-body data-work-id={work.id} data-chapter-id={current.entry.data.id} data-chapter-index={currentIndex} data-chapter-count={chapters.length} data-edition={work.publication.edition} data-release-version={work.release?.version ?? ''}>
         <header class="chapter-header">
           <p class="eyebrow">{current.entry.data.part ? work.parts.find((part) => part.id === current.entry.data.part)?.title ?? 'Publication' : 'Publication'}</p>
           <h1 data-pagefind-meta="title">{current.entry.data.title}</h1>
@@ -98,10 +98,23 @@ const legacyCompatibility = Boolean(nativeReaderHref);
     </script>
     <script>
       import { setLegacyProgress } from '../lib/client/library-db';
+      import { recordReadingOpen } from '../lib/reading-activity/client';
       type ReaderSettings = { scale: number; measure: number };
       const SETTINGS_KEY = 'thiepn.library.reader.v1';
       const root = document.documentElement;
       const article = document.querySelector<HTMLElement>('[data-work-id][data-chapter-id]');
+      if (article?.dataset.workId) {
+        const edition = Number(article.dataset.edition ?? '');
+        if (Number.isFinite(edition)) {
+          void recordReadingOpen({
+            workId: article.dataset.workId,
+            edition,
+            releaseVersion: article.dataset.releaseVersion ?? '',
+            format: 'web',
+            source: 'hosted',
+          }).catch(() => {});
+        }
+      }
       const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
       const readSettings = (): ReaderSettings => {
         try {

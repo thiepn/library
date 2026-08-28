@@ -17,6 +17,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     import type { ReaderSourceFallbackHarnessHandle } from '../../lib/reader/fallback-harness';
     import { ReaderPerformanceController } from '../../lib/reader/performance';
     import { mountReaderShell } from '../../lib/reader/shell';
+    import { recordReadingOpen } from '../../lib/reading-activity/client';
 
     const root = document.querySelector<HTMLElement>('[data-reader-shell]');
     const readerPerformance = root ? new ReaderPerformanceController(root) : undefined;
@@ -70,13 +71,15 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         if (closing) return;
         readerPerformance?.markOpening();
 
+        const identity = {
+          workId: personalReaderWorkId(book),
+          edition: 1,
+          releaseVersion: personalReaderReleaseVersion(book),
+        };
+        void recordReadingOpen({ ...identity, format: 'epub', source: 'personal' }).catch(() => {});
         const handle = await mountReaderSourceWithFallbackHarness(root, {
           source,
-          identity: {
-            workId: personalReaderWorkId(book),
-            edition: 1,
-            releaseVersion: personalReaderReleaseVersion(book),
-          },
+          identity,
         });
         if (closing) handle.destroy();
         else mounted = handle;

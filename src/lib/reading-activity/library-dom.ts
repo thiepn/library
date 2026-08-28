@@ -276,8 +276,16 @@ function sortLibraryItems(items: Array<{ node: HTMLElement; state: ReadingLibrar
   const personal = items.filter(({ node }) => node.matches('[data-personal-book]')).sort(compare);
   const hostedList = document.querySelector<HTMLElement>('[data-saved-list]');
   const personalList = document.querySelector<HTMLElement>('[data-personal-books-list]');
-  if (hostedList) hostedList.append(...hosted.map(({ node }) => node));
-  if (personalList) personalList.append(...personal.map(({ node }) => node));
+  if (hostedList) {
+    const desired = hosted.map(({ node }) => node);
+    const current = [...hostedList.querySelectorAll<HTMLElement>('[data-saved-work]')];
+    if (desired.some((node, index) => current[index] !== node)) hostedList.append(...desired);
+  }
+  if (personalList) {
+    const desired = personal.map(({ node }) => node);
+    const current = [...personalList.querySelectorAll<HTMLElement>('[data-personal-book]')];
+    if (desired.some((node, index) => current[index] !== node)) personalList.append(...desired);
+  }
 }
 
 function renderLibrarySummary(items: Array<{ node: HTMLElement; state: ReadingLibraryState }>) {

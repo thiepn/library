@@ -78,6 +78,7 @@ const pdfReaderHref = work.release?.artifacts.pdf
       import type { ReaderFallbackHarnessHandle } from '../../../../lib/reader/fallback-harness';
       import { isLegacyReaderRequested, resolveLegacyResumeHref } from '../../../../lib/reader/legacy-bridge';
       import { ReaderPerformanceController } from '../../../../lib/reader/performance';
+      import { recordReadingOpen } from '../../../../lib/reading-activity/client';
       import type { ReaderPublicationCandidate } from '../../../../lib/reader/publication';
       import { mountReaderShell } from '../../../../lib/reader/shell';
 
@@ -149,6 +150,13 @@ const pdfReaderHref = work.release?.artifacts.pdf
           requestAnimationFrame(() => {
             void openRequestedLegacyReader().then((redirected) => {
               if (redirected || pageClosing) return;
+              void recordReadingOpen({
+                workId: publication.workId,
+                edition: publication.edition,
+                releaseVersion: publication.version,
+                format: 'epub',
+                source: 'hosted',
+              }).catch(() => {});
               readerPerformance?.markShellPainted();
               void bootNativeReader(publication);
             }).catch(() => {
