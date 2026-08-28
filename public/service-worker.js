@@ -15,6 +15,10 @@ const OFFLINE_ASSET_MANIFEST = scoped('offline-assets.json');
 const CORE_URLS = [
   scopePath,
   OFFLINE_URL,
+  scoped('saved'),
+  scoped('downloads'),
+  scoped('personal/read'),
+  scoped('personal/pdf'),
   scoped('manifest.webmanifest'),
   scoped('favicon.svg'),
 ];
@@ -28,6 +32,16 @@ function publicationFormat(url) {
   if (/\.epub$/i.test(url.pathname)) return 'epub';
   if (/\.pdf$/i.test(url.pathname)) return 'pdf';
   return undefined;
+}
+
+function personalReaderBaseUrl(url) {
+  const pathname = url.pathname.replace(/\/$/, '');
+  if (pathname !== scoped('personal/read') && pathname !== scoped('personal/pdf')) return undefined;
+  const normalized = new URL(url.href);
+  normalized.pathname = pathname;
+  normalized.search = '';
+  normalized.hash = '';
+  return normalized;
 }
 
 function isImmutableBuildAsset(url) {
@@ -84,6 +98,12 @@ async function networkFirstNavigation(request) {
   } catch {
     const cached = await caches.match(request);
     if (cached) return cached;
+    const url = new URL(request.url);
+    const personalBase = personalReaderBaseUrl(url);
+    if (personalBase) {
+      const personalCached = await caches.match(new Request(personalBase.href, { credentials: 'same-origin' }));
+      if (personalCached) return personalCached;
+    }
     const offline = await caches.match(OFFLINE_URL);
     if (offline) return offline;
     throw new Error('Library is offline and no cached navigation is available.');
@@ -107,14 +127,22 @@ async function cacheUrls(urls) {
 
 async function cacheOfflineApplicationAssets() {
   const manifestUrl = new URL(OFFLINE_ASSET_MANIFEST, scopeUrl.origin);
-  const response = await fetch(new Request(manifestUrl.href, { cache: 'no-store', credentials: 'same-origin' }));
-  if (!cacheableResponse(response)) throw new Error('The offline application asset manifest is unavailable.');
+  const cache = await caches.open(RUNTIME_CACHE);
+  let response;
+  try {
+    const network = await fetch(new Request(manifestUrl.href, { cache: 'no-store', credentials: 'same-origin' }));
+    if (!cacheableResponse(network)) throw new Error('The offline application asset manifest is unavailable.');
+    await cache.put(manifestUrl.href, network.clone());
+    response = network;
+  } catch {
+    response = await cache.match(manifestUrl.href) ?? await caches.match(manifestUrl.href);
+  }
+  if (!response) throw new Error('The offline application asset manifest is unavailable.');
+
   const payload = await response.clone().json();
   const paths = Array.isArray(payload?.assets) ? payload.assets.filter((value) => typeof value === 'string') : [];
   if (!paths.length || paths.length > 512) throw new Error('The offline application asset manifest is invalid.');
 
-  const cache = await caches.open(RUNTIME_CACHE);
-  await cache.put(manifestUrl.href, response);
   for (let offset = 0; offset < paths.length; offset += 8) {
     await Promise.all(paths.slice(offset, offset + 8).map(async (raw) => {
       const url = new URL(raw, scopeUrl.origin);
@@ -132,10 +160,12 @@ async function cacheOfflineApplicationAssets() {
 async function cacheOfflineReaderDocument(rawUrl) {
   const url = new URL(rawUrl, scopeUrl.origin);
   if (!isSameOriginScoped(url) || publicationFormat(url)) throw new Error('The reader route is outside the Library application scope.');
-  const request = new Request(url.href, { credentials: 'same-origin' });
+  const cacheUrl = personalReaderBaseUrl(url) ?? url;
+  const request = new Request(cacheUrl.href, { credentials: 'same-origin' });
+  const cache = await caches.open(RUNTIME_CACHE);
+  if (await cache.match(request)) return;
   const response = await fetch(request);
   if (!cacheableResponse(response)) throw new Error('The reader shell could not be prepared for offline use.');
-  const cache = await caches.open(RUNTIME_CACHE);
   await cache.put(request, response.clone());
 }
 
@@ -373,7 +403,11 @@ async function hostedPublicationResponse(request, url) {
 }
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CORE_CACHE).then((cache) => cache.addAll(CORE_URLS)));
+  event.waitUntil((async () => {
+    const core = await caches.open(CORE_CACHE);
+    await core.addAll(CORE_URLS);
+    await cacheOfflineApplicationAssets().catch(() => undefined);
+  })());
 });
 
 self.addEventListener('activate', (event) => {
