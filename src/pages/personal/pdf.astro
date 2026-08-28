@@ -1,0 +1,73 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import '../../styles/personal-library.css';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+<BaseLayout title="Personal PDF" description="Open a personal PDF stored locally in this browser." noindex>
+  <div class="page">
+    <section class="section personal-pdf-page">
+      <div class="personal-pdf-toolbar">
+        <div>
+          <p class="eyebrow">Personal PDF</p>
+          <h1 data-personal-pdf-title>Opening PDF…</h1>
+          <p data-personal-pdf-meta>Stored on this device</p>
+        </div>
+        <a class="personal-book__action" href={`${base}/saved`}>Back to My Library</a>
+      </div>
+      <iframe class="personal-pdf-frame" data-personal-pdf-frame title="Personal PDF" hidden></iframe>
+      <div class="personal-pdf-error" data-personal-pdf-error hidden>
+        <h2>Unable to open this PDF</h2>
+        <p data-personal-pdf-error-message></p>
+        <p>This phase uses your browser’s built-in PDF viewer. A fully integrated Library PDF reader is planned for ER4.</p>
+      </div>
+    </section>
+  </div>
+  <script>
+    import { getPersonalBook } from '../../lib/client/personal-books';
+
+    const title = document.querySelector<HTMLElement>('[data-personal-pdf-title]');
+    const meta = document.querySelector<HTMLElement>('[data-personal-pdf-meta]');
+    const frame = document.querySelector<HTMLIFrameElement>('[data-personal-pdf-frame]');
+    const errorBox = document.querySelector<HTMLElement>('[data-personal-pdf-error]');
+    const errorMessage = document.querySelector<HTMLElement>('[data-personal-pdf-error-message]');
+    let objectUrl: string | undefined;
+
+    const formatBytes = (bytes: number) => bytes < 1024 * 1024
+      ? `${Math.max(1, Math.round(bytes / 1024))} KB`
+      : `${(bytes / (1024 * 1024)).toFixed(bytes >= 10 * 1024 * 1024 ? 0 : 1)} MB`;
+
+    function fail(message: string) {
+      if (title) title.textContent = 'PDF unavailable';
+      if (errorMessage) errorMessage.textContent = message;
+      if (errorBox) errorBox.hidden = false;
+      if (frame) frame.hidden = true;
+    }
+
+    async function boot() {
+      try {
+        const id = new URL(location.href).searchParams.get('id')?.trim();
+        if (!id) return fail('No personal book was selected.');
+        const book = await getPersonalBook(id);
+        if (!book) return fail('This personal book is no longer stored in this browser.');
+        if (book.format !== 'pdf') return fail('This personal book is not a PDF.');
+        if (!frame) return fail('The PDF viewing surface is unavailable.');
+
+        if (title) title.textContent = book.title;
+        if (meta) meta.textContent = `${formatBytes(book.size)} · browser PDF viewer · stored on this device`;
+        document.title = `${book.title} — Thiepn Library`;
+        frame.title = `PDF: ${book.title}`;
+        objectUrl = URL.createObjectURL(book.file);
+        frame.src = objectUrl;
+        frame.hidden = false;
+      } catch (error) {
+        fail(error instanceof Error ? error.message : 'Unable to open this personal PDF.');
+      }
+    }
+
+    void boot();
+    window.addEventListener('pagehide', () => {
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+      objectUrl = undefined;
+    }, { once: true });
+  </script>
+</BaseLayout>
