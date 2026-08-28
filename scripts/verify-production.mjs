@@ -52,25 +52,43 @@ await requireRoute(`${origin}/`);
 await requireRoute(`${origin}/search`);
 await requireRoute(`${origin}/subjects`);
 await requireRoute(`${origin}/collections`);
+const downloads = (await requireRoute(`${origin}/downloads/`)).toString('utf8');
+if (!downloads.includes('Offline downloads') || !downloads.includes('data-offline-library')) {
+  throw new Error('Production RR5 offline-download manager mismatch');
+}
 
 const manifestBytes = await requireRoute(`${origin}/manifest.webmanifest`);
 const manifest = JSON.parse(manifestBytes.toString('utf8'));
 if (manifest.id !== '/library/' || manifest.start_url !== '/library/' || manifest.scope !== '/library/' || manifest.display !== 'standalone') {
-  throw new Error('Production P28 manifest scope/install metadata mismatch');
+  throw new Error('Production manifest scope/install metadata mismatch');
 }
 if (!Array.isArray(manifest.icons) || !manifest.icons.some((icon) => icon.purpose === 'maskable')) {
-  throw new Error('Production P28 manifest is missing its maskable install icon');
+  throw new Error('Production manifest is missing its maskable install icon');
 }
 
+const offlineAssetsBytes = await requireRoute(`${origin}/offline-assets.json`);
+const offlineAssets = JSON.parse(offlineAssetsBytes.toString('utf8'));
+if (offlineAssets.schemaVersion !== 1 || !Array.isArray(offlineAssets.assets) || !offlineAssets.assets.length) {
+  throw new Error('Production RR5 offline application asset manifest is invalid');
+}
+if (!offlineAssets.assets.every((asset) => typeof asset === 'string' && asset.startsWith('/library/_astro/'))) {
+  throw new Error('Production RR5 offline application asset manifest contains an unsupported path');
+}
+for (const asset of offlineAssets.assets.slice(0, 3)) await requireRoute(`https://thiepn.dev${asset}`);
+
 const serviceWorker = (await requireRoute(`${origin}/service-worker.js`)).toString('utf8');
-if (!serviceWorker.includes("const SW_VERSION = 'p28-v1'")
+if (!serviceWorker.includes("const SW_VERSION = 'rr5-v1'")
   || !serviceWorker.includes("const CACHE_PREFIX = 'thiepn-library-pwa-'")
+  || !serviceWorker.includes("const HOSTED_PUBLICATION_CACHE = 'thiepn-library-offline-publications-v1'")
   || !serviceWorker.includes("url.pathname.startsWith(scoped('media/'))")
-  || !serviceWorker.includes('/\\.epub$/i.test(url.pathname)')) {
-  throw new Error('Production P28 service-worker cache contract mismatch');
+  || !serviceWorker.includes('/\\.epub$/i.test(url.pathname)')
+  || !serviceWorker.includes('/\\.pdf$/i.test(url.pathname)')
+  || !serviceWorker.includes("data.type === 'CACHE_OFFLINE_PUBLICATION'")
+  || !serviceWorker.includes('async function rangedResponse')) {
+  throw new Error('Production RR5 service-worker offline publication contract mismatch');
 }
 
 const offline = (await requireRoute(`${origin}/offline/`)).toString('utf8');
-if (!offline.includes('You’re offline.')) throw new Error('Production P28 offline fallback mismatch');
+if (!offline.includes('You’re offline.')) throw new Error('Production offline fallback mismatch');
 
 console.log('PRODUCTION_VERIFICATION_PASS');
