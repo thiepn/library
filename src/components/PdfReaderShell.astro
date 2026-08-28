@@ -1,0 +1,113 @@
+---
+interface Props {
+  title: string;
+  backHref: string;
+  backLabel?: string;
+  fallbackHref?: string;
+  metadata?: string;
+}
+
+const {
+  title,
+  backHref,
+  backLabel = 'Back to Library',
+  fallbackHref,
+  metadata = 'Integrated PDF reader',
+} = Astro.props;
+---
+<main class="pdf-reader" data-pdf-reader-root aria-busy="true">
+  <header class="pdf-reader__topbar">
+    <div class="pdf-reader__identity">
+      <a class="pdf-reader__back" href={backHref} aria-label={backLabel}>←</a>
+      <div class="pdf-reader__title-wrap">
+        <strong class="pdf-reader__title">{title}</strong>
+        <span class="pdf-reader__meta">{metadata}</span>
+      </div>
+    </div>
+
+    <nav class="pdf-reader__tools" aria-label="PDF tools">
+      <button type="button" data-pdf-search-toggle aria-haspopup="dialog">Search</button>
+      <button type="button" data-pdf-bookmark-toggle aria-haspopup="dialog">Bookmarks</button>
+      {fallbackHref && <a href={fallbackHref} target="_blank" rel="noopener noreferrer">Open original</a>}
+    </nav>
+  </header>
+
+  <div class="pdf-reader__controlbar" aria-label="Page and zoom controls">
+    <div class="pdf-reader__page-controls">
+      <button type="button" data-pdf-previous aria-label="Previous page">‹</button>
+      <label>
+        <span class="sr-only">Page</span>
+        <input data-pdf-page-input type="number" min="1" value="1" inputmode="numeric" aria-label="Page number" />
+      </label>
+      <span aria-hidden="true">/</span>
+      <span data-pdf-page-count aria-label="Page count">—</span>
+      <button type="button" data-pdf-next aria-label="Next page">›</button>
+    </div>
+
+    <div class="pdf-reader__zoom-controls">
+      <button type="button" data-pdf-zoom-out aria-label="Zoom out">−</button>
+      <span data-pdf-zoom-label class="pdf-reader__zoom-label" aria-live="polite">100%</span>
+      <button type="button" data-pdf-zoom-in aria-label="Zoom in">+</button>
+      <label>
+        <span class="sr-only">Page fit</span>
+        <select data-pdf-fit aria-label="Page fit">
+          <option value="width">Fit width</option>
+          <option value="page">Fit page</option>
+          <option value="custom">Custom zoom</option>
+        </select>
+      </label>
+    </div>
+
+    <button type="button" data-pdf-bookmark aria-pressed="false">Bookmark</button>
+    <span class="pdf-reader__progress" data-pdf-progress aria-live="polite">0%</span>
+  </div>
+
+  <section
+    id="pdf-reader-viewport"
+    class="pdf-reader__viewport"
+    data-pdf-viewport
+    tabindex="-1"
+    aria-label="PDF page"
+  >
+    <div class="pdf-reader__page" data-pdf-page>
+      <canvas data-pdf-canvas aria-hidden="true"></canvas>
+      <div class="textLayer" data-pdf-text-layer aria-label="Selectable PDF text"></div>
+    </div>
+    <div class="pdf-reader__status" data-pdf-status role="status" aria-live="polite">Opening PDF…</div>
+    <section class="pdf-reader__error" data-pdf-error role="alert" hidden>
+      <h1>Unable to open this PDF</h1>
+      <p data-pdf-error-message></p>
+      <div class="pdf-reader__error-actions">
+        <button type="button" data-pdf-retry>Try again</button>
+        {fallbackHref && <a href={fallbackHref} target="_blank" rel="noopener noreferrer">Open original PDF</a>}
+      </div>
+    </section>
+  </section>
+
+  <aside class="pdf-reader__panel" data-pdf-search-panel role="dialog" aria-labelledby="pdf-search-title" aria-hidden="true" hidden>
+    <header>
+      <div>
+        <p class="pdf-reader__eyebrow">In-document</p>
+        <h2 id="pdf-search-title">Search PDF</h2>
+      </div>
+      <button type="button" data-pdf-search-close aria-label="Close search">×</button>
+    </header>
+    <div class="pdf-reader__search-form">
+      <input type="search" data-pdf-search-input placeholder="Search this PDF" autocomplete="off" />
+      <button type="button" data-pdf-search-submit>Search</button>
+    </div>
+    <p data-pdf-search-status role="status" aria-live="polite">Enter text to search this PDF.</p>
+    <div class="pdf-reader__results" data-pdf-search-results></div>
+  </aside>
+
+  <aside class="pdf-reader__panel" data-pdf-bookmark-panel role="dialog" aria-labelledby="pdf-bookmarks-title" aria-hidden="true" hidden>
+    <header>
+      <div>
+        <p class="pdf-reader__eyebrow">Saved locally</p>
+        <h2 id="pdf-bookmarks-title">Bookmarks</h2>
+      </div>
+      <button type="button" data-pdf-bookmark-close aria-label="Close bookmarks">×</button>
+    </header>
+    <div class="pdf-reader__results" data-pdf-bookmark-list></div>
+  </aside>
+</main>
