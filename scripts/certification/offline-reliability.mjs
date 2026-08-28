@@ -12,6 +12,7 @@ const files = [
   'src/lib/client/personal-books.ts',
   'src/components/OfflineLibraryManager.astro',
   'src/pages/downloads.astro',
+  'src/pages/saved.astro',
   'public/service-worker.js',
   'scripts/prepare-deploy.mjs',
   'scripts/certification/post-build.mjs',
@@ -29,7 +30,7 @@ const present = (await Promise.all(files.map(exists))).every(Boolean);
 pass('RR5_FILES', present, 'RR5 offline manager, worker protocol, storage hardening, browser corpus, workflow, docs, post-build/live verification, and production gate are present');
 
 if (present) {
-  const [doc, offlineClient, storage, pwa, personal, manager, downloadsPage, sw, prepare, postbuild, verifier, fixtures, offlineTests, storageTests, baselineConfig, config, workflow, deployment, pkg] = await Promise.all([
+  const [doc, offlineClient, storage, pwa, personal, manager, downloadsPage, saved, sw, prepare, postbuild, verifier, fixtures, offlineTests, storageTests, baselineConfig, config, workflow, deployment, pkg] = await Promise.all([
     readFile('docs/RR5_OFFLINE_STORAGE_RELIABILITY.md', 'utf8'),
     readFile('src/lib/client/offline-library.ts', 'utf8'),
     readFile('src/lib/client/storage-reliability.ts', 'utf8'),
@@ -37,6 +38,7 @@ if (present) {
     readFile('src/lib/client/personal-books.ts', 'utf8'),
     readFile('src/components/OfflineLibraryManager.astro', 'utf8'),
     readFile('src/pages/downloads.astro', 'utf8'),
+    readFile('src/pages/saved.astro', 'utf8'),
     readFile('public/service-worker.js', 'utf8'),
     readFile('scripts/prepare-deploy.mjs', 'utf8'),
     readFile('scripts/certification/post-build.mjs', 'utf8'),
@@ -104,6 +106,18 @@ if (present) {
       && !sw.includes('indexedDB')
       && doc.includes('never duplicated into the service-worker publication cache'),
     'Personal files remain IndexedDB-only and are not doubled in Cache Storage');
+
+  const importStatusIndex = saved.indexOf("status.textContent = parts.join(' · ');");
+  const offlinePrepIndex = saved.indexOf('prepareImportedReaders(readerRoutes);');
+  pass('RR5_PERSONAL_OFFLINE_NONBLOCKING',
+    saved.includes('data-personal-offline-status')
+      && saved.includes('function prepareImportedReaders(readerRoutes: string[])')
+      && saved.includes('void preparePersonalReadersForOffline(readerRoutes).then')
+      && !saved.includes('await preparePersonalReadersForOffline(readerRoutes)')
+      && importStatusIndex >= 0
+      && offlinePrepIndex > importStatusIndex
+      && storageTests.includes('2 readers ready for offline use.'),
+    'Committed personal imports report success before optional offline reader preparation; RR5 readiness has its own live status and cannot consume RR4 import latency budgets');
 
   pass('RR5_STORAGE_FAILURES',
     storage.includes("name === 'QuotaExceededError'")
