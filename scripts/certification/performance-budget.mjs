@@ -146,7 +146,8 @@ if (present) {
 
   pass(
     'RR4_PDF_SEARCH_CANCELLATION',
-    pdfRuntime.includes("this.cancelSearch('Search cancelled.')")
+    pdfRuntime.includes('const wasSearching = Boolean(this.searchAbort)')
+      && pdfRuntime.includes("this.cancelSearch(wasSearching ? 'Search cancelled.' : undefined)")
       && pdfRuntime.includes('this.searchAbort?.abort()')
       && pdfRuntime.includes('controller.signal.aborted')
       && pdfRuntime.includes('page.cleanup()'),
