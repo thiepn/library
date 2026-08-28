@@ -26,8 +26,8 @@ if (present) {
 
   pass(
     'EPUB_READER_BOOKMARK_STORAGE_EXISTING',
-    db.includes("['bookmarks', 'id']") && db.includes('const DB_VERSION = 7') && store.includes("db.objectStoreNames.contains('bookmarks')"),
-    'P19 continues to reuse the existing bookmarks store unchanged through the non-destructive P29 IndexedDB v7 upgrade',
+    db.includes("['bookmarks', 'id']") && db.includes('const DB_VERSION = 8') && store.includes("db.objectStoreNames.contains('bookmarks')"),
+    'P19 continues to reuse the unchanged bookmarks store after the additive ER6 IndexedDB v8 activity-store upgrade',
   );
   pass(
     'EPUB_READER_BOOKMARK_SCHEMA',
