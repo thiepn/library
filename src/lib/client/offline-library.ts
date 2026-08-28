@@ -110,6 +110,17 @@ export async function removeOfflinePublication(url: string): Promise<boolean> {
   return true;
 }
 
+/**
+ * Cache only the application/runtime needed to open already-local personal books.
+ * The personal EPUB/PDF bytes remain exclusively in IndexedDB.
+ */
+export async function preparePersonalReadersForOffline(readerUrls: string[]): Promise<void> {
+  const urls = [...new Set(readerUrls.filter(Boolean).map((url) => new URL(url, location.href).href))];
+  if (!urls.length) return;
+  const reply = await requestWorker('PREPARE_PERSONAL_READERS', { urls });
+  if (!reply.ok) throw new Error(reply.error ?? 'Unable to prepare the personal-book reader for offline use.');
+}
+
 export function startOfflinePublicationDownload(
   artifact: OfflinePublicationArtifact,
   onProgress?: (progress: OfflineDownloadProgress) => void,
