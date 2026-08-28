@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "packageManager": "pnpm@11.21.0",
-  "engines": { "node": ">=22.12.0" },
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "scripts": {
     "dev": "astro dev",
     "check": "astro check",
@@ -23,12 +25,14 @@
     "certify:compatibility": "node scripts/certification/publication-corpus.mjs",
     "certify:physical:structure": "node scripts/certification/physical-device-evidence.mjs --mode structure",
     "certify:physical:release": "node scripts/certification/physical-device-evidence.mjs --mode release",
-    "certify:source": "node scripts/certification/source.mjs && node scripts/certification/reader-toc.mjs && node scripts/certification/reader-navigation.mjs && node scripts/certification/reader-progress.mjs && node scripts/certification/work-detail.mjs && node scripts/certification/library-home.mjs && node scripts/certification/reader-search.mjs && node scripts/certification/reader-bookmarks.mjs && node scripts/certification/reader-annotations.mjs && node scripts/certification/reader-mobile.mjs && node scripts/certification/reader-desktop.mjs && node scripts/certification/reader-accessibility.mjs && node scripts/certification/reader-compatibility.mjs && node scripts/certification/reader-migration.mjs && node scripts/certification/reader-fallback.mjs && node scripts/certification/reader-performance.mjs && node scripts/certification/reader-offline.mjs && node scripts/certification/reader-legacy-bridge.mjs && node scripts/certification/reader-regression.mjs && node scripts/certification/personal-import.mjs && node scripts/certification/reader-consolidation.mjs && node scripts/certification/pdf-reader.mjs && node scripts/certification/reader-entry.mjs && node scripts/certification/reading-activity.mjs && node scripts/certification/reader-device-ux.mjs && node scripts/certification/publication-corpus.mjs && node scripts/certification/release-contract.mjs && node scripts/certification/physical-device-contract.mjs",
+    "certify:source": "node scripts/certification/source.mjs && node scripts/certification/reader-toc.mjs && node scripts/certification/reader-navigation.mjs && node scripts/certification/reader-progress.mjs && node scripts/certification/work-detail.mjs && node scripts/certification/library-home.mjs && node scripts/certification/reader-search.mjs && node scripts/certification/reader-bookmarks.mjs && node scripts/certification/reader-annotations.mjs && node scripts/certification/reader-mobile.mjs && node scripts/certification/reader-desktop.mjs && node scripts/certification/reader-accessibility.mjs && node scripts/certification/reader-compatibility.mjs && node scripts/certification/reader-migration.mjs && node scripts/certification/reader-fallback.mjs && node scripts/certification/reader-performance.mjs && node scripts/certification/reader-offline.mjs && node scripts/certification/reader-legacy-bridge.mjs && node scripts/certification/reader-regression.mjs && node scripts/certification/personal-import.mjs && node scripts/certification/reader-consolidation.mjs && node scripts/certification/pdf-reader.mjs && node scripts/certification/reader-entry.mjs && node scripts/certification/reading-activity.mjs && node scripts/certification/reader-device-ux.mjs && node scripts/certification/publication-corpus.mjs && node scripts/certification/performance-budget.mjs && node scripts/certification/release-contract.mjs && node scripts/certification/physical-device-contract.mjs",
     "certify:postbuild": "node scripts/certification/post-build.mjs",
     "release:certify": "pnpm certify:source && pnpm test:reader && pnpm l17b:verify && pnpm build && pnpm certify:postbuild && pnpm test:reader:postbuild",
     "stage:media": "node scripts/stage-publication-media.mjs",
     "verify:production": "node scripts/verify-production.mjs",
-    "deploy": "pnpm release:certify && pnpm stage:media"
+    "deploy": "pnpm release:certify && pnpm stage:media",
+    "test:performance": "playwright test --config=playwright.performance.config.ts",
+    "certify:performance": "node scripts/certification/performance-budget.mjs"
   },
   "dependencies": {
     "astro": "^6.0.0",

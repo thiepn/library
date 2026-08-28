@@ -151,6 +151,10 @@ function safeMessage(error: unknown): string {
   return 'The PDF could not be opened in the integrated reader.';
 }
 
+function isRenderingCancellation(error: unknown): boolean {
+  return error instanceof Error && error.name === 'RenderingCancelledException';
+}
+
 class PdfReaderController {
   private readonly root: HTMLElement;
   private readonly candidate: PdfCanonicalCandidate;
@@ -172,6 +176,7 @@ class PdfReaderController {
   private searchResults: SearchResult[] = [];
   private activeQuery = '';
   private openGeneration = 0;
+  private renderGeneration = 0;
   private destroyed = false;
 
   constructor(root: HTMLElement, candidate: PdfCanonicalCandidate) {
@@ -313,33 +318,45 @@ class PdfReaderController {
     const pdf = this.document;
     if (!pdf || this.destroyed) return;
     const requestedPage = Math.min(this.pageCount, Math.max(1, this.page));
+    const generation = ++this.renderGeneration;
+    this.root.dataset.pdfRenderGeneration = String(generation);
     this.page = requestedPage;
     this.showBusy(`Rendering page ${requestedPage}…`);
     this.renderTask?.cancel();
     this.textLayer?.cancel();
-    const page = await pdf.getPage(requestedPage);
-    if (this.destroyed || requestedPage !== this.page) return;
-    const viewport = this.viewportForPage(page);
-    await this.renderPage(page, viewport);
-    if (this.destroyed || requestedPage !== this.page) return;
-
-    this.elements.pageInput.value = String(requestedPage);
-    this.elements.previous.disabled = requestedPage <= 1;
-    this.elements.next.disabled = requestedPage >= this.pageCount;
-    this.furthestPage = Math.max(this.furthestPage, requestedPage);
-    this.elements.progress.textContent = `${Math.round((requestedPage / this.pageCount) * 100)}% · furthest ${Math.round((this.furthestPage / this.pageCount) * 100)}%`;
-    this.elements.zoomLabel.textContent = `${Math.round(viewport.scale * 100)}%`;
-    this.elements.status.textContent = `Page ${requestedPage} of ${this.pageCount}`;
-    this.elements.status.hidden = false;
-    this.updateBookmarkButton();
-    this.highlightSearchMatches();
+    let page: PDFPageProxy | undefined;
 
     try {
-      const progress = await setPdfProgress(this.candidate.identity, requestedPage, this.pageCount);
-      this.furthestPage = progress.furthestPage;
+      page = await pdf.getPage(requestedPage);
+      if (this.destroyed || generation !== this.renderGeneration || requestedPage !== this.page) return;
+      const viewport = this.viewportForPage(page);
+      await this.renderPage(page, viewport, generation);
+      if (this.destroyed || generation !== this.renderGeneration || requestedPage !== this.page) return;
+
+      this.elements.pageInput.value = String(requestedPage);
+      this.elements.previous.disabled = requestedPage <= 1;
+      this.elements.next.disabled = requestedPage >= this.pageCount;
+      this.furthestPage = Math.max(this.furthestPage, requestedPage);
       this.elements.progress.textContent = `${Math.round((requestedPage / this.pageCount) * 100)}% · furthest ${Math.round((this.furthestPage / this.pageCount) * 100)}%`;
-    } catch {
-      this.root.dataset.pdfPersistence = 'session-only';
+      this.elements.zoomLabel.textContent = `${Math.round(viewport.scale * 100)}%`;
+      this.elements.status.textContent = `Page ${requestedPage} of ${this.pageCount}`;
+      this.elements.status.hidden = false;
+      this.updateBookmarkButton();
+      this.highlightSearchMatches();
+
+      try {
+        const progress = await setPdfProgress(this.candidate.identity, requestedPage, this.pageCount);
+        if (this.destroyed || generation !== this.renderGeneration || requestedPage !== this.page) return;
+        this.furthestPage = progress.furthestPage;
+        this.elements.progress.textContent = `${Math.round((requestedPage / this.pageCount) * 100)}% · furthest ${Math.round((this.furthestPage / this.pageCount) * 100)}%`;
+      } catch {
+        this.root.dataset.pdfPersistence = 'session-only';
+      }
+    } catch (error) {
+      if (this.destroyed || generation !== this.renderGeneration || isRenderingCancellation(error)) return;
+      throw error;
+    } finally {
+      try { page?.cleanup(); } catch {}
     }
   }
 
@@ -354,7 +371,11 @@ class PdfReaderController {
     return page.getViewport({ scale });
   }
 
-  private async renderPage(page: PDFPageProxy, viewport: ReturnType<PDFPageProxy['getViewport']>) {
+  private async renderPage(
+    page: PDFPageProxy,
+    viewport: ReturnType<PDFPageProxy['getViewport']>,
+    generation: number,
+  ) {
     const canvas = this.elements.canvas;
     const context = canvas.getContext('2d', { alpha: false });
     if (!context) throw new Error('Canvas rendering is unavailable in this browser.');
@@ -367,21 +388,33 @@ class PdfReaderController {
     this.elements.textLayer.style.height = `${viewport.height}px`;
     this.elements.textLayer.style.setProperty('--scale-factor', String(viewport.scale));
 
-    this.renderTask = page.render({
+    const renderTask = page.render({
       canvasContext: context,
       viewport,
       transform: ratio === 1 ? undefined : [ratio, 0, 0, ratio, 0, 0],
     });
-    await this.renderTask.promise;
+    this.renderTask = renderTask;
+    try {
+      await renderTask.promise;
+    } finally {
+      if (this.renderTask === renderTask) delete this.renderTask;
+    }
+    if (this.destroyed || generation !== this.renderGeneration) return;
 
     this.elements.textLayer.replaceChildren();
     const textContent = await page.getTextContent();
-    this.textLayer = new TextLayer({
+    if (this.destroyed || generation !== this.renderGeneration) return;
+    const textLayer = new TextLayer({
       textContentSource: textContent,
       container: this.elements.textLayer,
       viewport,
     });
-    await this.textLayer.render();
+    this.textLayer = textLayer;
+    try {
+      await textLayer.render();
+    } finally {
+      if (this.textLayer === textLayer) delete this.textLayer;
+    }
   }
 
   private async goToPage(page: number) {
@@ -476,6 +509,7 @@ class PdfReaderController {
 
   private closeSearch() {
     if (this.elements.searchPanel.hidden) return;
+    this.cancelSearch('Search cancelled.');
     this.setPanel(null);
     this.elements.searchToggle.focus();
   }
@@ -485,9 +519,17 @@ class PdfReaderController {
     else if (!this.elements.bookmarkPanel.hidden) this.closeBookmarks();
   }
 
+  private cancelSearch(message?: string) {
+    this.searchAbort?.abort();
+    delete this.searchAbort;
+    this.elements.searchSubmit.disabled = false;
+    if (message) this.elements.searchStatus.textContent = message;
+  }
+
   private async search(rawQuery: string) {
     const pdf = this.document;
     const query = rawQuery.trim();
+    this.cancelSearch();
     if (!pdf || !query) {
       this.activeQuery = '';
       this.searchResults = [];
@@ -496,7 +538,6 @@ class PdfReaderController {
       return;
     }
 
-    this.searchAbort?.abort();
     const controller = new AbortController();
     this.searchAbort = controller;
     const normalizedQuery = normalizeSearch(query);
@@ -509,22 +550,27 @@ class PdfReaderController {
       for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
         if (controller.signal.aborted) return;
         const page = await pdf.getPage(pageNumber);
-        const text = await page.getTextContent();
-        const plain = text.items
-          .map((item) => ('str' in item ? item.str : ''))
-          .join(' ')
-          .replace(/\s+/g, ' ')
-          .trim();
-        const normalized = normalizeSearch(plain);
-        const index = normalized.indexOf(normalizedQuery);
-        if (index >= 0) {
-          const start = Math.max(0, index - 55);
-          const end = Math.min(plain.length, index + query.length + 90);
-          this.searchResults.push({
-            page: pageNumber,
-            snippet: `${start > 0 ? '…' : ''}${plain.slice(start, end)}${end < plain.length ? '…' : ''}`,
-          });
-          if (this.searchResults.length >= MAX_SEARCH_RESULTS) break;
+        try {
+          const text = await page.getTextContent();
+          if (controller.signal.aborted) return;
+          const plain = text.items
+            .map((item) => ('str' in item ? item.str : ''))
+            .join(' ')
+            .replace(/\s+/g, ' ')
+            .trim();
+          const normalized = normalizeSearch(plain);
+          const index = normalized.indexOf(normalizedQuery);
+          if (index >= 0) {
+            const start = Math.max(0, index - 55);
+            const end = Math.min(plain.length, index + query.length + 90);
+            this.searchResults.push({
+              page: pageNumber,
+              snippet: `${start > 0 ? '…' : ''}${plain.slice(start, end)}${end < plain.length ? '…' : ''}`,
+            });
+            if (this.searchResults.length >= MAX_SEARCH_RESULTS) break;
+          }
+        } finally {
+          try { page.cleanup(); } catch {}
         }
         if (pageNumber % 4 === 0) {
           this.elements.searchStatus.textContent = `Searching… ${pageNumber} / ${pdf.numPages}`;
@@ -595,12 +641,12 @@ class PdfReaderController {
   }
 
   private async resetDocument() {
+    this.renderGeneration += 1;
     this.renderTask?.cancel();
     this.textLayer?.cancel();
     delete this.renderTask;
     delete this.textLayer;
-    this.searchAbort?.abort();
-    delete this.searchAbort;
+    this.cancelSearch();
     const loading = this.loadingTask;
     delete this.loadingTask;
     const document = this.document;

@@ -154,8 +154,8 @@ if (present) {
 
   pass(
     'RELEASE_PHASE1_CERT_CHAIN',
-    pkg.includes('reader-device-ux.mjs && node scripts/certification/publication-corpus.mjs && node scripts/certification/release-contract.mjs'),
-    'Release-contract certification remains after ER7 device-profile and RR3 publication-compatibility certification',
+    pkg.includes('reader-device-ux.mjs && node scripts/certification/publication-corpus.mjs && node scripts/certification/performance-budget.mjs && node scripts/certification/release-contract.mjs'),
+    'Release-contract certification remains after ER7 device-profile, RR3 publication compatibility, and RR4 performance-budget certification',
   );
 }
 
