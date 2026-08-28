@@ -1,0 +1,89 @@
+name: Performance Budget
+
+on:
+  pull_request:
+    paths:
+      - 'performance/**'
+      - 'src/lib/performance-budget.ts'
+      - 'src/lib/reader/performance.ts'
+      - 'src/lib/reader/search.ts'
+      - 'src/lib/pdf-reader/**'
+      - 'tests/performance/**'
+      - 'playwright.performance.config.ts'
+      - 'scripts/certification/performance-budget.mjs'
+      - 'scripts/regression/performance-budget.test.ts'
+      - 'docs/RR4_PERFORMANCE_MEMORY.md'
+      - '.github/workflows/performance-budget.yml'
+      - '.github/workflows/deploy.yml'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+  push:
+    branches: [main]
+    paths:
+      - 'performance/**'
+      - 'src/lib/performance-budget.ts'
+      - 'src/lib/reader/performance.ts'
+      - 'src/lib/reader/search.ts'
+      - 'src/lib/pdf-reader/**'
+      - 'tests/performance/**'
+      - 'playwright.performance.config.ts'
+      - 'scripts/certification/performance-budget.mjs'
+      - 'scripts/regression/performance-budget.test.ts'
+      - 'docs/RR4_PERFORMANCE_MEMORY.md'
+      - '.github/workflows/performance-budget.yml'
+      - '.github/workflows/deploy.yml'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: performance-budget-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  low-end-performance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup pnpm and Node
+        uses: pnpm/setup@v2
+        with:
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+          cache: true
+
+      - name: Install frozen dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Certify RR4 source and budget ownership
+        run: pnpm certify:performance
+
+      - name: Run deterministic budget regression tests
+        run: pnpm test:reader
+
+      - name: Install Chromium and system dependencies
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Build static Library
+        run: pnpm build
+
+      - name: Run low-end performance and retained-memory budgets
+        run: pnpm test:performance
+
+      - name: Upload failed RR4 evidence
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-budget-failure-${{ github.run_id }}
+          path: |
+            playwright-performance-report
+            test-results
+          if-no-files-found: ignore
+          retention-days: 30
