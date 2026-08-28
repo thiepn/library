@@ -139,22 +139,18 @@ async function goToSaved(page: Page): Promise<void> {
   await expect(page.locator('[data-personal-file-input]')).toBeAttached();
 }
 
-async function readerProgressFingerprint(page: Page): Promise<string> {
-  return page.locator('[data-reader-progress-ux]').evaluate((element) => [
-    element.getAttribute('style') ?? '',
-    element.getAttribute('data-progress-stage') ?? '',
-    element.querySelector('[data-reader-chapter]')?.textContent ?? '',
-    element.querySelector('[data-reader-progress]')?.textContent ?? '',
-  ].join('|'));
+async function readerLocationCfi(page: Page): Promise<string> {
+  return page.locator('[data-reader-shell]').getAttribute('data-reader-location-cfi').then((value) => value ?? '');
 }
 
 async function epubPageTurn(page: Page): Promise<number> {
   const next = page.locator('[data-reader-command="next"]');
   await expect(next).toBeEnabled();
-  const before = await readerProgressFingerprint(page);
+  const before = await readerLocationCfi(page);
+  expect(before).not.toBe('');
   return measureMs(page, async () => {
     await next.click();
-    await expect.poll(() => readerProgressFingerprint(page)).not.toBe(before);
+    await expect.poll(() => readerLocationCfi(page)).not.toBe(before);
   });
 }
 
@@ -298,11 +294,12 @@ test('large EPUB remains responsive for page turns, search, cancellation, and re
     budgets.budgetsMs.navigationDuringSearch!,
   );
 
-  const fingerprint = await readerProgressFingerprint(page);
+  const savedCfi = await readerLocationCfi(page);
+  expect(savedCfi).not.toBe('');
   await goToSaved(page);
   metrics.epubResumeReady = await openFixture(page, 'RR4 Large EPUB', 'epub');
   budget('epubResumeReady', metrics.epubResumeReady as number, budgets.budgetsMs.resumeReady!);
-  await expect.poll(() => readerProgressFingerprint(page)).toBe(fingerprint);
+  await expect.poll(() => readerLocationCfi(page)).toBe(savedCfi);
   checkLongTasks(await longTasks(page), 'largeEpubJourney');
 
   await session.detach();
