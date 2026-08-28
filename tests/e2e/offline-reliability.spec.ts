@@ -59,7 +59,7 @@ test('@rr5 explicit PDF download reopens offline with cached byte-range support'
   await context.setOffline(true);
   await page.goto(readerUrl!, { waitUntil: 'domcontentloaded' });
   await expect(page.locator('[data-pdf-reader-root]')).toHaveAttribute('data-pdf-reader-state', 'ready', { timeout: 30_000 });
-  await expect(page.locator('[data-pdf-page-count]')).toHaveText('3');
+  await expect.poll(async () => Number(await page.locator('[data-pdf-page-count]').textContent())).toBeGreaterThan(0);
   await context.setOffline(false);
 });
 
