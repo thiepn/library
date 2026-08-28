@@ -1,11 +1,13 @@
 import { getProgress, getReaderProgress, subscribeLibraryState } from '../client/library-db';
-import { getPdfProgress, subscribePdfReaderState } from '../pdf-reader/state';
+import { getPdfProgress } from '../pdf-reader/state';
 import type { PdfReaderIdentity } from '../pdf-reader/canonical';
 import {
   createReadingContinuitySnapshot,
   type ReadingContinuitySnapshot,
   type ReadingEntryState,
 } from './continuity';
+
+const PDF_CHANNEL = 'thiepn-library-pdf-reader';
 
 export interface HostedReadingContinuityRequest {
   workId: string;
@@ -87,6 +89,17 @@ export async function getHostedReadingContinuity(
   }
 
   return createReadingContinuitySnapshot(entries);
+}
+
+function subscribePdfReaderState(listener: () => void): () => void {
+  let channel: BroadcastChannel | undefined;
+  try {
+    channel = new BroadcastChannel(PDF_CHANNEL);
+    channel.addEventListener('message', listener);
+  } catch {
+    // IndexedDB remains authoritative; this subscription is only invalidation.
+  }
+  return () => channel?.close();
 }
 
 export function subscribeUnifiedReadingState(listener: () => void): () => void {
