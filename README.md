@@ -19,6 +19,8 @@ Publication validation, immutable media storage, and release ingestion remain ma
 - local EPUB search, bookmarks, highlights, and notes
 - local PDF text search, page bookmarks, fit modes, zoom, and selectable text
 - browser-local personal-book import with content-hash identity and duplicate detection
+- bounded EPUB/PDF compatibility preflight before personal files are persisted
+- explicit scanned/image-only PDF search and selection capability messaging
 - responsive phone, tablet, split-window, desktop, safe-area, orientation, and software-keyboard handling
 - installable PWA shell and exact active-release offline EPUB caching
 - no reader account, telemetry, or personal-file upload requirement
@@ -72,6 +74,22 @@ pnpm test:e2e
 
 The Playwright matrix covers Chromium, Firefox, and WebKit on desktop and phone-sized contexts. It is browser-engine evidence, not a substitute for named physical-device evidence.
 
+### Publication compatibility corpus
+
+RR3 defines deterministic supported, degraded, rejected, and bounded EPUB/PDF classes. Source ownership and the machine-readable corpus are checked with:
+
+```bash
+pnpm certify:compatibility
+```
+
+Run only the RR3 browser journeys with:
+
+```bash
+pnpm test:compatibility
+```
+
+The corpus includes EPUB 2/3, reflowable and fixed-layout books, navigation variants, rich resources, RTL/CJK/vertical writing, missing navigation, scripted-content attempts, malformed packages, traversal, archive-expansion attacks, remote resources, encrypted content, searchable and image-only PDFs, mixed/rotated/large pages, incremental updates, corrupt xrefs, active PDF content, and truncation. Rejected files fail before IndexedDB persistence; corrupt PDF cases must resolve to ready or an explicit bounded error.
+
 ### Physical-device evidence
 
 RR2 stores manual evidence as exact-build JSON records. Structural validation confirms that the matrix and submitted records are honest and well-formed while allowing an incomplete physical campaign:
@@ -88,13 +106,14 @@ pnpm certify:physical:release -- --expected-sha <40-character-build-sha>
 
 The checked-in template never counts as evidence. Current physical certification remains **0/12** until named devices are operated and records are committed.
 
-Production is fail-closed for source, reader behavior, release registries, built routes, and immutable media hashes. Browser Acceptance and Physical Device Evidence are separate release signals; production builds do not install test browsers or fabricate physical runs.
+Production is fail-closed for source, reader behavior, release registries, built routes, immutable media hashes, and the complete Chromium/Firefox/WebKit acceptance suite. The production workflow stages canonical media, runs browser acceptance, and only then uploads the GitHub Pages artifact. Physical Device Evidence remains a separate release signal; no automated run is represented as physical-device testing.
 
 Release planning and support boundaries:
 
 - `docs/RELEASE_READINESS_ROADMAP.md`
 - `docs/RELEASE_SUPPORT_CONTRACT.md`
 - `docs/RR2_PHYSICAL_DEVICE_ACCEPTANCE.md`
+- `docs/RR3_PUBLICATION_COMPATIBILITY.md`
 - `evidence/physical-devices/README.md`
 - `docs/ER7_REAL_DEVICE_UX.md`
 

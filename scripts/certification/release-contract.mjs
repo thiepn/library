@@ -78,7 +78,7 @@ if (present) {
     config.includes("trace: 'retain-on-failure'")
       && config.includes("screenshot: 'only-on-failure'")
       && config.includes("video: 'retain-on-failure'")
-      && workflow.includes("if: failure()")
+      && workflow.includes('if: failure()')
       && workflow.includes('playwright-report')
       && workflow.includes('test-results'),
     'Debug artifacts are retained only on failure rather than collected from ordinary personal-library sessions',
@@ -154,8 +154,8 @@ if (present) {
 
   pass(
     'RELEASE_PHASE1_CERT_CHAIN',
-    pkg.includes('reader-device-ux.mjs && node scripts/certification/release-contract.mjs'),
-    'Release-contract certification is permanently chained after ER7 device-profile certification',
+    pkg.includes('reader-device-ux.mjs && node scripts/certification/publication-corpus.mjs && node scripts/certification/release-contract.mjs'),
+    'Release-contract certification remains after ER7 device-profile and RR3 publication-compatibility certification',
   );
 }
 
