@@ -1,0 +1,122 @@
+{
+  "$schema": "../record.schema.json",
+  "schemaVersion": 1,
+  "recordId": "yyyy-mm-dd-android-chrome-device",
+  "targetId": "android-chrome",
+  "status": "blocked",
+  "testedAt": "2026-01-01T00:00:00.000Z",
+  "tester": {
+    "name": "REPLACE ME",
+    "github": "REPLACE ME"
+  },
+  "release": {
+    "version": "1.0.0-rc.x",
+    "buildSha": "0000000000000000000000000000000000000000",
+    "url": "https://thiepn.dev/library"
+  },
+  "device": {
+    "manufacturer": "REPLACE ME",
+    "model": "REPLACE ME",
+    "physical": true,
+    "memoryGb": 8,
+    "notes": "Optional hardware notes."
+  },
+  "environment": {
+    "platform": "Android",
+    "osVersion": "REPLACE ME",
+    "browserFamily": "Chrome",
+    "browserVersion": "REPLACE ME",
+    "installedPwa": false
+  },
+  "inputs": [
+    "touch"
+  ],
+  "variants": [
+    "portrait",
+    "landscape"
+  ],
+  "sessionMinutes": 0,
+  "journeys": [
+    {
+      "id": "catalog-navigation",
+      "status": "blocked",
+      "notes": "Run the documented journey and replace this status.",
+      "evidence": []
+    },
+    {
+      "id": "hosted-epub-start-resume",
+      "status": "blocked",
+      "notes": "Run the documented journey and replace this status.",
+      "evidence": []
+    },
+    {
+      "id": "epub-layout-appearance",
+      "status": "blocked",
+      "notes": "Run the documented journey and replace this status.",
+      "evidence": []
+    },
+    {
+      "id": "epub-tools",
+      "status": "blocked",
+      "notes": "Run the documented journey and replace this status.",
+      "evidence": []
+    },
+    {
+      "id": "hosted-pdf-start-resume",
+      "status": "blocked",
+      "notes": "Run the documented journey and replace this status.",
+      "evidence": []
+    },
+    {
+      "id": "pdf-tools",
+      "status": "blocked",
+      "notes": "Run the documented journey and replace this status.",
+      "evidence": []
+    },
+    {
+      "id": "personal-import-reopen",
+      "status": "blocked",
+      "notes": "Run the documented journey and replace this status.",
+      "evidence": []
+    },
+    {
+      "id": "viewport-adaptation",
+      "status": "blocked",
+      "notes": "Run the documented journey and replace this status.",
+      "evidence": []
+    },
+    {
+      "id": "software-keyboard",
+      "status": "blocked",
+      "notes": "Run the documented journey and replace this status.",
+      "evidence": []
+    },
+    {
+      "id": "native-selection",
+      "status": "blocked",
+      "notes": "Run the documented journey and replace this status.",
+      "evidence": []
+    },
+    {
+      "id": "browser-history",
+      "status": "blocked",
+      "notes": "Run the documented journey and replace this status.",
+      "evidence": []
+    },
+    {
+      "id": "background-resume",
+      "status": "blocked",
+      "notes": "Run the documented journey and replace this status.",
+      "evidence": []
+    },
+    {
+      "id": "sustained-session",
+      "status": "blocked",
+      "notes": "Run the documented journey and replace this status.",
+      "evidence": []
+    }
+  ],
+  "defects": [],
+  "evidence": [],
+  "notes": "Copy this file to a name that does not begin with an underscore. Placeholder records never count as evidence."
+}

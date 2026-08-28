@@ -2,232 +2,219 @@
 
 ## Goal
 
-Deliver a dependable, low-friction reading experience across the supported browser and device classes without claiming literal compatibility with every historical browser, device, file, or DRM system.
+Deliver a dependable, low-friction reading experience across a published browser/device matrix without claiming literal compatibility with every historical device, browser, embedded webview, malformed file, or DRM system.
 
-The release target is **v1.0**. A phase is complete only when its implementation, regression coverage, documentation, and release evidence are all present. A green build alone is not sufficient.
+The target is **v1.0**. A phase is complete only when implementation, executable checks, documentation, and honest evidence exist. Source checks, browser-engine automation, simulated device profiles, and physical-device operation are separate evidence classes and may not be substituted for one another.
 
 ## Release definition
 
-The reader is release-ready when all of the following are true:
+The reader is release-ready only when:
 
-- every Tier 1 browser engine passes the automated acceptance matrix;
-- the physical-device matrix has recorded evidence rather than simulated-only claims;
-- supported EPUB and PDF fixture classes open, navigate, resume, search, and fail safely;
-- no open P0 or P1 reader defect remains;
+- every required Chromium, Firefox, and WebKit browser project passes;
+- every required named physical-device target has current evidence for the exact release SHA;
+- supported EPUB/PDF classes open, navigate, resume, search, and fail safely;
+- no unresolved P0 or P1 defect remains;
 - accessibility, keyboard, touch, safe-area, zoom, reduced-motion, and forced-colors gates pass;
-- large-book, low-memory, offline, quota, update, and recovery scenarios have bounded behavior;
-- local progress, bookmarks, annotations, settings, and imported books survive supported upgrades;
-- untrusted publications cannot enable scripted EPUB content or escape the reader security boundary;
-- production deployment and live-media verification pass from the exact release commit;
-- release notes, support limits, recovery instructions, rollback steps, and the v1.0 tag exist.
+- low-end, large-book, long-session, offline, quota, update, and recovery behavior is bounded;
+- progress, bookmarks, annotations, settings, activity, and imported books survive supported upgrades;
+- untrusted publication content remains inside the reader security boundary;
+- the exact source commit passes production deployment and live-media verification;
+- support limits, recovery instructions, release notes, rollback steps, and a v1.0 tag exist.
 
 Severity policy:
 
 | Severity | Meaning | Release rule |
 | --- | --- | --- |
-| P0 | data loss, security boundary failure, reader cannot open, or widespread crash | blocks every merge and release |
-| P1 | core reading, navigation, resume, import, or accessibility path broken on a Tier 1 target | blocks release |
-| P2 | important degradation with a usable workaround | must be explicitly accepted or fixed before v1.0 |
-| P3 | polish or optional enhancement | may be scheduled after v1.0 |
+| P0 | data loss, security failure, widespread crash, or reader cannot open | blocks every release |
+| P1 | core reading, navigation, resume, import, accessibility, or exit path broken on a required target | blocks release |
+| P2 | important degradation with a usable workaround | fix or explicitly accept before v1.0 |
+| P3 | cosmetic or optional enhancement | may be scheduled after v1.0 |
 
 ## Phase 1 — Release contract and browser-engine acceptance baseline
 
-**Purpose:** replace source-only confidence with executable user-journey coverage in real browser engines.
+**Purpose:** replace source-only confidence with executable user journeys in real browser engines.
 
 Implementation:
 
-- define Tier 1, Tier 2, unsupported, device-class, input, and evidence boundaries;
-- add Playwright acceptance tests for Chromium, Firefox, and WebKit;
-- cover desktop and phone-sized contexts;
-- verify catalog → My Library navigation;
-- import deterministic local EPUB and PDF fixtures through the real file input;
-- open both canonical personal-reader routes;
-- verify reader readiness, primary controls, dialog ownership, focus return, and horizontal-layout containment;
-- fail on unhandled page errors;
-- retain traces, screenshots, and video only on failure;
-- run browser acceptance as an independent required CI signal.
+- publish Tier 1, Tier 2, unsupported, device-class, input, and evidence boundaries;
+- run deterministic Playwright acceptance in Chromium, Firefox, and WebKit;
+- cover desktop and phone-sized projects;
+- exercise catalog, My Library, real EPUB/PDF import, canonical readers, readiness, controls, dialogs, focus return, and overflow containment;
+- reject unhandled page errors;
+- retain trace, screenshot, video, and report artifacts only on failure;
+- run Browser Acceptance as an independent CI signal.
 
 Exit criteria:
 
-- Quality workflow green;
-- Browser Acceptance workflow green for all configured projects;
-- release support contract and roadmap permanently source-certified;
-- no hosted R2 asset is required for the fixture-based acceptance paths.
+- Quality and Browser Acceptance are green;
+- browser fixtures require no hosted R2 media;
+- roadmap/support claims and RR1 ownership are permanently source-certified.
 
-## Phase 2 — Publication-format compatibility and hostile-file handling
+## Phase 2 — Physical-device acceptance and evidence
 
-**Purpose:** prove that the reader handles the real variety of books rather than only ordinary reflowable samples.
+**Purpose:** prove that actual devices, operating systems, browsers, input systems, and lifecycle behavior provide a smooth reading experience.
 
-EPUB matrix:
+Implementation:
 
-- EPUB 2 and EPUB 3;
-- reflowable and fixed-layout publications;
-- nested navigation, landmarks, page lists, footnotes, endnotes, internal and external links;
-- large images, SVG, tables, code, MathML, audio/video fallbacks, embedded fonts, and publisher CSS;
-- left-to-right, right-to-left, CJK, and vertical-writing metadata;
-- missing navigation, malformed package metadata, broken spine entries, missing resources, encrypted/DRM content, and zip-bomb/path-traversal attempts;
-- remote-resource and scripted-content rejection.
+- define an authoritative physical matrix for Android Chrome, Samsung Internet, Firefox, a lower-performance Android phone, iPhone Safari, iPhone installed PWA, iPad Safari, Windows Edge/Chrome/Firefox, and macOS Safari/Chrome;
+- define required portrait, landscape, split-view, narrow-window, touch, keyboard, pointer, trackpad, software-keyboard, native-selection, history, background/resume, offline/PWA, and sustained-session journeys;
+- store evidence as versioned JSON records bound to an exact 40-character build SHA;
+- require named human tester, physical manufacturer/model, OS/browser versions, required variants/inputs, journey outcomes, defects, duration, and evidence references;
+- provide structural validation that accepts an incomplete campaign but rejects malformed or dishonest records;
+- provide an exact-SHA release gate that fails until every target has current passing evidence;
+- retain manual workflow summaries as release artifacts;
+- provide structured physical-device defect intake.
 
-PDF matrix:
+Exit criteria:
 
-- ordinary text PDFs, scanned/image-only PDFs, mixed page sizes, rotated pages, large dimensions, embedded fonts, forms, links, encrypted/password-protected PDFs, corrupt xref data, and incremental updates;
-- graceful messaging when selectable text or search is unavailable;
+- all required targets pass for one exact build SHA;
+- every required journey and viewport/input variant passes;
+- each selected record includes evidence and at least a 30-minute session;
+- no open P0/P1 remains;
+- `pnpm certify:physical:release -- --expected-sha <sha>` passes.
+
+## Phase 3 — Publication-format compatibility and hostile-file handling
+
+**Purpose:** handle real publication diversity rather than only ordinary reflowable samples.
+
+EPUB scope:
+
+- EPUB 2/3, reflowable and fixed-layout detection;
+- nested navigation, landmarks, page lists, notes, internal/external links;
+- images, SVG, tables, code, MathML, media fallbacks, embedded fonts, publisher CSS;
+- LTR, RTL, CJK, and vertical-writing metadata;
+- missing navigation, malformed package/spine/resource data, encrypted/DRM content, traversal, zip-bomb, remote-resource, and scripted-content attempts.
+
+PDF scope:
+
+- text, scanned/image-only, mixed sizes, rotation, large pages, fonts, forms, links, encryption/password protection, corrupt xref data, and incremental updates;
+- explicit messaging when text selection/search is unavailable;
 - cancellation and cleanup during failed or abandoned opens.
 
 Exit criteria:
 
-- every supported fixture has an expected pass result;
-- every unsupported/hostile fixture has an expected safe-failure result;
-- no file class can silently hang the UI or create an unbounded resource operation.
+- supported fixtures have expected pass results;
+- unsupported/hostile fixtures have bounded safe failures;
+- no file class silently hangs or starts an unbounded operation.
 
-## Phase 3 — Performance, memory, and low-end-device resilience
+## Phase 4 — Performance, memory, and low-end resilience
 
-**Purpose:** make long sessions and large books smooth on constrained hardware.
+**Purpose:** make opening, reading, searching, and long sessions smooth on constrained hardware.
 
 Implementation:
 
-- define cold-open, warm-open, page-turn, search, rotation, and resume budgets;
-- measure representative small, medium, large, image-heavy, and long-document fixtures;
-- profile EPUB location generation, PDF rendering, text-layer creation, whole-book search, cover extraction, hashing, and IndexedDB writes;
-- add cancellation, cooperative yielding, bounded queues, and stale-render invalidation where missing;
-- verify no retained reader, iframe, canvas, worker, object URL, observer, or event-listener leaks after repeated open/close cycles;
-- reduce main-thread stalls on low-core and throttled profiles;
-- add performance regression thresholds that are stable enough for CI.
+- define cold-open, warm-open, first-readable-page, page-turn, search, rotation, and resume budgets;
+- measure small, ordinary, large, image-heavy, and long-document fixtures;
+- profile EPUB location generation, PDF rendering/text layers, search, cover extraction, hashing, and IndexedDB writes;
+- add cancellation, cooperative yielding, bounded queues, and stale-render invalidation;
+- verify teardown of iframes, canvases, workers, object URLs, observers, render tasks, and listeners;
+- repeat open/close, format-switch, background/resume, and 30–60-minute sessions on the lower-performance target;
+- add stable regression thresholds where CI measurement is reliable.
 
 Exit criteria:
 
-- budgets pass on the defined low-end profile;
-- repeated open/close and format-switch loops show bounded memory;
-- no long operation prevents back navigation, cancellation, or reader recovery.
+- published budgets pass on the defined lower-performance profile;
+- repeated use has bounded memory;
+- long operations never prevent navigation, cancellation, or recovery.
 
-## Phase 4 — Offline, PWA, update, and storage reliability
+## Phase 5 — Offline, PWA, update, and storage reliability
 
-**Purpose:** ensure books remain readable when connectivity or browser storage is unreliable.
+**Purpose:** keep books recoverable when connectivity or browser storage is unreliable.
 
 Implementation:
 
-- cache explicitly requested hosted EPUB and PDF editions with exact-release identity;
-- provide visible offline/download state and removal controls;
-- verify catalog, My Library, saved reader shell, and downloaded books offline;
-- preserve personal books offline through IndexedDB without service-worker duplication;
-- add storage estimation, persistence state, quota warnings, and actionable recovery copy;
-- test private mode, denied IndexedDB, quota exhaustion, blocked upgrades, interrupted writes, and multi-tab upgrades;
-- certify service-worker update, waiting-worker activation, cache migration, stale-cache cleanup, and rollback behavior;
-- prevent an update from discarding an open reader session.
+- provide explicit download/remove state for exact hosted EPUB/PDF releases;
+- expose offline inventory, size, progress, cancellation, and quota guidance;
+- verify catalog, My Library, reader shell, and explicitly downloaded books after restart while offline;
+- keep personal books in IndexedDB without service-worker duplication;
+- test denied IndexedDB, quota exhaustion, blocked upgrades, interrupted writes, private mode, storage eviction, and multi-tab upgrades;
+- certify service-worker waiting/activation, cache migration, stale cleanup, rollback, and active-reader preservation.
 
 Exit criteria:
 
-- downloaded books reopen offline after a full browser restart;
-- failures degrade to explicit session-only or unavailable states without corrupting existing data;
-- update and cache migrations are reproducible and reversible.
+- explicitly downloaded supported formats reopen offline;
+- failures become explicit session-only/unavailable states without corrupting existing data;
+- update/cache migrations are reproducible and reversible.
 
-## Phase 5 — Accessibility and inclusive reading
+## Phase 6 — Accessibility and inclusive reading
 
-**Purpose:** make core reading usable without assuming sight, mouse input, precise touch, ordinary contrast, or Latin left-to-right text.
+**Purpose:** make core reading usable without assuming sight, mouse input, precise touch, ordinary contrast, or Latin LTR text.
 
 Implementation:
 
-- complete WCAG 2.2 AA audit of catalog, My Library, EPUB, PDF, dialogs, import, errors, and offline states;
-- certify keyboard-only operation, visible focus, focus order, focus containment, skip navigation, live regions, and reader exit;
-- test VoiceOver/Safari, TalkBack/Chrome, NVDA/Firefox or Chromium, and platform zoom/text scaling;
-- verify 200% browser zoom and 400% reflow where applicable;
-- test forced colors, reduced motion, high contrast, coarse pointer, switch-like sequential navigation, and touch target spacing;
-- verify semantic reading order and usable alternative text behavior;
+- complete a WCAG 2.2 AA audit across catalog, My Library, EPUB, PDF, dialogs, imports, failures, and offline states;
+- certify keyboard operation, focus, containment/recovery, skip navigation, live regions, and exit;
+- test VoiceOver on iPhone/macOS, TalkBack on Android, and NVDA on Windows;
+- verify 200% zoom, 400% reflow, large text, forced colors, reduced motion, high contrast, and target spacing;
 - harden RTL, CJK, vertical text, language metadata, hyphenation, and font fallback;
-- document unsupported accessibility limitations rather than hiding them.
+- document limitations accurately.
 
 Exit criteria:
 
 - no P0/P1 accessibility defect remains;
-- the complete import → open → read → search/bookmark → resume → exit path works with keyboard and at least one screen reader per mobile/desktop family.
+- complete import → open → read → search/bookmark → resume → exit works with keyboard and required screen-reader families.
 
-## Phase 6 — Reading ergonomics and product UX polish
+## Phase 7 — Reading ergonomics and product UX polish
 
-**Purpose:** remove friction that is not visible in architecture tests.
+**Purpose:** remove real-world friction not visible in architecture tests.
 
 Implementation:
 
-- refine first-run onboarding and explain browser-local storage clearly;
+- refine onboarding and browser-local storage explanations;
 - make import, duplicate, unsupported-file, storage, and recovery states concise and actionable;
-- validate tap zones, swipes, page keys, scroll mode, selection, annotations, search, bookmarks, fullscreen/PWA, rotation, and browser back behavior;
-- ensure toolbars neither hide necessary actions nor cover content;
-- make settings discoverable while preserving a quiet reading surface;
-- add a storage/download manager and clearer book-state actions;
-- audit typography, line length, spacing, theme contrast, image handling, tables, footnotes, and chapter transitions on real screens;
-- eliminate layout shift, accidental page turns, scroll jumps, trapped panels, and unclear loading states.
+- audit tap zones, swipes, page keys, scroll mode, selection, annotations, search, bookmarks, fullscreen/PWA, rotation, and back behavior;
+- prevent toolbars from hiding actions or covering content;
+- audit typography, line length, spacing, themes, images, tables, notes, and chapter transitions on real screens;
+- eliminate layout shift, accidental page turns, scroll jumps, trapped panels, and ambiguous loading states;
+- convert all confirmed RR2 findings into fixed or explicitly accepted outcomes.
 
 Exit criteria:
 
-- moderated task scripts complete without workaround on phone, tablet, and desktop;
-- all confirmed UX defects from the physical-device matrix are fixed or explicitly deferred as P3.
+- moderated phone, tablet, and desktop task scripts complete without workaround;
+- all confirmed UX P0/P1/P2 defects are fixed or validly dispositioned.
 
-## Phase 7 — Data durability, migration, and portability
+## Phase 8 — Data durability, migration, backup, and portability
 
-**Purpose:** prevent the browser-local model from becoming a data trap.
+**Purpose:** prevent browser-local reading state from becoming fragile or trapped.
 
 Implementation:
 
 - version every persisted schema and add deterministic forward-migration tests;
-- export and restore progress, activity, favorites, EPUB bookmarks, highlights/notes, PDF bookmarks, settings, and personal-book metadata;
-- support an optional encrypted archive that may include personal book files when the user explicitly selects it;
-- validate partial restore, duplicate identity, stale release, corrupt archive, and quota failure behavior;
-- keep import atomic so a failed restore does not damage current state;
-- document that automatic cross-device sync is not provided unless a later privacy-preserving sync service is intentionally added.
+- cover crash/interruption, partial writes, corrupt records, storage denial, and multiple tabs;
+- export and restore activity, favorites, EPUB/PDF progress, bookmarks, highlights/notes, settings, and personal-book metadata;
+- optionally include personal book files only through an explicit encrypted archive choice;
+- validate partial restore, duplicate identity, stale releases, corrupt archives, and quota failure;
+- keep restore atomic and document the absence of automatic cloud sync.
 
 Exit criteria:
 
-- a user can move or back up their library state without database tools;
-- all supported historical schemas migrate without loss of authoritative format-native positions.
+- supported historical schemas migrate without authoritative-position loss;
+- users can inspect, back up, and move state without database tools;
+- failed restore never damages current state.
 
-## Phase 8 — Security, privacy, and dependency hardening
+## Phase 9 — Security, privacy, and dependency hardening plus v1.0 launch
 
-**Purpose:** certify the reader as a safe local-file and hosted-publication processor.
+**Purpose:** certify safe publication processing and produce an operable, reversible v1.0.
 
 Implementation:
 
-- audit CSP, security headers, iframe boundaries, workers, blob URLs, object URLs, external links, remote resources, and download paths;
-- retain `allowScriptedContent: false` and add executable proof that EPUB scripts do not run;
-- reject zip bombs, traversal paths, misleading extensions, invalid MIME signatures, oversized metadata/cover assets, and pathological decompression ratios;
-- keep PDF JavaScript evaluation disabled;
-- audit dependencies, licenses, provenance, known vulnerabilities, update cadence, and lockfile integrity;
-- ensure traces and CI artifacts never contain personal files or secrets;
-- publish a concise privacy and security model plus a responsible-reporting route.
+- audit CSP, headers, iframe/worker boundaries, blob/object URLs, links, remote resources, and download paths;
+- keep scripted EPUB content and PDF JavaScript disabled with executable proof;
+- reject traversal, bombs, misleading signatures, oversized metadata/covers, and pathological decompression;
+- audit dependency vulnerabilities, licenses, provenance, lock integrity, SBOM, and update policy;
+- ensure CI artifacts never expose personal files or secrets;
+- publish privacy/security/support/recovery/rollback documentation;
+- perform the **Physical-device release candidate re-run** on the exact final commit;
+- remove obsolete release infrastructure, enable protected gates, bump to `1.0.0`, write changelog, tag, deploy, verify production, and record rollback.
 
 Exit criteria:
 
-- no known high/critical vulnerability affects the shipped path;
-- hostile fixture suite passes;
-- privacy claims match actual network and storage behavior.
-
-## Phase 9 — Physical-device release candidate and v1.0 launch
-
-**Purpose:** convert automated confidence into release evidence and an operable v1.0.
-
-Minimum physical matrix:
-
-- Android phone: Chrome and Samsung Internet;
-- iPhone: Safari browser and installed PWA;
-- iPad: Safari portrait, landscape, and split view;
-- Windows: Chrome/Edge and Firefox;
-- macOS: Safari and Chrome/Firefox where available;
-- one low-memory or older supported phone;
-- keyboard, touch, mouse/trackpad, and screen-reader paths.
-
-Implementation:
-
-- run the complete acceptance script with recorded device/OS/browser/build evidence;
-- burn down all P0/P1 and accepted P2 defects;
-- repeat offline, update, quota, backup/restore, and long-session tests;
-- perform final legal/license, privacy, metadata, icon, installability, and documentation review;
-- remove obsolete release branches/workflows and enable protected release gates;
-- bump from release candidate to `1.0.0`, write changelog and support notes, tag the exact deployed commit, verify production, and record rollback instructions.
-
-Exit criteria:
-
-- every Tier 1 target has recorded passing evidence;
-- production verification passes from the tagged source;
-- the support contract, known limitations, recovery documentation, and rollback path are public and accurate.
+- no known high/critical shipped vulnerability;
+- hostile fixture suite and all preceding gates pass;
+- final exact-SHA physical evidence is current;
+- tagged source and production artifacts verify;
+- support, limitations, privacy, recovery, and rollback claims are public and accurate.
 
 ## Current state
 
-Phase 1 is the active implementation phase. ER0–ER7 provide a strong reader foundation, but they do not replace cross-browser end-to-end execution, broader publication fixtures, performance budgets, data portability, hostile-file testing, or recorded physical-device evidence.
+RR1 is implemented on its release branch. RR2 now provides the matrix, schema, validator, workflow, defect form, and documentation required to collect honest physical-device evidence. The current evidence count remains **0/12**; physical certification is not claimed until the named devices are actually operated and the exact-build gate passes.

@@ -1,0 +1,485 @@
+{
+  "schemaVersion": 1,
+  "phaseId": "RR2",
+  "name": "Physical-Device Acceptance and Evidence",
+  "maximumEvidenceAgeDays": 90,
+  "minimumSessionMinutes": 30,
+  "evidencePolicy": {
+    "minimumItemsForPassingRecord": 1,
+    "permittedReferences": [
+      "https URL",
+      "repository-relative path"
+    ],
+    "forbiddenContent": [
+      "private personal-book pages",
+      "credentials",
+      "secrets",
+      "unredacted personal information"
+    ]
+  },
+  "journeys": [
+    {
+      "id": "catalog-navigation",
+      "label": "Catalog and Library navigation",
+      "description": "Open the catalog, book details, My Library, and return without overflow, blocked controls, or dead navigation."
+    },
+    {
+      "id": "hosted-epub-start-resume",
+      "label": "Hosted EPUB start and resume",
+      "description": "Open a hosted EPUB, move away from the initial position, close the reader, and resume the exact release without a dead or shifted reader."
+    },
+    {
+      "id": "epub-layout-appearance",
+      "label": "EPUB layout and appearance",
+      "description": "Switch pagination/scrolling, spread, typography, width, margin, and theme while keeping controls reachable and position stable."
+    },
+    {
+      "id": "epub-tools",
+      "label": "EPUB search, bookmarks, highlights, and notes",
+      "description": "Use in-book search, create and reopen a bookmark, create a highlight/note, and dismiss every panel correctly."
+    },
+    {
+      "id": "hosted-pdf-start-resume",
+      "label": "Hosted PDF start and resume",
+      "description": "Open a hosted PDF, navigate pages, close, and resume the same exact-release page state."
+    },
+    {
+      "id": "pdf-tools",
+      "label": "PDF search, bookmarks, fit, and zoom",
+      "description": "Use search and page bookmarks, switch fit modes, adjust zoom, and verify focus/dialog ownership."
+    },
+    {
+      "id": "personal-import-reopen",
+      "label": "Personal EPUB and PDF import",
+      "description": "Import one valid EPUB and PDF, open both canonical readers, leave, and reopen them from My Library."
+    },
+    {
+      "id": "viewport-adaptation",
+      "label": "Resize, rotation, safe areas, and split view",
+      "description": "Exercise every target-required viewport variant without hidden controls, covered content, or horizontal document overflow."
+    },
+    {
+      "id": "software-keyboard",
+      "label": "Software keyboard behavior",
+      "description": "Focus reader inputs, verify the keyboard does not cover the active control, dismiss it, and recover full reader space."
+    },
+    {
+      "id": "keyboard-dialogs",
+      "label": "Keyboard and dialog ownership",
+      "description": "Operate core reader actions without a pointer, dismiss overlays with Escape, and verify deterministic focus restoration."
+    },
+    {
+      "id": "native-selection",
+      "label": "Native text selection",
+      "description": "Select publication text using the platform selection model without accidental page turns or an unusable action toolbar."
+    },
+    {
+      "id": "browser-history",
+      "label": "Browser and OS navigation",
+      "description": "Use Back, Forward, reader exit, and route re-entry without a dead reader, duplicate history, or lost position."
+    },
+    {
+      "id": "background-resume",
+      "label": "Background, lock, and resume",
+      "description": "Background the browser or PWA, lock the device where applicable, return, and continue without reload loops or lost state."
+    },
+    {
+      "id": "offline-pwa",
+      "label": "Installed PWA and offline recovery",
+      "description": "Install or launch the PWA, explicitly cache supported content, go offline, reopen it, and recover cleanly when content is unavailable."
+    },
+    {
+      "id": "sustained-session",
+      "label": "Sustained reading session",
+      "description": "Read continuously for the configured minimum duration while page turns, scrolling, panels, memory behavior, and device temperature remain usable."
+    }
+  ],
+  "targets": [
+    {
+      "id": "android-chrome",
+      "label": "Android phone · Chrome",
+      "platform": "Android",
+      "deviceClass": "phone",
+      "browserFamily": "Chrome",
+      "requiredInputs": [
+        "touch"
+      ],
+      "requiredVariants": [
+        "portrait",
+        "landscape"
+      ],
+      "requiredJourneys": [
+        "catalog-navigation",
+        "hosted-epub-start-resume",
+        "epub-layout-appearance",
+        "epub-tools",
+        "hosted-pdf-start-resume",
+        "pdf-tools",
+        "personal-import-reopen",
+        "viewport-adaptation",
+        "software-keyboard",
+        "native-selection",
+        "browser-history",
+        "background-resume",
+        "sustained-session"
+      ],
+      "requiredForRelease": true,
+      "physicalOnly": true
+    },
+    {
+      "id": "android-samsung-internet",
+      "label": "Android phone · Samsung Internet",
+      "platform": "Android",
+      "deviceClass": "phone",
+      "browserFamily": "Samsung Internet",
+      "requiredInputs": [
+        "touch"
+      ],
+      "requiredVariants": [
+        "portrait",
+        "landscape"
+      ],
+      "requiredJourneys": [
+        "catalog-navigation",
+        "hosted-epub-start-resume",
+        "epub-layout-appearance",
+        "epub-tools",
+        "hosted-pdf-start-resume",
+        "pdf-tools",
+        "personal-import-reopen",
+        "viewport-adaptation",
+        "software-keyboard",
+        "native-selection",
+        "browser-history",
+        "background-resume",
+        "sustained-session"
+      ],
+      "requiredForRelease": true,
+      "physicalOnly": true
+    },
+    {
+      "id": "android-firefox",
+      "label": "Android phone · Firefox",
+      "platform": "Android",
+      "deviceClass": "phone",
+      "browserFamily": "Firefox",
+      "requiredInputs": [
+        "touch"
+      ],
+      "requiredVariants": [
+        "portrait",
+        "landscape"
+      ],
+      "requiredJourneys": [
+        "catalog-navigation",
+        "hosted-epub-start-resume",
+        "epub-layout-appearance",
+        "epub-tools",
+        "hosted-pdf-start-resume",
+        "pdf-tools",
+        "personal-import-reopen",
+        "viewport-adaptation",
+        "software-keyboard",
+        "native-selection",
+        "browser-history",
+        "background-resume",
+        "sustained-session"
+      ],
+      "requiredForRelease": true,
+      "physicalOnly": true
+    },
+    {
+      "id": "android-low-end-chrome",
+      "label": "Lower-performance Android phone · Chrome",
+      "platform": "Android",
+      "deviceClass": "low-end-phone",
+      "browserFamily": "Chrome",
+      "requiredInputs": [
+        "touch"
+      ],
+      "requiredVariants": [
+        "portrait",
+        "landscape"
+      ],
+      "requiredJourneys": [
+        "catalog-navigation",
+        "hosted-epub-start-resume",
+        "epub-layout-appearance",
+        "epub-tools",
+        "hosted-pdf-start-resume",
+        "pdf-tools",
+        "personal-import-reopen",
+        "viewport-adaptation",
+        "software-keyboard",
+        "native-selection",
+        "browser-history",
+        "background-resume",
+        "sustained-session"
+      ],
+      "requiredForRelease": true,
+      "physicalOnly": true,
+      "deviceConstraints": {
+        "maxMemoryGb": 6
+      }
+    },
+    {
+      "id": "ios-safari",
+      "label": "iPhone · Safari",
+      "platform": "iOS",
+      "deviceClass": "phone",
+      "browserFamily": "Safari",
+      "requiredInputs": [
+        "touch"
+      ],
+      "requiredVariants": [
+        "portrait",
+        "landscape"
+      ],
+      "requiredJourneys": [
+        "catalog-navigation",
+        "hosted-epub-start-resume",
+        "epub-layout-appearance",
+        "epub-tools",
+        "hosted-pdf-start-resume",
+        "pdf-tools",
+        "personal-import-reopen",
+        "viewport-adaptation",
+        "software-keyboard",
+        "native-selection",
+        "browser-history",
+        "background-resume",
+        "sustained-session"
+      ],
+      "requiredForRelease": true,
+      "physicalOnly": true
+    },
+    {
+      "id": "ios-pwa",
+      "label": "iPhone · installed PWA",
+      "platform": "iOS",
+      "deviceClass": "phone",
+      "browserFamily": "Safari PWA",
+      "requiredInputs": [
+        "touch"
+      ],
+      "requiredVariants": [
+        "portrait",
+        "landscape",
+        "standalone"
+      ],
+      "requiredJourneys": [
+        "catalog-navigation",
+        "hosted-epub-start-resume",
+        "epub-layout-appearance",
+        "epub-tools",
+        "hosted-pdf-start-resume",
+        "pdf-tools",
+        "personal-import-reopen",
+        "viewport-adaptation",
+        "software-keyboard",
+        "native-selection",
+        "browser-history",
+        "background-resume",
+        "sustained-session",
+        "offline-pwa"
+      ],
+      "requiredForRelease": true,
+      "physicalOnly": true,
+      "requiredEnvironment": {
+        "installedPwa": true
+      }
+    },
+    {
+      "id": "ipados-safari",
+      "label": "iPad · Safari",
+      "platform": "iPadOS",
+      "deviceClass": "tablet",
+      "browserFamily": "Safari",
+      "requiredInputs": [
+        "touch"
+      ],
+      "requiredVariants": [
+        "portrait",
+        "landscape",
+        "split-view"
+      ],
+      "requiredJourneys": [
+        "catalog-navigation",
+        "hosted-epub-start-resume",
+        "epub-layout-appearance",
+        "epub-tools",
+        "hosted-pdf-start-resume",
+        "pdf-tools",
+        "personal-import-reopen",
+        "viewport-adaptation",
+        "software-keyboard",
+        "native-selection",
+        "browser-history",
+        "background-resume",
+        "sustained-session"
+      ],
+      "requiredForRelease": true,
+      "physicalOnly": true
+    },
+    {
+      "id": "windows-edge",
+      "label": "Windows · Edge",
+      "platform": "Windows",
+      "deviceClass": "desktop",
+      "browserFamily": "Edge",
+      "requiredInputs": [
+        "keyboard",
+        "pointer"
+      ],
+      "requiredVariants": [
+        "ordinary-window",
+        "narrow-window"
+      ],
+      "requiredJourneys": [
+        "catalog-navigation",
+        "hosted-epub-start-resume",
+        "epub-layout-appearance",
+        "epub-tools",
+        "hosted-pdf-start-resume",
+        "pdf-tools",
+        "personal-import-reopen",
+        "viewport-adaptation",
+        "keyboard-dialogs",
+        "native-selection",
+        "browser-history",
+        "background-resume",
+        "sustained-session"
+      ],
+      "requiredForRelease": true,
+      "physicalOnly": true
+    },
+    {
+      "id": "windows-chrome",
+      "label": "Windows · Chrome",
+      "platform": "Windows",
+      "deviceClass": "desktop",
+      "browserFamily": "Chrome",
+      "requiredInputs": [
+        "keyboard",
+        "pointer"
+      ],
+      "requiredVariants": [
+        "ordinary-window",
+        "narrow-window"
+      ],
+      "requiredJourneys": [
+        "catalog-navigation",
+        "hosted-epub-start-resume",
+        "epub-layout-appearance",
+        "epub-tools",
+        "hosted-pdf-start-resume",
+        "pdf-tools",
+        "personal-import-reopen",
+        "viewport-adaptation",
+        "keyboard-dialogs",
+        "native-selection",
+        "browser-history",
+        "background-resume",
+        "sustained-session"
+      ],
+      "requiredForRelease": true,
+      "physicalOnly": true
+    },
+    {
+      "id": "windows-firefox",
+      "label": "Windows · Firefox",
+      "platform": "Windows",
+      "deviceClass": "desktop",
+      "browserFamily": "Firefox",
+      "requiredInputs": [
+        "keyboard",
+        "pointer"
+      ],
+      "requiredVariants": [
+        "ordinary-window",
+        "narrow-window"
+      ],
+      "requiredJourneys": [
+        "catalog-navigation",
+        "hosted-epub-start-resume",
+        "epub-layout-appearance",
+        "epub-tools",
+        "hosted-pdf-start-resume",
+        "pdf-tools",
+        "personal-import-reopen",
+        "viewport-adaptation",
+        "keyboard-dialogs",
+        "native-selection",
+        "browser-history",
+        "background-resume",
+        "sustained-session"
+      ],
+      "requiredForRelease": true,
+      "physicalOnly": true
+    },
+    {
+      "id": "macos-safari",
+      "label": "macOS · Safari",
+      "platform": "macOS",
+      "deviceClass": "desktop",
+      "browserFamily": "Safari",
+      "requiredInputs": [
+        "keyboard",
+        "trackpad"
+      ],
+      "requiredVariants": [
+        "ordinary-window",
+        "narrow-window"
+      ],
+      "requiredJourneys": [
+        "catalog-navigation",
+        "hosted-epub-start-resume",
+        "epub-layout-appearance",
+        "epub-tools",
+        "hosted-pdf-start-resume",
+        "pdf-tools",
+        "personal-import-reopen",
+        "viewport-adaptation",
+        "keyboard-dialogs",
+        "native-selection",
+        "browser-history",
+        "background-resume",
+        "sustained-session"
+      ],
+      "requiredForRelease": true,
+      "physicalOnly": true
+    },
+    {
+      "id": "macos-chrome",
+      "label": "macOS · Chrome",
+      "platform": "macOS",
+      "deviceClass": "desktop",
+      "browserFamily": "Chrome",
+      "requiredInputs": [
+        "keyboard",
+        "trackpad"
+      ],
+      "requiredVariants": [
+        "ordinary-window",
+        "narrow-window"
+      ],
+      "requiredJourneys": [
+        "catalog-navigation",
+        "hosted-epub-start-resume",
+        "epub-layout-appearance",
+        "epub-tools",
+        "hosted-pdf-start-resume",
+        "pdf-tools",
+        "personal-import-reopen",
+        "viewport-adaptation",
+        "keyboard-dialogs",
+        "native-selection",
+        "browser-history",
+        "background-resume",
+        "sustained-session"
+      ],
+      "requiredForRelease": true,
+      "physicalOnly": true
+    }
+  ]
+}

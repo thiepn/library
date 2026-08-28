@@ -1,0 +1,97 @@
+name: Physical Device Evidence
+
+on:
+  pull_request:
+    paths:
+      - 'docs/RR2_PHYSICAL_DEVICE_ACCEPTANCE.md'
+      - 'docs/RELEASE_READINESS_ROADMAP.md'
+      - 'docs/RELEASE_SUPPORT_CONTRACT.md'
+      - 'evidence/physical-devices/**'
+      - 'scripts/certification/physical-device-*.mjs'
+      - '.github/workflows/physical-device-evidence.yml'
+      - '.github/ISSUE_TEMPLATE/physical-device-defect.yml'
+      - 'package.json'
+      - 'README.md'
+  push:
+    branches: [main]
+    paths:
+      - 'docs/RR2_PHYSICAL_DEVICE_ACCEPTANCE.md'
+      - 'docs/RELEASE_READINESS_ROADMAP.md'
+      - 'docs/RELEASE_SUPPORT_CONTRACT.md'
+      - 'evidence/physical-devices/**'
+      - 'scripts/certification/physical-device-*.mjs'
+      - '.github/workflows/physical-device-evidence.yml'
+      - '.github/ISSUE_TEMPLATE/physical-device-defect.yml'
+      - 'package.json'
+      - 'README.md'
+  workflow_dispatch:
+    inputs:
+      tested_build_sha:
+        description: Exact 40-character Git SHA operated on every physical target
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: physical-device-evidence-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  structure:
+    name: Validate evidence structure
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.12.0
+      - name: Validate RR2 contract, matrix, schema, and records
+        run: |
+          node scripts/certification/physical-device-contract.mjs
+          node scripts/certification/physical-device-evidence.mjs --mode structure
+
+  release:
+    name: Certify exact physical-device build
+    needs: structure
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    env:
+      TESTED_BUILD_SHA: ${{ inputs.tested_build_sha }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.12.0
+
+      - name: Run exact-build physical-device gate
+        id: physical
+        shell: bash
+        run: |
+          set +e
+          node scripts/certification/physical-device-evidence.mjs \
+            --mode release \
+            --expected-sha "$TESTED_BUILD_SHA" \
+            --report physical-device-release.json \
+            2>&1 | tee physical-device-release.txt
+          status=${PIPESTATUS[0]}
+          echo "$status" > physical-device-exit-code
+          exit 0
+
+      - name: Upload physical-device release evidence summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: physical-device-evidence-${{ inputs.tested_build_sha }}
+          path: |
+            physical-device-release.json
+            physical-device-release.txt
+            physical-device-exit-code
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Enforce physical-device result
+        if: always()
+        shell: bash
+        run: test "$(cat physical-device-exit-code)" -eq 0
