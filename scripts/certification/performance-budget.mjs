@@ -66,7 +66,7 @@ if (present) {
       && fixtures.includes("title: 'RR4 Image Heavy EPUB'")
       && fixtures.includes('makeLongPdf(180)')
       && fixtures.includes('method: 0')
-      && fixtures.includes('RR4-EPUB-FINAL-TARGET')
+      && fixtures.includes('RR4EPUBFINALTARGET')
       && fixtures.includes('RR4-PDF-FINAL-TARGET'),
     'Deterministic small, ordinary, large, image-heavy, and long-document fixtures exercise late-search targets and bounded archive behavior',
   );

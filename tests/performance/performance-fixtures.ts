@@ -225,7 +225,7 @@ function makeLongPdf(pageCount: number): BrowserFixtureFile {
   return fixture('rr4-long-180-page.pdf', 'application/pdf', Buffer.concat(chunks));
 }
 
-export const RR4_FINAL_EPUB_TOKEN = 'RR4-EPUB-FINAL-TARGET';
+export const RR4_FINAL_EPUB_TOKEN = 'RR4EPUBFINALTARGET';
 export const RR4_FINAL_PDF_TOKEN = 'RR4-PDF-FINAL-TARGET';
 
 export const smallEpubFixture = makeEpub({
