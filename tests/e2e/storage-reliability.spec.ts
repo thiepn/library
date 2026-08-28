@@ -1,10 +1,10 @@
 import { expect, test } from '@playwright/test';
-import { personalPdfFixture, secondPersonalPdfFixture } from './offline-fixtures';
+import { personalEpubFixture, personalPdfFixture, secondPersonalPdfFixture } from './offline-fixtures';
 
 const PERSONAL_DB = 'thiepn-library-personal-books';
 const STABLE_PUBLICATION_CACHE = 'thiepn-library-offline-publications-v1';
 
-const filePayload = (name: string, buffer: Buffer) => ({ name, mimeType: 'application/pdf', buffer });
+const filePayload = (name: string, buffer: Buffer, mimeType = 'application/pdf') => ({ name, mimeType, buffer });
 
 test('@rr5 quota exhaustion is explicit and leaves no partial personal book', async ({ page }) => {
   await page.goto('/library/saved');
@@ -111,6 +111,42 @@ test('@rr5 personal books stay in IndexedDB and never enter hosted service-worke
     return (await cache.keys()).map((request) => request.url);
   }, STABLE_PUBLICATION_CACHE);
   expect(cachedUrls.some((url) => url.includes('/personal/') || url.startsWith('blob:'))).toBe(false);
+});
+
+test('@rr5 personal EPUB and PDF readers reopen offline while private files remain IndexedDB-only', async ({ page, context }) => {
+  await page.goto('/library/saved');
+  await page.evaluate(() => navigator.serviceWorker.ready);
+  if (!(await page.evaluate(() => Boolean(navigator.serviceWorker.controller)))) {
+    await page.reload();
+    await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller));
+  }
+
+  await page.locator('[data-personal-file-input]').setInputFiles([
+    filePayload('RR5 Personal Offline.epub', personalEpubFixture, 'application/epub+zip'),
+    filePayload('RR5 Personal Offline.pdf', personalPdfFixture),
+  ]);
+  await expect(page.locator('[data-personal-import-status]')).toContainText('2 imported', { timeout: 45_000 });
+  await expect(page.locator('[data-personal-import-status]')).not.toContainText('offline setup did not finish');
+
+  const epubCard = page.locator('[data-personal-book]').filter({ has: page.getByRole('heading', { level: 3, name: 'RR5 Offline EPUB' }) });
+  const pdfCard = page.locator('[data-personal-book]').filter({ has: page.getByRole('heading', { level: 3, name: 'RR5 Personal Offline' }) });
+  const epubHref = await epubCard.locator('a.personal-book__action').getAttribute('href');
+  const pdfHref = await pdfCard.locator('a.personal-book__action').getAttribute('href');
+  expect(epubHref).toBeTruthy();
+  expect(pdfHref).toBeTruthy();
+
+  await context.setOffline(true);
+  try {
+    await page.goto(epubHref!, { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('[data-reader-shell]')).toHaveAttribute('data-reader-status', 'ready', { timeout: 30_000 });
+    await expect(page.locator('[data-reader-viewport] iframe')).toBeVisible();
+
+    await page.goto(pdfHref!, { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('[data-pdf-reader-root]')).toHaveAttribute('data-pdf-reader-state', 'ready', { timeout: 30_000 });
+    await expect.poll(async () => Number(await page.locator('[data-pdf-page-count]').textContent())).toBeGreaterThan(0);
+  } finally {
+    await context.setOffline(false);
+  }
 });
 
 test('@rr5 private-style ephemeral browser context does not persist personal books into a later session', async ({ browser }) => {
