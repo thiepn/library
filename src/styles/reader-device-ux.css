@@ -1,0 +1,299 @@
+/* ER7 — final device-facing normalization shared by EPUB, PDF, and legacy web reading. */
+
+/* Native EPUB: never trade away core controls to make a narrow toolbar fit. */
+.reader-shell__error-actions button,
+.reader-shell__error-actions a {
+  min-height: 44px;
+}
+
+@media (max-width: 760px) {
+  .reader-shell__cluster--end .reader-shell__icon-button[data-reader-command="contents"],
+  .reader-shell__cluster--end .reader-shell__icon-button[data-reader-command="more"] {
+    display: inline-grid;
+  }
+
+  .reader-shell__cluster--end {
+    flex: 0 0 auto;
+  }
+}
+
+@media (max-width: 420px) {
+  .reader-shell__cluster--end .reader-shell__icon-button,
+  .reader-shell__cluster--end .reader-shell__text-button {
+    width: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Integrated PDF: visual viewport, safe areas, modal panels, and reachable controls. */
+.pdf-reader {
+  --pdf-safe-top: env(safe-area-inset-top, 0px);
+  --pdf-safe-right: env(safe-area-inset-right, 0px);
+  --pdf-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --pdf-safe-left: env(safe-area-inset-left, 0px);
+  height: var(--pdf-visual-height, 100dvh);
+  grid-template-rows:
+    calc(var(--pdf-topbar) + var(--pdf-safe-top))
+    var(--pdf-controlbar)
+    minmax(0, 1fr);
+}
+
+.pdf-reader__topbar {
+  min-height: calc(var(--pdf-topbar) + var(--pdf-safe-top));
+  padding:
+    var(--pdf-safe-top)
+    calc(10px + var(--pdf-safe-right))
+    0
+    calc(10px + var(--pdf-safe-left));
+}
+
+.pdf-reader__controlbar {
+  padding-inline:
+    calc(12px + var(--pdf-safe-left))
+    calc(12px + var(--pdf-safe-right));
+}
+
+.pdf-reader__back {
+  min-width: 44px;
+}
+
+.pdf-reader__panel {
+  inset-block-start: calc(var(--pdf-topbar) + var(--pdf-safe-top));
+}
+
+.pdf-reader .pdf-reader__backdrop {
+  position: fixed;
+  z-index: 35;
+  inset: 0;
+  width: 100%;
+  min-width: 0;
+  height: var(--pdf-visual-height, 100dvh);
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: rgb(0 0 0 / 0.28);
+  cursor: pointer;
+}
+
+.pdf-reader .pdf-reader__backdrop:hover,
+.pdf-reader .pdf-reader__backdrop:focus-visible {
+  background: rgb(0 0 0 / 0.28);
+}
+
+.pdf-reader__backdrop[hidden] {
+  display: none;
+}
+
+.pdf-reader[data-pdf-panel="search"] .pdf-reader__viewport,
+.pdf-reader[data-pdf-panel="bookmarks"] .pdf-reader__viewport {
+  overscroll-behavior: none;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .pdf-reader__back,
+  .pdf-reader button:not(.pdf-reader__backdrop),
+  .pdf-reader select,
+  .pdf-reader input,
+  .pdf-reader__tools a,
+  .pdf-reader__error a {
+    min-height: 44px;
+  }
+
+  .pdf-reader button,
+  .pdf-reader a {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+@media (max-width: 760px) {
+  .pdf-reader {
+    --pdf-topbar: 56px;
+    --pdf-controlbar: 100px;
+  }
+
+  .pdf-reader button:not(.pdf-reader__backdrop),
+  .pdf-reader select,
+  .pdf-reader input,
+  .pdf-reader__back {
+    min-height: 44px;
+  }
+
+  .pdf-reader__tools button,
+  .pdf-reader__tools a {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .pdf-reader__search-form input,
+  .pdf-reader__page-controls input,
+  .pdf-reader__zoom-controls select {
+    font-size: 16px;
+  }
+
+  .pdf-reader__panel {
+    max-height: min(
+      74dvh,
+      calc(var(--pdf-visual-height, 100dvh) - var(--pdf-safe-top) - 12px)
+    );
+  }
+
+  .pdf-reader[data-pdf-keyboard="open"] {
+    grid-template-rows:
+      calc(var(--pdf-topbar) + var(--pdf-safe-top))
+      0
+      minmax(0, 1fr);
+  }
+
+  .pdf-reader[data-pdf-keyboard="open"] .pdf-reader__controlbar {
+    min-height: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .pdf-reader[data-pdf-keyboard="open"] .pdf-reader__panel {
+    inset:
+      calc(var(--pdf-safe-top) + 6px)
+      calc(var(--pdf-safe-right) + 6px)
+      6px
+      calc(var(--pdf-safe-left) + 6px);
+    width: auto;
+    max-height: none;
+    padding-bottom: 14px;
+    border: 1px solid var(--pdf-border);
+    border-radius: 14px;
+  }
+}
+
+@media (max-width: 430px) {
+  .pdf-reader__title {
+    max-width: 28vw;
+  }
+
+  .pdf-reader__tools [data-pdf-bookmark-toggle] {
+    display: inline-flex;
+  }
+
+  .pdf-reader__tools button {
+    padding-inline: 8px;
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 900px) and (max-height: 540px) and (orientation: landscape) {
+  .pdf-reader {
+    --pdf-topbar: 48px;
+    --pdf-controlbar: 52px;
+  }
+
+  .pdf-reader__meta,
+  .pdf-reader__progress {
+    display: none;
+  }
+
+  .pdf-reader__controlbar {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 8px;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: thin;
+  }
+
+  .pdf-reader__page-controls,
+  .pdf-reader__zoom-controls,
+  .pdf-reader__controlbar > [data-pdf-bookmark] {
+    grid-area: auto;
+    flex: 0 0 auto;
+  }
+
+  .pdf-reader__viewport {
+    padding-block: 8px max(10px, var(--pdf-safe-bottom));
+  }
+
+  .pdf-reader__panel {
+    inset:
+      calc(var(--pdf-safe-top) + 6px)
+      calc(var(--pdf-safe-right) + 6px)
+      calc(var(--pdf-safe-bottom) + 6px)
+      calc(var(--pdf-safe-left) + 6px);
+    width: auto;
+    max-height: none;
+    border: 1px solid var(--pdf-border);
+    border-radius: 14px;
+  }
+}
+
+/* Legacy web compatibility reader: respect notches and make mobile navigation tappable. */
+.reader-body {
+  --legacy-reader-safe-top: env(safe-area-inset-top, 0px);
+  --legacy-reader-safe-right: env(safe-area-inset-right, 0px);
+  --legacy-reader-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --legacy-reader-safe-left: env(safe-area-inset-left, 0px);
+}
+
+.reader-body .reader-bar {
+  min-height: calc(58px + var(--legacy-reader-safe-top));
+  padding:
+    var(--legacy-reader-safe-top)
+    calc(clamp(16px, 3vw, 34px) + var(--legacy-reader-safe-right))
+    0
+    calc(clamp(16px, 3vw, 34px) + var(--legacy-reader-safe-left));
+}
+
+.reader-body .reader-shell {
+  padding-right: max(clamp(20px, 4vw, 64px), calc(18px + var(--legacy-reader-safe-right)));
+  padding-left: max(clamp(20px, 4vw, 64px), calc(18px + var(--legacy-reader-safe-left)));
+  padding-bottom: max(110px, calc(72px + var(--legacy-reader-safe-bottom)));
+}
+
+.reader-body .reader-mobile-toc {
+  padding-right: calc(20px + var(--legacy-reader-safe-right));
+  padding-left: calc(20px + var(--legacy-reader-safe-left));
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .reader-body .reader-tools button,
+  .reader-body .reader-mobile-toc summary,
+  .reader-body .reader-mobile-toc a,
+  .reader-body .reader-chapter-nav a,
+  .reader-body .reader-compatibility a {
+    min-height: 44px;
+  }
+
+  .reader-body .reader-mobile-toc summary,
+  .reader-body .reader-mobile-toc a,
+  .reader-body .reader-chapter-nav a {
+    display: flex;
+    align-items: center;
+  }
+}
+
+@media (max-width: 520px) {
+  .reader-body .reader-bar {
+    padding-right: calc(10px + var(--legacy-reader-safe-right));
+    padding-left: calc(10px + var(--legacy-reader-safe-left));
+  }
+
+  .reader-body .reader-shell {
+    padding-right: calc(18px + var(--legacy-reader-safe-right));
+    padding-left: calc(18px + var(--legacy-reader-safe-left));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pdf-reader__backdrop {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .pdf-reader .pdf-reader__backdrop {
+    background: transparent;
+    border: 1px solid CanvasText;
+  }
+}

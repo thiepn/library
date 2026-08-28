@@ -1,24 +1,43 @@
 # Thiepn Library
 
-Static-first personal publishing, reading, and learning platform for books, research editions, PDFs, EPUBs, annotations, search, and cross-work knowledge.
+Static-first personal ebook library and reader for hosted and locally imported EPUB and PDF books.
 
 Production: `https://thiepn.dev/library`
+
+## Public product scope
+
+The public product is a personal reading application, not a publishing dashboard. Readers can browse the catalog, save books, import their own local files, continue reading, switch between available formats, search inside books, bookmark pages or locations, annotate EPUB text, and reopen recent books without creating an account.
+
+Publication validation, immutable media storage, and release ingestion remain maintenance infrastructure behind the reader. They are not the product’s public information architecture.
+
+## Reader capabilities
+
+- one consolidated EPUB reader for hosted and personal books
+- one integrated PDF.js reader for hosted and personal books
+- exact format-native resume positions: EPUB CFI, PDF page, and legacy web progress remain independent
+- unified Start reading, Continue reading, Read again, Reading, Finished, and Saved for later states
+- local EPUB search, bookmarks, highlights, and notes
+- local PDF text search, page bookmarks, fit modes, zoom, and selectable text
+- browser-local personal-book import with content-hash identity and duplicate detection
+- responsive phone, tablet, split-window, desktop, safe-area, orientation, and software-keyboard handling
+- installable PWA shell and exact active-release offline EPUB caching
+- no reader account, telemetry, or personal-file upload requirement
 
 ## Architecture
 
 The production runtime is:
 
-- Astro 6 + strict TypeScript
-- Archive Editorial CSS
-- build-time publication metadata and Markdown/MDX content
-- Pagefind static full-text search
+- Astro 6 with strict TypeScript
+- static catalog, book-detail, search, and reader routes
+- Pagefind static full-text catalog/content search
 - GitHub Pages mounted at `/library`
-- Cloudflare R2 as the immutable source of publication binaries
-- deployment-time R2 staging into the certified GitHub Pages artifact
-- browser-local reading state; no account is required for the public Library
-- optional owner-authenticated AI as a separate service, never as a dependency of the static reader
+- Cloudflare R2 as immutable storage for hosted publication binaries
+- deployment-time R2 staging into a hash-certified Pages artifact
+- bundled `epubjs` and `pdfjs-dist` reader engines
+- browser-local IndexedDB state for progress, activity, bookmarks, annotations, and personal books
+- optional owner-authenticated AI as a separate service, never a dependency of the static reader
 
-Large PDF, EPUB, and cover binaries do **not** live in normal Git history. Each canonical release records filename, MIME type, byte size, and SHA-256. Deployment downloads those objects from R2 and verifies them before they are included in the public Pages artifact.
+Large hosted PDF, EPUB, and cover binaries do not live in normal Git history. Each canonical release records filename, MIME type, byte size, and SHA-256. Deployment downloads those objects from R2, verifies them, and only then includes them in the public artifact.
 
 ## Local development
 
@@ -37,16 +56,19 @@ Astro serves the application under `/library` in development as well as producti
 
 ```bash
 pnpm validate
+pnpm test:reader
 pnpm build
 pnpm certify:source
 pnpm release:certify
 ```
 
-Production is fail-closed: source, reader manifests, release registries, built routes, and immutable media hashes must all pass before deployment.
+Production is fail-closed: source, reader behavior, release registries, built routes, and immutable media hashes must pass before deployment.
 
-## Content model
+ER7 device certification distinguishes deterministic device-profile coverage from physical-device evidence. See `docs/ER7_REAL_DEVICE_UX.md` for the exact boundary.
 
-Canonical publication source belongs under:
+## Maintainer publication infrastructure
+
+Canonical reader source belongs under:
 
 ```text
 src/content/works/<work-id>/
@@ -61,48 +83,27 @@ Canonical binary release registries belong under:
 src/publications/releases/<work-id>/<version>.yaml
 ```
 
-## Generic publication ingest
+New hosted books use the generic ingestion pipeline. A frozen package contains `publication.json`, `work.yaml`, native reader chapters, expected hashes, and release assets. The workflow verifies package identity, uploads artifacts to the provisioned R2 bucket, verifies immutable readback, writes the release registry, runs the complete Library certification suite, and promotes only verified source and registry data.
 
-New publications use the L18 generic ingestion pipeline. An `ingest/**` request points to a frozen publication package containing:
+This pipeline exists to protect the reader from incomplete or mutable hosted releases; it is maintenance infrastructure rather than a reader-facing feature.
 
-```text
-publication.json
-work.yaml
-chapters/
-recovery/publication-expected.json
-assets/
-```
-
-The ingest workflow:
-
-1. verifies the package byte count and SHA-256;
-2. validates publication identity and frozen reader-file hashes;
-3. materializes the native reader source;
-4. uploads publication artifacts to the provisioned R2 bucket;
-5. downloads them again and verifies immutable size/SHA-256 readback;
-6. writes the canonical release registry;
-7. runs the complete Library certification suite;
-8. promotes only verified publication source and registry data to `main`.
-
-The normal production workflow then rebuilds the Library, stages every canonical R2 artifact generically, deploys through GitHub Pages, and verifies live routes and artifact hashes.
-
-## Published works
+## Published library
 
 ### AI for the Kingdom
 
 **Stewarding Artificial Intelligence for the Great Commission**
 
-- native Web reader: 57 publication sections
-- PDF: available
-- EPUB: available
+- native web compatibility edition: 57 publication sections
+- EPUB reader edition: available
+- integrated PDF edition: available
 - frozen release: `1.0.0-rc4`
 
 ### How to Love God
 
 **Understanding, Receiving, and Growing in Wholehearted Love for God**
 
-- native Web reader: 57 publication sections
-- PDF: available with redesigned publication cover
+- native web compatibility edition: 57 publication sections
+- integrated PDF edition: available with redesigned cover
 - EPUB: not supplied in the source edition
 - active first-edition release: `1.0.1`
 - `1.0.0` remains preserved as the previous immutable release
@@ -111,10 +112,9 @@ The normal production workflow then rebuilds the Library, stages every canonical
 
 **Why Gospel Access Remains Unequal—and What Faithful Mission Requires Now**
 
-- native Web reader: 41 publication sections
-- PDF: online Library edition available
-- EPUB: available
-- cover: canonical first-edition artwork
-- first edition release candidate: `1.0.0-rc1`
+- native web compatibility edition: 41 publication sections
+- EPUB reader edition: available
+- integrated PDF edition: available
+- first-edition release candidate: `1.0.0-rc1`
 
-The Library remains multi-work by design: catalog, work pages, native reader routes, search, publication media staging, and production verification all discover canonical works/releases rather than relying on per-book application code.
+The catalog, book pages, readers, search, local activity state, media staging, and production verification discover canonical works and releases generically. No current title requires a separate application implementation.
