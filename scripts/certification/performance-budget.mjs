@@ -100,8 +100,8 @@ if (present) {
       && runtime.includes('MAX_CANVAS_DIMENSION = 8_192')
       && runtime.includes('MAX_DEVICE_PIXEL_RATIO = 2')
       && runtime.includes('function rasterRatio')
-      && runtime.includes('data') === false
       && runtime.includes('this.root.dataset.pdfRasterPixels')
+      && runtime.includes('this.root.dataset.pdfRasterRatio')
       && tests.includes('rasterPixels: 16_000_000')
       && tests.includes('rasterDimension: 8_192'),
     'PDF backing canvases have independent pixel-area, dimension, and device-scale ceilings with browser-visible diagnostic evidence',
