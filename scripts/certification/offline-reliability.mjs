@@ -134,14 +134,16 @@ if (present) {
     pwa.includes("setWorkerState('update-ready')")
       && pwa.includes('activateWaitingLibraryWorker')
       && sw.includes("data.type === 'SKIP_WAITING'")
+      && sw.includes('function isReaderDocumentUrl')
       && sw.includes('async function migrateRuntimeDocumentCaches()')
       && sw.includes('await migrateRuntimeDocumentCaches()')
       && manager.includes('Update and reload')
       && offlineTests.includes('waiting worker preserves active controller, reader routes, cache migration, and rollback')
+      && offlineTests.includes('staleMarkerAbsent')
       && offlineTests.includes('service-worker-next.js')
       && offlineTests.includes("register('/library/service-worker.js'")
       && !sw.includes('self.skipWaiting();\n});'),
-    'Waiting workers remain user-activated, cached reader routes migrate before stale cleanup, and update/rollback offline continuity is browser-tested');
+    'Waiting workers remain user-activated, only reader routes migrate before stale cleanup, and update/rollback offline continuity is browser-tested');
 
   pass('RR5_CROSS_ENGINE_PROFILE',
     config.includes("name: 'chromium-offline'")
