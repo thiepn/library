@@ -18,6 +18,16 @@ function attachCompatibility(
   base: ReaderAccessibilityHarnessHandle,
 ): ReaderCompatibilityHarnessHandle {
   const compatibility = new ReaderPublicationCompatibilityController(root, base.theme);
+  const unsubscribeLocationDiagnostic = base.controller.subscribe((state) => {
+    const location = state.location;
+    if (!location) {
+      delete root.dataset.readerLocationCfi;
+      delete root.dataset.readerLocationIndex;
+      return;
+    }
+    root.dataset.readerLocationCfi = location.cfi;
+    root.dataset.readerLocationIndex = String(location.index);
+  });
   let destroyed = false;
   compatibility.start();
 
@@ -27,6 +37,9 @@ function attachCompatibility(
     destroy: () => {
       if (destroyed) return;
       destroyed = true;
+      unsubscribeLocationDiagnostic();
+      delete root.dataset.readerLocationCfi;
+      delete root.dataset.readerLocationIndex;
       compatibility.destroy();
       base.destroy();
     },
