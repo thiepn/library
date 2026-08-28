@@ -115,15 +115,17 @@ async function cacheOfflineApplicationAssets() {
 
   const cache = await caches.open(RUNTIME_CACHE);
   await cache.put(manifestUrl.href, response);
-  for (const raw of paths) {
-    const url = new URL(raw, scopeUrl.origin);
-    if (!isImmutableBuildAsset(url)) throw new Error('The offline asset manifest contains an unsupported path.');
-    const request = new Request(url.href, { credentials: 'same-origin' });
-    const cached = await cache.match(request);
-    if (cached) continue;
-    const asset = await fetch(request);
-    if (!cacheableResponse(asset)) throw new Error(`Unable to cache application asset ${url.pathname}.`);
-    await cache.put(request, asset.clone());
+  for (let offset = 0; offset < paths.length; offset += 8) {
+    await Promise.all(paths.slice(offset, offset + 8).map(async (raw) => {
+      const url = new URL(raw, scopeUrl.origin);
+      if (!isImmutableBuildAsset(url)) throw new Error('The offline asset manifest contains an unsupported path.');
+      const request = new Request(url.href, { credentials: 'same-origin' });
+      const cached = await cache.match(request);
+      if (cached) return;
+      const asset = await fetch(request);
+      if (!cacheableResponse(asset)) throw new Error(`Unable to cache application asset ${url.pathname}.`);
+      await cache.put(request, asset.clone());
+    }));
   }
 }
 
