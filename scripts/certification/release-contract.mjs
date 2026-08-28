@@ -11,18 +11,20 @@ const files = [
   'tests/e2e/fixtures.ts',
   'tests/e2e/release-baseline.spec.ts',
   '.github/workflows/browser-acceptance.yml',
+  '.github/workflows/deploy.yml',
 ];
 const present = (await Promise.all(files.map(exists))).every(Boolean);
-pass('RELEASE_PHASE1_FILES', present, 'Phase 1 roadmap, support contract, browser configuration, fixtures, journeys, and CI workflow are present');
+pass('RELEASE_PHASE1_FILES', present, 'Phase 1 roadmap, support contract, browser configuration, fixtures, journeys, CI workflow, and production deployment gate are present');
 
 if (present) {
-  const [roadmap, support, config, fixtures, tests, workflow, pkg, readme] = await Promise.all([
+  const [roadmap, support, config, fixtures, tests, workflow, deployment, pkg, readme] = await Promise.all([
     readFile('docs/RELEASE_READINESS_ROADMAP.md', 'utf8'),
     readFile('docs/RELEASE_SUPPORT_CONTRACT.md', 'utf8'),
     readFile('playwright.config.ts', 'utf8'),
     readFile('tests/e2e/fixtures.ts', 'utf8'),
     readFile('tests/e2e/release-baseline.spec.ts', 'utf8'),
     readFile('.github/workflows/browser-acceptance.yml', 'utf8'),
+    readFile('.github/workflows/deploy.yml', 'utf8'),
     readFile('package.json', 'utf8'),
     readFile('README.md', 'utf8'),
   ]);
@@ -107,8 +109,8 @@ if (present) {
 
   pass(
     'RELEASE_PHASE1_DIALOG_OWNERSHIP',
-    tests.includes("data-pdf-search-toggle")
-      && tests.includes("data-pdf-bookmark-toggle")
+    tests.includes('data-pdf-search-toggle')
+      && tests.includes('data-pdf-bookmark-toggle')
       && tests.includes("toHaveAttribute('aria-expanded', 'true')")
       && tests.includes("page.keyboard.press('Escape')")
       && tests.includes('toBeFocused()'),
@@ -123,6 +125,23 @@ if (present) {
       && workflow.includes('pnpm test:e2e')
       && workflow.includes('timeout-minutes:'),
     'A permanent bounded Browser Acceptance workflow installs exact dependencies, builds the static app, installs all three engines, and runs the acceptance matrix',
+  );
+
+  const mediaIndex = deployment.indexOf('pnpm stage:media');
+  const browserIndex = deployment.indexOf('id: browser');
+  const pagesIndex = deployment.indexOf('actions/upload-pages-artifact@v4');
+  pass(
+    'RELEASE_PHASE1_PRODUCTION_GATE',
+    deployment.includes('playwright install --with-deps chromium firefox webkit')
+      && deployment.includes('Run browser acceptance against the staged production artifact')
+      && deployment.includes('run: pnpm test:e2e')
+      && deployment.includes("if: failure() && steps.browser.outcome == 'failure'")
+      && deployment.includes('production-browser-acceptance-${{ github.run_id }}')
+      && deployment.includes('browser acceptance before artifact upload')
+      && mediaIndex >= 0
+      && browserIndex > mediaIndex
+      && pagesIndex > browserIndex,
+    'The GitHub Pages artifact cannot be uploaded until the staged production build passes the full browser acceptance matrix, with failure evidence retained',
   );
 
   pass(
