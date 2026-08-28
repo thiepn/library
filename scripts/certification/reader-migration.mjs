@@ -6,6 +6,7 @@ const exists = async (file) => { try { await access(file); return true; } catch 
 
 const files = [
   'src/lib/reader/migration.ts',
+  'src/lib/reader/source.ts',
   'src/lib/reader/canonical.ts',
   'src/pages/works/[slug]/read/index.astro',
   'src/pages/works/[slug]/read/[chapter].astro',
@@ -13,11 +14,12 @@ const files = [
   'scripts/certification/reader-migration.mjs',
 ];
 const present = (await Promise.all(files.map(exists))).every(Boolean);
-pass('EPUB_READER_MIGRATION_P25', present, 'P25 migration resolver, canonical EPUB adapter, public route, preserved legacy route, publication-aware layout, and permanent certification are present');
+pass('EPUB_READER_MIGRATION_P25', present, 'P25 migration resolver, pure canonical source adapter, browser mount, public route, preserved legacy route, publication-aware layout, and permanent certification are present');
 
 if (present) {
-  const [migration, canonical, launcher, legacyChapter, layout, pkg, fallbackHarness] = await Promise.all([
+  const [migration, source, canonical, launcher, legacyChapter, layout, pkg, fallbackHarness] = await Promise.all([
     readFile('src/lib/reader/migration.ts', 'utf8'),
+    readFile('src/lib/reader/source.ts', 'utf8'),
     readFile('src/lib/reader/canonical.ts', 'utf8'),
     readFile('src/pages/works/[slug]/read/index.astro', 'utf8'),
     readFile('src/pages/works/[slug]/read/[chapter].astro', 'utf8'),
@@ -82,10 +84,11 @@ if (present) {
       && launcher.includes('mountReaderPublicationWithFallbackHarness(root, publication)')
       && fallbackHarness.includes('this.publication')
       && fallbackHarness.includes('readerCanonicalCandidateFromPublication(publication)')
-      && canonical.includes('workId: publication.workId')
-      && canonical.includes('edition: publication.edition')
-      && canonical.includes('releaseVersion: publication.version'),
-    'The public route passes the resolved edition/release artifact identity unchanged through canonical recovery into native progress, bookmarks, search, highlights, and notes',
+      && source.includes('source: publication.epub.url')
+      && source.includes('workId: publication.workId')
+      && source.includes('edition: publication.edition')
+      && source.includes('releaseVersion: publication.version'),
+    'The public route passes the resolved edition/release artifact identity unchanged through the pure source adapter and canonical recovery into native progress, bookmarks, search, highlights, and notes',
   );
 
   pass(
