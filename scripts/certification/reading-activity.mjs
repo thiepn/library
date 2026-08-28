@@ -54,7 +54,10 @@ if (present) {
     'ER6 uses a dedicated non-destructive DB v8 activity store instead of overloading EPUB, legacy, PDF, or historical reserved stores',
   );
 
-  const activityInterface = db.slice(db.indexOf('export interface ReadingActivityRecordV1'), db.indexOf('const storeDefinitions'));
+  const activityInterface = db.slice(
+    db.indexOf('export interface ReadingActivityRecordV1'),
+    db.indexOf('export type StoredProgressRecord'),
+  );
   pass(
     'READING_ACTIVITY_ER6_METADATA_ONLY',
     activityInterface.includes('workId: string')
