@@ -146,6 +146,7 @@ async function stageAtCanonicalPath(kind: 'epub' | 'pdf', synthetic: Buffer): Pr
   return { urlPath, sizeBytes: (await stat(target)).size, format: kind };
 }
 
+export const personalEpubFixture = buildEpub();
 export const personalPdfFixture = buildOfflinePdf('RR5 Personal PDF A', 2);
 export const secondPersonalPdfFixture = buildOfflinePdf('RR5 Personal PDF B', 2);
 
