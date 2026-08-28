@@ -1,0 +1,82 @@
+name: Publication Compatibility
+
+on:
+  pull_request:
+    paths:
+      - 'src/lib/publication-compatibility.ts'
+      - 'src/lib/client/personal-books.ts'
+      - 'src/lib/reader/canonical.ts'
+      - 'src/lib/pdf-reader/**'
+      - 'tests/compatibility/**'
+      - 'tests/e2e/compatibility-fixtures.ts'
+      - 'tests/e2e/publication-compatibility.spec.ts'
+      - 'scripts/certification/publication-corpus.mjs'
+      - 'docs/RR3_PUBLICATION_COMPATIBILITY.md'
+      - '.github/workflows/publication-compatibility.yml'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+  push:
+    branches: [main]
+    paths:
+      - 'src/lib/publication-compatibility.ts'
+      - 'src/lib/client/personal-books.ts'
+      - 'src/lib/reader/canonical.ts'
+      - 'src/lib/pdf-reader/**'
+      - 'tests/compatibility/**'
+      - 'tests/e2e/compatibility-fixtures.ts'
+      - 'tests/e2e/publication-compatibility.spec.ts'
+      - 'scripts/certification/publication-corpus.mjs'
+      - 'docs/RR3_PUBLICATION_COMPATIBILITY.md'
+      - '.github/workflows/publication-compatibility.yml'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publication-compatibility-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  publication-compatibility:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup pnpm and Node
+        uses: pnpm/setup@v2
+        with:
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+          cache: true
+
+      - name: Install frozen dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Certify RR3 source and corpus ownership
+        run: pnpm certify:compatibility
+
+      - name: Install browser engines and system dependencies
+        run: pnpm exec playwright install --with-deps chromium firefox webkit
+
+      - name: Build static Library
+        run: pnpm build
+
+      - name: Run EPUB and PDF compatibility corpus
+        run: pnpm test:compatibility
+
+      - name: Upload failed compatibility evidence
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: publication-compatibility-failure-${{ github.run_id }}
+          path: |
+            playwright-report
+            test-results
+          if-no-files-found: ignore
+          retention-days: 30
