@@ -136,6 +136,7 @@ test('@rr5 waiting worker preserves active controller, reader routes, cache migr
       migrated: Boolean(await stable.match(url)),
       legacyPreserved: (await caches.keys()).includes(legacyCache),
       staleRemoved: !(await caches.keys()).includes(staleCache),
+      staleMarkerAbsent: !(await caches.match('/library/rr5-stale-marker')),
     };
   }, {
     stableCache: STABLE_PUBLICATION_CACHE,
@@ -143,7 +144,7 @@ test('@rr5 waiting worker preserves active controller, reader routes, cache migr
     staleCache: 'thiepn-library-pwa-runtime-stale-rr5-test',
     url: fixtures.epub.urlPath,
   });
-  expect(migration).toEqual({ migrated: true, legacyPreserved: true, staleRemoved: true });
+  expect(migration).toEqual({ migrated: true, legacyPreserved: true, staleRemoved: true, staleMarkerAbsent: true });
 
   await context.setOffline(true);
   await page.goto(readerUrl!, { waitUntil: 'domcontentloaded' });
