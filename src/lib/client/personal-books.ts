@@ -1,4 +1,8 @@
 import ePub from 'epubjs';
+import {
+  inspectPublication,
+  type PublicationCompatibilityReport,
+} from '../publication-compatibility';
 
 const PERSONAL_DB_NAME = 'thiepn-library-personal-books';
 const PERSONAL_DB_VERSION = 1;
@@ -22,6 +26,7 @@ export interface PersonalBookRecord {
   updatedAt: string;
   file: Blob;
   cover?: Blob;
+  compatibility?: PublicationCompatibilityReport;
 }
 
 type StoredPersonalBookRecord = Omit<PersonalBookRecord, 'file'> & {
@@ -172,6 +177,7 @@ export async function importPersonalBook(file: File): Promise<{ record: Personal
   if (file.size > MAX_IMPORT_BYTES) throw new Error('This book is larger than the 250 MB personal-import limit.');
 
   const buffer = await file.arrayBuffer();
+  const compatibility = await inspectPublication(buffer, format);
   const digest = await sha256(buffer);
   const id = `${format}-${digest.slice(0, 32)}`;
   const existing = await getPersonalBook(id);
@@ -197,6 +203,7 @@ export async function importPersonalBook(file: File): Promise<{ record: Personal
     updatedAt: now,
     file: new Blob([buffer], { type: mimeType }),
     ...('cover' in metadata && metadata.cover ? { cover: metadata.cover } : {}),
+    compatibility,
   };
   const storedRecord: StoredPersonalBookRecord = {
     ...record,
