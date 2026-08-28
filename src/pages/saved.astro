@@ -89,9 +89,11 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     const status = document.querySelector<HTMLElement>('[data-personal-import-status]');
     const offlineStatus = document.querySelector<HTMLElement>('[data-personal-offline-status]');
     const coverUrls = new Set<string>();
+    const defaultEmptyCopy = 'Import an EPUB or PDF above, or add a book from the Library catalog. Your personal library stays in this browser and does not require an account.';
     let personalTotal = 0;
     let hostedTotal = 0;
     let offlinePreparationBatch = 0;
+    let libraryStateUnavailable = false;
 
     const formatBytes = (bytes: number) => {
       if (bytes < 1024) return `${bytes} B`;
@@ -100,6 +102,10 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     };
 
     function updateTotal() {
+      if (libraryStateUnavailable) {
+        if (count) count.textContent = 'Local library unavailable';
+        return;
+      }
       const total = personalTotal + hostedTotal;
       if (count) count.textContent = `${total} book${total === 1 ? '' : 's'}`;
       if (empty) empty.hidden = total !== 0;
@@ -228,8 +234,15 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     async function render() {
       try {
         await Promise.all([renderPersonal(), renderHosted()]);
+        libraryStateUnavailable = false;
+        if (empty) {
+          const paragraph = empty.querySelector('p');
+          if (paragraph) paragraph.textContent = defaultEmptyCopy;
+        }
+        updateTotal();
       } catch {
-        if (count) count.textContent = 'Local library unavailable';
+        libraryStateUnavailable = true;
+        updateTotal();
         if (empty) {
           empty.hidden = false;
           const paragraph = empty.querySelector('p');
