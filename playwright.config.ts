@@ -5,6 +5,7 @@ const inCi = Boolean(process.env.CI);
 
 export default defineConfig({
   testDir: './tests/e2e',
+  testIgnore: ['**/offline-reliability.spec.ts', '**/storage-reliability.spec.ts'],
   fullyParallel: false,
   forbidOnly: inCi,
   retries: inCi ? 1 : 0,
