@@ -10,7 +10,7 @@ const activeDownloads = new Map();
 const scopeUrl = new URL(self.registration.scope);
 const scopePath = scopeUrl.pathname.endsWith('/') ? scopeUrl.pathname : `${scopeUrl.pathname}/`;
 const scoped = (path = '') => `${scopePath}${path}`;
-const OFFLINE_URL = scoped('offline/');
+const OFFLINE_URL = scoped('offline');
 const OFFLINE_ASSET_MANIFEST = scoped('offline-assets.json');
 const CORE_URLS = [
   scopePath,
