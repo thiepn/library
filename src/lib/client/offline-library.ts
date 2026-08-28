@@ -58,8 +58,8 @@ const listeners = new Set<() => void>();
 let serviceWorkerListenerAttached = false;
 
 function operationId(): string {
-  if (globalThis.crypto?.randomUUID) return crypto.randomUUID();
-  return `rr5-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  try { return crypto.randomUUID(); }
+  catch { return `rr5-${Date.now()}-${Math.random().toString(36).slice(2)}`; }
 }
 
 async function activeWorker(): Promise<ServiceWorker | undefined> {
