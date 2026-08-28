@@ -12,9 +12,10 @@ test('ER3 hosted publication adapter preserves exact source and release identity
     edition: 3,
     version: '2026.08.28',
     epub: {
-      format: 'epub',
       url: '/library/media/example.epub',
-      bytes: 1234,
+      filename: 'example.epub',
+      mimeType: 'application/epub+zip',
+      sizeBytes: 1234,
       sha256: 'a'.repeat(64),
     },
   };
