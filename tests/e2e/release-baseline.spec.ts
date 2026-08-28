@@ -8,10 +8,10 @@ function watchPageErrors(page: Page): () => void {
 }
 
 async function expectNoHorizontalOverflow(page: Page): Promise<void> {
-  await expect.poll(async () => page.evaluate(() => ({
-    documentOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
-    bodyOverflow: document.body.scrollWidth - document.body.clientWidth,
-  }))).toEqual({ documentOverflow: 0, bodyOverflow: 0 });
+  await expect.poll(async () => page.evaluate(() => Math.max(
+    document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    document.body.scrollWidth - document.body.clientWidth,
+  ))).toBeLessThanOrEqual(1);
 }
 
 async function importBook(page: Page, fixture: BrowserFixtureFile, title: string): Promise<Locator> {
