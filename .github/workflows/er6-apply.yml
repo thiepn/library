@@ -17,14 +17,14 @@ jobs:
         with:
           ref: er6-unified-reading-activity
           fetch-depth: 0
-      - name: Apply ER6 integration
-        run: python .github/scripts/er6_apply.py
-      - name: Commit ER6 integration
+      - name: Apply ER6 audit fixes
+        run: python .github/scripts/er6_fix.py
+      - name: Commit ER6 audit fixes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src scripts package.json
+          git add src
           git diff --cached --quiet && exit 0
-          git commit -m "ER6 integrate unified reading activity and Library state"
+          git commit -m "ER6 harden activity recency and successful-open semantics"
           git pull --rebase origin er6-unified-reading-activity
           git push origin HEAD:er6-unified-reading-activity
