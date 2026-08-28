@@ -1,0 +1,43 @@
+name: ER4 lockfile bootstrap
+
+on:
+  push:
+    branches: [er4-integrated-pdf-reader]
+    paths:
+      - package.json
+      - .github/workflows/er4-lockfile.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: er4-pnpm-lockfile
+  cancel-in-progress: false
+
+jobs:
+  lockfile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: er4-integrated-pdf-reader
+          fetch-depth: 0
+      - name: Setup pnpm and Node
+        uses: pnpm/setup@v2
+        with:
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+      - name: Generate and verify lockfile
+        run: |
+          pnpm install --lockfile-only
+          pnpm install --frozen-lockfile
+      - name: Commit generated lockfile
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pnpm-lock.yaml
+          git diff --cached --quiet && exit 0
+          git commit -m "ER4 generate PDF.js lockfile"
+          git pull --rebase origin er4-integrated-pdf-reader
+          git push origin HEAD:er4-integrated-pdf-reader
