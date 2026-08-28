@@ -126,7 +126,7 @@ test('@rr5 personal EPUB and PDF readers reopen offline while private files rema
     filePayload('RR5 Personal Offline.pdf', personalPdfFixture),
   ]);
   await expect(page.locator('[data-personal-import-status]')).toContainText('2 imported', { timeout: 45_000 });
-  await expect(page.locator('[data-personal-import-status]')).not.toContainText('offline setup did not finish');
+  await expect(page.locator('[data-personal-offline-status]')).toContainText('2 readers ready for offline use.', { timeout: 45_000 });
 
   const epubCard = page.locator('[data-personal-book]').filter({ has: page.getByRole('heading', { level: 3, name: 'RR5 Offline EPUB' }) });
   const pdfCard = page.locator('[data-personal-book]').filter({ has: page.getByRole('heading', { level: 3, name: 'RR5 Personal Offline' }) });
