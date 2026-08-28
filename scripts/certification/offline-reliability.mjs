@@ -14,6 +14,8 @@ const files = [
   'src/pages/downloads.astro',
   'public/service-worker.js',
   'scripts/prepare-deploy.mjs',
+  'scripts/certification/post-build.mjs',
+  'scripts/verify-production.mjs',
   'tests/e2e/offline-fixtures.ts',
   'tests/e2e/offline-reliability.spec.ts',
   'tests/e2e/storage-reliability.spec.ts',
@@ -23,10 +25,10 @@ const files = [
   'package.json',
 ];
 const present = (await Promise.all(files.map(exists))).every(Boolean);
-pass('RR5_FILES', present, 'RR5 offline manager, worker protocol, storage hardening, browser corpus, workflow, docs, and production gate are present');
+pass('RR5_FILES', present, 'RR5 offline manager, worker protocol, storage hardening, browser corpus, workflow, docs, post-build/live verification, and production gate are present');
 
 if (present) {
-  const [doc, offlineClient, storage, pwa, personal, manager, downloadsPage, sw, prepare, fixtures, offlineTests, storageTests, config, workflow, deployment, pkg] = await Promise.all([
+  const [doc, offlineClient, storage, pwa, personal, manager, downloadsPage, sw, prepare, postbuild, verifier, fixtures, offlineTests, storageTests, config, workflow, deployment, pkg] = await Promise.all([
     readFile('docs/RR5_OFFLINE_STORAGE_RELIABILITY.md', 'utf8'),
     readFile('src/lib/client/offline-library.ts', 'utf8'),
     readFile('src/lib/client/storage-reliability.ts', 'utf8'),
@@ -36,6 +38,8 @@ if (present) {
     readFile('src/pages/downloads.astro', 'utf8'),
     readFile('public/service-worker.js', 'utf8'),
     readFile('scripts/prepare-deploy.mjs', 'utf8'),
+    readFile('scripts/certification/post-build.mjs', 'utf8'),
+    readFile('scripts/verify-production.mjs', 'utf8'),
     readFile('tests/e2e/offline-fixtures.ts', 'utf8'),
     readFile('tests/e2e/offline-reliability.spec.ts', 'utf8'),
     readFile('tests/e2e/storage-reliability.spec.ts', 'utf8'),
@@ -87,7 +91,7 @@ if (present) {
       && prepare.includes("path.join(libraryRoot, '_astro')")
       && sw.includes('cacheOfflineApplicationAssets()')
       && sw.includes('cacheOfflineReaderDocument(rawReaderUrl)')
-      && doc.includes('reader shell and its hashed runtime assets'),
+      && doc.includes('exact asset set plus the corresponding reader route'),
     'A completed publication download also owns the exact reader route and hashed application runtime required after restart');
 
   pass('RR5_PERSONAL_IDB_ONLY',
@@ -129,7 +133,7 @@ if (present) {
       && sw.includes("data.type === 'SKIP_WAITING'")
       && manager.includes('Update and reload')
       && offlineTests.includes('waiting worker preserves active controller')
-      && offlineTests.includes("service-worker-next.js")
+      && offlineTests.includes('service-worker-next.js')
       && offlineTests.includes("register('/library/service-worker.js'")
       && !sw.includes('self.skipWaiting();\n});'),
     'Waiting workers remain user-activated, active control is preserved until explicit activation, and migration/rollback are browser-tested');
@@ -147,9 +151,12 @@ if (present) {
     fixtures.includes('RR5 OFFLINE EPUB MARKER')
       && fixtures.includes('buildOfflinePdf')
       && fixtures.includes('service-worker-next.js')
-      && fixtures.includes("src/publications/releases")
+      && fixtures.includes('RR5_USE_SYNTHETIC_MEDIA')
+      && fixtures.includes('src/publications/releases')
+      && workflow.includes("RR5_USE_SYNTHETIC_MEDIA: '1'")
+      && !deployment.includes('RR5_USE_SYNTHETIC_MEDIA')
       && !fixtures.includes('https://example.com'),
-    'RR5 stages deterministic synthetic EPUB/PDF bytes at canonical local media paths and generates a byte-different update worker without third-party publication content');
+    'Synthetic publication bytes are qualification-only; production RR5 reuses integrity-verified staged R2 media and never overwrites it');
 
   pass('RR5_WORKFLOW',
     workflow.includes('name: Offline Reliability')
@@ -168,11 +175,21 @@ if (present) {
     deployment.includes('Run RR5 offline, PWA, update, and storage reliability')
       && deployment.includes('run: pnpm test:offline')
       && deployment.includes("if: failure() && steps.offline.outcome == 'failure'")
+      && deployment.includes('RR5 offline/PWA/storage reliability before artifact upload')
       && browserIndex >= 0
       && performanceIndex > browserIndex
       && offlineIndex > performanceIndex
       && pagesIndex > offlineIndex,
-    'Production artifact upload is ordered after browser acceptance, RR4 performance, and RR5 offline/storage reliability');
+    'Production artifact upload is ordered after browser acceptance, RR4 performance, and RR5 offline/storage reliability and records the outcome');
+
+  pass('RR5_BUILD_LIVE_VERIFY',
+    postbuild.includes("'dist/library/downloads/index.html'")
+      && postbuild.includes("'dist/library/offline-assets.json'")
+      && postbuild.includes("const SW_VERSION = 'rr5-v1'")
+      && verifier.includes('`${origin}/downloads/`')
+      && verifier.includes('`${origin}/offline-assets.json`')
+      && verifier.includes("const SW_VERSION = 'rr5-v1'"),
+    'Post-build and live production verification require the RR5 manager, offline asset manifest, and exact service-worker contract');
 
   pass('RR5_PACKAGE_COMMANDS',
     pkg.includes('"test:offline": "playwright test --config=playwright.offline.config.ts"')
