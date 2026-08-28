@@ -17,7 +17,9 @@
     "l17b:verify": "tsx scripts/l17b-verify.ts",
     "test:reader": "node --import tsx --test scripts/regression/*.test.ts",
     "test:reader:postbuild": "node scripts/regression/reader-postbuild.mjs",
-    "certify:source": "node scripts/certification/source.mjs && node scripts/certification/reader-toc.mjs && node scripts/certification/reader-navigation.mjs && node scripts/certification/reader-progress.mjs && node scripts/certification/work-detail.mjs && node scripts/certification/library-home.mjs && node scripts/certification/reader-search.mjs && node scripts/certification/reader-bookmarks.mjs && node scripts/certification/reader-annotations.mjs && node scripts/certification/reader-mobile.mjs && node scripts/certification/reader-desktop.mjs && node scripts/certification/reader-accessibility.mjs && node scripts/certification/reader-compatibility.mjs && node scripts/certification/reader-migration.mjs && node scripts/certification/reader-fallback.mjs && node scripts/certification/reader-performance.mjs && node scripts/certification/reader-offline.mjs && node scripts/certification/reader-legacy-bridge.mjs && node scripts/certification/reader-regression.mjs && node scripts/certification/personal-import.mjs && node scripts/certification/reader-consolidation.mjs && node scripts/certification/pdf-reader.mjs && node scripts/certification/reader-entry.mjs && node scripts/certification/reading-activity.mjs && node scripts/certification/reader-device-ux.mjs",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "certify:source": "node scripts/certification/source.mjs && node scripts/certification/reader-toc.mjs && node scripts/certification/reader-navigation.mjs && node scripts/certification/reader-progress.mjs && node scripts/certification/work-detail.mjs && node scripts/certification/library-home.mjs && node scripts/certification/reader-search.mjs && node scripts/certification/reader-bookmarks.mjs && node scripts/certification/reader-annotations.mjs && node scripts/certification/reader-mobile.mjs && node scripts/certification/reader-desktop.mjs && node scripts/certification/reader-accessibility.mjs && node scripts/certification/reader-compatibility.mjs && node scripts/certification/reader-migration.mjs && node scripts/certification/reader-fallback.mjs && node scripts/certification/reader-performance.mjs && node scripts/certification/reader-offline.mjs && node scripts/certification/reader-legacy-bridge.mjs && node scripts/certification/reader-regression.mjs && node scripts/certification/personal-import.mjs && node scripts/certification/reader-consolidation.mjs && node scripts/certification/pdf-reader.mjs && node scripts/certification/reader-entry.mjs && node scripts/certification/reading-activity.mjs && node scripts/certification/reader-device-ux.mjs && node scripts/certification/release-contract.mjs",
     "certify:postbuild": "node scripts/certification/post-build.mjs",
     "release:certify": "pnpm certify:source && pnpm test:reader && pnpm l17b:verify && pnpm build && pnpm certify:postbuild && pnpm test:reader:postbuild",
     "stage:media": "node scripts/stage-publication-media.mjs",
@@ -33,6 +35,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
+    "@playwright/test": "1.62.1",
     "@types/node": "^22.20.1",
     "pagefind": "^1.4.0",
     "tsx": "^4.20.5",
