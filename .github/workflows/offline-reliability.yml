@@ -38,6 +38,8 @@ jobs:
         run: pnpm build
 
       - name: Run cross-engine offline, PWA, update, and storage reliability
+        env:
+          RR5_USE_SYNTHETIC_MEDIA: '1'
         run: pnpm test:offline
 
       - name: Upload failed offline evidence
