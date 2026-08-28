@@ -254,6 +254,12 @@ export class ReaderSearchController {
 
   close(returnFocus = true): void {
     if (this.destroyed || this.ui.panel.hidden) return;
+    if (this.state.status === 'searching') {
+      this.abortController?.abort();
+      this.abortController = undefined;
+      this.revision += 1;
+      this.patchState({ status: 'idle', message: 'Search cancelled.' });
+    }
     this.ui.panel.hidden = true;
     this.ui.button.setAttribute('aria-expanded', 'false');
     this.patchState({ open: false });

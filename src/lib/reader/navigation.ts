@@ -54,6 +54,7 @@ export class ReaderNavigationController {
   private controllerState: ReaderControllerState;
   private readingModeState: ReaderReadingModeState;
   private state: ReaderNavigationState;
+  private locationGeneration = 0;
   private started = false;
   private destroyed = false;
 
@@ -77,6 +78,7 @@ export class ReaderNavigationController {
       next: false,
       flow: this.readingModeState.flow,
     };
+    this.publishLocationEvidence(this.controllerState.location?.cfi);
   }
 
   get snapshot(): ReaderNavigationState {
@@ -90,6 +92,7 @@ export class ReaderNavigationController {
 
     this.cleanups.push(this.controller.subscribe((state) => {
       this.controllerState = state;
+      this.publishLocationEvidence(state.location?.cfi);
       this.refreshAvailability();
     }));
     this.cleanups.push(this.readingMode.subscribe((state) => {
@@ -150,6 +153,7 @@ export class ReaderNavigationController {
     for (const cleanup of this.cleanups) cleanup();
     this.cleanups = [];
     this.listeners.clear();
+    delete this.shell.root.dataset.readerNavigationBusy;
   }
 
   private readonly handleContentInteraction = (interaction: ReaderContentInteraction): boolean => {
@@ -212,6 +216,17 @@ export class ReaderNavigationController {
     ));
   }
 
+  private publishLocationEvidence(cfi?: string): void {
+    if (!cfi) {
+      delete this.shell.root.dataset.readerLocationCfi;
+      return;
+    }
+    if (this.shell.root.dataset.readerLocationCfi === cfi) return;
+    this.locationGeneration += 1;
+    this.shell.root.dataset.readerLocationCfi = cfi;
+    this.shell.root.dataset.readerLocationGeneration = String(this.locationGeneration);
+  }
+
   private refreshAvailability(): void {
     const location = this.controllerState.location;
     const ready = this.controllerState.status === 'ready' && !this.state.busy;
@@ -227,6 +242,7 @@ export class ReaderNavigationController {
   private setBusy(busy: boolean): void {
     if (this.state.busy === busy) return;
     this.state = { ...this.state, busy };
+    this.shell.root.dataset.readerNavigationBusy = String(busy);
     this.refreshAvailability();
     this.emit();
   }
