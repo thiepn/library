@@ -1,0 +1,53 @@
+name: Phase 1 Browser Bootstrap
+
+on:
+  push:
+    branches: [release/phase-1-browser-baseline]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phase1-browser-bootstrap
+  cancel-in-progress: true
+
+jobs:
+  integrate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Checkout phase branch
+        uses: actions/checkout@v5
+        with:
+          ref: release/phase-1-browser-baseline
+          fetch-depth: 0
+
+      - name: Setup pnpm and Node
+        uses: pnpm/setup@v2
+        with:
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+          cache: true
+
+      - name: Resolve and lock Phase 1 dependency
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Install browser engines and system dependencies
+        run: pnpm exec playwright install --with-deps chromium firefox webkit
+
+      - name: Run complete source, reader, and build certification
+        run: pnpm release:certify
+
+      - name: Run Phase 1 browser acceptance
+        run: pnpm test:e2e
+
+      - name: Commit the generated lockfile
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add pnpm-lock.yaml
+          git diff --cached --quiet && exit 0
+          git commit -m 'Phase 1 lock browser acceptance dependencies'
+          git push origin HEAD:release/phase-1-browser-baseline
