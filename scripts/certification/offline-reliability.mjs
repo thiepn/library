@@ -173,12 +173,14 @@ if (present) {
 
   pass('RR5_WORKFLOW',
     workflow.includes('name: Offline Reliability')
+      && workflow.includes('cancel-in-progress: true')
+      && workflow.includes('rr5-offline-${{ github.event.pull_request.head.ref || github.ref_name }}')
       && workflow.includes('pnpm certify:offline-reliability')
       && workflow.includes('playwright install --with-deps chromium firefox webkit')
       && workflow.includes('pnpm build')
       && workflow.includes('pnpm test:offline')
       && workflow.includes('playwright-offline-report'),
-    'RR5 has a dedicated source-certified cross-engine workflow with failure evidence');
+    'RR5 has a dedicated source-certified cross-engine workflow that cancels superseded branch matrices and retains failure evidence');
 
   const browserIndex = deployment.indexOf('id: browser');
   const performanceIndex = deployment.indexOf('id: performance');
