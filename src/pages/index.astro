@@ -73,6 +73,26 @@ const catalog = works.map((work) => {
       </section>
     )}
 
+    {catalog.length > 0 && (
+      <section class="resume-section" data-recent-section hidden aria-labelledby="recent-heading">
+        <div class="compact-heading">
+          <div><p class="eyebrow">Recent activity</p><h2 id="recent-heading">Recently read</h2></div>
+          <a href={`${base}/saved`}>My Library</a>
+        </div>
+        <div class="continue-list compact-continue" data-recent-list>
+          {catalog.map(({ work }) => (
+            <a class="continue-item" href={`${base}/works/${work.slug}`} data-recent-work={work.id} hidden>
+              <span><strong>{work.title}</strong>{work.subtitle && <small>{work.subtitle}</small>}</span>
+              <span class="continue-item__status">
+                <span data-recent-context>Recent reading</span>
+                <span class="micro" data-recent-detail>Recently opened</span>
+              </span>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
     <section class="catalog-section" id="books" aria-labelledby="catalog-heading">
       <div class="catalog-toolbar">
         <div>
@@ -117,6 +137,7 @@ const catalog = works.map((work) => {
                 <h3><a href={`${base}/works/${work.slug}`}>{work.title}</a></h3>
                 {work.subtitle && <p class="catalog-subtitle">{work.subtitle}</p>}
                 <p class="catalog-description">{work.shortDescription}</p>
+                <p class="micro catalog-activity" data-catalog-activity hidden></p>
 
                 <div class="catalog-progress" data-catalog-progress hidden aria-live="polite">
                   <div class="catalog-progress__copy">

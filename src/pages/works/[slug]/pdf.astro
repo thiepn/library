@@ -54,6 +54,7 @@ const metadata = `PDF · edition ${release.edition} · ${Math.max(1, Math.round(
   <script>
     import { mountPdfReader, type PdfReaderHandle } from '../../../lib/pdf-reader';
     import type { PdfCanonicalCandidate } from '../../../lib/pdf-reader/canonical';
+    import { recordReadingOpen } from '../../../lib/reading-activity/client';
 
     const root = document.querySelector<HTMLElement>('[data-pdf-reader-root]');
     const encoded = document.querySelector<HTMLElement>('[data-pdf-candidate]')?.dataset.pdfCandidate;
@@ -82,6 +83,11 @@ const metadata = `PDF · edition ${release.edition} · ${Math.max(1, Math.round(
       try {
         const candidate = JSON.parse(encoded) as PdfCanonicalCandidate;
         mounted = await mountPdfReader(root, candidate);
+        void recordReadingOpen({
+          ...candidate.identity,
+          format: 'pdf',
+          source: 'hosted',
+        }).catch(() => {});
       } catch (error) {
         bootstrapFailure(error instanceof Error ? error.message : 'Unable to start the PDF reader.');
       }

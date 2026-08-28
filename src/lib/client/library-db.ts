@@ -1,5 +1,5 @@
 const DB_NAME = 'thiepn-library';
-const DB_VERSION = 7;
+const DB_VERSION = 8;
 const CHANNEL = 'thiepn-library';
 
 // P12 compatibility history: before P29 the legacy/native bridge used `DB_VERSION = 6`.
@@ -16,7 +16,8 @@ export type StoreName =
   | 'history'
   | 'annotations'
   | 'annotationStats'
-  | 'readingSessions';
+  | 'readingSessions'
+  | 'readingActivity';
 
 export interface FavoriteRecord {
   workId: string;
@@ -45,6 +46,19 @@ export interface ReaderProgressRecordV2 {
   updatedAt: string;
 }
 
+export type ReadingActivityFormat = 'epub' | 'pdf' | 'web';
+export type ReadingActivitySource = 'hosted' | 'personal';
+
+export interface ReadingActivityRecordV1 {
+  schemaVersion: 1;
+  workId: string;
+  edition: number;
+  releaseVersion: string;
+  format: ReadingActivityFormat;
+  source: ReadingActivitySource;
+  openedAt: string;
+}
+
 export type StoredProgressRecord = ProgressRecord | ReaderProgressRecordV2;
 
 export interface AnnotationRecord {
@@ -67,6 +81,7 @@ const storeDefinitions: Array<[StoreName, string]> = [
   ['annotations', 'id'],
   ['annotationStats', 'workId'],
   ['readingSessions', 'id'],
+  ['readingActivity', 'workId'],
 ];
 
 function request<T>(value: IDBRequest<T>): Promise<T> {
@@ -284,6 +299,69 @@ export async function setReaderProgress(workId: string, progress: ReaderProgress
     await request(store.put(next));
   });
   broadcast('progress', workId);
+}
+
+function isReadingActivityRecordV1(value: unknown): value is ReadingActivityRecordV1 {
+  if (typeof value !== 'object' || value === null) return false;
+  const record = value as Partial<ReadingActivityRecordV1>;
+  return record.schemaVersion === 1
+    && typeof record.workId === 'string'
+    && typeof record.edition === 'number'
+    && Number.isFinite(record.edition)
+    && typeof record.releaseVersion === 'string'
+    && (record.format === 'epub' || record.format === 'pdf' || record.format === 'web')
+    && (record.source === 'hosted' || record.source === 'personal')
+    && typeof record.openedAt === 'string';
+}
+
+export async function getReadingActivity(workId: string): Promise<ReadingActivityRecordV1 | undefined> {
+  return withStore('readingActivity', 'readonly', async (store) => {
+    const stored = await request<ReadingActivityRecordV1 | undefined>(store.get(workId));
+    return isReadingActivityRecordV1(stored) ? stored : undefined;
+  });
+}
+
+export async function getReadingActivities(): Promise<ReadingActivityRecordV1[]> {
+  return withStore('readingActivity', 'readonly', async (store) => {
+    const values = await request<ReadingActivityRecordV1[]>(store.getAll());
+    return values
+      .filter(isReadingActivityRecordV1)
+      .sort((a, b) => b.openedAt.localeCompare(a.openedAt));
+  });
+}
+
+export async function recordReadingActivity(
+  input: Omit<ReadingActivityRecordV1, 'schemaVersion' | 'openedAt'> & { openedAt?: string },
+): Promise<ReadingActivityRecordV1> {
+  if (!input.workId.trim()) throw new Error('Reading activity requires a work identity');
+  if (!Number.isFinite(input.edition)) throw new Error('Reading activity requires a valid edition');
+  const record: ReadingActivityRecordV1 = {
+    schemaVersion: 1,
+    workId: input.workId,
+    edition: input.edition,
+    releaseVersion: input.releaseVersion,
+    format: input.format,
+    source: input.source,
+    openedAt: input.openedAt ?? new Date().toISOString(),
+  };
+  let committed = record;
+  await withStore('readingActivity', 'readwrite', async (store) => {
+    const existing = await request<ReadingActivityRecordV1 | undefined>(store.get(input.workId));
+    if (isReadingActivityRecordV1(existing) && existing.openedAt > record.openedAt) {
+      committed = existing;
+      return;
+    }
+    await request(store.put(record));
+  });
+  if (committed === record) broadcast('readingActivity', input.workId);
+  return committed;
+}
+
+export async function deleteReadingActivity(workId: string): Promise<void> {
+  await withStore('readingActivity', 'readwrite', async (store) => {
+    await request(store.delete(workId));
+  });
+  broadcast('readingActivity', workId);
 }
 
 export async function getAnnotations(): Promise<AnnotationRecord[]> {

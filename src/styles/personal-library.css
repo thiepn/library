@@ -1,3 +1,28 @@
+.reading-state-toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  margin: 0 0 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--line, #d7d2c8);
+}
+.reading-state-toolbar p { margin: 0; }
+.reading-state-filters { display: flex; flex-wrap: wrap; gap: .45rem; }
+.reading-state-filters button {
+  min-height: 2.5rem;
+  padding: .45rem .7rem;
+  border: 1px solid var(--line-strong, #aaa399);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.reading-state-filters button[aria-pressed="true"] { border-color: currentColor; font-weight: 700; }
+.reading-state-filters button:focus-visible { outline: 3px solid currentColor; outline-offset: 2px; }
+.library-item-state { margin: .45rem 0 .2rem; }
+[data-activity-filter-hidden="true"] { display: none !important; }
+
 .personal-import {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -94,6 +119,7 @@
   .personal-import__actions { justify-content: flex-start; }
   .personal-books__grid { grid-template-columns: 1fr; }
   .personal-pdf-toolbar { align-items: flex-start; flex-direction: column; }
+  .reading-state-toolbar { align-items: flex-start; flex-direction: column; }
 }
 
 @media (max-width: 420px) {
@@ -109,5 +135,6 @@
   .personal-pdf-frame,
   .personal-import__drop { border-color: CanvasText; }
   .personal-import__button,
-  .personal-book__action { border: 1px solid ButtonText; }
+  .personal-book__action,
+  .reading-state-filters button { border: 1px solid ButtonText; }
 }

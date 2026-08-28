@@ -4,11 +4,22 @@ import WorkCard from '../components/WorkCard.astro';
 import { getWorks } from '../lib/content/repository';
 import '../styles/personal-library.css';
 const works = await getWorks();
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 <BaseLayout title="My Library" description="Books you have saved or imported into your browser-local personal library." noindex>
   <div class="page">
     <section class="section">
       <div class="section-heading"><div><p class="eyebrow">Your books</p><h1>My Library</h1></div><p class="micro" data-saved-count>Loading your books…</p></div>
+
+      <div class="reading-state-toolbar" data-reading-filters aria-label="Filter My Library by reading status">
+        <div class="reading-state-filters">
+          <button type="button" data-reading-filter="all" aria-pressed="true">All</button>
+          <button type="button" data-reading-filter="in-progress" aria-pressed="false">Reading</button>
+          <button type="button" data-reading-filter="not-started" aria-pressed="false">Saved for later</button>
+          <button type="button" data-reading-filter="completed" aria-pressed="false">Finished</button>
+        </div>
+        <p class="micro" data-reading-state-summary aria-live="polite">Reading state loading…</p>
+      </div>
 
       <section class="personal-import" aria-labelledby="personal-import-title">
         <div class="personal-import__copy">
@@ -34,13 +45,22 @@ const works = await getWorks();
       </section>
 
       <div class="work-list saved-list" data-saved-list>
-        {works.map((work, index) => <div class="saved-work" data-saved-work={work.id} hidden><WorkCard work={work} index={index + 1} /></div>)}
+        {works.map((work, index) => <div
+          class="saved-work"
+          data-saved-work={work.id}
+          data-edition={work.publication.edition}
+          data-release-version={work.release?.version ?? ''}
+          data-reader-href={work.webMaterialized ? `${base}/works/${work.slug}/read` : undefined}
+          data-has-epub={work.release?.artifacts.epub ? 'true' : 'false'}
+          data-pdf-href={work.release?.artifacts.pdf ? `${base}/works/${work.slug}/pdf` : undefined}
+          hidden
+        ><WorkCard work={work} index={index + 1} /></div>)}
       </div>
       <div class="empty" data-saved-empty hidden><h2>Your Library is empty.</h2><p>Import an EPUB or PDF above, or add a book from the Library catalog. Your personal library stays in this browser and does not require an account.</p></div>
     </section>
   </div>
   <script>
-    import { getFavoriteWorkIds } from '../lib/client/library-db';
+    import { deleteReadingActivity, getFavoriteWorkIds } from '../lib/client/library-db';
     import {
       deletePersonalBook,
       getPersonalBooks,
@@ -164,6 +184,7 @@ const works = await getWorks();
         remove.disabled = true;
         try {
           await deletePersonalBook(book.id);
+          await deleteReadingActivity(personalReaderWorkId(book)).catch(() => {});
           if (status) { status.dataset.state = 'ok'; status.textContent = `Removed “${book.title}”.`; }
           await renderPersonal();
         } catch (error) {

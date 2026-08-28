@@ -29,8 +29,8 @@ if (present) {
 
   pass(
     'EPUB_READER_ANNOTATION_EXISTING_STORE',
-    store.includes("openLibraryDb") && store.includes("objectStoreNames.contains('annotations')") && db.includes('const DB_VERSION = 7'),
-    'Native annotations continue to reuse the existing annotations store unchanged through the non-destructive P29 IndexedDB v7 upgrade',
+    store.includes("openLibraryDb") && store.includes("objectStoreNames.contains('annotations')") && db.includes('const DB_VERSION = 8'),
+    'Native annotations continue to reuse the unchanged annotations store after the additive ER6 IndexedDB v8 activity-store upgrade',
   );
   pass(
     'EPUB_READER_ANNOTATION_RELEASE_IDENTITY',

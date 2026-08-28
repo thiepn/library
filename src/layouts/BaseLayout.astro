@@ -61,6 +61,11 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).hr
       window.addEventListener('pagehide', unmountUnifiedReaderEntry, { once: true });
     </script>
     <script>
+      import { mountReadingActivityLibraryState } from '../lib/reading-activity/library-dom';
+      const unmountReadingActivityLibraryState = mountReadingActivityLibraryState();
+      window.addEventListener('pagehide', unmountReadingActivityLibraryState, { once: true });
+    </script>
+    <script>
       type Appearance = 'system' | 'light' | 'dark';
       interface LibrarySettings { appearance?: Appearance; [key: string]: unknown; }
       const key = 'thiepn.library.settings.v1';

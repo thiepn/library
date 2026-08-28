@@ -15,6 +15,7 @@ const backHref = `${base}/saved`;
     import { getPersonalBook, personalReaderReleaseVersion, personalReaderWorkId } from '../../lib/client/personal-books';
     import { mountPdfReader, type PdfReaderHandle } from '../../lib/pdf-reader';
     import type { PdfCanonicalCandidate } from '../../lib/pdf-reader/canonical';
+    import { recordReadingOpen } from '../../lib/reading-activity/client';
 
     const root = document.querySelector<HTMLElement>('[data-pdf-reader-root]');
     const title = root?.querySelector<HTMLElement>('.pdf-reader__title');
@@ -67,19 +68,21 @@ const backHref = `${base}/saved`;
         objectUrl = URL.createObjectURL(book.file);
         configureFallback(objectUrl);
         const source = await book.file.arrayBuffer();
+        const identity = {
+          workId: personalReaderWorkId(book),
+          edition: 1,
+          releaseVersion: personalReaderReleaseVersion(book),
+        };
         const candidate: PdfCanonicalCandidate = {
           source,
-          identity: {
-            workId: personalReaderWorkId(book),
-            edition: 1,
-            releaseVersion: personalReaderReleaseVersion(book),
-          },
+          identity,
           title: book.title,
           ...(book.language ? { language: book.language } : {}),
           fallbackUrl: objectUrl,
           backHref: location.pathname.replace(/\/personal\/pdf\/?$/, '/saved'),
         };
         mounted = await mountPdfReader(root, candidate);
+        void recordReadingOpen({ ...identity, format: 'pdf', source: 'personal' }).catch(() => {});
       } catch (error) {
         bootstrapFailure(error instanceof Error ? error.message : 'Unable to open this personal PDF.');
       }
