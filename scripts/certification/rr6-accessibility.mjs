@@ -75,6 +75,17 @@ if (present) {
       && !epub.includes('doc.documentElement?.clientWidth || win.innerWidth'),
     'EPUB tap coordinates normalize against the visible iframe viewport rather than a paginated document width');
 
+  const visibleInstrumentationCalls = (epub.match(/this\.instrumentVisibleContents\(\);/g) ?? []).length;
+  pass('RR6_VISIBLE_CONTENT_INSTRUMENTATION',
+    epub.includes('private instrumentVisibleContents(): void')
+      && epub.includes('const rendered = rendition.getContents() as unknown')
+      && epub.includes('this.handleContent(visible)')
+      && epub.includes('await rendition.display(target);\n      this.instrumentVisibleContents();')
+      && epub.includes('await rendition.next();\n      this.instrumentVisibleContents();')
+      && epub.includes('await rendition.prev();\n      this.instrumentVisibleContents();')
+      && visibleInstrumentationCalls >= 3,
+    'Visible EPUB Contents are explicitly and idempotently instrumented after display, next, and previous instead of relying only on asynchronous content hooks');
+
   pass('RR6_TOUCH_POINTER_PARITY',
     epub.includes("doc.addEventListener('pointerdown', handlePointerDown")
       && epub.includes("doc.addEventListener('pointerup', handlePointerUp")
