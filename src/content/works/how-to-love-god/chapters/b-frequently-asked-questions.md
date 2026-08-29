@@ -1,70 +1,72 @@
 ---
-id: frequently-asked-questions
-order: 7020
-title: Frequently Asked Questions
-part: study-and-practice-resources
+id: appendix-b-frequently-asked-questions
+order: 8020
+title: Appendix B — Frequently Asked Questions
+part: null
 status: published
-description: 'Study and practice resource: Frequently Asked Questions.'
+description: 'Appendix B: Frequently Asked Questions'
 estimatedMinutes: 4
 ---
-## 1. How do I know whether I really love God?
+## What if I do not feel love for God?
 
-Do not look for sinless devotion or constant warmth. Look first to whether your confidence rests in Christ and then for a real direction of trust, repentance, obedience, desire for God, and love for people. Weak fruit is still fruit; settled indifference to Christ’s lordship requires serious self-examination and pastoral counsel.
+Do not equate one emotional state with the whole of love. Christian love includes affection, but it also includes trust, allegiance, reverence, obedience, and continuing Godward desire. If low affect is broad, persistent, or seriously impairing, bodily or clinical factors may be relevant. If there is clear sin, repent. If the cause is unclear, avoid inventing one. See Chapter 17 and Appendix D.
 
-## 2. Is wanting to love God evidence that I already love him?
+## Does obedience count if I do not feel like obeying?
 
-It is pastorally significant because spiritual indifference usually does not grieve over lack of love. But desire alone is not an automatic proof of conversion. Examine what you believe about Christ, whether you are turning from sin, and whether the desire leads you toward his word, people, and commands.
+Yes. Faithful obedience matters even when emotion is weak, and reluctant obedience is not automatically hypocrisy. Yet Christianity does not aim at permanent loveless compliance; ask God to deepen desire while you obey.
 
-## 3. Can I love God without feeling close to him?
+## Can fear and love coexist?
 
-Yes. Psalm 42 portrays thirst for God during deep discouragement. Trust, lament, obedience, and continued seeking can be genuine love while felt closeness is absent. Emotional distance should still be explored rather than dismissed.
+Fear of condemnation and reverent awe should be distinguished. First John addresses fear associated with punishment, while Hebrews continues to call believers to reverent worship. Adoption moves Christians away from servile terror without making God casual.
 
-## 4. Is obedience without joy hypocritical?
+## How do I know God accepts me?
 
-Not necessarily. Obedience can be honest while feelings lag: “I believe your word and want you to change my desire.” Hypocrisy hides resistance behind a false image and refuses truth. Continue obeying and ask for willing delight.
+Look first to Christ and God's promise, not the current strength of your love. Justification rests on Christ and is received through faith. The Spirit's witness and adoption, the church's external gospel ministry, and pattern-level fruit also contribute to assurance without becoming the ground of acceptance. See Chapter 7.
 
-## 5. Why does God command love if love cannot be forced?
+## What if my faith is weak?
 
-The command reveals what God deserves and what human beings were created for. Our inability is caused by sin, not by an unreasonable standard. The gospel then promises forgiveness and a renewed heart by the Spirit.
+Weak faith can receive a strong Savior. Do not make the strength of faith a second object of faith. Continue to bring doubt and need to Christ, remain with God's people, and use the ordinary means of grace.
 
-## 6. Does habitual sin prove that I am not a Christian?
+## Can Christians lose salvation?
 
-Repeated sin is serious and should never be normalized. Yet Christians can struggle repeatedly while grieving, confessing, seeking help, and fighting. The decisive concerns are direction, repentance, use of grace, and refusal to make peace with sin. Seek pastoral help for persistent patterns.
+Historic Protestants disagree. Reformed traditions teach God's preservation of the truly regenerate; Wesleyan-Arminian traditions generally allow final apostasy through persistent unbelief; Lutheran and Anglican formulations add further nuance. The dispute remains explicit. All sides call Christians to continuing faith rather than presumption. See Chapter 27.
 
-## 7. How can I distinguish conviction from condemnation?
+## Do I need a daily quiet time?
 
-Conviction is truthful and specific; it names sin, leads toward confession, Christ, restitution, and change. Condemnation is often vague, totalizing, hopeless, and drives the person away from grace. Romans 8 begins with no condemnation while still commanding Spirit-enabled mortification.
+Scripture commands receiving God's Word, prayer, fellowship, worship, and obedience, but it does not command one universal private schedule. A daily quiet time can be wise. It is a prudential structure, not a measure of salvation. Adapt practices to responsibilities, health, safety, resources, and access.
 
-## 8. Why does prayer sometimes feel empty?
+## Is private Bible reading the main way Christians receive Scripture?
 
-Possible causes include fatigue, grief, unrealistic expectations, distraction, depression, neglected Scripture, hidden sin, or ordinary testing. Use simple, honest prayer and the Psalms; seek fellowship; examine concrete sin without inventing guilt; and obtain professional help when symptoms are persistent or severe.
+It is one excellent way. Scripture is also heard, preached, memorized, recited, sung, discussed, and received communally. See Chapter 13.
 
-## 9. Can I love God and still doubt?
+## Are baptism and the Lord's Supper merely symbols?
 
-Yes, if doubt is brought honestly into the light and pursued in faith. Biblical believers ask difficult questions. Specify the issue, seek evidence and counsel, and remain willing to obey truth. Doubt can also hide a desired escape from costly discipleship, so examine the whole person.
+All major Protestant traditions affirm symbolic or signifying dimensions, but traditions differ substantially on sacramental efficacy and Christ's presence. No single full model is imposed here. Biblically, baptism is Christ-instituted, triune, initiatory, and ecclesial; the Supper involves remembrance, proclamation, participation or fellowship, unity, self-examination, thanksgiving, and future hope.
 
-## 10. What role should emotions play in worship?
+## What if I cannot attend church easily?
 
-Emotion is a fitting response to truth but not the standard that makes worship real. Worship should engage understanding, body, affection, will, and community. Strong feeling is neither proof nor disproof of the Spirit’s work.
+The church is the ordinary context of Christian formation, but circumstances can constrain access. Illness, disability, persecution, geography, migration, caregiving, or imprisonment may require adapted forms of fellowship. Do not conclude that constrained believers are unreal Christians.
 
-## 11. How can I avoid legalism?
+## Must I forgive someone who has not repented?
 
-Begin with God’s mercy and Christ’s finished work. Distinguish God’s commands from personal rules. Practise disciplines as reception and response, not payment. Confess failure promptly, receive forgiveness, and refuse comparison as a basis of worth.
+Christians disagree on the precise terminology. The shared obligation is to reject personal vengeance and cultivate mercy and readiness for forgiveness. Reconciliation and restored trust are separate questions and normally require truth and sufficient mutuality. Serious harm may require protective distance and accountability.
 
-## 12. Why do other Christians seem more passionate?
+## Does forgiveness require trust?
 
-Temperament, culture, season, health, and style differ. Visible expressiveness is not a reliable scale of love. Learn from genuine zeal without copying personality or using comparison to condemn yourself.
+No. Trust answers to trustworthiness. Forgiveness, reconciliation, trust, access, consequences, and leadership restoration are related but distinct.
 
-## 13. How do depression and exhaustion affect spiritual experience?
+## Is setting a boundary unloving?
 
-Body and mind affect attention, pleasure, energy, and concentration. Emotional numbness may have medical or psychological dimensions and should not be inter-
+Not necessarily. *Boundary* is a modern prudential term for limits on access or behavior. Limits can serve truth, safety, responsibility, and love. They can also be misused punitively. Test them by truth, proportionality, responsibility, motive, and the genuine good of those involved.
 
-preted automatically as divine abandonment. Maintain simple spiritual contact and seek pastoral and professional care.
+## What if a church leader harmed me?
 
-## 14. What if church hurt has affected my relationship with God?
+Distinguish ordinary conflict from abuse or possible crime. Serious allegations may require church, safeguarding, professional, and civil processes in parallel. You are not biblically required to confront an alleged abuser privately before seeking safety. See Chapter 24.
 
-Name what happened accurately. Distinguish God from leaders who misrepresented him. Seek safety, justice, and professional support where needed. Healing may involve another healthy church, trustworthy relationships, lament, and time; it does not require denial or immediate restored trust.
+## Is every Christian a missionary?
 
-## 15. What is the simplest daily way to grow in love?
+Every Christian belongs to a witnessing, disciple-making people and should be ready to speak of Christ according to opportunity. Not every Christian has the same vocational calling to cross-cultural missionary service. See Chapters 25–26.
 
-Read a manageable passage, ask what it reveals about God and Christ, turn one truth into prayer, confess one rival love, and practise one concrete act of obedience or neighbor-love. Add weekly gathered worship and honest fellowship.
+## What is contextualization?
+
+Contextualization is the work of communicating and embodying Christian truth intelligibly within real cultures while keeping Scripture as the norm that judges both missionary and local cultures. It is not disguise, deception, or automatic accommodation.

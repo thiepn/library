@@ -2,75 +2,53 @@
 id: why-we-do-not-naturally-love-god
 order: 2010
 title: Why We Do Not Naturally Love God
-part: the-gospel-and-the-transformation-of-love
+part: grace-creates-a-new-godward-life
 status: published
-description: 'Chapter 5: Why We Do Not Naturally Love God.'
+description: 'Chapter 5: Why We Do Not Naturally Love God'
 estimatedMinutes: 4
 ---
-If God is supremely worthy, why do human beings resist, replace, and forget him?
+When a Christian struggles to pray, obey, or desire God, practical advice can help. But the Bible places a deeper problem underneath our weak habits. Human beings do not simply fail to love God because we lack information, motivation, or a good routine. Sin bends worship and allegiance away from the Creator.
 
-### Key passages
+## More than poor motivation
 
-Genesis 3; Jeremiah 2:9–13; Romans 1:18–32; Romans 3:9–26; Ephesians 2:1–10.
+Romans 1 describes humanity knowing enough of God to owe him honor and gratitude, yet exchanging his glory and directing worship toward created things. The language is religious and moral before it is psychological. The problem is not simply that people have inefficient habits. We fail to give God his rightful place.
 
-### Chapter thesis
+This claim does not imply that every unbeliever is as cruel as possible or incapable of real affection. Parents may love children sacrificially. Friends may be loyal. Neighbors may show courage, generosity, patience, and public virtue. People may respond deeply to beauty, justice, family, nation, or religious tradition. Christian theology should not deny real creaturely goods in order to make sin sound serious.
 
-Sin is not merely breaking isolated rules. It is the disordered refusal to honor, trust, thank, and love God as God, replacing him with created goods and self-rule.
+The narrower claim is that fallen humanity does not autonomously produce the saving, supreme, truth-governed God-love described in the first chapters. Sin affects the object, order, and direction of worship. Even our strongest loves can be used against God or made ultimate in his place.
 
-## The first disorder
+## Exchange and rival allegiance
 
-Genesis 3 depicts temptation as a contest over God’s character and authority. The serpent suggests that God withholds good, that his word is unreliable, and that human beings can define wisdom independently. The first sin therefore includes unbelief, ingratitude, grasping, and rebellion. The fruit is desired not simply as food but as a path to autonomy.
+The prophets often expose this exchange through the language of idolatry. Jeremiah portrays God's people abandoning the fountain of living water for cracked cisterns that cannot hold water (Jeremiah 2). The image is not a complete psychology of desire, but it captures the folly of leaving God for what cannot bear divine weight.
 
-Every later sin contains something of this pattern. We question God’s goodness, detach gifts from the Giver, and choose a created good on terms God has forbidden. Sin is fundamentally theological before it is merely behavioral.
+Modern Christians can use the word *idol* too casually. It is tempting to call every strong interest, recurring habit, unwanted desire, or enjoyable object an idol. That can create needless guilt, especially in people prone to obsessive self-monitoring. Scripture's idolatry language is stronger: worship, allegiance, trust, exchange, mastery, and the elevation of created things into God's place.
 
-## Broken cisterns
+A good gift can become a rival when we demand from it what belongs to God. Money may become a source of final security. Approval may become a verdict on our worth. Family may become an authority permitted to overrule Christ. Ministry may become a path to significance. Political identity may become a sacred loyalty that excuses moral compromise. Control may become a substitute for trust. None of these diagnoses should be made mechanically; Chapter 19 will examine rival loves more carefully. Here they illustrate the deeper disorder.
 
-Jeremiah describes Israel abandoning the fountain of living waters and digging cracked cisterns that cannot hold water. Idolatry is irrational exchange: the living God is traded for powerless substitutes. Yet the substitute often promises something genuinely desirable - security, pleasure, belonging, control, significance. The evil lies in making a created means carry ultimate weight and in pursuing it against God.
+## Sin can be religious
 
-This explains why direct commands alone do not cure the heart. Telling an anxious person not to worship control does not reveal why control feels necessary. Telling an approval-seeker to stop caring what people think does not disclose the feared loss underneath. Repentance must expose both the idol and the false promise it offers, then redirect trust toward God.
+Sin is not confined to obvious rebellion. Religious activity can also resist grace. Jesus repeatedly confronts forms of piety that seek public honor, use rules to evade the weightier matters of God's will, or substitute moral standing for mercy and humility. Paul can describe zeal without true knowledge and warn against establishing one's own righteousness.
 
-## Suppression and exchange
+That means church activity does not prove that love for God is healthy. We can pray to be seen, study to feel superior, serve to become indispensable, give in order to control, pursue moral purity as a basis for contempt, or defend doctrine without love. The activity may be good in itself while the motive is disordered.
 
-Romans 1 says humanity knows enough of God through creation to owe him honor and thanks, yet suppresses the truth and exchanges divine glory for created images. The result is not neutral freedom but darkened thinking and disordered desire. Worship is unavoidable; the question is whom or what we will treat as ultimate.
+This is one reason the gospel must remain central even for disciplined Christians. Sin can take the material of obedience and turn it into self-justification.
 
-This teaching should not be used to deny common grace. Unbelievers can display courage, affection, skill, civic virtue, and natural compassion. The theological claim is that none of us naturally gives the true God his rightful place or comes to saving faith by unaided moral capacity. Even good acts can be separated from worship, performed for self-glory, or used to avoid dependence on grace.
+## Moral inability and grace
 
-## Religious resistance
+Different Protestant traditions describe the relation between grace and human response with different terms. Reformed theology emphasizes the depth of moral inability and God's regenerating initiative. Wesleyan and Arminian traditions also insist on the necessity and priority of grace while explaining grace-enabled response differently. Those differences need not be settled here in order to make the central point.
 
-Sin can appear irreligious or intensely religious. The prodigal son seeks life away from the father; the elder brother remains near while treating obedience as leverage. One breaks rules to obtain freedom, the other keeps rules to establish superiority and control. Both avoid loving fellowship with the father.
+No sinner saves himself by producing the right affection. No one reaches God by accumulating enough spiritual sensitivity. Repentance and faith are genuine human responses, but salvation is grace from beginning to end.
 
-Religious activity can therefore become a strategy of self-salvation. Bible reading, doctrinal precision, ministry, moral discipline, and sacrifice are good gifts. They become corrupt when used to make God indebted, prove superiority, or avoid confession.
+The command to love God therefore does two things. It reveals what humanity is for, and it exposes how far sin reaches. We need forgiveness for guilt, liberation from rival mastery, renewal of desire and allegiance, the gift of the Spirit, and a new relation to God. We need new life.
 
-### Voice from the church: Augustine
+## Sin is not the explanation for everything painful
 
-Augustine’s famous image of the restless heart captures the human search for rest in created things. His deeper contribution is the idea of disordered loves: evil often consists not in loving a created good at all, but in loving it above God or in the wrong manner. The biblical qualification is that Scripture, not philosophical introspection, defines the Creator-creature order and the gospel remedy.
+Because sin is deep, Christians sometimes overuse it as an immediate explanation. A flat mood becomes hidden sin. Exhaustion becomes spiritual laziness. Illness becomes unbelief. A traumatic response becomes failure to forgive. Intrusive thoughts become the person's “real heart.”
 
-### Important distinction
+Those conclusions do not follow. Sin affects the whole world and every person, but particular suffering has multiple possible causes. Scripture itself resists simple retribution formulas. Later chapters will distinguish guilt, weakness, grief, illness, oppression, temptation, and spiritual opposition more carefully.
 
-Human inability is moral and spiritual, not mechanical. People choose what they desire, but fallen desire is hostile to God’s rule and cannot regenerate itself. Grace does not drag a willing lover away from God; it awakens the dead, opens the blind, and renews the will.
+A strong doctrine of sin should make us more honest, not more reckless in diagnosing people.
 
-## Why self-improvement is insufficient
+### Response
 
-The problem is not lack of technique. More information can make a sinner more capable without making him worshipful. Stronger discipline can restrain behavior without reconciling him to God. Emotional experiences can produce temporary zeal without a new heart. What is required is forgiveness, new birth, union with Christ, the indwelling Spirit, and the reformation of desire.
-
-This diagnosis is severe but hopeful. If the problem were merely weak effort, spiritually exhausted people would need harsher pressure. Because the problem is sin and death, the gospel announces divine action.
-
-### Chapter summary
-
-We do not naturally love God because sin disorders worship, trust, gratitude, and desire. It exchanges the Creator for creation and can hide in rebellion or religion. The answer must be more than improved behavior: God must forgive and renew the heart.
-
-### Reflect and discuss
-
-1. Which false promise - control, approval, comfort, pleasure, or significance - most often competes with trust in God?
-
-2. Are you more tempted by obvious rebellion or by using religious performance to establish worth?
-
-3. What does your recurring sin imply about what you are believing about God?
-
-### Practice for this week
-
-For one repeated temptation, write four lines: the desired good, the false promise, the biblical truth about God, and one act of repentant trust.
-
-### Prayer
-
-Righteous God, I have exchanged your glory for lesser things and tried to rule myself. Expose both obvious sin and religious pride. Show me the false promises I trust, and lead me to the fountain of living water through Christ. Amen.
+Look beneath one recurring failure without forcing a dramatic explanation. Is there a clear rival allegiance, chosen pattern, or refusal of God's will that Scripture actually exposes? If so, name it and repent. If the problem is unclear, resist the urge to invent hidden motives until you feel certain. Ask God for mercy and renewal. The Christian answer to sin is not self-optimization, and the Christian answer to every painful state is not self-accusation. Grace meets sinners truthfully and gives what we cannot generate for ourselves.

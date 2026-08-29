@@ -1,0 +1,61 @@
+schemaVersion: 1
+workId: how-to-love-god
+version: 1.1.0
+edition: 1
+releasedAt: 2026-08-28
+sourceHash: d120d2ec620e4a423a1ff62762dff49ca6a7c451bc54627d518b5287e8716e17
+artifacts:
+  pdf:
+    url: https://thiepn.dev/library/media/works/how-to-love-god/editions/1.1.0/How_to_Love_God_Jonathan.pdf
+    filename: How_to_Love_God_Jonathan.pdf
+    mimeType: application/pdf
+    sizeBytes: 1454573
+    sha256: 4e01b17b03ad8295a580946bf92c4ada07e074ed91716cef3455befba7b12ad0
+  epub:
+    url: https://thiepn.dev/library/media/works/how-to-love-god/editions/1.1.0/How_to_Love_God_Jonathan.epub
+    filename: How_to_Love_God_Jonathan.epub
+    mimeType: application/epub+zip
+    sizeBytes: 1508862
+    sha256: 3245562961e1fdcbbf234653ed1abd35df22cbb87df8cad4cac72cb0607e7a95
+  cover:
+    url: https://thiepn.dev/library/media/works/how-to-love-god/editions/1.1.0/how-to-love-god.webp
+    filename: how-to-love-god.webp
+    mimeType: image/webp
+    sizeBytes: 324780
+    sha256: b384824f1a53f84ab97afb0e2578f2d4d8bc5d3fbd6b489d2597208e59dbc539
+  figure01:
+    url: https://thiepn.dev/library/media/works/how-to-love-god/editions/1.1.0/F01_whole_person_love.png
+    filename: F01_whole_person_love.png
+    mimeType: image/png
+    sizeBytes: 198634
+    sha256: 82af39c5746f3a59b9000028c3b917f25814ee8aa7ff578f281d3ad669ae6dc5
+  figure02:
+    url: https://thiepn.dev/library/media/works/how-to-love-god/editions/1.1.0/F02_grace_before_response.png
+    filename: F02_grace_before_response.png
+    mimeType: image/png
+    sizeBytes: 103687
+    sha256: 0bc6a9c84bbb698f993e07feee034730100dc75678ddea6857ccf8040379789a
+  figure03:
+    url: https://thiepn.dev/library/media/works/how-to-love-god/editions/1.1.0/F03_four_lenses_assurance.png
+    filename: F03_four_lenses_assurance.png
+    mimeType: image/png
+    sizeBytes: 111605
+    sha256: e505a41583ec533284241dd9f5a90dafcd161fd1370871bd3bf726d4521db899
+  figure04:
+    url: https://thiepn.dev/library/media/works/how-to-love-god/editions/1.1.0/F04_practices_and_growth.png
+    filename: F04_practices_and_growth.png
+    mimeType: image/png
+    sizeBytes: 131882
+    sha256: 2dccc74f4f53dfa5460d01446ff41ed02f14c55ede2b606fb48fbd5faa3ff767
+  figure05:
+    url: https://thiepn.dev/library/media/works/how-to-love-god/editions/1.1.0/F05_dryness_discernment.png
+    filename: F05_dryness_discernment.png
+    mimeType: image/png
+    sizeBytes: 134019
+    sha256: fbc70d55b1a717585adbfc24fe1600d1be03ac09c6feef0c261bd582660015ca
+  figure06:
+    url: https://thiepn.dev/library/media/works/how-to-love-god/editions/1.1.0/F06_differentiated_mission_participation.png
+    filename: F06_differentiated_mission_participation.png
+    mimeType: image/png
+    sizeBytes: 163033
+    sha256: e9065beb648e657e41652bcfc1c52d21db737dacce1ded1defb499e4a5c07f54

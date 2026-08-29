@@ -6,25 +6,20 @@ subtitle: Understanding, Receiving, and Growing in Wholehearted Love for God
 type: book
 language: en-US
 contributors: []
-description: How to Love God is a biblical theology, practical discipleship guide,
-  and pastoral resource on wholehearted love for God. It traces the greatest commandment
-  through God’s prior grace in Christ, the Spirit’s renewing work, affection and obedience,
-  Scripture and prayer, worship and repentance, ordinary life, suffering, mission,
-  spiritual warfare, Christian community, and lifelong hope.
-shortDescription: A biblical theology, practical discipleship guide, and pastoral
-  resource on growing in wholehearted love for God.
+description: How to Love God is a biblical theology, practical discipleship guide, and pastoral resource on wholehearted love for God. Beginning with God's self-revelation and prior grace in Christ, it explores assurance, obedience, desire, Scripture, prayer, gathered worship, spiritual dryness, suffering, rival loves, spiritual warfare, relationships, church authority, witness, cross-cultural mission, perseverance, and new creation.
+shortDescription: A biblical theology, practical discipleship guide, and pastoral resource on growing in wholehearted love for God.
 status: published
 visibility: public
 publication:
   firstPublished: '2026-07-21'
-  lastUpdated: '2026-08-25'
+  lastUpdated: '2026-08-28'
   edition: 1
   editionLabel: First Edition
-  version: 1.0.1
-  activeRelease: 1.0.1
+  version: 1.1.0
+  activeRelease: 1.1.0
 cover:
-  src: /media/works/how-to-love-god/editions/1.0.1/how-to-love-god.webp
-  alt: Cover of How to Love God
+  src: /media/works/how-to-love-god/editions/1.1.0/how-to-love-god.webp
+  alt: Cover of How to Love God by Jonathan
 classification:
   subjects:
   - theology
@@ -37,29 +32,31 @@ classification:
   - worship
   - holiness
   - pastoral-care
+  - assurance
+  - christian-mission
   collections:
   - discipleship
 parts:
-- id: the-greatest-commandment
-  title: The Greatest Commandment
+- id: the-god-we-love
+  title: The God We Love
   order: 10
-- id: the-gospel-and-the-transformation-of-love
-  title: The Gospel and the Transformation of Love
+- id: grace-creates-a-new-godward-life
+  title: Grace Creates a New Godward Life
   order: 20
-- id: love-emotion-and-obedience
-  title: Love, Emotion, and Obedience
+- id: the-shape-and-growth-of-love
+  title: The Shape and Growth of Love
   order: 30
-- id: the-practices-through-which-love-grows
-  title: The Practices Through Which Love Grows
+- id: love-nourished-in-the-church
+  title: Love Nourished in the Church
   order: 40
-- id: obstacles-counterfeits-and-spiritual-warfare
-  title: Obstacles, Counterfeits, and Spiritual Warfare
+- id: love-under-pressure
+  title: Love Under Pressure
   order: 50
-- id: growing-in-mature-love
-  title: Growing in Mature Love
+- id: love-moves-toward-others
+  title: Love Moves Toward Others
   order: 60
-- id: study-and-practice-resources
-  title: Study and Practice Resources
+- id: the-endurance-and-fulfillment-of-love
+  title: The Endurance and Fulfillment of Love
   order: 70
 formats:
   web:
@@ -67,11 +64,11 @@ formats:
   pdf:
     enabled: true
   epub:
-    enabled: false
+    enabled: true
 relationships:
   relatedWorks: []
   prerequisites: []
 resources: []
 rights:
-  status: source-not-specified
-  notice: The supplied first-edition PDF does not include an explicit copyright notice.
+  status: copyright
+  notice: Copyright © 2026 Jonathan. All rights reserved.
