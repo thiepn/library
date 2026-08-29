@@ -40,15 +40,21 @@ if (navigationExists) {
     'Paginated reader maps section-wide EPUB coordinates back to the visible spread before protected previous/center/next classification');
   pass('EPUB_READER_NAV_MULTI_PAGE_CONTINUITY',
     performanceFixtures.includes('export const LARGE_EPUB_CHAPTERS = 96')
-      && tapTests.includes("largeEpubFixture")
+      && tapTests.includes('largeEpubFixture')
       && tapTests.includes('multi-page EPUB visible taps preserve reading continuity on desktop and mobile')
-      && tapTests.includes("page.locator('[data-reader-viewport]')")
-      && tapTests.includes("data-reader-location-cfi")
-      && tapTests.includes('advanceByButton(shell, next, 5)')
+      && tapTests.includes('async function verifyDeepReadingContinuity(')
+      && tapTests.includes('advanceByButton(shell, next, initialAdvanceCount)')
+      && tapTests.includes('verifyDeepReadingContinuity(page)')
+      && tapTests.includes('data-reader-location-cfi')
       && tapTests.includes('expect(current).not.toBe(initialCfi)')
       && tapTests.includes('expect(new Set(forwardLocations).size).toBe(forwardLocations.length)')
       && tapTests.includes('expect(await currentCfi(shell)).toBe(deepCfi)'),
     'A 96-section EPUB regression exercises visible-viewport taps several pages deep, repeated chrome toggles, forward turns, and exact-CFI reversal without cover reset');
+  pass('EPUB_READER_NAV_HOSTED_CONTINUITY',
+    tapTests.includes("const HOSTED_READER_PATH = '/library/works/ai-for-the-kingdom/read'")
+      && tapTests.includes('hosted EPUB route preserves reading continuity and stable chrome')
+      && tapTests.includes('verifyDeepReadingContinuity(page, 4)'),
+    'The user-facing hosted reader route reuses the same sustained exact-CFI continuity journey instead of relying only on personal-import fixtures');
   pass('EPUB_READER_NAV_VISIBLE_VIEWPORT_TEST_GEOMETRY',
     tapTests.includes("const viewport = page.locator('[data-reader-viewport]')")
       && tapTests.includes('viewportBox.width * xRatio')
