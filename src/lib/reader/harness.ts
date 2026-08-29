@@ -126,6 +126,13 @@ export async function mountReaderShellHarness(
     shell.setStatus('loading', 'Opening book…');
     try {
       const openTarget = await resolveOpenTarget();
+      // Navigation must subscribe to controller interactions before controller.open() can
+      // publish a ready state. Otherwise an immediate first tap can land in a brief window
+      // where the EPUB engine is ready but no tap/keyboard navigation listener exists yet.
+      if (!navigationStarted) {
+        navigationStarted = true;
+        navigation.start();
+      }
       await controller.open(source, shell.viewport, currentOpenOptions(), openTarget);
       if (themeStarted) theme.reapply();
       else {
@@ -136,10 +143,6 @@ export async function mountReaderShellHarness(
       else {
         modesStarted = true;
         await readingMode.start();
-      }
-      if (!navigationStarted) {
-        navigationStarted = true;
-        navigation.start();
       }
       if (typographyStarted) await typography.reapply();
       else {
