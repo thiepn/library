@@ -18,7 +18,7 @@ export interface ReaderNavigationOptions {
   enableKeyboard?: boolean;
 }
 
-const DEFAULT_EDGE_TAP_RATIO = 0.27;
+const DEFAULT_EDGE_TAP_RATIO = 1 / 3;
 const EDITABLE_SELECTOR = 'input, textarea, select, option, button, a[href], [contenteditable="true"], [role="textbox"]';
 
 function isEditableTarget(target: EventTarget | null): boolean {
