@@ -86,6 +86,14 @@ if (present) {
       && visibleInstrumentationCalls >= 3,
     'Visible EPUB Contents are explicitly and idempotently instrumented after display, next, and previous instead of relying only on asynchronous content hooks');
 
+  pass('RR6_RENDERED_VIEW_INSTRUMENTATION',
+    epub.includes('interface RenderedView')
+      && epub.includes('private readonly handleRendered')
+      && epub.includes('if (view?.contents) this.handleContent(view.contents)')
+      && epub.includes("rendition.on('rendered', this.handleRendered)")
+      && epub.includes("this.rendition.off('rendered', this.handleRendered)"),
+    'EPUB.js rendered-view events instrument the exact iframe Contents receiving input, with symmetric teardown');
+
   pass('RR6_TOUCH_POINTER_PARITY',
     epub.includes("doc.addEventListener('pointerdown', handlePointerDown")
       && epub.includes("doc.addEventListener('pointerup', handlePointerUp")
