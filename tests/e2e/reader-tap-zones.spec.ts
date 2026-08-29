@@ -18,6 +18,31 @@ async function importFixture(page: Page): Promise<void> {
   await expect(page.locator('[data-reader-viewport] iframe')).toBeVisible();
 }
 
+async function expectReaderScriptBoundary(page: Page): Promise<void> {
+  const iframe = page.locator('[data-reader-viewport] iframe');
+  await expect(iframe).toHaveAttribute('sandbox', /allow-same-origin/);
+  await expect(iframe).toHaveAttribute('sandbox', /allow-scripts/);
+
+  const security = await page.frameLocator('[data-reader-viewport] iframe').locator('html').evaluate(async () => {
+    const csp = document.querySelector('meta[data-reader-csp="true"]')?.getAttribute('content') ?? '';
+    const runtime = window as typeof window & { __rr6PublisherScriptRan?: boolean };
+    delete runtime.__rr6PublisherScriptRan;
+
+    const script = document.createElement('script');
+    script.textContent = 'window.__rr6PublisherScriptRan = true';
+    document.head?.appendChild(script);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    const executed = runtime.__rr6PublisherScriptRan === true;
+    script.remove();
+    delete runtime.__rr6PublisherScriptRan;
+    return { csp, executed };
+  });
+
+  expect(security.csp).toContain("script-src 'none'");
+  expect(security.csp).toContain("object-src 'none'");
+  expect(security.executed, 'EPUB CSP must block publisher-style inline script execution').toBe(false);
+}
+
 async function tapBook(page: Page, xRatio: number, yRatio = 0.5): Promise<CompatibilityTapResult | null> {
   const iframe = page.locator('[data-reader-viewport] iframe');
   const box = await iframe.boundingBox();
@@ -76,6 +101,7 @@ test('@rr6 mobile EPUB uses left previous, center chrome, and right next tap zon
   test.skip(!test.info().project.name.endsWith('-phone'), 'Touch tap-zone behavior is certified by the phone projects.');
 
   await importFixture(page);
+  await expectReaderScriptBoundary(page);
   const shell = page.locator('[data-reader-shell]');
   const previous = page.locator('[data-reader-command="previous"]');
   const next = page.locator('[data-reader-command="next"]');
