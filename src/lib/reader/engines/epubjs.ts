@@ -132,7 +132,7 @@ function finite(value: unknown): number | undefined {
 }
 
 function nonEmpty(value: unknown): string | undefined {
-  return typeof value === 'string' && value.trim() ? value : undefined;
+  return typeof value === 'string' && value.trim() ? value.trim() : undefined;
 }
 
 function normalizePointerType(value: string): ReaderPointerType {
@@ -260,8 +260,11 @@ export class EpubJsEngine implements ReaderEngine {
           hasSelection: selected,
         };
       } else if (!interactive && !selected && duration <= 650 && Math.hypot(deltaX, deltaY) <= 12) {
-        const width = Math.max(1, doc.documentElement?.clientWidth || win.innerWidth || 1);
-        const height = Math.max(1, doc.documentElement?.clientHeight || win.innerHeight || 1);
+        // PointerEvent client coordinates are relative to the visible iframe viewport. EPUB.js
+        // paginated documents can make the root element wider than that viewport, so using the
+        // document width can collapse center/right taps into the previous-page zone.
+        const width = Math.max(1, win.innerWidth || doc.documentElement?.clientWidth || 1);
+        const height = Math.max(1, win.innerHeight || doc.documentElement?.clientHeight || 1);
         interaction = {
           type: 'tap',
           xRatio: clampRatio(event.clientX / width),
