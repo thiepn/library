@@ -18,7 +18,7 @@ const files = [
   'scripts/certification/reader-offline.mjs',
 ];
 const present = (await Promise.all(files.map(exists))).every(Boolean);
-pass('EPUB_READER_OFFLINE_P28', present, 'P28 service worker, manifest, install assets, registration bridge, fallback, reader integration, documentation, and certification are present');
+pass('EPUB_READER_OFFLINE_P28', present, 'P28 service-worker scope, manifest/install metadata, registration, fallback, reader integration, documentation, and certification foundation remain present');
 
 if (present) {
   const [sw, manifestRaw, pwa, offline, baseLayout, readerLayout, launcher, headers, pkg, verifier, postbuild] = await Promise.all([
@@ -43,7 +43,7 @@ if (present) {
       && manifest.scope === '/library/'
       && sw.includes('const scopeUrl = new URL(self.registration.scope)')
       && pwa.includes("scope: `${base}/`"),
-    'Manifest, registration, and service-worker runtime are constrained to the /library/ application scope',
+    'Manifest, registration, and service-worker runtime remain constrained to the /library/ application scope',
   );
 
   pass(
@@ -84,17 +84,19 @@ if (present) {
       && !offline.includes('BaseLayout')
       && !offline.includes('fonts.googleapis.com')
       && offline.includes('You’re offline.'),
-    'Offline fallback is self-contained and does not depend on the site bundle or third-party fonts',
+    'Offline fallback remains self-contained and independent of the site bundle and third-party fonts',
   );
 
   pass(
-    'EPUB_READER_OFFLINE_EPUB_RELEASE_BOUND',
+    'EPUB_READER_OFFLINE_EXPLICIT_SUPERSESSION',
     sw.includes("url.pathname.startsWith(scoped('media/'))")
       && sw.includes('/\\.epub$/i.test(url.pathname)')
       && launcher.includes('cacheReaderPublicationForOffline(publication.epub.url)')
       && launcher.includes('if (handle.reader)')
-      && pwa.includes("worker.postMessage({ type: 'CACHE_READER_EPUB', url: epubUrl })"),
-    'Only the exact already-resolved EPUB URL is offered for offline caching after the full native reader opens successfully',
+      && pwa.includes('RR5 intentionally disables automatic publication caching')
+      && pwa.includes('return false;')
+      && !pwa.includes("type: 'CACHE_READER_EPUB'"),
+    'The P28 reader compatibility call remains harmless while RR5 truthfully supersedes automatic EPUB warmup with explicit user-owned downloads',
   );
 
   pass(
@@ -102,15 +104,16 @@ if (present) {
     sw.includes("/\\.pdf$/i.test(url.pathname)")
       && !launcher.includes('cacheReaderPublicationForOffline(publication.pdf')
       && !pwa.includes('CACHE_READER_PDF'),
-    'PDF artifacts remain explicit fallback/download resources and are never automatically added to the offline publication cache',
+    'PDF artifacts are never automatically cached merely because a reader opens; RR5 owns explicit PDF download state',
   );
 
   pass(
     'EPUB_READER_OFFLINE_CROSS_ORIGIN_SAFE',
     sw.includes('url.origin === scopeUrl.origin')
       && sw.includes('if (!isSameOriginScoped(url)) return;')
-      && sw.includes("if (request.method !== 'GET' || request.headers.has('range')) return;"),
-    'Service-worker caching ignores cross-origin, non-GET, and range requests',
+      && sw.includes("if (request.method !== 'GET') return;")
+      && sw.includes("request.headers.get('range')"),
+    'Service-worker interception still rejects cross-origin and non-GET traffic; RR5 handles ranges only inside the validated hosted-publication path',
   );
 
   pass(
@@ -119,8 +122,8 @@ if (present) {
       && pwa.includes('navigator.serviceWorker.ready.then')
       && pwa.includes("type: 'CACHE_DOCUMENT_URLS'")
       && sw.includes("data.type === 'CACHE_DOCUMENT_URLS'")
-      && sw.includes('urls.slice(0, 48)'),
-    'The first uncontrolled document and its already-loaded same-origin assets receive bounded best-effort warmup after activation',
+      && /urls\.slice\(0,\s*(48|96)\)/.test(sw),
+    'The first uncontrolled document and its already-loaded same-origin assets still receive bounded best-effort warmup after activation',
   );
 
   pass(
@@ -130,7 +133,7 @@ if (present) {
       && pwa.includes("registration.waiting.postMessage({ type: 'SKIP_WAITING' })")
       && sw.includes("data.type === 'SKIP_WAITING'")
       && !sw.includes("self.skipWaiting();\n});"),
-    'Waiting service workers are surfaced but not activated automatically during an active reading session',
+    'Waiting service workers are surfaced but never activated automatically during an active reading session',
   );
 
   pass(
@@ -138,7 +141,7 @@ if (present) {
     sw.includes("const CACHE_PREFIX = 'thiepn-library-pwa-'")
       && sw.includes('key.startsWith(CACHE_PREFIX)')
       && sw.includes('!OWN_CACHES.has(key)'),
-    'Activation cleans only P28-owned cache namespaces and leaves unrelated browser storage untouched',
+    'Versioned PWA cache cleanup remains namespace-bounded; RR5 separately protects stable hosted-publication storage',
   );
 
   pass(
@@ -147,7 +150,7 @@ if (present) {
       && !sw.includes('indexedDB')
       && !pwa.includes('library-db')
       && !sw.includes('library-db'),
-    'P28 does not mutate reader progress, bookmarks, annotations, settings, or IndexedDB schema',
+    'The PWA bridge and service worker still do not mutate reader progress, bookmarks, annotations, settings, or IndexedDB schemas',
   );
 
   pass(
@@ -167,7 +170,7 @@ if (present) {
       && postbuild.includes("'dist/library/service-worker.js'")
       && postbuild.includes("'dist/library/manifest.webmanifest'")
       && postbuild.includes("'dist/library/offline/index.html'"),
-    'Post-build and production verification require the P28 worker, manifest, and offline fallback to be deployed',
+    'Post-build and production verification still require the foundational worker, manifest, and offline fallback',
   );
 
   const forbiddenTitles = ['ai-for-the-kingdom', 'how-to-love-god', 'the-unfinished-mission'];
@@ -185,13 +188,13 @@ if (present) {
       && readerLayout.includes('type="application/epub+zip"')
       && launcher.includes("await import('../../../../lib/reader/fallback-harness')")
       && launcher.includes('ReaderPerformanceController'),
-    'P28 keeps P27 shell-first bootstrap, EPUB preload, performance evidence, and P26 recovery path intact',
+    'RR5 keeps P27 shell-first bootstrap, EPUB preload, performance evidence, and P26 recovery path intact',
   );
 
   pass(
     'EPUB_READER_OFFLINE_CERT_CHAIN',
     pkg.includes('reader-performance.mjs && node scripts/certification/reader-offline.mjs'),
-    'P28 permanent certification is chained immediately after the P27 performance gate',
+    'The P28 foundation remains permanently certified immediately after the P27 performance source gate',
   );
 }
 

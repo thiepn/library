@@ -3,9 +3,10 @@ import {
   inspectPublication,
   type PublicationCompatibilityReport,
 } from '../publication-compatibility';
+import { LibraryStorageError, normalizeLibraryStorageError } from './storage-reliability';
 
 const PERSONAL_DB_NAME = 'thiepn-library-personal-books';
-const PERSONAL_DB_VERSION = 1;
+const PERSONAL_DB_VERSION = 2;
 const PERSONAL_STORE = 'books';
 const PERSONAL_CHANNEL = 'thiepn-library-personal-books';
 const MAX_IMPORT_BYTES = 250 * 1024 * 1024;
@@ -39,29 +40,48 @@ export interface PersonalBookSummary extends Omit<PersonalBookRecord, 'file' | '
 
 function openPersonalBookDb(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
-    const open = indexedDB.open(PERSONAL_DB_NAME, PERSONAL_DB_VERSION);
+    if (typeof indexedDB === 'undefined') {
+      reject(new LibraryStorageError('unavailable', 'Personal book storage is unavailable in this browser session.', { retryable: false, sessionOnly: true }));
+      return;
+    }
+
+    let open: IDBOpenDBRequest;
+    try {
+      open = indexedDB.open(PERSONAL_DB_NAME, PERSONAL_DB_VERSION);
+    } catch (error) {
+      reject(normalizeLibraryStorageError(error, 'Personal book storage'));
+      return;
+    }
+
     open.addEventListener('upgradeneeded', () => {
       const db = open.result;
       if (!db.objectStoreNames.contains(PERSONAL_STORE)) db.createObjectStore(PERSONAL_STORE, { keyPath: 'id' });
     });
-    open.addEventListener('success', () => resolve(open.result));
-    open.addEventListener('error', () => reject(open.error ?? new Error('Unable to open personal book storage.')));
-    open.addEventListener('blocked', () => reject(new Error('Personal book storage is blocked by another tab.')));
+    open.addEventListener('success', () => {
+      const db = open.result;
+      db.addEventListener('versionchange', () => db.close());
+      resolve(db);
+    });
+    open.addEventListener('error', () => reject(normalizeLibraryStorageError(open.error ?? new Error('Unable to open personal book storage.'), 'Personal book storage')));
+    open.addEventListener('blocked', () => reject(new LibraryStorageError(
+      'blocked',
+      'Personal book storage upgrade is blocked by another Library tab. Close the older tab and retry.',
+    )));
   });
 }
 
 function request<T>(value: IDBRequest<T>): Promise<T> {
   return new Promise((resolve, reject) => {
     value.addEventListener('success', () => resolve(value.result));
-    value.addEventListener('error', () => reject(value.error ?? new Error('Personal book storage request failed.')));
+    value.addEventListener('error', () => reject(normalizeLibraryStorageError(value.error ?? new Error('Personal book storage request failed.'), 'Personal book storage')));
   });
 }
 
 function transactionCompletion(transaction: IDBTransaction): Promise<void> {
   return new Promise((resolve, reject) => {
     transaction.addEventListener('complete', () => resolve(), { once: true });
-    transaction.addEventListener('abort', () => reject(transaction.error ?? new Error('Personal book storage transaction aborted.')), { once: true });
-    transaction.addEventListener('error', () => reject(transaction.error ?? new Error('Personal book storage transaction failed.')), { once: true });
+    transaction.addEventListener('abort', () => reject(normalizeLibraryStorageError(transaction.error ?? new DOMException('Transaction aborted', 'AbortError'), 'Personal book storage')), { once: true });
+    transaction.addEventListener('error', () => reject(normalizeLibraryStorageError(transaction.error ?? new Error('Personal book storage transaction failed.'), 'Personal book storage')), { once: true });
   });
 }
 
@@ -77,8 +97,10 @@ async function withStore<T>(mode: IDBTransactionMode, operation: (store: IDBObje
     } catch (error) {
       try { transaction.abort(); } catch {}
       try { await completion; } catch {}
-      throw error;
+      throw normalizeLibraryStorageError(error, 'Personal book storage');
     }
+  } catch (error) {
+    throw normalizeLibraryStorageError(error, 'Personal book storage');
   } finally {
     db.close();
   }
@@ -153,13 +175,7 @@ function normalizeStoredRecord(record: StoredPersonalBookRecord): PersonalBookRe
 }
 
 function storageError(error: unknown): Error {
-  if (error instanceof DOMException && error.name === 'QuotaExceededError') {
-    return new Error('Not enough browser storage is available to keep this book locally.');
-  }
-  if (error instanceof DOMException && error.name === 'UnknownError') {
-    return new Error('This browser could not save the book locally. Check site-storage or private-browsing settings and try again.');
-  }
-  return error instanceof Error ? error : new Error('Unable to import this book.');
+  return normalizeLibraryStorageError(error, 'Personal book storage');
 }
 
 export function personalReaderWorkId(book: Pick<PersonalBookRecord, 'id'>): string {

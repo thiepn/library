@@ -34,6 +34,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         </div>
         <div class="personal-import__drop" data-personal-drop tabindex="0">Or drop EPUB/PDF files here</div>
         <p class="personal-import__status" data-personal-import-status aria-live="polite"></p>
+        <p class="personal-import__status" data-personal-offline-status aria-live="polite"></p>
       </section>
 
       <section class="personal-books" data-personal-books-section hidden aria-labelledby="personal-books-title">
@@ -61,6 +62,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   </div>
   <script>
     import { deleteReadingActivity, getFavoriteWorkIds } from '../lib/client/library-db';
+    import { preparePersonalReadersForOffline } from '../lib/client/offline-library';
     import {
       deletePersonalBook,
       getPersonalBooks,
@@ -85,9 +87,13 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     const chooseButton = document.querySelector<HTMLButtonElement>('[data-personal-file-button]');
     const drop = document.querySelector<HTMLElement>('[data-personal-drop]');
     const status = document.querySelector<HTMLElement>('[data-personal-import-status]');
+    const offlineStatus = document.querySelector<HTMLElement>('[data-personal-offline-status]');
     const coverUrls = new Set<string>();
+    const defaultEmptyCopy = 'Import an EPUB or PDF above, or add a book from the Library catalog. Your personal library stays in this browser and does not require an account.';
     let personalTotal = 0;
     let hostedTotal = 0;
+    let offlinePreparationBatch = 0;
+    let libraryStateUnavailable = false;
 
     const formatBytes = (bytes: number) => {
       if (bytes < 1024) return `${bytes} B`;
@@ -96,6 +102,10 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     };
 
     function updateTotal() {
+      if (libraryStateUnavailable) {
+        if (count) count.textContent = 'Local library unavailable';
+        return;
+      }
       const total = personalTotal + hostedTotal;
       if (count) count.textContent = `${total} book${total === 1 ? '' : 's'}`;
       if (empty) empty.hidden = total !== 0;
@@ -224,8 +234,15 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     async function render() {
       try {
         await Promise.all([renderPersonal(), renderHosted()]);
+        libraryStateUnavailable = false;
+        if (empty) {
+          const paragraph = empty.querySelector('p');
+          if (paragraph) paragraph.textContent = defaultEmptyCopy;
+        }
+        updateTotal();
       } catch {
-        if (count) count.textContent = 'Local library unavailable';
+        libraryStateUnavailable = true;
+        updateTotal();
         if (empty) {
           empty.hidden = false;
           const paragraph = empty.querySelector('p');
@@ -234,16 +251,47 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       }
     }
 
+    function prepareImportedReaders(readerRoutes: string[]) {
+      if (!readerRoutes.length) {
+        if (offlineStatus) { offlineStatus.dataset.state = ''; offlineStatus.textContent = ''; }
+        return;
+      }
+
+      const batch = ++offlinePreparationBatch;
+      if (offlineStatus) {
+        offlineStatus.dataset.state = 'working';
+        offlineStatus.textContent = readerRoutes.length === 1
+          ? 'Preparing reader for offline use…'
+          : `Preparing ${readerRoutes.length} readers for offline use…`;
+      }
+
+      void preparePersonalReadersForOffline(readerRoutes).then(() => {
+        if (batch !== offlinePreparationBatch || !offlineStatus) return;
+        offlineStatus.dataset.state = 'ok';
+        offlineStatus.textContent = readerRoutes.length === 1
+          ? 'Reader ready for offline use.'
+          : `${readerRoutes.length} readers ready for offline use.`;
+      }).catch((error) => {
+        if (batch !== offlinePreparationBatch || !offlineStatus) return;
+        offlineStatus.dataset.state = 'error';
+        offlineStatus.textContent = error instanceof Error
+          ? `Offline reader setup did not finish: ${error.message}`
+          : 'Offline reader setup did not finish.';
+      });
+    }
+
     async function importFiles(files: File[]) {
       if (!files.length) return;
       chooseButton?.setAttribute('disabled', '');
       let imported = 0;
       let duplicates = 0;
       const errors: string[] = [];
+      const readerRoutes: string[] = [];
       for (const file of files) {
         if (status) { status.dataset.state = 'working'; status.textContent = `Importing ${file.name}…`; }
         try {
           const result = await importPersonalBook(file);
+          readerRoutes.push(personalRoute(result.record));
           if (result.duplicate) duplicates++;
           else imported++;
         } catch (error) {
@@ -253,7 +301,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       chooseButton?.removeAttribute('disabled');
       if (input) input.value = '';
       if (imported > 0) void requestPersonalLibraryPersistence();
-      await renderPersonal();
+
       if (status) {
         status.dataset.state = errors.length ? 'error' : 'ok';
         const parts = [
@@ -263,6 +311,9 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         ].filter(Boolean);
         status.textContent = parts.join(' · ');
       }
+
+      await render();
+      prepareImportedReaders(readerRoutes);
     }
 
     chooseButton?.addEventListener('click', () => input?.click());
@@ -284,6 +335,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     const unsubscribeReading = subscribeUnifiedReadingState(() => { void render(); });
     const unsubscribePersonal = subscribePersonalBooks(() => { void renderPersonal(); });
     window.addEventListener('pagehide', () => {
+      offlinePreparationBatch++;
       unsubscribeReading();
       unsubscribePersonal();
       clearCoverUrls();

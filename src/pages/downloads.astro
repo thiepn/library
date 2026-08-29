@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import OfflineLibraryManager from '../components/OfflineLibraryManager.astro';
+import { getWorks } from '../lib/content/repository';
+const works = await getWorks();
+---
+<BaseLayout
+  title="Offline downloads"
+  description="Manage EPUB and PDF releases stored for offline reading in this browser."
+  noindex
+>
+  <div class="page">
+    <section class="section">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Browser-local storage</p>
+          <h1>Offline downloads</h1>
+        </div>
+      </div>
+      <OfflineLibraryManager works={works} />
+    </section>
+  </div>
+</BaseLayout>

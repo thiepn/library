@@ -8,10 +8,12 @@ const required = [
   'dist/_headers',
   'dist/library/index.html',
   'dist/library/search/index.html',
+  'dist/library/downloads/index.html',
   'dist/library/sitemap.xml',
   'dist/library/pagefind/pagefind.js',
   'dist/library/service-worker.js',
   'dist/library/manifest.webmanifest',
+  'dist/library/offline-assets.json',
   'dist/library/app-icon.svg',
   'dist/library/app-icon-maskable.svg',
   'dist/library/offline/index.html',
@@ -25,23 +27,44 @@ if (missing.length) {
 
 const manifest = JSON.parse(await readFile('dist/library/manifest.webmanifest', 'utf8'));
 if (manifest.id !== '/library/' || manifest.start_url !== '/library/' || manifest.scope !== '/library/' || manifest.display !== 'standalone') {
-  throw new Error('AUTOMATED_RC_BLOCKED P28 manifest scope/install metadata is invalid');
+  throw new Error('AUTOMATED_RC_BLOCKED manifest scope/install metadata is invalid');
 }
 if (!Array.isArray(manifest.icons) || !manifest.icons.some((icon) => icon.purpose === 'maskable')) {
-  throw new Error('AUTOMATED_RC_BLOCKED P28 manifest is missing its maskable install icon');
+  throw new Error('AUTOMATED_RC_BLOCKED manifest is missing its maskable install icon');
+}
+
+const offlineAssets = JSON.parse(await readFile('dist/library/offline-assets.json', 'utf8'));
+if (offlineAssets.schemaVersion !== 1 || !Array.isArray(offlineAssets.assets) || !offlineAssets.assets.length) {
+  throw new Error('AUTOMATED_RC_BLOCKED RR5 offline application asset manifest is missing or empty');
+}
+if (!offlineAssets.assets.every((asset) => typeof asset === 'string' && asset.startsWith('/library/_astro/'))) {
+  throw new Error('AUTOMATED_RC_BLOCKED RR5 offline application asset manifest contains a non-hashed-app path');
+}
+for (const asset of offlineAssets.assets) {
+  const local = path.join('dist/library', asset.slice('/library/'.length));
+  if (!(await exists(local))) throw new Error(`AUTOMATED_RC_BLOCKED RR5 offline application asset is missing: ${asset}`);
 }
 
 const serviceWorker = await readFile('dist/library/service-worker.js', 'utf8');
-if (!serviceWorker.includes("const SW_VERSION = 'p28-v1'")
+if (!serviceWorker.includes("const SW_VERSION = 'rr5-v1'")
   || !serviceWorker.includes("const CACHE_PREFIX = 'thiepn-library-pwa-'")
+  || !serviceWorker.includes("const HOSTED_PUBLICATION_CACHE = 'thiepn-library-offline-publications-v1'")
   || !serviceWorker.includes("url.pathname.startsWith(scoped('media/'))")
-  || !serviceWorker.includes('/\\.epub$/i.test(url.pathname)')) {
-  throw new Error('AUTOMATED_RC_BLOCKED P28 service-worker release-bound cache contract is missing');
+  || !serviceWorker.includes('/\\.epub$/i.test(url.pathname)')
+  || !serviceWorker.includes('/\\.pdf$/i.test(url.pathname)')
+  || !serviceWorker.includes("data.type === 'CACHE_OFFLINE_PUBLICATION'")
+  || !serviceWorker.includes('async function rangedResponse')) {
+  throw new Error('AUTOMATED_RC_BLOCKED RR5 service-worker explicit publication/offline range contract is missing');
+}
+
+const downloadsHtml = await readFile('dist/library/downloads/index.html', 'utf8');
+if (!downloadsHtml.includes('Offline downloads') || !downloadsHtml.includes('data-offline-library')) {
+  throw new Error('AUTOMATED_RC_BLOCKED RR5 offline-download manager was not built');
 }
 
 const offlineHtml = await readFile('dist/library/offline/index.html', 'utf8');
 if (!offlineHtml.includes('You’re offline.') || !offlineHtml.includes('<style')) {
-  throw new Error('AUTOMATED_RC_BLOCKED P28 self-contained offline fallback was not built');
+  throw new Error('AUTOMATED_RC_BLOCKED self-contained offline fallback was not built');
 }
 
 const worksRoot = 'src/content/works';
