@@ -134,7 +134,10 @@ export class ReaderNavigationController {
 
   start(): void {
     this.assertUsable();
-    if (this.started) return;
+    if (this.started) {
+      this.refreshAvailability();
+      return;
+    }
     this.started = true;
 
     this.cleanups.push(this.controller.subscribe((state) => {
@@ -155,6 +158,13 @@ export class ReaderNavigationController {
     this.refreshAvailability();
   }
 
+  /** Re-sync control availability after the shell crosses loading/ready without an engine state change. */
+  refresh(): void {
+    this.assertUsable();
+    if (!this.started) return;
+    this.refreshAvailability();
+  }
+
   subscribe(listener: (state: ReaderNavigationState) => void): Unsubscribe {
     this.assertUsable();
     this.listeners.add(listener);
@@ -164,7 +174,7 @@ export class ReaderNavigationController {
 
   async navigate(direction: ReaderNavigationDirection, source: 'button' | 'keyboard' | 'tap' | 'swipe' = 'button'): Promise<void> {
     this.assertUsable();
-    if (this.state.busy || this.controllerState.status !== 'ready') return;
+    if (this.state.busy || !this.isInteractiveReady()) return;
 
     const location = this.controllerState.location;
     if (direction === 'previous' && location?.atStart) {
@@ -202,7 +212,7 @@ export class ReaderNavigationController {
   }
 
   private readonly handleContentInteraction = (interaction: ReaderContentInteraction): boolean => {
-    if (this.destroyed || this.controllerState.status !== 'ready') return false;
+    if (this.destroyed || !this.isInteractiveReady()) return false;
     if (interaction.interactive || interaction.hasSelection) return false;
 
     if (interaction.type === 'key') {
@@ -250,7 +260,7 @@ export class ReaderNavigationController {
   };
 
   private readonly handleDocumentKeydown = (event: KeyboardEvent) => {
-    if (this.destroyed || this.controllerState.status !== 'ready' || this.readingModeState.flow !== 'paginated') return;
+    if (this.destroyed || !this.isInteractiveReady() || this.readingModeState.flow !== 'paginated') return;
     if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) return;
     if (isEditableTarget(event.target) || this.hasOpenReaderPanel()) return;
     if (window.getSelection()?.toString().trim()) return;
@@ -261,6 +271,10 @@ export class ReaderNavigationController {
     void this.navigate(direction, 'keyboard');
   };
 
+  private isInteractiveReady(): boolean {
+    return this.controllerState.status === 'ready' && this.shell.root.dataset.readerStatus === 'ready';
+  }
+
   private hasOpenReaderPanel(): boolean {
     return Boolean(this.shell.root.querySelector(
       '[data-reader-toc-panel]:not([hidden]), [data-reader-appearance-panel]:not([hidden]), [data-reader-mode-panel]:not([hidden]), [data-reader-search-panel]:not([hidden]), [data-reader-bookmarks-panel]:not([hidden]), [data-reader-annotations-panel]:not([hidden]), [data-reader-selection-actions]:not([hidden])',
@@ -269,7 +283,7 @@ export class ReaderNavigationController {
 
   private refreshAvailability(): void {
     const location = this.controllerState.location;
-    const ready = this.controllerState.status === 'ready' && !this.state.busy;
+    const ready = this.isInteractiveReady() && !this.state.busy;
     const previous = ready && !Boolean(location?.atStart);
     const next = ready && !Boolean(location?.atEnd);
     const flow = this.readingModeState.flow;
