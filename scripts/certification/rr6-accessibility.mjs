@@ -44,8 +44,12 @@ if (present) {
       && navigation.includes("void this.navigate('previous', 'tap')")
       && navigation.includes("void this.navigate('next', 'tap')")
       && navigation.includes('this.shell.toggleControls()')
-      && tapTests.includes('left previous, center chrome, and right next tap zones'),
-    'Paginated reader uses explicit left/center/right thirds and browser regression coverage');
+      && tapTests.includes('left previous, center chrome, and right next tap zones')
+      && tapTests.includes("project.name === 'webkit-phone'")
+      && tapTests.includes("frameLocator('[data-reader-viewport] iframe')")
+      && tapTests.includes("new MouseEvent('click'")
+      && tapTests.includes('page.touchscreen.tap('),
+    'Paginated reader uses explicit left/center/right thirds, Chromium touchscreen E2E coverage, and WebKit iframe compatibility-event coverage');
 
   pass('RR6_VIEWPORT_RELATIVE_POINTERS',
     epub.includes('win.innerWidth || doc.documentElement?.clientWidth')
