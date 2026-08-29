@@ -65,21 +65,40 @@ async function tapVisibleBook(page: Page, xRatio: number, yRatio = 0.5): Promise
   const pageY = viewportBox.y + viewportBox.height * yRatio;
 
   if (test.info().project.name === 'webkit-phone') {
-    // Playwright WebKit does not reliably route touchscreen.tap() through a sandboxed iframe.
-    // Dispatch Safari's compatibility click on the exact EPUB Document, but use coordinates
-    // derived from the visible outer reader viewport rather than the potentially chapter-wide
-    // iframe. Production still performs the normal interaction classification/navigation.
+    // Playwright WebKit does not reliably route page.touchscreen.tap() through EPUB iframes.
+    // Model one physical tap inside the exact iframe instead: pointerdown -> pointerup -> the
+    // browser compatibility click. This preserves production deduplication semantics without
+    // firing unrelated click-only interactions back-to-back inside the same 800 ms gesture window.
     return page.frameLocator('[data-reader-viewport] iframe').locator('html').evaluate(
       (_html, coordinates) => {
-        const event = new MouseEvent('click', {
+        const target = document.elementFromPoint(coordinates.x, coordinates.y) ?? document.documentElement;
+        const pointerInit: PointerEventInit = {
+          bubbles: true,
+          cancelable: true,
+          clientX: coordinates.x,
+          clientY: coordinates.y,
+          pointerId: 1,
+          pointerType: 'touch',
+          isPrimary: true,
+          button: 0,
+          buttons: 1,
+        };
+        target.dispatchEvent(new PointerEvent('pointerdown', pointerInit));
+        const pointerUp = new PointerEvent('pointerup', { ...pointerInit, buttons: 0 });
+        target.dispatchEvent(pointerUp);
+
+        const compatibilityClick = new MouseEvent('click', {
           bubbles: true,
           cancelable: true,
           clientX: coordinates.x,
           clientY: coordinates.y,
           button: 0,
         });
-        const dispatched = document.dispatchEvent(event);
-        return { dispatched, defaultPrevented: event.defaultPrevented };
+        const dispatched = target.dispatchEvent(compatibilityClick);
+        return {
+          dispatched,
+          defaultPrevented: pointerUp.defaultPrevented || compatibilityClick.defaultPrevented,
+        };
       },
       { x: pageX - iframeBox.x, y: pageY - iframeBox.y },
     );
@@ -95,9 +114,9 @@ async function tapVisibleBook(page: Page, xRatio: number, yRatio = 0.5): Promise
 
 function expectCompatibilityTapHandled(result: CompatibilityTapResult | null): void {
   if (test.info().project.name !== 'webkit-phone') return;
-  expect(result, 'WebKit compatibility tap must report its production event outcome').not.toBeNull();
-  expect(result?.defaultPrevented, 'EPUB production click listener must consume the compatibility tap').toBe(true);
-  expect(result?.dispatched, 'dispatchEvent must return false when the production listener prevents the tap default').toBe(false);
+  expect(result, 'WebKit physical-tap fallback must report its production event outcome').not.toBeNull();
+  expect(result?.defaultPrevented, 'EPUB production interaction path must consume the physical tap').toBe(true);
+  expect(result?.dispatched, 'compatibility click must be consumed after the physical tap').toBe(false);
 }
 
 async function currentCfi(shell: Locator): Promise<string> {
