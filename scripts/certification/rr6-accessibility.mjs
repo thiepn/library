@@ -8,6 +8,7 @@ const files = [
   'docs/RR6_ACCESSIBILITY_INCLUSIVE_READING.md',
   'src/lib/reader/accessibility.ts',
   'src/lib/reader/engines/epubjs.ts',
+  'src/lib/reader/epub-security.ts',
   'src/lib/reader/navigation.ts',
   'src/lib/reader/harness.ts',
   'src/components/reader/ReaderShell.astro',
@@ -21,13 +22,14 @@ const files = [
   'package.json',
 ];
 const present = (await Promise.all(files.map(exists))).every(Boolean);
-pass('RR6_FILES', present, 'RR6 docs, reader/PDF accessibility surfaces, cross-engine tests, workflow, package commands, and production gate are present');
+pass('RR6_FILES', present, 'RR6 docs, reader/PDF accessibility and EPUB security surfaces, cross-engine tests, workflow, package commands, and production gate are present');
 
 if (present) {
-  const [doc, a11y, epub, navigation, harness, shell, pdfShell, css, deviceCss, tests, tapTests, workflow, deployment, pkg] = await Promise.all([
+  const [doc, a11y, epub, epubSecurity, navigation, harness, shell, pdfShell, css, deviceCss, tests, tapTests, workflow, deployment, pkg] = await Promise.all([
     readFile('docs/RR6_ACCESSIBILITY_INCLUSIVE_READING.md', 'utf8'),
     readFile('src/lib/reader/accessibility.ts', 'utf8'),
     readFile('src/lib/reader/engines/epubjs.ts', 'utf8'),
+    readFile('src/lib/reader/epub-security.ts', 'utf8'),
     readFile('src/lib/reader/navigation.ts', 'utf8'),
     readFile('src/lib/reader/harness.ts', 'utf8'),
     readFile('src/components/reader/ReaderShell.astro', 'utf8'),
@@ -93,6 +95,21 @@ if (present) {
       && epub.includes("rendition.on('rendered', this.handleRendered)")
       && epub.includes("this.rendition.off('rendered', this.handleRendered)"),
     'EPUB.js rendered-view events instrument the exact iframe Contents receiving input, with symmetric teardown');
+
+  pass('RR6_EPUB_SCRIPT_BOUNDARY',
+    epub.includes("import { sanitizeEpubDocument } from '../epub-security'")
+      && epub.includes('book.spine.hooks.content.register(sanitizeEpubDocument)')
+      && epub.includes('allowScriptedContent: true')
+      && epub.includes('this.book.spine.hooks.content.deregister(sanitizeEpubDocument)')
+      && epubSecurity.includes("const ACTIVE_CONTENT_ELEMENTS = new Set(['script', 'iframe', 'object', 'embed', 'applet'])")
+      && epubSecurity.includes("name.startsWith('on')")
+      && epubSecurity.includes("value.startsWith('javascript:')")
+      && epubSecurity.includes("'Content-Security-Policy'")
+      && epubSecurity.includes("\"script-src 'none'\"")
+      && epubSecurity.includes("\"object-src 'none'\"")
+      && tapTests.includes('expectReaderScriptBoundary')
+      && tapTests.includes('EPUB CSP must block publisher-style inline script execution'),
+    'WebKit script-capable sandbox is gated by pre-serialization active-content sanitization, restrictive CSP, symmetric hook teardown, and executable browser proof that publisher-style inline scripts remain blocked');
 
   pass('RR6_TOUCH_POINTER_PARITY',
     epub.includes("doc.addEventListener('pointerdown', handlePointerDown")
