@@ -6,6 +6,7 @@ import ePub, {
   type Rendition,
 } from 'epubjs';
 import type { ReaderEngine } from './engine';
+import { sanitizeEpubDocument } from '../epub-security';
 import {
   ReaderEngineError,
   type ReaderAppearance,
@@ -422,6 +423,10 @@ export class EpubJsEngine implements ReaderEngine {
       const book = ePub(source);
       await book.ready;
       this.book = book;
+      // WebKit requires sandbox script capability for parent-installed DOM event callbacks to
+      // execute inside EPUB.js srcdoc frames. Sanitize each spine document before serialization
+      // so enabling that capability never grants publisher-authored scripts execution rights.
+      book.spine.hooks.content.register(sanitizeEpubDocument);
 
       const flow = options.flow ?? 'paginated';
       const spread = options.spread ?? 'auto';
@@ -431,7 +436,7 @@ export class EpubJsEngine implements ReaderEngine {
         flow: mapFlow(flow),
         spread: mapSpread(spread),
         minSpreadWidth: options.minSpreadWidth ?? 900,
-        allowScriptedContent: false,
+        allowScriptedContent: true,
       });
       this.rendition = rendition;
       rendition.on('relocated', this.handleRelocated);
@@ -653,7 +658,10 @@ export class EpubJsEngine implements ReaderEngine {
       this.rendition.destroy();
     }
     this.rendition = undefined;
-    if (this.book) this.book.destroy();
+    if (this.book) {
+      this.book.spine.hooks.content.deregister(sanitizeEpubDocument);
+      this.book.destroy();
+    }
     this.book = undefined;
     this.instrumentedDocuments = new WeakSet<Document>();
     this.currentLocation = null;
