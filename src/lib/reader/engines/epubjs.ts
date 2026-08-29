@@ -360,9 +360,14 @@ export class EpubJsEngine implements ReaderEngine {
     };
 
     const handleClick = (event: MouseEvent) => {
-      // Pointer/touch events remain primary. A synthesized compatibility click is ignored
-      // when the same physical gesture was already handled, preventing double page turns.
-      if (performance.now() - lastHandledInteractionAt < 800) return;
+      // Pointer/touch events remain primary. Consume the browser's synthesized compatibility
+      // click when that same physical gesture was already handled. This not only prevents the
+      // engine from turning/toggling twice, it also tells the parent-owned WebKit fallback bridge
+      // that the event is intentionally complete rather than an unhandled click it should replay.
+      if (performance.now() - lastHandledInteractionAt < 800) {
+        event.preventDefault();
+        return;
+      }
       if (isInteractiveTarget(event.target) || hasSelection()) return;
 
       const width = Math.max(1, win.innerWidth || doc.documentElement?.clientWidth || 1);
