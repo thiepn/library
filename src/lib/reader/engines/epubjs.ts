@@ -59,6 +59,10 @@ interface PointerStart {
   interactive: boolean;
 }
 
+interface RenderedView {
+  contents?: Contents;
+}
+
 const THEME_PALETTES: Record<ReaderAppearance['theme'], ThemePalette> = {
   light: { background: '#fbfbfa', text: '#1d1e1c', secondary: '#555a55', link: '#315f86', rule: '#d7d9d5', surface: '#f1f2ef', code: '#f0f1ee', mark: '#fff1a8' },
   warm: { background: '#f7f3e8', text: '#28251f', secondary: '#625b50', link: '#6f552f', rule: '#d7cebd', surface: '#eee7d8', code: '#eee6d5', mark: '#eadc91' },
@@ -206,6 +210,10 @@ export class EpubJsEngine implements ReaderEngine {
     const text = contents.window.getSelection()?.toString().trim() ?? '';
     const selection: ReaderSelection = { cfiRange, text };
     for (const listener of this.selectionListeners) listener(selection);
+  };
+
+  private readonly handleRendered = (_section: unknown, view: RenderedView) => {
+    if (view?.contents) this.handleContent(view.contents);
   };
 
   private readonly handleContent = (contents: Contents) => {
@@ -428,6 +436,10 @@ export class EpubJsEngine implements ReaderEngine {
       this.rendition = rendition;
       rendition.on('relocated', this.handleRelocated);
       rendition.on('selected', this.handleSelected);
+      // `rendered` exposes the exact view Contents that owns the iframe document. This closes
+      // WebKit timing/reflow gaps where the asynchronous content hook or getContents() snapshot
+      // can miss the document that receives the user's next tap.
+      rendition.on('rendered', this.handleRendered);
       rendition.hooks.content.register(this.handleContent);
 
       this.registerThemes();
@@ -637,6 +649,7 @@ export class EpubJsEngine implements ReaderEngine {
     if (this.rendition) {
       this.rendition.off('relocated', this.handleRelocated);
       this.rendition.off('selected', this.handleSelected);
+      this.rendition.off('rendered', this.handleRendered);
       this.rendition.destroy();
     }
     this.rendition = undefined;
