@@ -14,10 +14,35 @@ async function importFixture(page: Page): Promise<void> {
 }
 
 async function tapBook(page: Page, xRatio: number, yRatio = 0.5): Promise<void> {
-  const frame = page.locator('[data-reader-viewport] iframe');
-  const box = await frame.boundingBox();
+  const iframe = page.locator('[data-reader-viewport] iframe');
+  const box = await iframe.boundingBox();
   expect(box, 'EPUB iframe must have a rendered box').not.toBeNull();
   if (!box) return;
+
+  if (test.info().project.name === 'webkit-phone') {
+    // Playwright WebKit does not reliably route page.touchscreen.tap() through an iframe.
+    // Safari emits a compatibility click for an unhandled tap, so dispatch that event
+    // inside the EPUB viewport and exercise the production click/tap classifier directly.
+    await page.frameLocator('[data-reader-viewport] iframe').locator('html').evaluate(
+      (_html, ratios) => {
+        const x = Math.max(1, window.innerWidth) * ratios.x;
+        const y = Math.max(1, window.innerHeight) * ratios.y;
+        const target = document.elementFromPoint(x, y) ?? document.body ?? document.documentElement;
+        target.dispatchEvent(new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+          clientX: x,
+          clientY: y,
+          button: 0,
+        }));
+      },
+      { x: xRatio, y: yRatio },
+    );
+    return;
+  }
+
+  // Chromium keeps the full device-style path: an outer-page touchscreen tap must cross
+  // the iframe boundary and reach the production Pointer/Touch interaction handlers.
   await page.touchscreen.tap(
     box.x + box.width * xRatio,
     box.y + box.height * yRatio,
