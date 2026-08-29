@@ -1,7 +1,7 @@
 import { ReaderController, type ReaderControllerState } from './controller';
 import { ReaderReadingModeController, type ReaderReadingModeState } from './reading-mode';
 import { ReaderShellController } from './shell';
-import type { ReaderContentInteraction, ReaderFlow, Unsubscribe } from './types';
+import type { ReaderContentInteraction, ReaderFlow, ReaderLocation, Unsubscribe } from './types';
 
 export type ReaderNavigationDirection = 'previous' | 'next';
 
@@ -29,6 +29,48 @@ function isEditableTarget(target: EventTarget | null): boolean {
   } catch {
     return false;
   }
+}
+
+function clampUnit(value: number): number {
+  if (!Number.isFinite(value)) return 0.5;
+  return Math.max(0, Math.min(1, value));
+}
+
+/**
+ * EPUB.js paginated chapters can render one iframe whose viewport spans every column in the
+ * current spine section. In that layout an event's xRatio is section-relative, not relative to
+ * the one/two pages actually visible to the reader. Classifying that raw ratio directly makes
+ * ordinary taps on early pages look like left-edge taps and can repeatedly walk the reader back
+ * toward the beginning/cover.
+ *
+ * `displayedPage`/`displayedTotal` identify the visible slice inside that section-wide iframe.
+ * When the raw ratio lies inside that slice, remap it to a visible-spread ratio. If a browser
+ * already reports page-local coordinates, the raw ratio normally falls outside the section
+ * slice on later pages and is deliberately left unchanged.
+ */
+function visibleTapRatio(
+  rawRatio: number,
+  location: ReaderLocation | null,
+  spread: ReaderReadingModeState['effectiveSpread'],
+): number {
+  const raw = clampUnit(rawRatio);
+  const page = location?.displayedPage;
+  const total = location?.displayedTotal;
+  if (!Number.isFinite(page) || !Number.isFinite(total) || !page || !total || total <= 1) return raw;
+
+  const safePage = Math.max(1, Math.min(total, Math.round(page)));
+  const visiblePages = spread === 'double' ? Math.min(2, total - safePage + 1) : 1;
+  const sliceStart = (safePage - 1) / total;
+  const sliceEnd = (safePage - 1 + visiblePages) / total;
+  const tolerance = Math.min(0.025, 0.25 / total);
+
+  // A page-local browser coordinate (for example 0.84 on the right side) must not be remapped
+  // merely because the chapter itself contains many pages. Only ratios that plausibly belong to
+  // the currently visible section slice are interpreted as section-global coordinates.
+  if (raw < sliceStart - tolerance || raw > sliceEnd + tolerance) return raw;
+
+  const sliceWidth = Math.max(Number.EPSILON, sliceEnd - sliceStart);
+  return clampUnit((raw - sliceStart) / sliceWidth);
 }
 
 function keyboardDirection(
@@ -172,12 +214,18 @@ export class ReaderNavigationController {
     }
 
     if (interaction.type === 'tap') {
+      const tapRatio = visibleTapRatio(
+        interaction.xRatio,
+        this.controllerState.location,
+        this.readingModeState.effectiveSpread,
+      );
+
       if (this.readingModeState.flow === 'paginated') {
-        if (interaction.xRatio <= this.edgeTapRatio) {
+        if (tapRatio <= this.edgeTapRatio) {
           void this.navigate('previous', 'tap');
           return true;
         }
-        if (interaction.xRatio >= 1 - this.edgeTapRatio) {
+        if (tapRatio >= 1 - this.edgeTapRatio) {
           void this.navigate('next', 'tap');
           return true;
         }
@@ -185,7 +233,7 @@ export class ReaderNavigationController {
 
       const centerStart = this.edgeTapRatio;
       const centerEnd = 1 - this.edgeTapRatio;
-      if (interaction.xRatio > centerStart && interaction.xRatio < centerEnd) {
+      if (tapRatio > centerStart && tapRatio < centerEnd) {
         this.shell.toggleControls();
         return true;
       }
