@@ -17,15 +17,16 @@ const files = [
   'src/styles/reader-device-ux.css',
   'tests/e2e/accessibility.spec.ts',
   'tests/e2e/reader-tap-zones.spec.ts',
+  'tests/e2e/performance-fixtures.ts',
   '.github/workflows/accessibility.yml',
   '.github/workflows/deploy.yml',
   'package.json',
 ];
 const present = (await Promise.all(files.map(exists))).every(Boolean);
-pass('RR6_FILES', present, 'RR6 docs, reader/PDF accessibility and EPUB security surfaces, cross-engine tests, workflow, package commands, and production gate are present');
+pass('RR6_FILES', present, 'RR6 docs, reader/PDF accessibility and EPUB security surfaces, multi-page interaction fixtures, cross-engine tests, workflow, package commands, and production gate are present');
 
 if (present) {
-  const [doc, a11y, epub, epubSecurity, navigation, harness, shell, pdfShell, css, deviceCss, tests, tapTests, workflow, deployment, pkg] = await Promise.all([
+  const [doc, a11y, epub, epubSecurity, navigation, harness, shell, pdfShell, css, deviceCss, tests, tapTests, performanceFixtures, workflow, deployment, pkg] = await Promise.all([
     readFile('docs/RR6_ACCESSIBILITY_INCLUSIVE_READING.md', 'utf8'),
     readFile('src/lib/reader/accessibility.ts', 'utf8'),
     readFile('src/lib/reader/engines/epubjs.ts', 'utf8'),
@@ -38,6 +39,7 @@ if (present) {
     readFile('src/styles/reader-device-ux.css', 'utf8'),
     readFile('tests/e2e/accessibility.spec.ts', 'utf8'),
     readFile('tests/e2e/reader-tap-zones.spec.ts', 'utf8'),
+    readFile('tests/e2e/performance-fixtures.ts', 'utf8'),
     readFile('.github/workflows/accessibility.yml', 'utf8'),
     readFile('.github/workflows/deploy.yml', 'utf8'),
     readFile('package.json', 'utf8'),
@@ -45,37 +47,67 @@ if (present) {
 
   pass('RR6_MOBILE_TAP_ZONES',
     navigation.includes('const DEFAULT_EDGE_TAP_RATIO = 1 / 3')
+      && navigation.includes('function visibleTapRatio(')
+      && navigation.includes('location?.displayedPage')
+      && navigation.includes('location?.displayedTotal')
+      && navigation.includes('const tapRatio = visibleTapRatio(')
       && navigation.includes("void this.navigate('previous', 'tap')")
       && navigation.includes("void this.navigate('next', 'tap')")
       && navigation.includes('this.shell.toggleControls()')
-      && tapTests.includes('left previous, center chrome, and right next tap zones')
+      && tapTests.includes('short EPUB uses left previous, center chrome, and right next tap zones')
       && tapTests.includes("project.name === 'webkit-phone'")
-      && tapTests.includes("frameLocator('[data-reader-viewport] iframe')")
+      && tapTests.includes("page.locator('[data-reader-viewport]')")
       && tapTests.includes('const dispatched = document.dispatchEvent(event)')
       && tapTests.includes('defaultPrevented: event.defaultPrevented')
       && tapTests.includes('EPUB production click listener must consume the compatibility tap')
       && tapTests.includes('page.touchscreen.tap('),
-    'Paginated reader uses explicit left/center/right thirds, Chromium touchscreen E2E coverage, and WebKit EPUB-Document compatibility-event consumption proof');
+    'Paginated reader uses explicit visible left/center/right thirds, multi-column coordinate normalization, Chromium touchscreen E2E coverage, and WebKit EPUB-Document compatibility-event proof');
+
+  pass('RR6_MULTI_PAGE_READING_CONTINUITY',
+    performanceFixtures.includes('export const LARGE_EPUB_CHAPTERS = 96')
+      && tapTests.includes('largeEpubFixture')
+      && tapTests.includes('multi-page EPUB visible taps preserve reading continuity on desktop and mobile')
+      && tapTests.includes('advanceByButton(shell, next, 5)')
+      && tapTests.includes('data-reader-location-cfi')
+      && tapTests.includes('expect(current).not.toBe(initialCfi)')
+      && tapTests.includes('expect(new Set(forwardLocations).size).toBe(forwardLocations.length)')
+      && tapTests.includes('expect(await currentCfi(shell)).toBe(deepCfi)'),
+    'RR6 includes a 96-section sustained desktop/phone journey that verifies exact-CFI forward/back continuity, repeated center chrome toggles, and no reset to the initial/cover location');
 
   const readerOpenStart = harness.indexOf('const open = async () => {');
   const readerOpenEnd = harness.indexOf('cleanups.push(readingMode.subscribe', readerOpenStart);
   const readerOpen = readerOpenStart >= 0 && readerOpenEnd > readerOpenStart
     ? harness.slice(readerOpenStart, readerOpenEnd)
     : '';
-  const navigationStartIndex = readerOpen.indexOf('navigation.start()');
   const controllerOpenIndex = readerOpen.indexOf('await controller.open(');
-  pass('RR6_READY_NAVIGATION_ORDER',
-    navigationStartIndex >= 0
-      && controllerOpenIndex > navigationStartIndex
-      && readerOpen.includes('Navigation must subscribe to controller interactions before controller.open()'),
-    'Reader navigation subscribes before controller.open can publish ready, eliminating the first-tap readiness race');
+  const readingModeIndex = readerOpen.indexOf('await readingMode.start()');
+  const typographyIndex = readerOpen.indexOf('await typography.start()');
+  const pageLayoutIndex = readerOpen.indexOf('await pageLayout.start()');
+  const shellReadyIndex = readerOpen.indexOf("shell.setStatus('ready')");
+  const navigationStartIndex = readerOpen.indexOf('navigation.start()');
+  pass('RR6_SETTLED_INTERACTION_BOUNDARY',
+    controllerOpenIndex >= 0
+      && readingModeIndex > controllerOpenIndex
+      && typographyIndex > readingModeIndex
+      && pageLayoutIndex > typographyIndex
+      && shellReadyIndex > pageLayoutIndex
+      && navigationStartIndex > shellReadyIndex
+      && readerOpen.includes("shell.setStatus('loading', 'Opening book…')")
+      && readerOpen.includes('if (navigationStarted) navigation.refresh()')
+      && harness.includes('Engine `ready` is intentionally not forwarded to the shell here')
+      && navigation.includes("this.shell.root.dataset.readerStatus === 'ready'")
+      && navigation.includes('refresh(): void'),
+    'Engine ready remains non-interactive while initial flow, typography, page geometry, and progress settle; shell ready is published before navigation is enabled and retries re-sync availability');
 
-  pass('RR6_VIEWPORT_RELATIVE_POINTERS',
+  pass('RR6_SECTION_TO_VISIBLE_TAP_GEOMETRY',
     epub.includes('win.innerWidth || doc.documentElement?.clientWidth')
       && epub.includes('win.innerHeight || doc.documentElement?.clientHeight')
-      && epub.includes('PointerEvent/Touch client coordinates are relative to the visible iframe viewport')
-      && !epub.includes('doc.documentElement?.clientWidth || win.innerWidth'),
-    'EPUB tap coordinates normalize against the visible iframe viewport rather than a paginated document width');
+      && navigation.includes('function visibleTapRatio(')
+      && navigation.includes('const sliceStart = (safePage - 1) / total')
+      && navigation.includes('const sliceEnd = (safePage - 1 + visiblePages) / total')
+      && tapTests.includes('viewportBox.width * xRatio')
+      && tapTests.includes('pageX - iframeBox.x'),
+    'Raw EPUB iframe coordinates are normalized from the current section slice into the visible reader viewport before tap-zone classification, and tests target visible outer geometry');
 
   const visibleInstrumentationCalls = (epub.match(/this\.instrumentVisibleContents\(\);/g) ?? []).length;
   pass('RR6_VISIBLE_CONTENT_INSTRUMENTATION',
