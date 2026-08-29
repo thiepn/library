@@ -72,12 +72,23 @@ if (present) {
     performanceFixtures.includes('export const LARGE_EPUB_CHAPTERS = 96')
       && tapTests.includes('largeEpubFixture')
       && tapTests.includes('multi-page EPUB visible taps preserve reading continuity on desktop and mobile')
-      && tapTests.includes('advanceByButton(shell, next, 5)')
+      && tapTests.includes('verifyDeepReadingContinuity(page)')
+      && tapTests.includes('advanceByButton(shell, next, initialAdvanceCount)')
       && tapTests.includes('data-reader-location-cfi')
       && tapTests.includes('expect(current).not.toBe(initialCfi)')
       && tapTests.includes('expect(new Set(forwardLocations).size).toBe(forwardLocations.length)')
       && tapTests.includes('expect(await currentCfi(shell)).toBe(deepCfi)'),
     'RR6 includes a 96-section sustained desktop/phone journey that verifies exact-CFI forward/back continuity, repeated center chrome toggles, and no reset to the initial/cover location');
+
+  pass('RR6_HOSTED_READER_CONTINUITY',
+    tapTests.includes("const USE_STAGED_HOSTED_MEDIA = process.env.RR6_STAGED_HOSTED_MEDIA === '1'")
+      && tapTests.includes("const HOSTED_READER_PATH = '/library/works/ai-for-the-kingdom/read'")
+      && tapTests.includes('AI_for_the_Kingdom.epub')
+      && tapTests.includes('async function openHostedReader(')
+      && tapTests.includes('hosted EPUB route preserves reading continuity and stable chrome')
+      && tapTests.includes('verifyDeepReadingContinuity(page, 4)')
+      && deployment.includes("RR6_STAGED_HOSTED_MEDIA: '1'"),
+    'RR6 exercises the real hosted reader/bootstrap path in PR CI with deterministic long EPUB bytes and switches to exact R2-staged canonical EPUB media in production before artifact upload');
 
   pass('RR6_CHROME_TOGGLE_STABILITY',
     shellController.includes('const POINTER_REVEAL_GUARD_MS = 450')
@@ -247,13 +258,14 @@ if (present) {
   const pagesIndex = deployment.indexOf('actions/upload-pages-artifact@v4');
   pass('RR6_PRODUCTION_GATE',
     deployment.includes('Run RR6 accessibility and inclusive-reading acceptance')
+      && deployment.includes("RR6_STAGED_HOSTED_MEDIA: '1'")
       && deployment.includes('run: pnpm test:accessibility')
       && browserIndex >= 0
       && performanceIndex > browserIndex
       && offlineIndex > performanceIndex
       && accessibilityIndex > offlineIndex
       && pagesIndex > accessibilityIndex,
-    'Production artifact upload is ordered after Browser Acceptance, RR4, RR5, and RR6 accessibility acceptance');
+    'Production artifact upload is ordered after Browser Acceptance, RR4, RR5, and RR6 accessibility acceptance, with RR6 using staged canonical hosted media');
 
   pass('RR6_EVIDENCE_BOUNDARY',
     doc.includes('does **not** claim that Playwright is VoiceOver, TalkBack, or NVDA')
