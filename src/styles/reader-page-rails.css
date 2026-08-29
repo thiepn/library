@@ -1,0 +1,90 @@
+.reader-shell__page-rail,
+.reader-shell__page-rail[hidden] {
+  display: none;
+}
+
+/* Scroll mode is native scrolling: page-turn controls would imply the wrong interaction model. */
+.reader-shell[data-reader-flow="scrolled"] .reader-shell__bar--bottom {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.reader-shell[data-reader-flow="scrolled"] .reader-shell__bar--bottom .reader-shell__nav-button {
+  display: none;
+}
+
+.reader-shell[data-reader-flow="scrolled"] .reader-shell__bar--bottom .reader-shell__location {
+  grid-column: 1;
+}
+
+@media (min-width: 761px) and (hover: hover) and (pointer: fine) {
+  .reader-shell[data-reader-status="ready"][data-reader-flow="paginated"] .reader-shell__page-rail:not([hidden]) {
+    position: absolute;
+    z-index: 12;
+    top: 50%;
+    width: 52px;
+    height: 116px;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    transform: translateY(-50%);
+    border: 1px solid color-mix(in srgb, var(--reader-shell-ink) 14%, transparent);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--reader-shell-surface) 88%, transparent);
+    color: var(--reader-shell-ink);
+    box-shadow: 0 8px 24px rgb(0 0 0 / 0.08);
+    opacity: 0.34;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: opacity 120ms ease, background 120ms ease, box-shadow 120ms ease;
+  }
+
+  .reader-shell__page-rail--previous {
+    left: clamp(8px, 1.3vw, 20px);
+  }
+
+  .reader-shell__page-rail--next {
+    right: clamp(8px, 1.3vw, 20px);
+  }
+
+  .reader-shell__page-rail svg {
+    width: 25px;
+    height: 25px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.75;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .reader-shell__page-rail:not(:disabled):hover,
+  .reader-shell__page-rail:not(:disabled):focus-visible {
+    background: var(--reader-shell-surface);
+    box-shadow: 0 10px 28px rgb(0 0 0 / 0.14);
+    opacity: 0.96;
+  }
+
+  .reader-shell__page-rail:disabled {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reader-shell__page-rail {
+    transition: none !important;
+  }
+}
+
+@media (forced-colors: active) and (min-width: 761px) {
+  .reader-shell[data-reader-status="ready"][data-reader-flow="paginated"] .reader-shell__page-rail:not([hidden]) {
+    border: 1px solid ButtonText;
+    background: Canvas;
+    color: ButtonText;
+    opacity: 1;
+  }
+
+  .reader-shell__page-rail:disabled {
+    display: none !important;
+  }
+}
