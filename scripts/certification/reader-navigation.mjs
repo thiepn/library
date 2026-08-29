@@ -55,6 +55,19 @@ if (navigationExists) {
       && tapTests.includes('pageX - iframeBox.x')
       && !tapTests.includes('box.width * xRatio'),
     'Tap regression targets the visible reader viewport instead of treating a chapter-wide EPUB iframe as one visible page');
+  pass('EPUB_READER_NAV_RELOAD_BRIDGE',
+    navigation.includes('private startIframeCompatibilityBridge(): void')
+      && navigation.includes('new MutationObserver(() => this.scanReaderFrames())')
+      && navigation.includes("frame.addEventListener('load', onLoad)")
+      && navigation.includes('requestAnimationFrame(() => this.attachDocumentBridge(frame))')
+      && navigation.includes("doc.addEventListener('click', handleCompatibilityClick)")
+      && navigation.includes('if (event.defaultPrevented || this.destroyed || !this.isInteractiveReady()) return')
+      && navigation.includes('isPublicationInteractiveTarget(event.target)')
+      && navigation.includes("win?.getSelection()?.toString().trim()")
+      && navigation.includes('this.scanReaderFrames();')
+      && navigation.includes('this.iframeObserver?.disconnect()')
+      && navigation.includes("doc?.removeEventListener('click', handleCompatibilityClick)"),
+    'A parent-owned late iframe-load bridge reattaches compatibility click handling after EPUB.js section/document replacement without double turns, link/selection interception, or listener leaks');
   pass('EPUB_READER_NAV_SWIPE', engine.includes("type: 'swipe'") && engine.includes('absX >= 48') && navigation.includes("interaction.direction === 'left' ? 'next' : 'previous'"), 'Horizontal touch/pen swipes produce page turns only after gesture qualification');
   pass('EPUB_READER_NAV_KEYBOARD', ['ArrowRight', 'ArrowLeft', 'PageDown', 'PageUp', 'Space'].every((key) => navigation.includes(key)) && navigation.includes("source === 'keyboard'"), 'Paginated reader supports standard page-turn keyboard controls');
   pass('EPUB_READER_NAV_SCROLL_SAFE', navigation.includes("this.readingModeState.flow !== 'paginated'") && navigation.includes("this.readingModeState.flow === 'paginated'"), 'Scroll mode does not hijack page keys, edge taps, or swipe page turns');
