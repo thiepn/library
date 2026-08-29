@@ -8,9 +8,11 @@ const navigationFiles = [
   'src/lib/reader/navigation.ts',
   'src/lib/reader/engines/epubjs.ts',
   'src/lib/reader/controller.ts',
+  'tests/e2e/reader-tap-zones.spec.ts',
+  'tests/e2e/performance-fixtures.ts',
 ];
 const navigationExists = (await Promise.all(navigationFiles.map(exists))).every(Boolean);
-pass('EPUB_READER_NAVIGATION', navigationExists, 'Dedicated P14 navigation controller and EPUB interaction bridge are present');
+pass('EPUB_READER_NAVIGATION', navigationExists, 'Dedicated navigation controller, EPUB interaction bridge, and real multi-page navigation regression are present');
 
 if (navigationExists) {
   const navigation = await readFile('src/lib/reader/navigation.ts', 'utf8');
@@ -19,10 +21,40 @@ if (navigationExists) {
   const harness = await readFile('src/lib/reader/harness.ts', 'utf8');
   const shell = await readFile('src/components/reader/ReaderShell.astro', 'utf8');
   const publicApi = await readFile('src/lib/reader/index.ts', 'utf8');
+  const tapTests = await readFile('tests/e2e/reader-tap-zones.spec.ts', 'utf8');
+  const performanceFixtures = await readFile('tests/e2e/performance-fixtures.ts', 'utf8');
 
   pass('EPUB_READER_NAV_INTERACTION_BRIDGE', engine.includes('rendition.hooks.content.register(this.handleContent)') && controller.includes('onInteraction(listener') && controller.includes('this.engine.onInteraction'), 'EPUB iframe interactions are normalized through engine and controller boundaries');
   pass('EPUB_READER_NAV_INTERACTION_GUARDS', engine.includes('INTERACTIVE_SELECTOR') && engine.includes("'a[href]'") && engine.includes('hasSelection()') && navigation.includes('interaction.interactive || interaction.hasSelection'), 'Links, controls, forms, and text selection bypass reader navigation gestures');
-  pass('EPUB_READER_NAV_TAP_ZONES', navigation.includes('edgeTapRatio') && navigation.includes('interaction.xRatio <= this.edgeTapRatio') && navigation.includes('interaction.xRatio >= 1 - this.edgeTapRatio') && navigation.includes('this.shell.toggleControls()'), 'Paginated reader has protected previous/center/next tap zones');
+  pass('EPUB_READER_NAV_TAP_ZONES',
+    navigation.includes('const DEFAULT_EDGE_TAP_RATIO = 1 / 3')
+      && navigation.includes('function visibleTapRatio(')
+      && navigation.includes('location?.displayedPage')
+      && navigation.includes('location?.displayedTotal')
+      && navigation.includes("spread === 'double'")
+      && navigation.includes('const tapRatio = visibleTapRatio(')
+      && navigation.includes('tapRatio <= this.edgeTapRatio')
+      && navigation.includes('tapRatio >= 1 - this.edgeTapRatio')
+      && navigation.includes('tapRatio > centerStart && tapRatio < centerEnd')
+      && navigation.includes('this.shell.toggleControls()'),
+    'Paginated reader maps section-wide EPUB coordinates back to the visible spread before protected previous/center/next classification');
+  pass('EPUB_READER_NAV_MULTI_PAGE_CONTINUITY',
+    performanceFixtures.includes('export const LARGE_EPUB_CHAPTERS = 96')
+      && tapTests.includes("largeEpubFixture")
+      && tapTests.includes('multi-page EPUB visible taps preserve reading continuity on desktop and mobile')
+      && tapTests.includes("page.locator('[data-reader-viewport]')")
+      && tapTests.includes("data-reader-location-cfi")
+      && tapTests.includes('advanceByButton(shell, next, 5)')
+      && tapTests.includes('expect(current).not.toBe(initialCfi)')
+      && tapTests.includes('expect(new Set(forwardLocations).size).toBe(forwardLocations.length)')
+      && tapTests.includes('expect(await currentCfi(shell)).toBe(deepCfi)'),
+    'A 96-section EPUB regression exercises visible-viewport taps several pages deep, repeated chrome toggles, forward turns, and exact-CFI reversal without cover reset');
+  pass('EPUB_READER_NAV_VISIBLE_VIEWPORT_TEST_GEOMETRY',
+    tapTests.includes("const viewport = page.locator('[data-reader-viewport]')")
+      && tapTests.includes('viewportBox.width * xRatio')
+      && tapTests.includes('pageX - iframeBox.x')
+      && !tapTests.includes('box.width * xRatio'),
+    'Tap regression targets the visible reader viewport instead of treating a chapter-wide EPUB iframe as one visible page');
   pass('EPUB_READER_NAV_SWIPE', engine.includes("type: 'swipe'") && engine.includes('absX >= 48') && navigation.includes("interaction.direction === 'left' ? 'next' : 'previous'"), 'Horizontal touch/pen swipes produce page turns only after gesture qualification');
   pass('EPUB_READER_NAV_KEYBOARD', ['ArrowRight', 'ArrowLeft', 'PageDown', 'PageUp', 'Space'].every((key) => navigation.includes(key)) && navigation.includes("source === 'keyboard'"), 'Paginated reader supports standard page-turn keyboard controls');
   pass('EPUB_READER_NAV_SCROLL_SAFE', navigation.includes("this.readingModeState.flow !== 'paginated'") && navigation.includes("this.readingModeState.flow === 'paginated'"), 'Scroll mode does not hijack page keys, edge taps, or swipe page turns');
