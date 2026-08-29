@@ -11,6 +11,7 @@ const files = [
   'src/lib/reader/epub-security.ts',
   'src/lib/reader/navigation.ts',
   'src/lib/reader/harness.ts',
+  'src/lib/reader/shell.ts',
   'src/components/reader/ReaderShell.astro',
   'src/components/PdfReaderShell.astro',
   'src/styles/reader-accessibility.css',
@@ -26,13 +27,14 @@ const present = (await Promise.all(files.map(exists))).every(Boolean);
 pass('RR6_FILES', present, 'RR6 docs, reader/PDF accessibility and EPUB security surfaces, multi-page interaction fixtures, cross-engine tests, workflow, package commands, and production gate are present');
 
 if (present) {
-  const [doc, a11y, epub, epubSecurity, navigation, harness, shell, pdfShell, css, deviceCss, tests, tapTests, performanceFixtures, workflow, deployment, pkg] = await Promise.all([
+  const [doc, a11y, epub, epubSecurity, navigation, harness, shellController, shell, pdfShell, css, deviceCss, tests, tapTests, performanceFixtures, workflow, deployment, pkg] = await Promise.all([
     readFile('docs/RR6_ACCESSIBILITY_INCLUSIVE_READING.md', 'utf8'),
     readFile('src/lib/reader/accessibility.ts', 'utf8'),
     readFile('src/lib/reader/engines/epubjs.ts', 'utf8'),
     readFile('src/lib/reader/epub-security.ts', 'utf8'),
     readFile('src/lib/reader/navigation.ts', 'utf8'),
     readFile('src/lib/reader/harness.ts', 'utf8'),
+    readFile('src/lib/reader/shell.ts', 'utf8'),
     readFile('src/components/reader/ReaderShell.astro', 'utf8'),
     readFile('src/components/PdfReaderShell.astro', 'utf8'),
     readFile('src/styles/reader-accessibility.css', 'utf8'),
@@ -57,11 +59,14 @@ if (present) {
       && tapTests.includes('short EPUB uses left previous, center chrome, and right next tap zones')
       && tapTests.includes("project.name === 'webkit-phone'")
       && tapTests.includes("page.locator('[data-reader-viewport]')")
-      && tapTests.includes('const dispatched = document.dispatchEvent(event)')
-      && tapTests.includes('defaultPrevented: event.defaultPrevented')
-      && tapTests.includes('EPUB production click listener must consume the compatibility tap')
-      && tapTests.includes('page.touchscreen.tap('),
-    'Paginated reader uses explicit visible left/center/right thirds, multi-column coordinate normalization, Chromium touchscreen E2E coverage, and WebKit EPUB-Document compatibility-event proof');
+      && tapTests.includes("target.dispatchEvent(new PointerEvent('pointerdown', pointerInit))")
+      && tapTests.includes('target.dispatchEvent(pointerUp)')
+      && tapTests.includes('const dispatched = target.dispatchEvent(compatibilityClick)')
+      && tapTests.includes('defaultPrevented: pointerUp.defaultPrevented || compatibilityClick.defaultPrevented')
+      && tapTests.includes('EPUB production interaction path must consume the physical tap')
+      && tapTests.includes('page.touchscreen.tap(')
+      && tapTests.includes('page.mouse.click('),
+    'Paginated reader uses visible left/center/right thirds, multi-column normalization, real Chromium phone taps, desktop clicks, and a WebKit physical pointer-plus-compatibility-click sequence');
 
   pass('RR6_MULTI_PAGE_READING_CONTINUITY',
     performanceFixtures.includes('export const LARGE_EPUB_CHAPTERS = 96')
@@ -73,6 +78,15 @@ if (present) {
       && tapTests.includes('expect(new Set(forwardLocations).size).toBe(forwardLocations.length)')
       && tapTests.includes('expect(await currentCfi(shell)).toBe(deepCfi)'),
     'RR6 includes a 96-section sustained desktop/phone journey that verifies exact-CFI forward/back continuity, repeated center chrome toggles, and no reset to the initial/cover location');
+
+  pass('RR6_CHROME_TOGGLE_STABILITY',
+    shellController.includes('const POINTER_REVEAL_GUARD_MS = 450')
+      && shellController.includes("if (event.pointerType === 'touch') return")
+      && shellController.includes('if (target && this.viewport.contains(target)) return')
+      && tapTests.includes('async function expectChromeStable(')
+      && tapTests.includes('await page.waitForTimeout(520)')
+      && tapTests.includes("await expect(shell).toHaveAttribute('data-reader-controls', expected)"),
+    'Center-tap chrome state survives the post-hide pointer/focus reveal guard so the same interaction cannot flicker controls back open');
 
   const readerOpenStart = harness.indexOf('const open = async () => {');
   const readerOpenEnd = harness.indexOf('cleanups.push(readingMode.subscribe', readerOpenStart);
