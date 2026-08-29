@@ -9,6 +9,7 @@ const files = [
   'src/lib/reader/accessibility.ts',
   'src/lib/reader/engines/epubjs.ts',
   'src/lib/reader/navigation.ts',
+  'src/lib/reader/harness.ts',
   'src/components/reader/ReaderShell.astro',
   'src/components/PdfReaderShell.astro',
   'src/styles/reader-accessibility.css',
@@ -23,11 +24,12 @@ const present = (await Promise.all(files.map(exists))).every(Boolean);
 pass('RR6_FILES', present, 'RR6 docs, reader/PDF accessibility surfaces, cross-engine tests, workflow, package commands, and production gate are present');
 
 if (present) {
-  const [doc, a11y, epub, navigation, shell, pdfShell, css, deviceCss, tests, tapTests, workflow, deployment, pkg] = await Promise.all([
+  const [doc, a11y, epub, navigation, harness, shell, pdfShell, css, deviceCss, tests, tapTests, workflow, deployment, pkg] = await Promise.all([
     readFile('docs/RR6_ACCESSIBILITY_INCLUSIVE_READING.md', 'utf8'),
     readFile('src/lib/reader/accessibility.ts', 'utf8'),
     readFile('src/lib/reader/engines/epubjs.ts', 'utf8'),
     readFile('src/lib/reader/navigation.ts', 'utf8'),
+    readFile('src/lib/reader/harness.ts', 'utf8'),
     readFile('src/components/reader/ReaderShell.astro', 'utf8'),
     readFile('src/components/PdfReaderShell.astro', 'utf8'),
     readFile('src/styles/reader-accessibility.css', 'utf8'),
@@ -50,6 +52,19 @@ if (present) {
       && tapTests.includes("document.dispatchEvent(new MouseEvent('click'")
       && tapTests.includes('page.touchscreen.tap('),
     'Paginated reader uses explicit left/center/right thirds, Chromium touchscreen E2E coverage, and WebKit EPUB-Document compatibility-event coverage');
+
+  const readerOpenStart = harness.indexOf('const open = async () => {');
+  const readerOpenEnd = harness.indexOf('cleanups.push(readingMode.subscribe', readerOpenStart);
+  const readerOpen = readerOpenStart >= 0 && readerOpenEnd > readerOpenStart
+    ? harness.slice(readerOpenStart, readerOpenEnd)
+    : '';
+  const navigationStartIndex = readerOpen.indexOf('navigation.start()');
+  const controllerOpenIndex = readerOpen.indexOf('await controller.open(');
+  pass('RR6_READY_NAVIGATION_ORDER',
+    navigationStartIndex >= 0
+      && controllerOpenIndex > navigationStartIndex
+      && readerOpen.includes('Navigation must subscribe to controller interactions before controller.open()'),
+    'Reader navigation subscribes before controller.open can publish ready, eliminating the first-tap readiness race');
 
   pass('RR6_VIEWPORT_RELATIVE_POINTERS',
     epub.includes('win.innerWidth || doc.documentElement?.clientWidth')
