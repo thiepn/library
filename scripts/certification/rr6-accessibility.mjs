@@ -12,6 +12,7 @@ const files = [
   'src/components/reader/ReaderShell.astro',
   'src/components/PdfReaderShell.astro',
   'src/styles/reader-accessibility.css',
+  'src/styles/reader-device-ux.css',
   'tests/e2e/accessibility.spec.ts',
   'tests/e2e/reader-tap-zones.spec.ts',
   '.github/workflows/accessibility.yml',
@@ -22,7 +23,7 @@ const present = (await Promise.all(files.map(exists))).every(Boolean);
 pass('RR6_FILES', present, 'RR6 docs, reader/PDF accessibility surfaces, cross-engine tests, workflow, package commands, and production gate are present');
 
 if (present) {
-  const [doc, a11y, epub, navigation, shell, pdfShell, css, tests, tapTests, workflow, deployment, pkg] = await Promise.all([
+  const [doc, a11y, epub, navigation, shell, pdfShell, css, deviceCss, tests, tapTests, workflow, deployment, pkg] = await Promise.all([
     readFile('docs/RR6_ACCESSIBILITY_INCLUSIVE_READING.md', 'utf8'),
     readFile('src/lib/reader/accessibility.ts', 'utf8'),
     readFile('src/lib/reader/engines/epubjs.ts', 'utf8'),
@@ -30,6 +31,7 @@ if (present) {
     readFile('src/components/reader/ReaderShell.astro', 'utf8'),
     readFile('src/components/PdfReaderShell.astro', 'utf8'),
     readFile('src/styles/reader-accessibility.css', 'utf8'),
+    readFile('src/styles/reader-device-ux.css', 'utf8'),
     readFile('tests/e2e/accessibility.spec.ts', 'utf8'),
     readFile('tests/e2e/reader-tap-zones.spec.ts', 'utf8'),
     readFile('.github/workflows/accessibility.yml', 'utf8'),
@@ -57,13 +59,17 @@ if (present) {
       && epub.includes("doc.addEventListener('pointerup', handlePointerUp")
       && epub.includes("doc.addEventListener('touchstart', handleTouchStart")
       && epub.includes("doc.addEventListener('touchend', handleTouchEnd")
+      && epub.includes("doc.addEventListener('click', handleClick)")
+      && epub.includes('lastHandledInteractionAt')
+      && epub.includes('performance.now() - lastHandledInteractionAt < 800')
       && epub.includes('if (pointerStart) return;')
       && epub.includes('deduplicates browsers')
       && epub.includes("pointerType: effectivePointerType"),
-    'EPUB interaction accepts Pointer Events and WebKit/Safari Touch Events through one deduplicated gesture state');
+    'EPUB interaction accepts Pointer Events, WebKit/Safari Touch Events, and a deduplicated compatibility click tap path');
 
   pass('RR6_INTERACTION_GUARDS',
     epub.includes('isInteractiveTarget(target)')
+      && epub.includes('isInteractiveTarget(event.target) || hasSelection()')
       && epub.includes('const selected = hasSelection()')
       && epub.includes("type: 'swipe'")
       && epub.includes("type: 'tap'")
@@ -99,11 +105,14 @@ if (present) {
       && css.includes('max-width: 100%')
       && css.includes('(hover: none) and (pointer: coarse)')
       && css.includes('min-block-size: 44px')
+      && deviceCss.includes('.pdf-reader button:not(.pdf-reader__backdrop)')
+      && deviceCss.includes('min-width: 44px')
+      && deviceCss.includes('min-height: 44px')
       && tests.includes('400-percent reference reflow')
       && tests.includes('phone reader controls preserve large touch targets')
       && tests.includes('expectMinimumTarget')
       && tests.includes('44'),
-    '320 CSS px reflow and >=44 CSS px primary phone/coarse-pointer targets are executable release checks');
+    '320 CSS px reflow and >=44x44 CSS px primary EPUB/PDF phone targets are executable release checks');
 
   pass('RR6_MEDIA_PREFERENCES',
     a11y.includes("safeMatchMedia('(prefers-reduced-motion: reduce)')")
