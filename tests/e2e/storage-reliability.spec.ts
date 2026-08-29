@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { personalEpubFixture, personalPdfFixture, secondPersonalPdfFixture } from './offline-fixtures';
+import { setRr5Offline } from './offline-network';
 
 const PERSONAL_DB = 'thiepn-library-personal-books';
 const STABLE_PUBLICATION_CACHE = 'thiepn-library-offline-publications-v1';
@@ -142,7 +143,7 @@ test('@rr5 personal EPUB and PDF readers reopen offline while private files rema
   expect(epubHref).toBeTruthy();
   expect(pdfHref).toBeTruthy();
 
-  await context.setOffline(true);
+  await setRr5Offline(context, true);
   try {
     await page.goto(epubHref!, { waitUntil: 'domcontentloaded' });
     await expect(page.locator('[data-reader-shell]')).toHaveAttribute('data-reader-status', 'ready', { timeout: 30_000 });
@@ -152,7 +153,7 @@ test('@rr5 personal EPUB and PDF readers reopen offline while private files rema
     await expect(page.locator('[data-pdf-reader-root]')).toHaveAttribute('data-pdf-reader-state', 'ready', { timeout: 30_000 });
     await expect.poll(async () => Number(await page.locator('[data-pdf-page-count]').textContent())).toBeGreaterThan(0);
   } finally {
-    await context.setOffline(false);
+    await setRr5Offline(context, false);
   }
 });
 
