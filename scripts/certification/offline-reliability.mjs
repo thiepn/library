@@ -18,6 +18,8 @@ const files = [
   'scripts/certification/post-build.mjs',
   'scripts/verify-production.mjs',
   'tests/e2e/offline-fixtures.ts',
+  'tests/e2e/offline-preview-proxy.mjs',
+  'tests/e2e/offline-network.ts',
   'tests/e2e/offline-reliability.spec.ts',
   'tests/e2e/storage-reliability.spec.ts',
   'playwright.config.ts',
@@ -27,10 +29,10 @@ const files = [
   'package.json',
 ];
 const present = (await Promise.all(files.map(exists))).every(Boolean);
-pass('RR5_FILES', present, 'RR5 offline manager, worker protocol, storage hardening, browser corpus, workflow, docs, post-build/live verification, and production gate are present');
+pass('RR5_FILES', present, 'RR5 offline manager, worker protocol, storage hardening, browser corpus, outage harness, workflow, docs, post-build/live verification, and production gate are present');
 
 if (present) {
-  const [doc, offlineClient, storage, pwa, personal, manager, downloadsPage, saved, sw, prepare, postbuild, verifier, fixtures, offlineTests, storageTests, baselineConfig, config, workflow, deployment, pkg] = await Promise.all([
+  const [doc, offlineClient, storage, pwa, personal, manager, downloadsPage, saved, sw, prepare, postbuild, verifier, fixtures, offlineProxy, offlineNetwork, offlineTests, storageTests, baselineConfig, config, workflow, deployment, pkg] = await Promise.all([
     readFile('docs/RR5_OFFLINE_STORAGE_RELIABILITY.md', 'utf8'),
     readFile('src/lib/client/offline-library.ts', 'utf8'),
     readFile('src/lib/client/storage-reliability.ts', 'utf8'),
@@ -44,6 +46,8 @@ if (present) {
     readFile('scripts/certification/post-build.mjs', 'utf8'),
     readFile('scripts/verify-production.mjs', 'utf8'),
     readFile('tests/e2e/offline-fixtures.ts', 'utf8'),
+    readFile('tests/e2e/offline-preview-proxy.mjs', 'utf8'),
+    readFile('tests/e2e/offline-network.ts', 'utf8'),
     readFile('tests/e2e/offline-reliability.spec.ts', 'utf8'),
     readFile('tests/e2e/storage-reliability.spec.ts', 'utf8'),
     readFile('playwright.config.ts', 'utf8'),
@@ -134,8 +138,10 @@ if (present) {
     personal.includes('const PERSONAL_DB_VERSION = 2')
       && personal.includes("db.addEventListener('versionchange', () => db.close())")
       && storageTests.includes("indexedDB.open(dbName, 1)")
+      && storageTests.includes("const bytes = new TextEncoder().encode('%PDF-1.4")
+      && storageTests.includes('transaction.error ?? put.error')
       && storageTests.includes('RR5 v1 preserved'),
-    'Personal-book v1→v2 upgrade closes version-changed connections and preserves an authoritative v1 record');
+    'Personal-book v1→v2 upgrade closes version-changed connections, seeds production-representative ArrayBuffer bytes, and preserves an authoritative v1 record');
 
   pass('RR5_EVICTION_PRIVATE_BOUNDARY',
     offlineTests.includes("caches.delete(cacheName)")
@@ -167,6 +173,21 @@ if (present) {
       && config.includes("'**/offline-reliability.spec.ts'")
       && config.includes("'**/storage-reliability.spec.ts'"),
     'RR5 has a service-worker-enabled Chromium/Firefox/WebKit browser profile; lifecycle-only checks are explicitly sampled once where appropriate');
+
+  pass('RR5_WEBKIT_ORIGIN_OUTAGE_HARNESS',
+    config.includes("command: 'node tests/e2e/offline-preview-proxy.mjs'")
+      && offlineProxy.includes("const controlPrefix = '/__rr5-network/'")
+      && offlineProxy.includes('request.socket.destroy()')
+      && offlineNetwork.includes("test.info().project.name === 'webkit-offline'")
+      && offlineNetwork.includes('await setProxyOriginOffline(offline)')
+      && offlineNetwork.includes('await context.setOffline(offline)')
+      && offlineTests.includes("import { setRr5Offline } from './offline-network'")
+      && storageTests.includes("import { setRr5Offline } from './offline-network'")
+      && offlineTests.includes('setRr5Offline(context, true)')
+      && storageTests.includes('setRr5Offline(context, true)')
+      && doc.includes("Chromium and Firefox use Playwright's native browser-context offline mode")
+      && doc.includes('qualification-only localhost origin proxy'),
+    'Chromium/Firefox retain native offline emulation while WebKit uses a qualification-only origin connection-reset proxy so the production service worker must satisfy cached requests without relying on WebKit’s broken document-offline toggle');
 
   pass('RR5_BROWSER_CONFIG_ISOLATION',
     baselineConfig.includes("serviceWorkers: 'block'")
