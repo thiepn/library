@@ -49,9 +49,11 @@ if (present) {
       && tapTests.includes('left previous, center chrome, and right next tap zones')
       && tapTests.includes("project.name === 'webkit-phone'")
       && tapTests.includes("frameLocator('[data-reader-viewport] iframe')")
-      && tapTests.includes("document.dispatchEvent(new MouseEvent('click'")
+      && tapTests.includes('const dispatched = document.dispatchEvent(event)')
+      && tapTests.includes('defaultPrevented: event.defaultPrevented')
+      && tapTests.includes('EPUB production click listener must consume the compatibility tap')
       && tapTests.includes('page.touchscreen.tap('),
-    'Paginated reader uses explicit left/center/right thirds, Chromium touchscreen E2E coverage, and WebKit EPUB-Document compatibility-event coverage');
+    'Paginated reader uses explicit left/center/right thirds, Chromium touchscreen E2E coverage, and WebKit EPUB-Document compatibility-event consumption proof');
 
   const readerOpenStart = harness.indexOf('const open = async () => {');
   const readerOpenEnd = harness.indexOf('cleanups.push(readingMode.subscribe', readerOpenStart);
