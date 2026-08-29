@@ -24,7 +24,7 @@ export default defineConfig({
     video: 'retain-on-failure',
   },
   webServer: {
-    command: 'pnpm exec astro preview --host 127.0.0.1 --port 4321',
+    command: 'node tests/e2e/offline-preview-proxy.mjs',
     url: `${baseURL}/library`,
     reuseExistingServer: !inCi,
     timeout: 120_000,
