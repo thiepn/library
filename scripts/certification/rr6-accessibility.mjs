@@ -174,12 +174,16 @@ if (present) {
       && epub.includes("doc.addEventListener('touchstart', handleTouchStart")
       && epub.includes("doc.addEventListener('touchend', handleTouchEnd")
       && epub.includes("doc.addEventListener('click', handleClick)")
-      && epub.includes('lastHandledInteractionAt')
-      && epub.includes('performance.now() - lastHandledInteractionAt < 800')
+      && epub.includes('interface HandledPointerInteraction')
+      && epub.includes('const COMPATIBILITY_CLICK_DEDUPE_MS = 800')
+      && epub.includes('const COMPATIBILITY_CLICK_DEDUPE_DISTANCE = 18')
+      && epub.includes('let lastHandledPointer: HandledPointerInteraction | null = null')
+      && epub.includes('performance.now() - lastHandledPointer.time < COMPATIBILITY_CLICK_DEDUPE_MS')
+      && epub.includes('Math.hypot(event.clientX - lastHandledPointer.x, event.clientY - lastHandledPointer.y) <= COMPATIBILITY_CLICK_DEDUPE_DISTANCE')
       && epub.includes('if (pointerStart) return;')
       && epub.includes('deduplicates browsers')
       && epub.includes("pointerType: effectivePointerType"),
-    'EPUB interaction accepts Pointer Events, WebKit/Safari Touch Events, and a deduplicated compatibility click tap path');
+    'EPUB interaction accepts Pointer Events, WebKit/Safari Touch Events, and spatially deduplicates only the compatibility click belonging to the same handled gesture so rapid independent desktop clicks stay responsive');
 
   pass('RR6_INTERACTION_GUARDS',
     epub.includes('isInteractiveTarget(target)')
