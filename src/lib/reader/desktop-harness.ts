@@ -5,11 +5,13 @@ import {
   type ReaderMobileHarnessHandle,
 } from './mobile-harness';
 import { ReaderDesktopController, type ReaderDesktopOptions } from './desktop';
+import { ReaderPageRailController } from './page-rails';
 import type { ReaderPublicationCandidate } from './publication';
 import type { ReaderOpenOptions } from './types';
 
 export interface ReaderDesktopHarnessHandle extends ReaderMobileHarnessHandle {
   desktop: ReaderDesktopController;
+  pageRails: ReaderPageRailController;
 }
 
 function attachDesktop(
@@ -17,15 +19,19 @@ function attachDesktop(
   options: ReaderDesktopOptions = {},
 ): ReaderDesktopHarnessHandle {
   const desktop = new ReaderDesktopController(base.shell, options);
+  const pageRails = new ReaderPageRailController(base.shell, base.navigation);
   let destroyed = false;
   desktop.start();
+  pageRails.start();
 
   return {
     ...base,
     desktop,
+    pageRails,
     destroy: () => {
       if (destroyed) return;
       destroyed = true;
+      pageRails.destroy();
       desktop.destroy();
       base.destroy();
     },
