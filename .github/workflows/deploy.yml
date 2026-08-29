@@ -131,6 +131,8 @@ jobs:
 
       - name: Run RR6 accessibility and inclusive-reading acceptance
         id: accessibility
+        env:
+          RR6_STAGED_HOSTED_MEDIA: '1'
         run: pnpm test:accessibility
 
       - name: Upload failed production accessibility evidence
