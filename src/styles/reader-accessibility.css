@@ -15,6 +15,22 @@
   min-block-size: 24px;
 }
 
+/* The final accessibility layer must not shrink the larger phone/coarse-pointer hitboxes
+   established by the mobile reader. WCAG's 24px minimum is a floor, not a reason to
+   reduce the reader's 44px touch contract. */
+@media (max-width: 760px), (hover: none) and (pointer: coarse) {
+  .reader-shell[data-reader-accessibility="ready"] :is(
+    button,
+    input,
+    select,
+    textarea,
+    [role="button"],
+    [tabindex]:not([tabindex="-1"])
+  ) {
+    min-block-size: 44px;
+  }
+}
+
 .reader-shell[data-reader-accessibility="ready"] :is(
   input,
   select,

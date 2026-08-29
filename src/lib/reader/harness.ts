@@ -124,9 +124,16 @@ export async function mountReaderShellHarness(
   const open = async () => {
     clearReaderFailureState(shell);
     shell.setStatus('loading', 'Opening book…');
+    if (navigationStarted) navigation.refresh();
+
     try {
       const openTarget = await resolveOpenTarget();
       await controller.open(source, shell.viewport, currentOpenOptions(), openTarget);
+
+      // Controller.open() is only the engine-ready boundary. The reader is not user-ready until
+      // its theme, viewport flow/spread, typography, page geometry, and progress surfaces have
+      // completed their initial CFI-preserving application. Keeping the shell in `loading` here
+      // prevents taps/clicks from racing those redisplays and appearing to jump toward the cover.
       if (themeStarted) theme.reapply();
       else {
         themeStarted = true;
@@ -136,10 +143,6 @@ export async function mountReaderShellHarness(
       else {
         modesStarted = true;
         await readingMode.start();
-      }
-      if (!navigationStarted) {
-        navigationStarted = true;
-        navigation.start();
       }
       if (typographyStarted) await typography.reapply();
       else {
@@ -162,8 +165,18 @@ export async function mountReaderShellHarness(
           progressUx.start();
         }
       }
+
+      clearReaderFailureState(shell);
+      shell.setStatus('ready');
+      if (!navigationStarted) {
+        navigationStarted = true;
+        navigation.start();
+      } else {
+        navigation.refresh();
+      }
     } catch (error) {
       setReaderFailureState(shell, error);
+      if (navigationStarted) navigation.refresh();
       throw error;
     }
   };
@@ -190,11 +203,9 @@ export async function mountReaderShellHarness(
   }));
 
   cleanups.push(controller.subscribe((state) => {
+    // Engine `ready` is intentionally not forwarded to the shell here. `open()` publishes the
+    // user-visible ready state only after every initial layout/reflow owner above has settled.
     if (state.status === 'loading') shell.setStatus('loading');
-    if (state.status === 'ready') {
-      clearReaderFailureState(shell);
-      shell.setStatus('ready');
-    }
     if (state.status === 'error') setReaderFailureState(shell, state.error);
 
     if (state.location) {

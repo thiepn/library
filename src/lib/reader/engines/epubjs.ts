@@ -6,6 +6,7 @@ import ePub, {
   type Rendition,
 } from 'epubjs';
 import type { ReaderEngine } from './engine';
+import { sanitizeEpubDocument } from '../epub-security';
 import {
   ReaderEngineError,
   type ReaderAppearance,
@@ -57,6 +58,16 @@ interface PointerStart {
   time: number;
   pointerType: ReaderPointerType;
   interactive: boolean;
+}
+
+interface HandledPointerInteraction {
+  x: number;
+  y: number;
+  time: number;
+}
+
+interface RenderedView {
+  contents?: Contents;
 }
 
 const THEME_PALETTES: Record<ReaderAppearance['theme'], ThemePalette> = {
@@ -117,6 +128,9 @@ const INTERACTIVE_SELECTOR = [
   '[data-no-reader-nav]',
 ].join(',');
 
+const COMPATIBILITY_CLICK_DEDUPE_MS = 800;
+const COMPATIBILITY_CLICK_DEDUPE_DISTANCE = 18;
+
 function mapFlow(flow: ReaderFlow): string {
   return flow === 'scrolled' ? 'scrolled-doc' : 'paginated';
 }
@@ -132,7 +146,7 @@ function finite(value: unknown): number | undefined {
 }
 
 function nonEmpty(value: unknown): string | undefined {
-  return typeof value === 'string' && value.trim() ? value : undefined;
+  return typeof value === 'string' && value.trim() ? value.trim() : undefined;
 }
 
 function normalizePointerType(value: string): ReaderPointerType {
@@ -208,6 +222,10 @@ export class EpubJsEngine implements ReaderEngine {
     for (const listener of this.selectionListeners) listener(selection);
   };
 
+  private readonly handleRendered = (_section: unknown, view: RenderedView) => {
+    if (view?.contents) this.handleContent(view.contents);
+  };
+
   private readonly handleContent = (contents: Contents) => {
     const doc = contents.document;
     const win = contents.window;
@@ -215,64 +233,169 @@ export class EpubJsEngine implements ReaderEngine {
     this.instrumentedDocuments.add(doc);
 
     let pointerStart: PointerStart | null = null;
+    let lastHandledPointer: HandledPointerInteraction | null = null;
     const hasSelection = () => Boolean(win.getSelection()?.toString().trim());
 
-    const handlePointerDown = (event: PointerEvent) => {
-      if (!event.isPrimary || event.button !== 0) return;
+    const beginInteraction = (
+      x: number,
+      y: number,
+      pointerType: ReaderPointerType,
+      target: EventTarget | null,
+    ) => {
+      // Browsers that expose both Touch Events and Pointer Events may emit both for one
+      // physical gesture. The first start event owns the gesture; the second is ignored.
+      if (pointerStart) return;
       pointerStart = {
-        x: event.clientX,
-        y: event.clientY,
+        x,
+        y,
         time: performance.now(),
-        pointerType: normalizePointerType(event.pointerType),
-        interactive: isInteractiveTarget(event.target),
+        pointerType,
+        interactive: isInteractiveTarget(target),
       };
     };
 
-    const handlePointerCancel = () => {
+    const cancelInteraction = () => {
       pointerStart = null;
     };
 
-    const handlePointerUp = (event: PointerEvent) => {
-      if (!pointerStart || !event.isPrimary || event.button !== 0) {
-        pointerStart = null;
-        return;
-      }
+    const finishInteraction = (
+      x: number,
+      y: number,
+      pointerType: ReaderPointerType,
+      target: EventTarget | null,
+    ): boolean => {
+      if (!pointerStart) return false;
 
       const start = pointerStart;
       pointerStart = null;
-      const deltaX = event.clientX - start.x;
-      const deltaY = event.clientY - start.y;
+      const effectivePointerType = start.pointerType === 'unknown' ? pointerType : start.pointerType;
+      const deltaX = x - start.x;
+      const deltaY = y - start.y;
       const absX = Math.abs(deltaX);
       const absY = Math.abs(deltaY);
       const duration = performance.now() - start.time;
-      const interactive = start.interactive || isInteractiveTarget(event.target);
+      const interactive = start.interactive || isInteractiveTarget(target);
       const selected = hasSelection();
       let interaction: ReaderContentInteraction | null = null;
 
-      if (!interactive && !selected && start.pointerType !== 'mouse' && duration <= 900 && absX >= 48 && absX > absY * 1.3) {
+      if (!interactive && !selected && effectivePointerType !== 'mouse' && duration <= 900 && absX >= 48 && absX > absY * 1.3) {
         interaction = {
           type: 'swipe',
           direction: deltaX < 0 ? 'left' : 'right',
           deltaX,
           deltaY,
-          pointerType: start.pointerType,
+          pointerType: effectivePointerType,
           interactive,
           hasSelection: selected,
         };
       } else if (!interactive && !selected && duration <= 650 && Math.hypot(deltaX, deltaY) <= 12) {
-        const width = Math.max(1, doc.documentElement?.clientWidth || win.innerWidth || 1);
-        const height = Math.max(1, doc.documentElement?.clientHeight || win.innerHeight || 1);
+        // PointerEvent/Touch client coordinates are relative to the visible iframe viewport.
+        // EPUB.js paginated documents can make the root element wider than that viewport,
+        // so using the document width can collapse center/right taps into the previous zone.
+        const width = Math.max(1, win.innerWidth || doc.documentElement?.clientWidth || 1);
+        const height = Math.max(1, win.innerHeight || doc.documentElement?.clientHeight || 1);
         interaction = {
           type: 'tap',
-          xRatio: clampRatio(event.clientX / width),
-          yRatio: clampRatio(event.clientY / height),
-          pointerType: start.pointerType,
+          xRatio: clampRatio(x / width),
+          yRatio: clampRatio(y / height),
+          pointerType: effectivePointerType,
           interactive,
           hasSelection: selected,
         };
       }
 
-      if (interaction && this.emitInteraction(interaction)) event.preventDefault();
+      const handled = Boolean(interaction && this.emitInteraction(interaction));
+      if (handled) lastHandledPointer = { x, y, time: performance.now() };
+      return handled;
+    };
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!event.isPrimary || event.button !== 0) return;
+      beginInteraction(
+        event.clientX,
+        event.clientY,
+        normalizePointerType(event.pointerType),
+        event.target,
+      );
+    };
+
+    const handlePointerCancel = () => {
+      cancelInteraction();
+    };
+
+    const handlePointerUp = (event: PointerEvent) => {
+      if (!event.isPrimary || event.button !== 0) {
+        cancelInteraction();
+        return;
+      }
+      if (finishInteraction(
+        event.clientX,
+        event.clientY,
+        normalizePointerType(event.pointerType),
+        event.target,
+      )) event.preventDefault();
+    };
+
+    const handleTouchStart = (event: TouchEvent) => {
+      if (event.touches.length !== 1) {
+        cancelInteraction();
+        return;
+      }
+      const touch = event.touches.item(0);
+      if (!touch) {
+        cancelInteraction();
+        return;
+      }
+      beginInteraction(touch.clientX, touch.clientY, 'touch', touch.target ?? event.target);
+    };
+
+    const handleTouchEnd = (event: TouchEvent) => {
+      if (event.touches.length > 0 || event.changedTouches.length === 0) {
+        cancelInteraction();
+        return;
+      }
+      const touch = event.changedTouches.item(0);
+      if (!touch) {
+        cancelInteraction();
+        return;
+      }
+      if (finishInteraction(touch.clientX, touch.clientY, 'touch', touch.target ?? event.target)) {
+        event.preventDefault();
+      }
+    };
+
+    const handleTouchCancel = () => {
+      cancelInteraction();
+    };
+
+    const handleClick = (event: MouseEvent) => {
+      // Pointer/touch events remain primary. Consume only the browser compatibility click that
+      // corresponds to the same recently handled gesture. A simple time-only gate swallowed valid
+      // rapid desktop clicks in Firefox (for example left, then center), which made reader chrome
+      // appear unresponsive. Spatial identity keeps duplicate suppression without blocking a new
+      // click in another visible reader zone.
+      const duplicateOfHandledPointer = Boolean(
+        lastHandledPointer
+        && performance.now() - lastHandledPointer.time < COMPATIBILITY_CLICK_DEDUPE_MS
+        && Math.hypot(event.clientX - lastHandledPointer.x, event.clientY - lastHandledPointer.y) <= COMPATIBILITY_CLICK_DEDUPE_DISTANCE
+      );
+      if (duplicateOfHandledPointer) {
+        event.preventDefault();
+        return;
+      }
+      if (isInteractiveTarget(event.target) || hasSelection()) return;
+
+      const width = Math.max(1, win.innerWidth || doc.documentElement?.clientWidth || 1);
+      const height = Math.max(1, win.innerHeight || doc.documentElement?.clientHeight || 1);
+      const interaction: ReaderContentInteraction = {
+        type: 'tap',
+        xRatio: clampRatio(event.clientX / width),
+        yRatio: clampRatio(event.clientY / height),
+        pointerType: 'mouse',
+        interactive: false,
+        hasSelection: false,
+      };
+      if (this.emitInteraction(interaction)) event.preventDefault();
     };
 
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -294,6 +417,15 @@ export class EpubJsEngine implements ReaderEngine {
     doc.addEventListener('pointerdown', handlePointerDown, { passive: true });
     doc.addEventListener('pointerup', handlePointerUp);
     doc.addEventListener('pointercancel', handlePointerCancel, { passive: true });
+    // WebKit/Safari can deliver touchscreen gestures to EPUB iframes through Touch Events
+    // even when PointerEvent exists. The shared gesture state above deduplicates browsers
+    // that emit both event families for the same physical tap/swipe.
+    doc.addEventListener('touchstart', handleTouchStart, { passive: true });
+    doc.addEventListener('touchend', handleTouchEnd, { passive: false });
+    doc.addEventListener('touchcancel', handleTouchCancel, { passive: true });
+    // A compatibility click gives WebKit/Safari and assistive input a browser-agnostic tap
+    // path when a touchscreen gesture does not surface through the iframe pointer/touch path.
+    doc.addEventListener('click', handleClick);
     doc.addEventListener('keydown', handleKeyDown);
   };
 
@@ -308,6 +440,10 @@ export class EpubJsEngine implements ReaderEngine {
       const book = ePub(source);
       await book.ready;
       this.book = book;
+      // WebKit requires sandbox script capability for parent-installed DOM event callbacks to
+      // execute inside EPUB.js srcdoc frames. Sanitize each spine document before serialization
+      // so enabling that capability never grants publisher-authored scripts execution rights.
+      book.spine.hooks.content.register(sanitizeEpubDocument);
 
       const flow = options.flow ?? 'paginated';
       const spread = options.spread ?? 'auto';
@@ -317,11 +453,15 @@ export class EpubJsEngine implements ReaderEngine {
         flow: mapFlow(flow),
         spread: mapSpread(spread),
         minSpreadWidth: options.minSpreadWidth ?? 900,
-        allowScriptedContent: false,
+        allowScriptedContent: true,
       });
       this.rendition = rendition;
       rendition.on('relocated', this.handleRelocated);
       rendition.on('selected', this.handleSelected);
+      // `rendered` exposes the exact view Contents that owns the iframe document. This closes
+      // WebKit timing/reflow gaps where the asynchronous content hook or getContents() snapshot
+      // can miss the document that receives the user's next tap.
+      rendition.on('rendered', this.handleRendered);
       rendition.hooks.content.register(this.handleContent);
 
       this.registerThemes();
@@ -344,22 +484,27 @@ export class EpubJsEngine implements ReaderEngine {
     const rendition = this.requireRendition();
     try {
       await rendition.display(target);
+      this.instrumentVisibleContents();
     } catch (error) {
       throw normalizeError(target?.startsWith('epubcfi(') ? 'invalid-location' : 'epub-render-failed', 'Unable to display EPUB location.', error);
     }
   }
 
   async next(): Promise<void> {
+    const rendition = this.requireRendition();
     try {
-      await this.requireRendition().next();
+      await rendition.next();
+      this.instrumentVisibleContents();
     } catch (error) {
       throw normalizeError('epub-render-failed', 'Unable to advance EPUB rendition.', error);
     }
   }
 
   async previous(): Promise<void> {
+    const rendition = this.requireRendition();
     try {
-      await this.requireRendition().prev();
+      await rendition.prev();
+      this.instrumentVisibleContents();
     } catch (error) {
       throw normalizeError('epub-render-failed', 'Unable to move to the previous EPUB rendition.', error);
     }
@@ -464,6 +609,22 @@ export class EpubJsEngine implements ReaderEngine {
     return handled;
   }
 
+  private instrumentVisibleContents(): void {
+    const rendition = this.rendition;
+    if (!rendition) return;
+
+    // EPUB.js runs content hooks asynchronously. After a render promise resolves, inspect the
+    // manager's currently visible Contents as well so interaction listeners are installed before
+    // the reader can accept the next tap. handleContent() is idempotent per Document via WeakSet.
+    const rendered = rendition.getContents() as unknown;
+    const contents = Array.isArray(rendered)
+      ? rendered as Contents[]
+      : rendered
+        ? [rendered as Contents]
+        : [];
+    for (const visible of contents) this.handleContent(visible);
+  }
+
   private registerThemes(): void {
     const rendition = this.requireRendition();
     for (const [name, rules] of Object.entries(THEME_RULES)) rendition.themes.register(name, rules);
@@ -510,10 +671,14 @@ export class EpubJsEngine implements ReaderEngine {
     if (this.rendition) {
       this.rendition.off('relocated', this.handleRelocated);
       this.rendition.off('selected', this.handleSelected);
+      this.rendition.off('rendered', this.handleRendered);
       this.rendition.destroy();
     }
     this.rendition = undefined;
-    if (this.book) this.book.destroy();
+    if (this.book) {
+      this.book.spine.hooks.content.deregister(sanitizeEpubDocument);
+      this.book.destroy();
+    }
     this.book = undefined;
     this.instrumentedDocuments = new WeakSet<Document>();
     this.currentLocation = null;
