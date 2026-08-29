@@ -217,65 +217,126 @@ export class EpubJsEngine implements ReaderEngine {
     let pointerStart: PointerStart | null = null;
     const hasSelection = () => Boolean(win.getSelection()?.toString().trim());
 
-    const handlePointerDown = (event: PointerEvent) => {
-      if (!event.isPrimary || event.button !== 0) return;
+    const beginInteraction = (
+      x: number,
+      y: number,
+      pointerType: ReaderPointerType,
+      target: EventTarget | null,
+    ) => {
+      // Browsers that expose both Touch Events and Pointer Events may emit both for one
+      // physical gesture. The first start event owns the gesture; the second is ignored.
+      if (pointerStart) return;
       pointerStart = {
-        x: event.clientX,
-        y: event.clientY,
+        x,
+        y,
         time: performance.now(),
-        pointerType: normalizePointerType(event.pointerType),
-        interactive: isInteractiveTarget(event.target),
+        pointerType,
+        interactive: isInteractiveTarget(target),
       };
     };
 
-    const handlePointerCancel = () => {
+    const cancelInteraction = () => {
       pointerStart = null;
     };
 
-    const handlePointerUp = (event: PointerEvent) => {
-      if (!pointerStart || !event.isPrimary || event.button !== 0) {
-        pointerStart = null;
-        return;
-      }
+    const finishInteraction = (
+      x: number,
+      y: number,
+      pointerType: ReaderPointerType,
+      target: EventTarget | null,
+    ): boolean => {
+      if (!pointerStart) return false;
 
       const start = pointerStart;
       pointerStart = null;
-      const deltaX = event.clientX - start.x;
-      const deltaY = event.clientY - start.y;
+      const effectivePointerType = start.pointerType === 'unknown' ? pointerType : start.pointerType;
+      const deltaX = x - start.x;
+      const deltaY = y - start.y;
       const absX = Math.abs(deltaX);
       const absY = Math.abs(deltaY);
       const duration = performance.now() - start.time;
-      const interactive = start.interactive || isInteractiveTarget(event.target);
+      const interactive = start.interactive || isInteractiveTarget(target);
       const selected = hasSelection();
       let interaction: ReaderContentInteraction | null = null;
 
-      if (!interactive && !selected && start.pointerType !== 'mouse' && duration <= 900 && absX >= 48 && absX > absY * 1.3) {
+      if (!interactive && !selected && effectivePointerType !== 'mouse' && duration <= 900 && absX >= 48 && absX > absY * 1.3) {
         interaction = {
           type: 'swipe',
           direction: deltaX < 0 ? 'left' : 'right',
           deltaX,
           deltaY,
-          pointerType: start.pointerType,
+          pointerType: effectivePointerType,
           interactive,
           hasSelection: selected,
         };
       } else if (!interactive && !selected && duration <= 650 && Math.hypot(deltaX, deltaY) <= 12) {
-        // PointerEvent client coordinates are relative to the visible iframe viewport. EPUB.js
-        // paginated documents can make the root element wider than that viewport, so using the
-        // document width can collapse center/right taps into the previous-page zone.
+        // PointerEvent/Touch client coordinates are relative to the visible iframe viewport.
+        // EPUB.js paginated documents can make the root element wider than that viewport,
+        // so using the document width can collapse center/right taps into the previous zone.
         const width = Math.max(1, win.innerWidth || doc.documentElement?.clientWidth || 1);
         const height = Math.max(1, win.innerHeight || doc.documentElement?.clientHeight || 1);
         interaction = {
           type: 'tap',
-          xRatio: clampRatio(event.clientX / width),
-          yRatio: clampRatio(event.clientY / height),
-          pointerType: start.pointerType,
+          xRatio: clampRatio(x / width),
+          yRatio: clampRatio(y / height),
+          pointerType: effectivePointerType,
           interactive,
           hasSelection: selected,
         };
       }
 
-      if (interaction && this.emitInteraction(interaction)) event.preventDefault();
+      return Boolean(interaction && this.emitInteraction(interaction));
+    };
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!event.isPrimary || event.button !== 0) return;
+      beginInteraction(
+        event.clientX,
+        event.clientY,
+        normalizePointerType(event.pointerType),
+        event.target,
+      );
+    };
+
+    const handlePointerCancel = () => {
+      cancelInteraction();
+    };
+
+    const handlePointerUp = (event: PointerEvent) => {
+      if (!event.isPrimary || event.button !== 0) {
+        cancelInteraction();
+        return;
+      }
+      if (finishInteraction(
+        event.clientX,
+        event.clientY,
+        normalizePointerType(event.pointerType),
+        event.target,
+      )) event.preventDefault();
+    };
+
+    const handleTouchStart = (event: TouchEvent) => {
+      if (event.touches.length !== 1) {
+        cancelInteraction();
+        return;
+      }
+      const touch = event.touches[0];
+      beginInteraction(touch.clientX, touch.clientY, 'touch', touch.target ?? event.target);
+    };
+
+    const handleTouchEnd = (event: TouchEvent) => {
+      if (event.touches.length > 0 || event.changedTouches.length === 0) {
+        cancelInteraction();
+        return;
+      }
+      const touch = event.changedTouches[0];
+      if (finishInteraction(touch.clientX, touch.clientY, 'touch', touch.target ?? event.target)) {
+        event.preventDefault();
+      }
+    };
+
+    const handleTouchCancel = () => {
+      cancelInteraction();
     };
 
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -297,6 +358,12 @@ export class EpubJsEngine implements ReaderEngine {
     doc.addEventListener('pointerdown', handlePointerDown, { passive: true });
     doc.addEventListener('pointerup', handlePointerUp);
     doc.addEventListener('pointercancel', handlePointerCancel, { passive: true });
+    // WebKit/Safari can deliver touchscreen gestures to EPUB iframes through Touch Events
+    // even when PointerEvent exists. The shared gesture state above deduplicates browsers
+    // that emit both event families for the same physical tap/swipe.
+    doc.addEventListener('touchstart', handleTouchStart, { passive: true });
+    doc.addEventListener('touchend', handleTouchEnd, { passive: false });
+    doc.addEventListener('touchcancel', handleTouchCancel, { passive: true });
     doc.addEventListener('keydown', handleKeyDown);
   };
 
