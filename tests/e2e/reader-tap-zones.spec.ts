@@ -150,6 +150,14 @@ async function expectNavigationState(previous: Locator, next: Locator, state: 's
   }
 }
 
+async function expectChromeStable(page: Page, shell: Locator, expected: 'visible' | 'hidden'): Promise<void> {
+  await expect(shell).toHaveAttribute('data-reader-controls', expected);
+  // The shell has a short pointer-reveal guard after hiding chrome. Re-check after that guard
+  // expires so a click/tap cannot appear correct briefly and then flicker the UI back open.
+  await page.waitForTimeout(520);
+  await expect(shell).toHaveAttribute('data-reader-controls', expected);
+}
+
 test('@rr6 short EPUB uses left previous, center chrome, and right next tap zones', async ({ page }) => {
   test.skip(!test.info().project.name.endsWith('-phone'), 'Basic touchscreen tap zones are certified by phone projects.');
 
@@ -177,7 +185,7 @@ test('@rr6 short EPUB uses left previous, center chrome, and right next tap zone
   const expectedAfter = controlsBefore === 'hidden' ? 'visible' : 'hidden';
   const centerTap = await tapVisibleBook(page, 0.5);
   expectCompatibilityTapHandled(centerTap);
-  await expect(shell).toHaveAttribute('data-reader-controls', expectedAfter);
+  await expectChromeStable(page, shell, expectedAfter);
   expect(await currentCfi(shell)).toBe(startCfi);
   expect(advancedCfi).not.toBe(startCfi);
 });
@@ -211,15 +219,14 @@ test('@rr6 multi-page EPUB visible taps preserve reading continuity on desktop a
   await expect.poll(() => shell.getAttribute('data-reader-location-cfi'), { timeout: 5_000 }).toBe(deepCfi);
 
   // Center taps are pure UI operations. Toggle chrome repeatedly and prove the exact reading CFI
-  // never changes while the UI transitions between visible and hidden states.
+  // never changes while the UI transitions between visible and hidden states or after the reveal guard.
   for (let toggle = 0; toggle < 4; toggle += 1) {
     const controlsBefore = await shell.getAttribute('data-reader-controls');
     expect(controlsBefore === 'visible' || controlsBefore === 'hidden').toBe(true);
     const expectedAfter = controlsBefore === 'hidden' ? 'visible' : 'hidden';
     const centerTap = await tapVisibleBook(page, 0.5);
     expectCompatibilityTapHandled(centerTap);
-    await expect(shell).toHaveAttribute('data-reader-controls', expectedAfter);
-    await page.waitForTimeout(220);
+    await expectChromeStable(page, shell, expectedAfter);
     expect(await currentCfi(shell)).toBe(deepCfi);
   }
 
