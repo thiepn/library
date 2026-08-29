@@ -60,6 +60,12 @@ interface PointerStart {
   interactive: boolean;
 }
 
+interface HandledPointerInteraction {
+  x: number;
+  y: number;
+  time: number;
+}
+
 interface RenderedView {
   contents?: Contents;
 }
@@ -121,6 +127,9 @@ const INTERACTIVE_SELECTOR = [
   '[role="link"]',
   '[data-no-reader-nav]',
 ].join(',');
+
+const COMPATIBILITY_CLICK_DEDUPE_MS = 800;
+const COMPATIBILITY_CLICK_DEDUPE_DISTANCE = 18;
 
 function mapFlow(flow: ReaderFlow): string {
   return flow === 'scrolled' ? 'scrolled-doc' : 'paginated';
@@ -224,7 +233,7 @@ export class EpubJsEngine implements ReaderEngine {
     this.instrumentedDocuments.add(doc);
 
     let pointerStart: PointerStart | null = null;
-    let lastHandledInteractionAt = -Infinity;
+    let lastHandledPointer: HandledPointerInteraction | null = null;
     const hasSelection = () => Boolean(win.getSelection()?.toString().trim());
 
     const beginInteraction = (
@@ -296,7 +305,7 @@ export class EpubJsEngine implements ReaderEngine {
       }
 
       const handled = Boolean(interaction && this.emitInteraction(interaction));
-      if (handled) lastHandledInteractionAt = performance.now();
+      if (handled) lastHandledPointer = { x, y, time: performance.now() };
       return handled;
     };
 
@@ -360,11 +369,17 @@ export class EpubJsEngine implements ReaderEngine {
     };
 
     const handleClick = (event: MouseEvent) => {
-      // Pointer/touch events remain primary. Consume the browser's synthesized compatibility
-      // click when that same physical gesture was already handled. This not only prevents the
-      // engine from turning/toggling twice, it also tells the parent-owned WebKit fallback bridge
-      // that the event is intentionally complete rather than an unhandled click it should replay.
-      if (performance.now() - lastHandledInteractionAt < 800) {
+      // Pointer/touch events remain primary. Consume only the browser compatibility click that
+      // corresponds to the same recently handled gesture. A simple time-only gate swallowed valid
+      // rapid desktop clicks in Firefox (for example left, then center), which made reader chrome
+      // appear unresponsive. Spatial identity keeps duplicate suppression without blocking a new
+      // click in another visible reader zone.
+      const duplicateOfHandledPointer = Boolean(
+        lastHandledPointer
+        && performance.now() - lastHandledPointer.time < COMPATIBILITY_CLICK_DEDUPE_MS
+        && Math.hypot(event.clientX - lastHandledPointer.x, event.clientY - lastHandledPointer.y) <= COMPATIBILITY_CLICK_DEDUPE_DISTANCE
+      );
+      if (duplicateOfHandledPointer) {
         event.preventDefault();
         return;
       }
@@ -380,10 +395,7 @@ export class EpubJsEngine implements ReaderEngine {
         interactive: false,
         hasSelection: false,
       };
-      if (this.emitInteraction(interaction)) {
-        lastHandledInteractionAt = performance.now();
-        event.preventDefault();
-      }
+      if (this.emitInteraction(interaction)) event.preventDefault();
     };
 
     const handleKeyDown = (event: KeyboardEvent) => {
