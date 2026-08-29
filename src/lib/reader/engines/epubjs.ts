@@ -215,6 +215,7 @@ export class EpubJsEngine implements ReaderEngine {
     this.instrumentedDocuments.add(doc);
 
     let pointerStart: PointerStart | null = null;
+    let lastHandledInteractionAt = -Infinity;
     const hasSelection = () => Boolean(win.getSelection()?.toString().trim());
 
     const beginInteraction = (
@@ -285,7 +286,9 @@ export class EpubJsEngine implements ReaderEngine {
         };
       }
 
-      return Boolean(interaction && this.emitInteraction(interaction));
+      const handled = Boolean(interaction && this.emitInteraction(interaction));
+      if (handled) lastHandledInteractionAt = performance.now();
+      return handled;
     };
 
     const handlePointerDown = (event: PointerEvent) => {
@@ -347,6 +350,28 @@ export class EpubJsEngine implements ReaderEngine {
       cancelInteraction();
     };
 
+    const handleClick = (event: MouseEvent) => {
+      // Pointer/touch events remain primary. A synthesized compatibility click is ignored
+      // when the same physical gesture was already handled, preventing double page turns.
+      if (performance.now() - lastHandledInteractionAt < 800) return;
+      if (isInteractiveTarget(event.target) || hasSelection()) return;
+
+      const width = Math.max(1, win.innerWidth || doc.documentElement?.clientWidth || 1);
+      const height = Math.max(1, win.innerHeight || doc.documentElement?.clientHeight || 1);
+      const interaction: ReaderContentInteraction = {
+        type: 'tap',
+        xRatio: clampRatio(event.clientX / width),
+        yRatio: clampRatio(event.clientY / height),
+        pointerType: 'mouse',
+        interactive: false,
+        hasSelection: false,
+      };
+      if (this.emitInteraction(interaction)) {
+        lastHandledInteractionAt = performance.now();
+        event.preventDefault();
+      }
+    };
+
     const handleKeyDown = (event: KeyboardEvent) => {
       const interaction: ReaderContentInteraction = {
         type: 'key',
@@ -372,6 +397,9 @@ export class EpubJsEngine implements ReaderEngine {
     doc.addEventListener('touchstart', handleTouchStart, { passive: true });
     doc.addEventListener('touchend', handleTouchEnd, { passive: false });
     doc.addEventListener('touchcancel', handleTouchCancel, { passive: true });
+    // A compatibility click gives WebKit/Safari and assistive input a browser-agnostic tap
+    // path when a touchscreen gesture does not surface through the iframe pointer/touch path.
+    doc.addEventListener('click', handleClick);
     doc.addEventListener('keydown', handleKeyDown);
   };
 
