@@ -68,6 +68,11 @@ if (navigationExists) {
       && navigation.includes('this.iframeObserver?.disconnect()')
       && navigation.includes("doc?.removeEventListener('click', handleCompatibilityClick)"),
     'A parent-owned late iframe-load bridge reattaches compatibility click handling after EPUB.js section/document replacement without double turns, link/selection interception, or listener leaks');
+  pass('EPUB_READER_NAV_COMPAT_CLICK_DEDUPE',
+    engine.includes('performance.now() - lastHandledInteractionAt < 800')
+      && engine.includes("if (performance.now() - lastHandledInteractionAt < 800) {\n        event.preventDefault();\n        return;\n      }")
+      && navigation.includes('if (event.defaultPrevented || this.destroyed || !this.isInteractiveReady()) return'),
+    'Compatibility clicks from an already-handled pointer/touch gesture are consumed by the engine so the parent fallback cannot replay the same page turn or chrome toggle');
   pass('EPUB_READER_NAV_SWIPE', engine.includes("type: 'swipe'") && engine.includes('absX >= 48') && navigation.includes("interaction.direction === 'left' ? 'next' : 'previous'"), 'Horizontal touch/pen swipes produce page turns only after gesture qualification');
   pass('EPUB_READER_NAV_KEYBOARD', ['ArrowRight', 'ArrowLeft', 'PageDown', 'PageUp', 'Space'].every((key) => navigation.includes(key)) && navigation.includes("source === 'keyboard'"), 'Paginated reader supports standard page-turn keyboard controls');
   pass('EPUB_READER_NAV_SCROLL_SAFE', navigation.includes("this.readingModeState.flow !== 'paginated'") && navigation.includes("this.readingModeState.flow === 'paginated'"), 'Scroll mode does not hijack page keys, edge taps, or swipe page turns');
