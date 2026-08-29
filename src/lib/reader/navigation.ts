@@ -20,12 +20,33 @@ export interface ReaderNavigationOptions {
 
 const DEFAULT_EDGE_TAP_RATIO = 1 / 3;
 const EDITABLE_SELECTOR = 'input, textarea, select, option, button, a[href], [contenteditable="true"], [role="textbox"]';
+const PUBLICATION_INTERACTIVE_SELECTOR = [
+  EDITABLE_SELECTOR,
+  'label',
+  'summary',
+  'details',
+  'audio',
+  'video',
+  '[role="button"]',
+  '[role="link"]',
+  '[data-no-reader-nav]',
+].join(',');
 
 function isEditableTarget(target: EventTarget | null): boolean {
   const candidate = target as { closest?: (selector: string) => Element | null } | null;
   if (typeof candidate?.closest !== 'function') return false;
   try {
     return Boolean(candidate.closest(EDITABLE_SELECTOR));
+  } catch {
+    return false;
+  }
+}
+
+function isPublicationInteractiveTarget(target: EventTarget | null): boolean {
+  const candidate = target as { closest?: (selector: string) => Element | null } | null;
+  if (typeof candidate?.closest !== 'function') return false;
+  try {
+    return Boolean(candidate.closest(PUBLICATION_INTERACTIVE_SELECTOR));
   } catch {
     return false;
   }
@@ -100,6 +121,10 @@ export class ReaderNavigationController {
   private readonly enableKeyboard: boolean;
   private readonly listeners = new Set<(state: ReaderNavigationState) => void>();
   private cleanups: Unsubscribe[] = [];
+  private iframeBridgeCleanups: Unsubscribe[] = [];
+  private bridgedFrames = new WeakSet<HTMLIFrameElement>();
+  private bridgedDocuments = new WeakSet<Document>();
+  private iframeObserver: MutationObserver | null = null;
   private controllerState: ReaderControllerState;
   private readingModeState: ReaderReadingModeState;
   private state: ReaderNavigationState;
@@ -154,6 +179,7 @@ export class ReaderNavigationController {
       if (command === 'next') void this.navigate('next', 'button');
     }));
 
+    this.startIframeCompatibilityBridge();
     if (this.enableKeyboard) document.addEventListener('keydown', this.handleDocumentKeydown);
     this.refreshAvailability();
   }
@@ -163,6 +189,7 @@ export class ReaderNavigationController {
     this.assertUsable();
     if (!this.started) return;
     this.refreshAvailability();
+    this.scanReaderFrames();
   }
 
   subscribe(listener: (state: ReaderNavigationState) => void): Unsubscribe {
@@ -197,6 +224,10 @@ export class ReaderNavigationController {
       this.shell.announce(message);
     } finally {
       this.setBusy(false);
+      // EPUB.js can replace/reload the active iframe document while crossing section boundaries.
+      // Re-scan only after the page turn settles so WebKit always gets a bridge on the current
+      // document instead of retaining a listener on the previous section.
+      this.scanReaderFrames();
     }
 
     if (source === 'keyboard') this.shell.showControls();
@@ -206,6 +237,12 @@ export class ReaderNavigationController {
     if (this.destroyed) return;
     this.destroyed = true;
     if (this.enableKeyboard) document.removeEventListener('keydown', this.handleDocumentKeydown);
+    this.iframeObserver?.disconnect();
+    this.iframeObserver = null;
+    for (const cleanup of this.iframeBridgeCleanups) cleanup();
+    this.iframeBridgeCleanups = [];
+    this.bridgedFrames = new WeakSet<HTMLIFrameElement>();
+    this.bridgedDocuments = new WeakSet<Document>();
     for (const cleanup of this.cleanups) cleanup();
     this.cleanups = [];
     this.listeners.clear();
@@ -230,34 +267,37 @@ export class ReaderNavigationController {
       return true;
     }
 
-    if (interaction.type === 'tap') {
-      const tapRatio = visibleTapRatio(
-        interaction.xRatio,
-        this.controllerState.location,
-        this.readingModeState.effectiveSpread,
-      );
+    if (interaction.type === 'tap') return this.handleTapRatio(interaction.xRatio);
 
-      if (this.readingModeState.flow === 'paginated') {
-        if (tapRatio <= this.edgeTapRatio) {
-          void this.navigate('previous', 'tap');
-          return true;
-        }
-        if (tapRatio >= 1 - this.edgeTapRatio) {
-          void this.navigate('next', 'tap');
-          return true;
-        }
+    return false;
+  };
+
+  private handleTapRatio(rawRatio: number): boolean {
+    const tapRatio = visibleTapRatio(
+      rawRatio,
+      this.controllerState.location,
+      this.readingModeState.effectiveSpread,
+    );
+
+    if (this.readingModeState.flow === 'paginated') {
+      if (tapRatio <= this.edgeTapRatio) {
+        void this.navigate('previous', 'tap');
+        return true;
       }
-
-      const centerStart = this.edgeTapRatio;
-      const centerEnd = 1 - this.edgeTapRatio;
-      if (tapRatio > centerStart && tapRatio < centerEnd) {
-        this.shell.toggleControls();
+      if (tapRatio >= 1 - this.edgeTapRatio) {
+        void this.navigate('next', 'tap');
         return true;
       }
     }
 
+    const centerStart = this.edgeTapRatio;
+    const centerEnd = 1 - this.edgeTapRatio;
+    if (tapRatio > centerStart && tapRatio < centerEnd) {
+      this.shell.toggleControls();
+      return true;
+    }
     return false;
-  };
+  }
 
   private readonly handleDocumentKeydown = (event: KeyboardEvent) => {
     if (this.destroyed || !this.isInteractiveReady() || this.readingModeState.flow !== 'paginated') return;
@@ -270,6 +310,61 @@ export class ReaderNavigationController {
     event.preventDefault();
     void this.navigate(direction, 'keyboard');
   };
+
+  private startIframeCompatibilityBridge(): void {
+    this.scanReaderFrames();
+    this.iframeObserver = new MutationObserver(() => this.scanReaderFrames());
+    this.iframeObserver.observe(this.shell.viewport, { childList: true, subtree: true });
+  }
+
+  private scanReaderFrames(): void {
+    if (this.destroyed) return;
+    for (const frame of this.shell.viewport.querySelectorAll('iframe')) this.attachFrameBridge(frame);
+  }
+
+  private attachFrameBridge(frame: HTMLIFrameElement): void {
+    if (!this.bridgedFrames.has(frame)) {
+      this.bridgedFrames.add(frame);
+      const onLoad = () => {
+        // EPUB.js creates Contents and fires its own rendered hooks after iframe load processing.
+        // Attach on the following frame so the normal engine listener owns the event first. The
+        // bridge then observes event.defaultPrevented and is a no-op whenever that primary path works.
+        requestAnimationFrame(() => this.attachDocumentBridge(frame));
+      };
+      frame.addEventListener('load', onLoad);
+      this.iframeBridgeCleanups.push(() => frame.removeEventListener('load', onLoad));
+    }
+    requestAnimationFrame(() => this.attachDocumentBridge(frame));
+  }
+
+  private attachDocumentBridge(frame: HTMLIFrameElement): void {
+    if (this.destroyed) return;
+    let doc: Document | null = null;
+    let win: Window | null = null;
+    try {
+      doc = frame.contentDocument;
+      win = frame.contentWindow;
+    } catch {
+      return;
+    }
+    if (!doc || !win || this.bridgedDocuments.has(doc)) return;
+    this.bridgedDocuments.add(doc);
+
+    const handleCompatibilityClick = (event: MouseEvent) => {
+      // Engine pointer/touch/click listeners remain primary. This parent-owned listener exists for
+      // WebKit section transitions where the newly active iframe Document can otherwise lose the
+      // normal compatibility-click listener. Never turn twice when the engine already consumed it.
+      if (event.defaultPrevented || this.destroyed || !this.isInteractiveReady()) return;
+      if (isPublicationInteractiveTarget(event.target)) return;
+      if (win?.getSelection()?.toString().trim()) return;
+
+      const width = Math.max(1, win?.innerWidth || doc?.documentElement?.clientWidth || 1);
+      if (this.handleTapRatio(event.clientX / width)) event.preventDefault();
+    };
+
+    doc.addEventListener('click', handleCompatibilityClick);
+    this.iframeBridgeCleanups.push(() => doc?.removeEventListener('click', handleCompatibilityClick));
+  }
 
   private isInteractiveReady(): boolean {
     return this.controllerState.status === 'ready' && this.shell.root.dataset.readerStatus === 'ready';
