@@ -21,14 +21,14 @@ async function tapBook(page: Page, xRatio: number, yRatio = 0.5): Promise<void> 
 
   if (test.info().project.name === 'webkit-phone') {
     // Playwright WebKit does not reliably route page.touchscreen.tap() through an iframe.
-    // Safari emits a compatibility click for an unhandled tap, so dispatch that event
-    // inside the EPUB viewport and exercise the production click/tap classifier directly.
+    // Safari emits a compatibility click for an unhandled tap. Dispatch that event on the
+    // EPUB Document itself because production subscribes there; this avoids depending on
+    // Playwright/WebKit synthetic bubbling through application/xhtml+xml elements.
     await page.frameLocator('[data-reader-viewport] iframe').locator('html').evaluate(
       (_html, ratios) => {
         const x = Math.max(1, window.innerWidth) * ratios.x;
         const y = Math.max(1, window.innerHeight) * ratios.y;
-        const target = document.elementFromPoint(x, y) ?? document.body ?? document.documentElement;
-        target.dispatchEvent(new MouseEvent('click', {
+        document.dispatchEvent(new MouseEvent('click', {
           bubbles: true,
           cancelable: true,
           clientX: x,
