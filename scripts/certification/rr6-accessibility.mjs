@@ -47,9 +47,9 @@ if (present) {
       && tapTests.includes('left previous, center chrome, and right next tap zones')
       && tapTests.includes("project.name === 'webkit-phone'")
       && tapTests.includes("frameLocator('[data-reader-viewport] iframe')")
-      && tapTests.includes("new MouseEvent('click'")
+      && tapTests.includes("document.dispatchEvent(new MouseEvent('click'")
       && tapTests.includes('page.touchscreen.tap('),
-    'Paginated reader uses explicit left/center/right thirds, Chromium touchscreen E2E coverage, and WebKit iframe compatibility-event coverage');
+    'Paginated reader uses explicit left/center/right thirds, Chromium touchscreen E2E coverage, and WebKit EPUB-Document compatibility-event coverage');
 
   pass('RR6_VIEWPORT_RELATIVE_POINTERS',
     epub.includes('win.innerWidth || doc.documentElement?.clientWidth')
