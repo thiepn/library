@@ -8,10 +8,10 @@ Source SHA: 38c50ed1d559ae731211d72e4e4b327ac09e006e
 | readiness job | success |
 | production gate | true |
 | blockers | none |
-| certified build + R2 media staging | failure |
+| certified build + R2 media staging | success |
 | browser acceptance before artifact upload | success |
 | RR4 performance/memory budgets before artifact upload | success |
-| RR5 offline/PWA/storage reliability before artifact upload | failure |
-| RR6 accessibility/inclusive-reading acceptance before artifact upload | skipped |
-| GitHub Pages deployment | skipped |
-| live application + media verification | skipped |
+| RR5 offline/PWA/storage reliability before artifact upload | success |
+| RR6 accessibility/inclusive-reading acceptance before artifact upload | success |
+| GitHub Pages deployment | success |
+| live application + media verification | success |
