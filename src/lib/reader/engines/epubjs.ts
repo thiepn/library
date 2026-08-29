@@ -320,7 +320,11 @@ export class EpubJsEngine implements ReaderEngine {
         cancelInteraction();
         return;
       }
-      const touch = event.touches[0];
+      const touch = event.touches.item(0);
+      if (!touch) {
+        cancelInteraction();
+        return;
+      }
       beginInteraction(touch.clientX, touch.clientY, 'touch', touch.target ?? event.target);
     };
 
@@ -329,7 +333,11 @@ export class EpubJsEngine implements ReaderEngine {
         cancelInteraction();
         return;
       }
-      const touch = event.changedTouches[0];
+      const touch = event.changedTouches.item(0);
+      if (!touch) {
+        cancelInteraction();
+        return;
+      }
       if (finishInteraction(touch.clientX, touch.clientY, 'touch', touch.target ?? event.target)) {
         event.preventDefault();
       }
