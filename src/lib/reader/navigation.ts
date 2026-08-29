@@ -56,7 +56,14 @@ function visibleTapRatio(
   const raw = clampUnit(rawRatio);
   const page = location?.displayedPage;
   const total = location?.displayedTotal;
-  if (!Number.isFinite(page) || !Number.isFinite(total) || !page || !total || total <= 1) return raw;
+  if (
+    typeof page !== 'number'
+    || typeof total !== 'number'
+    || !Number.isFinite(page)
+    || !Number.isFinite(total)
+    || page <= 0
+    || total <= 1
+  ) return raw;
 
   const safePage = Math.max(1, Math.min(total, Math.round(page)));
   const visiblePages = spread === 'double' ? Math.min(2, total - safePage + 1) : 1;
