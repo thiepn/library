@@ -48,12 +48,22 @@ if (present) {
   pass('RR6_VIEWPORT_RELATIVE_POINTERS',
     epub.includes('win.innerWidth || doc.documentElement?.clientWidth')
       && epub.includes('win.innerHeight || doc.documentElement?.clientHeight')
-      && epub.includes('PointerEvent client coordinates are relative to the visible iframe viewport')
+      && epub.includes('PointerEvent/Touch client coordinates are relative to the visible iframe viewport')
       && !epub.includes('doc.documentElement?.clientWidth || win.innerWidth'),
     'EPUB tap coordinates normalize against the visible iframe viewport rather than a paginated document width');
 
+  pass('RR6_TOUCH_POINTER_PARITY',
+    epub.includes("doc.addEventListener('pointerdown', handlePointerDown")
+      && epub.includes("doc.addEventListener('pointerup', handlePointerUp")
+      && epub.includes("doc.addEventListener('touchstart', handleTouchStart")
+      && epub.includes("doc.addEventListener('touchend', handleTouchEnd")
+      && epub.includes('if (pointerStart) return;')
+      && epub.includes('deduplicates browsers')
+      && epub.includes("pointerType: effectivePointerType"),
+    'EPUB interaction accepts Pointer Events and WebKit/Safari Touch Events through one deduplicated gesture state');
+
   pass('RR6_INTERACTION_GUARDS',
-    epub.includes('isInteractiveTarget(event.target)')
+    epub.includes('isInteractiveTarget(target)')
       && epub.includes('const selected = hasSelection()')
       && epub.includes("type: 'swipe'")
       && epub.includes("type: 'tap'")
@@ -87,11 +97,13 @@ if (present) {
   pass('RR6_REFLOW_TARGETS',
     css.includes('@media (max-width: 320px)')
       && css.includes('max-width: 100%')
+      && css.includes('(hover: none) and (pointer: coarse)')
+      && css.includes('min-block-size: 44px')
       && tests.includes('400-percent reference reflow')
       && tests.includes('phone reader controls preserve large touch targets')
       && tests.includes('expectMinimumTarget')
       && tests.includes('44'),
-    '320 CSS px reflow and >=44 CSS px primary phone targets are executable release checks');
+    '320 CSS px reflow and >=44 CSS px primary phone/coarse-pointer targets are executable release checks');
 
   pass('RR6_MEDIA_PREFERENCES',
     a11y.includes("safeMatchMedia('(prefers-reduced-motion: reduce)')")
