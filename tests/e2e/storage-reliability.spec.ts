@@ -72,35 +72,51 @@ test('@rr5 denied IndexedDB becomes an explicit unavailable/private-session stat
 test('@rr5 blocked v1 personal storage reports the older tab and then upgrades without data loss', async ({ page, context }) => {
   const blocker = await context.newPage();
   await blocker.goto('/library/');
-  await blocker.evaluate(async (dbName) => {
-    const db = await new Promise<IDBDatabase>((resolve, reject) => {
-      const open = indexedDB.open(dbName, 1);
-      open.addEventListener('upgradeneeded', () => {
-        if (!open.result.objectStoreNames.contains('books')) open.result.createObjectStore('books', { keyPath: 'id' });
+  const setup = await blocker.evaluate(async (dbName) => {
+    let stage = 'open';
+    try {
+      const db = await new Promise<IDBDatabase>((resolve, reject) => {
+        const open = indexedDB.open(dbName, 1);
+        open.addEventListener('upgradeneeded', () => {
+          if (!open.result.objectStoreNames.contains('books')) open.result.createObjectStore('books', { keyPath: 'id' });
+        });
+        open.addEventListener('success', () => resolve(open.result));
+        open.addEventListener('error', () => reject(open.error ?? new Error('RR5 v1 database open failed.')));
       });
-      open.addEventListener('success', () => resolve(open.result));
-      open.addEventListener('error', () => reject(open.error));
-    });
-    const transaction = db.transaction('books', 'readwrite');
-    transaction.objectStore('books').put({
-      id: 'pdf-rr5-v1-preserved',
-      format: 'pdf',
-      title: 'RR5 v1 preserved',
-      fileName: 'rr5-v1.pdf',
-      mimeType: 'application/pdf',
-      size: 12,
-      sha256: 'a'.repeat(64),
-      importedAt: '2026-08-28T00:00:00.000Z',
-      updatedAt: '2026-08-28T00:00:00.000Z',
-      file: new Blob(['%PDF-1.4\n%%EOF'], { type: 'application/pdf' }),
-    });
-    await new Promise<void>((resolve, reject) => {
-      transaction.addEventListener('complete', () => resolve());
-      transaction.addEventListener('error', () => reject(transaction.error));
-      transaction.addEventListener('abort', () => reject(transaction.error));
-    });
-    (window as typeof window & { __rr5BlockedDb?: IDBDatabase }).__rr5BlockedDb = db;
+
+      stage = 'seed';
+      const bytes = new TextEncoder().encode('%PDF-1.4\n%%EOF').buffer;
+      const transaction = db.transaction('books', 'readwrite');
+      const put = transaction.objectStore('books').put({
+        id: 'pdf-rr5-v1-preserved',
+        format: 'pdf',
+        title: 'RR5 v1 preserved',
+        fileName: 'rr5-v1.pdf',
+        mimeType: 'application/pdf',
+        size: bytes.byteLength,
+        sha256: 'a'.repeat(64),
+        importedAt: '2026-08-28T00:00:00.000Z',
+        updatedAt: '2026-08-28T00:00:00.000Z',
+        file: bytes,
+      });
+      await new Promise<void>((resolve, reject) => {
+        put.addEventListener('error', () => reject(put.error ?? new Error('RR5 v1 seed request failed.')), { once: true });
+        transaction.addEventListener('complete', () => resolve(), { once: true });
+        transaction.addEventListener('error', () => reject(transaction.error ?? put.error ?? new Error('RR5 v1 seed transaction failed.')), { once: true });
+        transaction.addEventListener('abort', () => reject(transaction.error ?? put.error ?? new DOMException('RR5 v1 seed transaction aborted.', 'AbortError')), { once: true });
+      });
+      (window as typeof window & { __rr5BlockedDb?: IDBDatabase }).__rr5BlockedDb = db;
+      return { ok: true, stage: 'ready', name: '', message: '' };
+    } catch (error) {
+      return {
+        ok: false,
+        stage,
+        name: error instanceof Error || error instanceof DOMException ? error.name : typeof error,
+        message: error instanceof Error || error instanceof DOMException ? error.message : String(error),
+      };
+    }
   }, PERSONAL_DB);
+  expect(setup).toEqual({ ok: true, stage: 'ready', name: '', message: '' });
 
   await page.goto('/library/saved');
   await expect(page.locator('[data-saved-count]')).toHaveText('Local library unavailable');
