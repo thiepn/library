@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { prepareOfflineHostedFixtures } from './offline-fixtures';
+import { setRr5Offline } from './offline-network';
 
 const STABLE_PUBLICATION_CACHE = 'thiepn-library-offline-publications-v1';
 let fixtures: Awaited<ReturnType<typeof prepareOfflineHostedFixtures>>;
@@ -45,14 +46,14 @@ test('@rr5 visited catalog and My Library reopen after restart-style offline nav
   await page.goto('/library/saved');
   await expect(page.getByRole('heading', { level: 1, name: 'My Library' })).toBeVisible();
 
-  await context.setOffline(true);
+  await setRr5Offline(context, true);
   try {
     await page.goto('/library/', { waitUntil: 'domcontentloaded' });
     await expect(page.getByRole('heading', { level: 1, name: 'Books' })).toBeVisible();
     await page.goto('/library/saved', { waitUntil: 'domcontentloaded' });
     await expect(page.getByRole('heading', { level: 1, name: 'My Library' })).toBeVisible();
   } finally {
-    await context.setOffline(false);
+    await setRr5Offline(context, false);
   }
 });
 
@@ -62,7 +63,7 @@ test('@rr5 explicit EPUB download survives restart-style offline navigation', as
   const readerUrl = await row.getAttribute('data-offline-reader-url');
   expect(readerUrl).toBeTruthy();
 
-  await context.setOffline(true);
+  await setRr5Offline(context, true);
   try {
     await page.reload({ waitUntil: 'domcontentloaded' });
     await expect(page.getByRole('heading', { level: 1, name: 'Offline downloads' })).toBeVisible();
@@ -70,7 +71,7 @@ test('@rr5 explicit EPUB download survives restart-style offline navigation', as
     await expect(page.locator('[data-reader-shell]')).toHaveAttribute('data-reader-status', 'ready', { timeout: 30_000 });
     await expect(page.locator('[data-reader-viewport] iframe')).toBeVisible();
   } finally {
-    await context.setOffline(false);
+    await setRr5Offline(context, false);
   }
 });
 
@@ -80,13 +81,13 @@ test('@rr5 explicit PDF download reopens offline with cached byte-range support'
   const readerUrl = await row.getAttribute('data-offline-reader-url');
   expect(readerUrl).toBeTruthy();
 
-  await context.setOffline(true);
+  await setRr5Offline(context, true);
   try {
     await page.goto(readerUrl!, { waitUntil: 'domcontentloaded' });
     await expect(page.locator('[data-pdf-reader-root]')).toHaveAttribute('data-pdf-reader-state', 'ready', { timeout: 30_000 });
     await expect.poll(async () => Number(await page.locator('[data-pdf-page-count]').textContent())).toBeGreaterThan(0);
   } finally {
-    await context.setOffline(false);
+    await setRr5Offline(context, false);
   }
 });
 
@@ -163,12 +164,12 @@ test('@rr5 waiting worker preserves active controller, reader routes, cache migr
     staleMarkerAbsent: true,
   });
 
-  await context.setOffline(true);
+  await setRr5Offline(context, true);
   try {
     await page.goto(readerUrl!, { waitUntil: 'domcontentloaded' });
     await expect(page.locator('[data-reader-shell]')).toHaveAttribute('data-reader-status', 'ready', { timeout: 30_000 });
   } finally {
-    await context.setOffline(false);
+    await setRr5Offline(context, false);
   }
 
   const nextController = await page.evaluate(() => navigator.serviceWorker.controller?.scriptURL ?? '');
@@ -185,11 +186,11 @@ test('@rr5 waiting worker preserves active controller, reader routes, cache migr
   expect(await page.evaluate(() => navigator.serviceWorker.controller?.scriptURL ?? '')).toContain('/library/service-worker.js');
   expect(await page.evaluate(async ({ stableCache, url }) => Boolean(await (await caches.open(stableCache)).match(url)), { stableCache: STABLE_PUBLICATION_CACHE, url: fixtures.epub.urlPath })).toBe(true);
 
-  await context.setOffline(true);
+  await setRr5Offline(context, true);
   try {
     await page.goto(readerUrl!, { waitUntil: 'domcontentloaded' });
     await expect(page.locator('[data-reader-shell]')).toHaveAttribute('data-reader-status', 'ready', { timeout: 30_000 });
   } finally {
-    await context.setOffline(false);
+    await setRr5Offline(context, false);
   }
 });
