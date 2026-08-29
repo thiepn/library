@@ -1,15 +1,12 @@
 # Library production deployment status
 
-Run: 33209838968
-Source SHA: 5c9d1a2b3174e57c6841c401d7cd7e5b0888c4e9
+Deployment requested for **How to Love God 1.1.0** after successful generic publication ingest.
 
-| Stage | Outcome |
-| --- | --- |
-| readiness job | success |
-| production gate | true |
-| blockers | none |
-| certified build + R2 media staging | success |
-| browser acceptance before artifact upload | success |
-| RR4 performance/memory budgets before artifact upload | success |
-| GitHub Pages deployment | success |
-| live application + media verification | success |
+- Release: `how-to-love-god@1.1.0`
+- Ingest run: `33222170094`
+- Ingest result: `success`
+- R2 artifact readback: `success`
+- Library certification before promotion: `success`
+- Deployment state: `requested`
+
+This temporary request record is replaced automatically by the Deploy Library workflow's final production outcome.
