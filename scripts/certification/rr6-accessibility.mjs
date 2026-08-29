@@ -55,9 +55,10 @@ if (present) {
   pass('RR6_INTERACTION_GUARDS',
     epub.includes('isInteractiveTarget(event.target)')
       && epub.includes('const selected = hasSelection()')
-      && navigation.includes('if (interaction.interactive || interaction.hasSelection) return false')
-      && epub.includes("interaction.type === 'swipe'") === false,
-    'Interactive publication content and active selection remain outside tap navigation while swipe logic stays a distinct interaction type');
+      && epub.includes("type: 'swipe'")
+      && epub.includes("type: 'tap'")
+      && navigation.includes('if (interaction.interactive || interaction.hasSelection) return false'),
+    'Interactive publication content and active selection remain outside tap navigation while swipe and tap stay distinct interaction types');
 
   pass('RR6_EPUB_SEMANTICS',
     a11y.includes("this.shell.viewport.setAttribute('role', 'region')")
