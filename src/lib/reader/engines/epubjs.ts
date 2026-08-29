@@ -450,22 +450,27 @@ export class EpubJsEngine implements ReaderEngine {
     const rendition = this.requireRendition();
     try {
       await rendition.display(target);
+      this.instrumentVisibleContents();
     } catch (error) {
       throw normalizeError(target?.startsWith('epubcfi(') ? 'invalid-location' : 'epub-render-failed', 'Unable to display EPUB location.', error);
     }
   }
 
   async next(): Promise<void> {
+    const rendition = this.requireRendition();
     try {
-      await this.requireRendition().next();
+      await rendition.next();
+      this.instrumentVisibleContents();
     } catch (error) {
       throw normalizeError('epub-render-failed', 'Unable to advance EPUB rendition.', error);
     }
   }
 
   async previous(): Promise<void> {
+    const rendition = this.requireRendition();
     try {
-      await this.requireRendition().prev();
+      await rendition.prev();
+      this.instrumentVisibleContents();
     } catch (error) {
       throw normalizeError('epub-render-failed', 'Unable to move to the previous EPUB rendition.', error);
     }
@@ -568,6 +573,22 @@ export class EpubJsEngine implements ReaderEngine {
       if (listener(interaction) === true) handled = true;
     }
     return handled;
+  }
+
+  private instrumentVisibleContents(): void {
+    const rendition = this.rendition;
+    if (!rendition) return;
+
+    // EPUB.js runs content hooks asynchronously. After a render promise resolves, inspect the
+    // manager's currently visible Contents as well so interaction listeners are installed before
+    // the reader can accept the next tap. handleContent() is idempotent per Document via WeakSet.
+    const rendered = rendition.getContents() as unknown;
+    const contents = Array.isArray(rendered)
+      ? rendered as Contents[]
+      : rendered
+        ? [rendered as Contents]
+        : [];
+    for (const visible of contents) this.handleContent(visible);
   }
 
   private registerThemes(): void {
