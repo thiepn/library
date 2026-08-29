@@ -109,9 +109,11 @@ Cross-engine coverage (Chromium, Firefox, WebKit):
 - blocked v1→v2 upgrade and preserved record;
 - personal-file Cache Storage isolation.
 
+Chromium and Firefox use Playwright's native browser-context offline mode. Playwright/WebKit's native offline toggle can abort a document navigation internally before the page's service worker is allowed to satisfy the request, so RR5 does not treat that automation artifact as an application failure. The WebKit project instead runs through a qualification-only localhost origin proxy: normal requests are forwarded to the same Astro preview, and the test can deliberately reset origin connections while leaving the browser and production service worker running. WebKit must then reopen the same cached navigations, EPUB/PDF readers, and personal-reader routes through the real RR5 service worker. The proxy is test-only and is never included in the production artifact.
+
 Chromium-only deterministic lifecycle coverage additionally tests waiting worker activation, cache migration/stale cleanup, rollback, and an ephemeral/private-style context boundary.
 
-These automated browser contexts do not substitute for RR2 physical iPhone/Android installed-PWA testing.
+These automated browser contexts and the WebKit origin-outage proxy do not substitute for RR2 physical iPhone/Android installed-PWA testing.
 
 ## Release gates
 
