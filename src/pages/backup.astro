@@ -1,0 +1,127 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout
+  title="Backup & restore"
+  description="Export, inspect, and restore browser-local Thiepn Library reading state."
+  noindex
+>
+  <div class="page backup-page">
+    <section class="section backup-shell" aria-labelledby="backup-title">
+      <div class="backup-heading">
+        <p class="eyebrow">Data portability</p>
+        <h1 id="backup-title">Backup & restore</h1>
+        <p>Move your reading state between browsers or keep a local recovery copy without database tools.</p>
+      </div>
+
+      <div class="backup-grid">
+        <article class="backup-card">
+          <p class="eyebrow">Export</p>
+          <h2>Create a backup</h2>
+          <p>The JSON backup includes favorites, EPUB/PDF progress, bookmarks, annotations and notes, reading activity, reader settings, and personal-book metadata.</p>
+          <p><strong>Personal EPUB/PDF files are not included.</strong> Re-import the matching files after restoring; their SHA-256 identity is used to reconnect them safely.</p>
+          <button type="button" class="backup-action" data-library-backup-export>Export backup</button>
+        </article>
+
+        <article class="backup-card">
+          <p class="eyebrow">Restore</p>
+          <h2>Restore a backup</h2>
+          <p>Every category present in the selected backup replaces that category in this browser. Categories omitted from a partial backup are left unchanged.</p>
+          <p>The complete file is validated before anything changes. If a write fails, Library attempts to restore the state that existed before the import.</p>
+          <input type="file" accept=".json,application/json" data-library-backup-input hidden />
+          <button type="button" class="backup-action" data-library-backup-restore>Choose backup</button>
+        </article>
+      </div>
+
+      <div class="backup-status" data-library-backup-status aria-live="polite" hidden></div>
+
+      <aside class="backup-note" aria-labelledby="backup-boundary-title">
+        <h2 id="backup-boundary-title">Local-first boundary</h2>
+        <p>This is a manual local backup. Thiepn Library does not automatically sync your reading data or personal books to a cloud account.</p>
+      </aside>
+
+      <p><a href="./saved">← Back to My Library</a></p>
+    </section>
+  </div>
+
+  <script>
+    import {
+      createLibraryBackupJson,
+      restoreLibraryBackupJson,
+      suggestedLibraryBackupFileName,
+    } from '../lib/client/library-portability';
+
+    const exportButton = document.querySelector<HTMLButtonElement>('[data-library-backup-export]');
+    const restoreButton = document.querySelector<HTMLButtonElement>('[data-library-backup-restore]');
+    const input = document.querySelector<HTMLInputElement>('[data-library-backup-input]');
+    const status = document.querySelector<HTMLElement>('[data-library-backup-status]');
+
+    function setStatus(state: 'working' | 'ok' | 'error', message: string) {
+      if (!status) return;
+      status.hidden = false;
+      status.dataset.state = state;
+      status.textContent = message;
+    }
+
+    exportButton?.addEventListener('click', () => {
+      exportButton.disabled = true;
+      setStatus('working', 'Creating backup…');
+      void createLibraryBackupJson().then((json) => {
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = suggestedLibraryBackupFileName();
+        document.body.append(link);
+        link.click();
+        link.remove();
+        window.setTimeout(() => URL.revokeObjectURL(url), 0);
+        setStatus('ok', 'Backup created. Keep the JSON file somewhere you control.');
+      }).catch((error) => {
+        setStatus('error', error instanceof Error ? error.message : 'Unable to create the backup.');
+      }).finally(() => {
+        exportButton.disabled = false;
+      });
+    });
+
+    restoreButton?.addEventListener('click', () => input?.click());
+    input?.addEventListener('change', () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      input.value = '';
+      if (!confirm('Restore this Library backup? Categories present in the backup will replace the matching data in this browser.')) return;
+
+      restoreButton.disabled = true;
+      exportButton?.setAttribute('disabled', '');
+      setStatus('working', `Validating ${file.name}…`);
+      void file.text().then(restoreLibraryBackupJson).then((result) => {
+        const relink = result.personalBooksNeedingFiles > 0
+          ? ` ${result.personalBooksNeedingFiles} personal book file${result.personalBooksNeedingFiles === 1 ? '' : 's'} still need to be re-imported in My Library.`
+          : '';
+        setStatus('ok', `Restore complete: ${result.restoredCategories.join(', ') || 'no categories'}.${relink}`);
+      }).catch((error) => {
+        setStatus('error', error instanceof Error ? error.message : 'Unable to restore this backup.');
+      }).finally(() => {
+        restoreButton.disabled = false;
+        exportButton?.removeAttribute('disabled');
+      });
+    });
+  </script>
+</BaseLayout>
+
+<style>
+  .backup-page { max-width: 1120px; margin-inline: auto; }
+  .backup-shell { display: grid; gap: 1.5rem; }
+  .backup-heading { max-width: 760px; }
+  .backup-heading h1 { margin-bottom: .55rem; }
+  .backup-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+  .backup-card, .backup-note, .backup-status { border: 1px solid var(--line); background: var(--paper); border-radius: 12px; padding: 1.25rem; }
+  .backup-card { display: flex; flex-direction: column; align-items: flex-start; gap: .65rem; }
+  .backup-card h2, .backup-card p, .backup-note h2, .backup-note p { margin: 0; }
+  .backup-action { margin-top: auto; border: 1px solid var(--ink); background: var(--ink); color: var(--paper); border-radius: 999px; padding: .7rem 1rem; font: inherit; font-weight: 700; cursor: pointer; }
+  .backup-action:disabled { opacity: .55; cursor: wait; }
+  .backup-status[data-state='ok'] { border-color: currentColor; }
+  .backup-status[data-state='error'] { border-width: 2px; }
+  .backup-note { max-width: 760px; }
+  @media (max-width: 760px) { .backup-grid { grid-template-columns: 1fr; } }
+</style>
