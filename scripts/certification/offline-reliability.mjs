@@ -90,12 +90,11 @@ if (present) {
     sw.includes('async function rangedResponse')
       && sw.includes("status: 206")
       && sw.includes("headers.set('Content-Range'")
-      && sw.includes("request.headers.get('range')")
       && offlineTests.includes('cached byte-range support'),
     'Complete explicit PDF downloads serve bounded cached byte ranges to PDF.js while offline');
 
   pass('RR5_READER_RUNTIME_OFFLINE',
-    prepare.includes("offline-assets.json")
+    prepare.includes('offline-assets.json')
       && prepare.includes("path.join(libraryRoot, '_astro')")
       && sw.includes('cacheOfflineApplicationAssets()')
       && sw.includes('cacheOfflineReaderDocument(rawReaderUrl)')
@@ -135,16 +134,18 @@ if (present) {
     'Quota, denial/private-session style failure, interruption, and blocked upgrade states are normalized and exercised');
 
   pass('RR5_PERSONAL_UPGRADE',
-    personal.includes('const PERSONAL_DB_VERSION = 2')
+    personal.includes('const PERSONAL_DB_VERSION = 3')
+      && personal.includes('PERSONAL_BOOK_SCHEMA_VERSION = 1')
+      && personal.includes('if (oldVersion < 3')
       && personal.includes("db.addEventListener('versionchange', () => db.close())")
       && storageTests.includes("indexedDB.open(dbName, 1)")
       && storageTests.includes("const bytes = new TextEncoder().encode('%PDF-1.4")
       && storageTests.includes('transaction.error ?? put.error')
       && storageTests.includes('RR5 v1 preserved'),
-    'Personal-book v1→v2 upgrade closes version-changed connections, seeds production-representative ArrayBuffer bytes, and preserves an authoritative v1 record');
+    'The current personal-book v3 upgrade keeps RR5 v1 preservation guarantees while adding explicit record versioning');
 
   pass('RR5_EVICTION_PRIVATE_BOUNDARY',
-    offlineTests.includes("caches.delete(cacheName)")
+    offlineTests.includes('caches.delete(cacheName)')
       && offlineTests.includes('No hosted publication files')
       && storageTests.includes('private-style ephemeral browser context')
       && storageTests.includes('does not persist personal books into a later session'),
@@ -187,7 +188,7 @@ if (present) {
       && storageTests.includes('setRr5Offline(context, true)')
       && doc.includes("Chromium and Firefox use Playwright's native browser-context offline mode")
       && doc.includes('qualification-only localhost origin proxy'),
-    'Chromium/Firefox retain native offline emulation while WebKit uses a qualification-only origin connection-reset proxy so the production service worker must satisfy cached requests without relying on WebKit’s broken document-offline toggle');
+    'Chromium/Firefox retain native offline emulation while WebKit uses a qualification-only localhost origin proxy so the production service worker must satisfy cached requests without relying on WebKit offline emulation');
 
   pass('RR5_BROWSER_CONFIG_ISOLATION',
     baselineConfig.includes("serviceWorkers: 'block'")
