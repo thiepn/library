@@ -57,6 +57,11 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
           hidden
         ><WorkCard work={work} index={index + 1} /></div>)}
       </div>
+      <div class="empty" data-library-error role="alert" hidden>
+        <h2>My Library couldn’t load.</h2>
+        <p data-library-error-message>Check browser storage settings, then try again.</p>
+        <button class="personal-import__button" type="button" data-library-retry>Try again</button>
+      </div>
       <div class="empty" data-saved-empty hidden><h2>Your Library is empty.</h2><p>Import an EPUB or PDF above, or add a book from the Library catalog. Your personal library stays in this browser and does not require an account.</p></div>
     </section>
   </div>
@@ -73,12 +78,16 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       subscribePersonalBooks,
       type PersonalBookSummary,
     } from '../lib/client/personal-books';
+    import { normalizeLibraryStorageError } from '../lib/client/storage-reliability';
     import { getReadingContinuity, subscribeUnifiedReadingState } from '../lib/reader-entry/client';
     import { readingActionLabel, readingPositionLabel } from '../lib/reader-entry/continuity';
 
     const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     const count = document.querySelector<HTMLElement>('[data-saved-count]');
     const empty = document.querySelector<HTMLElement>('[data-saved-empty]');
+    const libraryError = document.querySelector<HTMLElement>('[data-library-error]');
+    const libraryErrorMessage = document.querySelector<HTMLElement>('[data-library-error-message]');
+    const libraryRetry = document.querySelector<HTMLButtonElement>('[data-library-retry]');
     const hostedNodes = [...document.querySelectorAll<HTMLElement>('[data-saved-work]')];
     const personalSection = document.querySelector<HTMLElement>('[data-personal-books-section]');
     const personalList = document.querySelector<HTMLElement>('[data-personal-books-list]');
@@ -89,7 +98,6 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     const status = document.querySelector<HTMLElement>('[data-personal-import-status]');
     const offlineStatus = document.querySelector<HTMLElement>('[data-personal-offline-status]');
     const coverUrls = new Set<string>();
-    const defaultEmptyCopy = 'Import an EPUB or PDF above, or add a book from the Library catalog. Your personal library stays in this browser and does not require an account.';
     let personalTotal = 0;
     let hostedTotal = 0;
     let offlinePreparationBatch = 0;
@@ -235,19 +243,23 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       try {
         await Promise.all([renderPersonal(), renderHosted()]);
         libraryStateUnavailable = false;
-        if (empty) {
-          const paragraph = empty.querySelector('p');
-          if (paragraph) paragraph.textContent = defaultEmptyCopy;
-        }
+        if (libraryError) libraryError.hidden = true;
         updateTotal();
-      } catch {
+      } catch (error) {
         libraryStateUnavailable = true;
-        updateTotal();
-        if (empty) {
-          empty.hidden = false;
-          const paragraph = empty.querySelector('p');
-          if (paragraph) paragraph.textContent = 'This browser did not allow the local Library database to open.';
+        personalTotal = 0;
+        hostedTotal = 0;
+        if (personalSection) personalSection.hidden = true;
+        for (const node of hostedNodes) node.hidden = true;
+        if (empty) empty.hidden = true;
+        const failure = normalizeLibraryStorageError(error, 'My Library storage');
+        if (libraryErrorMessage) {
+          libraryErrorMessage.textContent = failure.kind === 'unknown'
+            ? 'My Library storage could not be opened. Reload this page; if the problem continues, check browser site-storage settings.'
+            : failure.message;
         }
+        if (libraryError) libraryError.hidden = false;
+        updateTotal();
       }
     }
 
@@ -318,6 +330,10 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
     chooseButton?.addEventListener('click', () => input?.click());
     input?.addEventListener('change', () => { void importFiles([...input.files ?? []]); });
+    libraryRetry?.addEventListener('click', () => {
+      libraryRetry.disabled = true;
+      void render().finally(() => { libraryRetry.disabled = false; });
+    });
 
     const hasFiles = (event: DragEvent) => [...(event.dataTransfer?.types ?? [])].includes('Files');
     drop?.addEventListener('dragenter', (event) => { if (hasFiles(event)) { event.preventDefault(); drop.dataset.dragging = 'true'; } });
@@ -333,7 +349,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     });
 
     const unsubscribeReading = subscribeUnifiedReadingState(() => { void render(); });
-    const unsubscribePersonal = subscribePersonalBooks(() => { void renderPersonal(); });
+    const unsubscribePersonal = subscribePersonalBooks(() => { void render(); });
     window.addEventListener('pagehide', () => {
       offlinePreparationBatch++;
       unsubscribeReading();
