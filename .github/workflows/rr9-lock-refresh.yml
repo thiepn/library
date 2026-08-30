@@ -1,0 +1,36 @@
+name: RR9 Lockfile Refresh
+
+on:
+  pull_request:
+    paths:
+      - package.json
+      - pnpm-workspace.yaml
+      - .github/workflows/rr9-lock-refresh.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rr9-lock-${{ github.event.pull_request.head.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lockfile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/setup@v2
+        with:
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+          cache: false
+      - name: Resolve patched dependency graph
+        run: pnpm install --lockfile-only --no-frozen-lockfile
+      - name: Upload refreshed lockfile
+        uses: actions/upload-artifact@v4
+        with:
+          name: rr9-pnpm-lock-${{ github.run_id }}
+          path: pnpm-lock.yaml
+          if-no-files-found: error
+          retention-days: 2
