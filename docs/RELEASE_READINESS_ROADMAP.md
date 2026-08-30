@@ -156,7 +156,7 @@ Exit criteria:
 
 ## Phase 7 — Reading ergonomics and product UX polish
 
-**Status:** implementation campaign active on `rr7-reading-ergonomics`. Automated browser/device-profile evidence may close code-level defects, but physical-device evidence remains a separate release requirement.
+**Status:** automated/code-level phase complete and production-certified. Physical-device evidence remains a separate v1.0 release requirement.
 
 **Purpose:** remove real-world friction not visible in architecture tests.
 
@@ -177,6 +177,8 @@ Exit criteria:
 
 ## Phase 8 — Data durability, migration, backup, and portability
 
+**Status:** automated/code-level phase complete and production-certified on source `4699c39f3c409d8a274e4989804d30211dbe7a9f` via production run `33337028919`.
+
 **Purpose:** prevent browser-local reading state from becoming fragile or trapped.
 
 Implementation:
@@ -195,6 +197,8 @@ Exit criteria:
 - failed restore never damages current state.
 
 ## Phase 9 — Security, privacy, and dependency hardening plus v1.0 launch
+
+**Status:** next active implementation phase.
 
 **Purpose:** certify safe publication processing and produce an operable, reversible v1.0.
 
@@ -219,4 +223,4 @@ Exit criteria:
 
 ## Current state
 
-RR1 is implemented on its release branch. RR2 provides the matrix, schema, validator, workflow, defect form, and documentation required to collect honest physical-device evidence. The current evidence count remains **0/12**; physical certification is not claimed until the named devices are actually operated and the exact-build gate passes. RR3–RR6 automated release-readiness gates are integrated. RR7 is now the active implementation campaign; the existing ER7 device-profile work is treated as automated UX coverage, not physical-device proof.
+RR1–RR8 automated/code-level release-readiness work is integrated. RR7 and RR8 are production-certified on the current release lineage, including the RR8 backup/restore/migration gate. RR2 physical-device evidence remains **0/12**; physical certification is not claimed until the named devices are actually operated for the exact release SHA. Phase 9 — security, privacy, dependency hardening, and v1.0 launch — is the next active implementation phase.
