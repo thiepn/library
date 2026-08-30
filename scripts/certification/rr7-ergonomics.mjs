@@ -150,9 +150,12 @@ if (present) {
 
   pass('RR7_GESTURE_GUARDS',
     (tapTests.includes('hasSelection') || navigation.includes('interaction.interactive || interaction.hasSelection'))
+      && pdfRuntime.includes('isInteractiveTarget(event.target)')
       && pdfRuntime.includes('hasSelectionWithin(this.elements.textLayer)')
-      && pdfRuntime.includes('SWIPE_SCROLL_TOLERANCE'),
-    'Interactive publication content, active text selection, and horizontally pannable PDFs remain protected from accidental navigation gestures');
+      && pdfRuntime.includes("this.settings.fit === 'custom'")
+      && pdfTests.includes("toHaveValue('custom')")
+      && pdfTests.includes('await expectPage(page, root, 1);'),
+    'Interactive publication content, active text selection, and custom-zoom PDF panning remain protected from accidental navigation gestures');
 
   pass('RR7_CHROME_STABILITY',
     shell.includes('const POINTER_REVEAL_GUARD_MS = 450')
