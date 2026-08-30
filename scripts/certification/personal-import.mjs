@@ -7,6 +7,7 @@ const exists = async (file) => { try { await access(file); return true; } catch 
 const files = [
   'src/lib/client/personal-books.ts',
   'src/lib/client/storage-reliability.ts',
+  'src/lib/data-portability/personal-metadata.ts',
   'src/pages/saved.astro',
   'src/pages/personal/read.astro',
   'src/pages/personal/pdf.astro',
@@ -14,11 +15,12 @@ const files = [
   'src/pages/privacy.astro',
 ];
 const present = (await Promise.all(files.map(exists))).every(Boolean);
-pass('PERSONAL_IMPORT_ER2_FILES', present, 'ER2 local personal-book storage, shared storage failure classifier, library UI, EPUB/PDF routes, styles, and privacy copy are present');
+pass('PERSONAL_IMPORT_ER2_FILES', present, 'ER2 local personal-book storage, shared storage failure classifier, RR8 metadata bridge, library UI, EPUB/PDF routes, styles, and privacy copy are present');
 
 if (present) {
   const storage = await readFile('src/lib/client/personal-books.ts', 'utf8');
   const reliability = await readFile('src/lib/client/storage-reliability.ts', 'utf8');
+  const portableMetadata = await readFile('src/lib/data-portability/personal-metadata.ts', 'utf8');
   const saved = await readFile('src/pages/saved.astro', 'utf8');
   const epub = await readFile('src/pages/personal/read.astro', 'utf8');
   const pdf = await readFile('src/pages/personal/pdf.astro', 'utf8');
@@ -30,7 +32,7 @@ if (present) {
     storage.includes("PERSONAL_DB_NAME = 'thiepn-library-personal-books'")
       && storage.includes("PERSONAL_STORE = 'books'")
       && !storage.includes("PERSONAL_DB_NAME = 'thiepn-library'"),
-    'Large personal publication files use a dedicated IndexedDB database instead of changing the mature reading-state database',
+    'Large personal publication files remain in a dedicated IndexedDB database instead of entering the portable reading-state database',
   );
   pass(
     'PERSONAL_IMPORT_ER2_LOCAL_BLOB',
@@ -107,7 +109,7 @@ if (present) {
       && pdf.includes('mountPdfReader(root, candidate)')
       && pdf.includes('URL.createObjectURL(book.file)')
       && pdf.includes('URL.revokeObjectURL(objectUrl)'),
-    'Personal PDFs remain locally sourced while ER4 upgrades their route to the shared integrated PDF reader and keeps a revocable original-file fallback',
+    'Personal PDFs remain locally sourced while ER4 upgrades their route to the shared integrated PDF reader and keeps a revocable local original-file fallback',
   );
   pass(
     'PERSONAL_IMPORT_ER2_OBJECT_URL_CLEANUP',
@@ -135,10 +137,13 @@ if (present) {
   );
   pass(
     'PERSONAL_IMPORT_ER2_VERSIONCHANGE',
-    storage.includes('const PERSONAL_DB_VERSION = 2')
+    storage.includes('const PERSONAL_DB_VERSION = 3')
+      && storage.includes('PERSONAL_BOOK_SCHEMA_VERSION = 1')
+      && storage.includes('if (oldVersion < 3')
+      && storage.includes('cursor.update(toVersionedStoredRecord(cursor.value))')
       && storage.includes("db.addEventListener('versionchange', () => db.close())")
-      && storage.includes("'blocked'"),
-    'RR5 extends personal-book storage through a non-destructive schema version and closes older connections when a newer tab requests an upgrade',
+      && portableMetadata.includes('PORTABLE_PERSONAL_METADATA_SCHEMA_VERSION = 1'),
+    'RR8 v3 non-destructively versions historical personal-book records and keeps portable metadata separate from private file bytes',
   );
   pass(
     'PERSONAL_IMPORT_ER2_PRIVACY_COPY',
