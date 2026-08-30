@@ -29,9 +29,10 @@ async function dispatchReaderWheel(page: Page, deltaY: number): Promise<boolean>
   return frame.evaluate((element, delta) => {
     const iframe = element as HTMLIFrameElement;
     const document = iframe.contentDocument;
-    const window = iframe.contentWindow;
-    if (!document || !window) throw new Error('Reader iframe is not available.');
-    const event = new window.WheelEvent('wheel', { deltaY: delta, bubbles: true, cancelable: true });
+    const frameWindow = iframe.contentWindow;
+    if (!document || !frameWindow) throw new Error('Reader iframe is not available.');
+    const WheelEventCtor = (frameWindow as unknown as { WheelEvent: typeof WheelEvent }).WheelEvent;
+    const event = new WheelEventCtor('wheel', { deltaY: delta, bubbles: true, cancelable: true });
     document.dispatchEvent(event);
     return event.defaultPrevented;
   }, deltaY);
