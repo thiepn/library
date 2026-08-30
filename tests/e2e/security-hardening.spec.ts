@@ -8,7 +8,12 @@ test('@rr9 EPUB sandbox strips executable/navigation surfaces and blocks remote 
     if (request.url().includes('example.invalid')) remoteRequests.push(request.url());
   });
   await page.addInitScript(() => {
-    const target = window as Window & Record<string, boolean>;
+    const target = window as typeof window & {
+      __rr9ScriptRan?: boolean;
+      __rr9EventRan?: boolean;
+      __rr9DataRan?: boolean;
+      __rr9JavascriptRan?: boolean;
+    };
     target.__rr9ScriptRan = false;
     target.__rr9EventRan = false;
     target.__rr9DataRan = false;
@@ -45,7 +50,12 @@ test('@rr9 EPUB sandbox strips executable/navigation surfaces and blocks remote 
 
   await expect.poll(async () => frame.locator('#local-image').evaluate((image) => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
   const markers = await page.evaluate(() => {
-    const target = window as Window & Record<string, boolean>;
+    const target = window as typeof window & {
+      __rr9ScriptRan?: boolean;
+      __rr9EventRan?: boolean;
+      __rr9DataRan?: boolean;
+      __rr9JavascriptRan?: boolean;
+    };
     return [target.__rr9ScriptRan, target.__rr9EventRan, target.__rr9DataRan, target.__rr9JavascriptRan];
   });
   expect(markers).toEqual([false, false, false, false]);
