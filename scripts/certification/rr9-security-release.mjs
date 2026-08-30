@@ -154,6 +154,15 @@ if (present) {
       && !sw.includes('thiepn-library-personal-books'),
     'Service-worker interception and hosted publication caching remain GET-only, same-origin, scope-bounded, and separate from personal publication storage');
 
+  pass('RR9_PATCHED_DEPENDENCY_GRAPH',
+    pkg.dependencies?.epubjs === '0.3.93'
+      && pkg.dependencies?.['pdfjs-dist'] === '4.10.38'
+      && pkg.dependencies?.astro === undefined
+      && pkg.devDependencies?.astro === '7.2.8'
+      && workspace.includes("'@xmldom/xmldom': 0.8.15")
+      && !workspace.includes("'sharp@0.34.5': true"),
+    'Shipped browser dependencies remain explicit, the patched Astro toolchain is build-only, and epubjs resolves to maintained xmldom 0.8 LTS');
+
   pass('RR9_DEPENDENCY_AUDIT',
     pkg.scripts?.['security:audit'] === 'node scripts/security/audit-dependencies.mjs'
       && audit.includes("['audit', '--prod', '--audit-level', 'high', '--json']")
@@ -161,7 +170,7 @@ if (present) {
       && audit.includes('high > 0 || critical > 0')
       && workflow.includes('pnpm security:audit')
       && deploy.includes('pnpm security:audit'),
-    'High/critical production dependency advisories fail RR9 CI and production deployment while retaining a JSON audit record');
+    'High/critical advisories in the shipped browser dependency graph fail RR9 CI and production deployment while retaining a JSON audit record');
 
   pass('RR9_SBOM_LICENSE_EVIDENCE',
     pkg.scripts?.['security:supply-chain'] === 'node scripts/security/generate-supply-chain-evidence.mjs'
@@ -171,15 +180,16 @@ if (present) {
       && supplyChain.includes('licenses.json')
       && supplyChain.includes('unlicensed|none|no license|see license in')
       && workflow.includes('artifacts/security'),
-    'RR9 creates a production CycloneDX SBOM and license inventory and blocks unresolved license declarations');
+    'RR9 creates a shipped-dependency CycloneDX SBOM and license inventory and blocks unresolved license declarations');
 
   pass('RR9_INSTALL_SCRIPT_POLICY',
     workspace.includes('allowBuilds:')
       && workspace.includes("'esbuild@0.27.7 || 0.28.1 || 0.28.2': true")
-      && workspace.includes("'sharp@0.34.5': true")
       && workspace.includes("'workerd@1.20260820.1': true")
-      && workspace.includes("'core-js@3.50.0': false"),
-    'Install-time build scripts remain explicitly allow/deny listed under pnpm 11 supply-chain controls');
+      && workspace.includes("'core-js@3.50.0': false")
+      && workspace.includes("'es5-ext@0.10.64': false")
+      && !workspace.includes("'sharp@0.34.5': true"),
+    'Install-time build scripts remain explicitly allow/deny listed and the vulnerable Sharp 0.34 install-script exception is removed');
 
   pass('RR9_CI_ARTIFACT_PRIVACY',
     workflow.includes('name: rr9-supply-chain-${{ github.run_id }}')
