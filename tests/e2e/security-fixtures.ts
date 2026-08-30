@@ -63,10 +63,10 @@ function zip(entries: Entry[]): Buffer {
   return Buffer.concat([...localParts, centralDirectory, eocd]);
 }
 
-const pixelPng = Buffer.from(
-  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl2nLkAAAAASUVORK5CYII=',
-  'base64',
-);
+const localSvg = `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 8 8">
+  <rect width="8" height="8" fill="#000"/>
+</svg>`;
 
 const packageDocument = `<?xml version="1.0" encoding="UTF-8"?>
 <package version="3.0" unique-identifier="id" xmlns="http://www.idpf.org/2007/opf">
@@ -78,7 +78,7 @@ const packageDocument = `<?xml version="1.0" encoding="UTF-8"?>
   <manifest>
     <item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>
     <item id="chapter" href="chapter.xhtml" media-type="application/xhtml+xml" properties="scripted"/>
-    <item id="pixel" href="pixel.png" media-type="image/png"/>
+    <item id="local-image" href="local.svg" media-type="image/svg+xml"/>
   </manifest>
   <spine><itemref idref="chapter"/></spine>
 </package>`;
@@ -92,7 +92,7 @@ const chapter = `<?xml version="1.0" encoding="UTF-8"?>
 </head>
 <body onload="window.parent.__rr9EventRan = true">
   <h1>RR9 sandbox attack</h1>
-  <img id="local-image" src="pixel.png" alt="Local pixel"/>
+  <img id="local-image" src="local.svg" alt="Local image"/>
   <a id="dangerous-link" href="data:text/html,&lt;script&gt;window.parent.__rr9DataRan=true&lt;/script&gt;">Dangerous navigation</a>
   <a id="javascript-link" href="javascript:window.parent.__rr9JavascriptRan=true">Javascript navigation</a>
 </body>
@@ -107,7 +107,7 @@ const buffer = zip([
   { name: 'OEBPS/content.opf', content: packageDocument },
   { name: 'OEBPS/nav.xhtml', content: '<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops"><body><nav epub:type="toc"><ol><li><a href="chapter.xhtml">Chapter</a></li></ol></nav></body></html>' },
   { name: 'OEBPS/chapter.xhtml', content: chapter },
-  { name: 'OEBPS/pixel.png', content: pixelPng },
+  { name: 'OEBPS/local.svg', content: localSvg },
 ]);
 
 export const rr9SandboxEpubFixture: BrowserFixtureFile = {
