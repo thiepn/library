@@ -57,6 +57,7 @@ jobs:
       offline: ${{ steps.offline.outcome }}
       accessibility: ${{ steps.accessibility.outcome }}
       ergonomics: ${{ steps.ergonomics.outcome }}
+      durability: ${{ steps.durability.outcome }}
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -164,6 +165,22 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
 
+      - name: Run RR8 data durability, migration, backup, and portability acceptance
+        id: durability
+        run: pnpm test:durability
+
+      - name: Upload failed production durability evidence
+        if: failure() && steps.durability.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-data-durability-${{ github.run_id }}
+          path: |
+            playwright-report
+            playwright-offline-report
+            test-results
+          if-no-files-found: warn
+          retention-days: 14
+
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
         with:
@@ -230,6 +247,7 @@ jobs:
           OFFLINE_RESULT: ${{ needs.build.outputs.offline }}
           ACCESSIBILITY_RESULT: ${{ needs.build.outputs.accessibility }}
           ERGONOMICS_RESULT: ${{ needs.build.outputs.ergonomics }}
+          DURABILITY_RESULT: ${{ needs.build.outputs.durability }}
           DEPLOY_RESULT: ${{ needs.deploy.result }}
           VERIFY_RESULT: ${{ needs.verify-production.result }}
         run: |
@@ -255,6 +273,7 @@ jobs:
           | RR5 offline/PWA/storage reliability before artifact upload | ${OFFLINE_RESULT:-not-run} |
           | RR6 accessibility/inclusive-reading acceptance before artifact upload | ${ACCESSIBILITY_RESULT:-not-run} |
           | RR7 reading ergonomics/product UX acceptance before artifact upload | ${ERGONOMICS_RESULT:-not-run} |
+          | RR8 data durability/migration/backup/portability acceptance before artifact upload | ${DURABILITY_RESULT:-not-run} |
           | GitHub Pages deployment | ${DEPLOY_RESULT} |
           | live application + media verification | ${VERIFY_RESULT} |
           EOF

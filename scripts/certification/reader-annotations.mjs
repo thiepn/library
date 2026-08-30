@@ -29,8 +29,12 @@ if (present) {
 
   pass(
     'EPUB_READER_ANNOTATION_EXISTING_STORE',
-    store.includes("openLibraryDb") && store.includes("objectStoreNames.contains('annotations')") && db.includes('const DB_VERSION = 8'),
-    'Native annotations continue to reuse the unchanged annotations store after the additive ER6 IndexedDB v8 activity-store upgrade',
+    store.includes("openLibraryDb")
+      && store.includes("objectStoreNames.contains('annotations')")
+      && db.includes('const DB_VERSION = 9')
+      && db.includes("['annotations', 'id']")
+      && !db.includes("createObjectStore('annotations'"),
+    'Native annotations continue to reuse the unchanged annotations store through the additive RR8 IndexedDB v9 record-versioning migration',
   );
   pass(
     'EPUB_READER_ANNOTATION_RELEASE_IDENTITY',

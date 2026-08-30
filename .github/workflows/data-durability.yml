@@ -1,0 +1,56 @@
+name: Data Durability
+
+on:
+  push:
+    branches: [main, 'release/**']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rr8-data-durability-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  data-durability:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup pnpm and Node
+        uses: pnpm/setup@v2
+        with:
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+          cache: true
+
+      - name: Install frozen dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Certify RR8 source ownership and restore boundaries
+        run: pnpm certify:durability
+
+      - name: Install browser engines and system dependencies
+        run: pnpm exec playwright install --with-deps chromium firefox webkit
+
+      - name: Build static Library
+        run: pnpm build
+
+      - name: Run cross-engine durability, migration, and portability acceptance
+        run: pnpm test:durability
+
+      - name: Upload failed durability evidence
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-data-durability-${{ github.run_id }}
+          path: |
+            playwright-report
+            test-results
+          if-no-files-found: ignore
+          retention-days: 14
