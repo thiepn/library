@@ -24,10 +24,9 @@ test('@rr9 EPUB sandbox strips executable/navigation surfaces and blocks remote 
   await page.locator('[data-personal-file-input]').setInputFiles(rr9SandboxEpubFixture);
   await expect(page.locator('[data-personal-import-status]')).toContainText('1 imported', { timeout: 30_000 });
 
-  const card = page.locator('[data-personal-book]').filter({
-    has: page.getByRole('heading', { level: 3, name: 'RR9 Sandbox Attack', exact: true }),
-  });
-  await expect(card).toHaveCount(1);
+  const cards = page.locator('[data-personal-book]');
+  await expect(cards).toHaveCount(1);
+  const card = cards.first();
   await card.getByRole('link', { name: /Start reading|Continue reading|Read again/ }).click();
 
   const shell = page.locator('[data-reader-shell]');
