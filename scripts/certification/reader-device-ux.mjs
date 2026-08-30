@@ -104,10 +104,10 @@ if (present) {
   pass(
     'READER_DEVICE_UX_ER7_PDF_RESULT_NAVIGATION',
     runtime.includes('this.closeSearch();')
-      && runtime.includes('void this.goToPage(result.page)')
+      && runtime.includes('this.runSafely(this.goToPage(result.page))')
       && runtime.indexOf('this.closeSearch();', runtime.indexOf('for (const result of this.searchResults)'))
-        < runtime.indexOf('void this.goToPage(result.page)', runtime.indexOf('for (const result of this.searchResults)')),
-    'Selecting a PDF search result closes the mobile sheet before navigating to the page',
+        < runtime.indexOf('this.runSafely(this.goToPage(result.page))', runtime.indexOf('for (const result of this.searchResults)')),
+    'Selecting a PDF search result closes the mobile sheet before navigating to the page through the guarded page controller',
   );
 
   pass(
