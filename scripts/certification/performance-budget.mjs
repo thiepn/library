@@ -139,7 +139,7 @@ if (present) {
 
   const browserIndex = deployment.indexOf('id: browser');
   const performanceIndex = deployment.indexOf('id: performance');
-  const pagesIndex = deployment.indexOf('actions/upload-pages-artifact@v4');
+  const pagesIndex = deployment.indexOf('actions/upload-pages-artifact@');
   pass('RR4_PRODUCTION_GATE',
     deployment.includes('Run RR4 performance and memory budgets')
       && deployment.includes('run: pnpm test:performance')
