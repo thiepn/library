@@ -30,13 +30,14 @@ if (present) {
 
   pass(
     'EPUB_READER_LEGACY_PROGRESS_SIDECAR',
-    db.includes("const DB_VERSION = 8")
+    db.includes('const DB_VERSION = 9')
       && db.includes("| 'legacyProgress'")
       && db.includes("['legacyProgress', 'workId']")
       && db.includes("transaction.objectStore('legacyProgress')")
       && db.includes('isLegacyProgressRecord(cursor.value)')
-      && db.includes('legacy.put(cursor.value)'),
-    'The current DB schema retains the v7 P29 migration that moves pre-P29 Markdown progress into a dedicated legacyProgress sidecar',
+      && db.includes('legacy.put(toStoredLegacyProgress(cursor.value))')
+      && db.includes('LEGACY_PROGRESS_SCHEMA_VERSION = 1'),
+    'RR8 DB v9 retains the v7 P29 sidecar migration and explicitly versions recovered legacy positions without losing them',
   );
 
   pass(
@@ -47,7 +48,7 @@ if (present) {
       && db.includes("withStore('progress', 'readwrite'")
       && db.includes('export async function setReaderProgress')
       && db.indexOf("withStore('legacyProgress', 'readwrite'") < db.indexOf('export async function getReaderProgress'),
-    'Legacy Markdown writes and native EPUB writes use separate stores after P29',
+    'Legacy Markdown writes and native EPUB writes remain isolated after the RR8 schema upgrade',
   );
 
   pass(
