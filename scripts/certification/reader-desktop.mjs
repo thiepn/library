@@ -4,14 +4,20 @@ const checks = [];
 const pass = (id, ok, detail) => checks.push({ id, ok, detail });
 const exists = async (file) => { try { await access(file); return true; } catch { return false; } };
 
-const files = ['src/lib/reader/desktop.ts', 'src/lib/reader/desktop-harness.ts', 'src/styles/reader-desktop.css'];
+const files = [
+  'src/lib/reader/desktop.ts',
+  'src/lib/reader/desktop-harness.ts',
+  'src/lib/reader/wheel-navigation.ts',
+  'src/styles/reader-desktop.css',
+];
 const present = (await Promise.all(files.map(exists))).every(Boolean);
-pass('EPUB_READER_DESKTOP_P22', present, 'P22 tablet and desktop reader subsystem is present');
+pass('EPUB_READER_DESKTOP_P22', present, 'P22 tablet and desktop reader subsystem, including desktop wheel navigation, is present');
 
 if (present) {
-  const [desktop, harness, css, readingMode, navigation, layout, index, legacyLayout, pkg] = await Promise.all([
+  const [desktop, harness, wheelNavigation, css, readingMode, navigation, layout, index, legacyLayout, pkg] = await Promise.all([
     readFile('src/lib/reader/desktop.ts', 'utf8'),
     readFile('src/lib/reader/desktop-harness.ts', 'utf8'),
+    readFile('src/lib/reader/wheel-navigation.ts', 'utf8'),
     readFile('src/styles/reader-desktop.css', 'utf8'),
     readFile('src/lib/reader/reading-mode.ts', 'utf8'),
     readFile('src/lib/reader/navigation.ts', 'utf8'),
@@ -30,9 +36,27 @@ if (present) {
   pass('EPUB_READER_DESKTOP_WIDE', css.includes('@media (min-width: 1560px)') && css.includes('[data-reader-desktop-surface="wide"]'), 'Ultrawide windows use bounded panel geometry');
   pass('EPUB_READER_DESKTOP_COMPACT_HEIGHT', desktop.includes('compactHeight') && css.includes('(max-height: 680px)') && css.includes('[data-reader-window-compact="true"]'), 'Low-height desktop windows reduce chrome density safely');
   pass('EPUB_READER_DESKTOP_POINTER', desktop.includes("matchMedia('(hover: hover)')") && desktop.includes("matchMedia('(pointer: fine)')") && css.includes('@media (hover: hover) and (pointer: fine)'), 'Fine-pointer environments receive desktop hover affordances');
-  pass('EPUB_READER_DESKTOP_TRACKPAD_SAFE', !navigation.includes("interaction.type === 'wheel'") && navigation.includes("if (interaction.type === 'swipe')"), 'Wheel and trackpad scrolling remain native instead of becoming page-turn commands');
-  pass('EPUB_READER_DESKTOP_HARNESS', harness.includes('mountReaderPublicationWithDesktopHarness') && harness.includes('mountReaderPublicationWithMobileHarness') && harness.includes('ReaderDesktopController'), 'P22 composes on top of the complete P21 staged reader');
-  pass('EPUB_READER_DESKTOP_PUBLIC_API', index.includes('ReaderDesktopController') && index.includes('READER_DESKTOP_DEFAULTS') && index.includes('ReaderDesktopState'), 'P22 APIs are exported');
+  pass(
+    'EPUB_READER_DESKTOP_WHEEL_NAVIGATION',
+    wheelNavigation.includes("this.shell.root.dataset.readerFlow !== 'paginated'")
+      && wheelNavigation.includes("event.preventDefault()")
+      && wheelNavigation.includes("this.navigation.navigate(delta > 0 ? 'next' : 'previous', 'button')")
+      && wheelNavigation.includes("matchMedia('(hover: hover) and (pointer: fine)')")
+      && wheelNavigation.includes('WHEEL_TURN_COOLDOWN_MS')
+      && !navigation.includes("interaction.type === 'wheel'"),
+    'Fine-pointer desktop wheel/trackpad gestures turn paginated EPUB pages through the canonical navigation controller, while scroll mode remains native and the core interaction taxonomy stays unchanged',
+  );
+  pass(
+    'EPUB_READER_DESKTOP_HARNESS',
+    harness.includes('mountReaderPublicationWithDesktopHarness')
+      && harness.includes('mountReaderPublicationWithMobileHarness')
+      && harness.includes('ReaderDesktopController')
+      && harness.includes('ReaderWheelNavigationController')
+      && harness.includes('wheelNavigation.start()')
+      && harness.includes('wheelNavigation.destroy()'),
+    'P22 composes the desktop environment, page rails, and wheel adapter on top of the complete P21 staged reader with explicit lifecycle ownership',
+  );
+  pass('EPUB_READER_DESKTOP_PUBLIC_API', index.includes('ReaderDesktopController') && index.includes('READER_DESKTOP_DEFAULTS') && index.includes('ReaderDesktopState'), 'P22 stable environment APIs remain exported while wheel navigation stays an internal desktop adapter');
   pass('EPUB_READER_DESKTOP_LAYER_ORDER', layout.includes("../styles/reader-mobile.css") && layout.includes("../styles/reader-desktop.css") && layout.indexOf('reader-desktop.css') > layout.indexOf('reader-mobile.css'), 'Desktop optimization CSS loads after mobile normalization');
   pass('EPUB_READER_DESKTOP_LEGACY_PRESERVED', legacyLayout.includes("import '../styles/reader.css';") && !legacyLayout.includes('ReaderDesktopController') && !legacyLayout.includes('reader-desktop.css'), 'Legacy production reader remains outside the staged P22 stack');
   pass('EPUB_READER_DESKTOP_CERT_CHAIN', pkg.includes('reader-mobile.mjs && node scripts/certification/reader-desktop.mjs'), 'P22 certification is chained after P21');
