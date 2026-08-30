@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout title="Support">
+  <div class="page">
+    <section class="section">
+      <div class="section-heading"><div><p class="eyebrow">06 / Support</p><h1>Support</h1></div></div>
+      <div class="empty">
+        <h2>Supported release boundary</h2>
+        <p>The v1 reader targets current Chromium, Firefox, and WebKit browser engines and a defined physical-device matrix. Automated browser-engine and responsive-device-profile results are not substitutes for physical-device certification. A broad v1.0 physical support claim is made only after the exact release SHA has passing records for every required physical target.</p>
+        <p>Supported personal imports are non-DRM EPUB and PDF files within the documented size and safety limits. Scripted EPUB content remains disabled. Encrypted/DRM publications, hostile archives, active-content PDFs, obsolete browsers, and environments that disable required browser storage, Blob, Canvas, Worker, or Web Crypto capabilities are outside the supported boundary.</p>
+        <h2>Recovery</h2>
+        <p>If browser-local state is lost, restore a previously exported JSON backup from the Backup page. Personal EPUB/PDF file bytes are not included in that backup; re-import the original matching files to reconnect restored personal-book metadata. EPUB CFIs and PDF page positions remain format-specific and are never heuristically translated between formats or publication releases.</p>
+        <h2>Offline and storage</h2>
+        <p>Hosted publications explicitly downloaded for offline use can reopen without a network connection after the offline shell has been installed. Personal books remain in IndexedDB. Browser storage can still be evicted or cleared by the browser, operating system, or user, so a local browser profile should not be treated as the only backup of important reading state or personal files.</p>
+        <h2>Release status</h2>
+        <p>The application can be production-verified before the final v1.0 support claim. The final v1.0 tag is fail-closed on the exact production source, security/dependency gates, protected-main configuration, and complete exact-SHA physical-device evidence.</p>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
