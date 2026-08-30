@@ -23,7 +23,7 @@
     "test:performance": "playwright test --config=playwright.performance.config.ts",
     "test:offline": "playwright test --config=playwright.offline.config.ts",
     "test:accessibility": "playwright test tests/e2e/accessibility.spec.ts tests/e2e/reader-tap-zones.spec.ts",
-    "test:ergonomics": "playwright test tests/e2e/library-ergonomics.spec.ts tests/e2e/reader-ergonomics.spec.ts tests/e2e/reader-navigation-controls.spec.ts tests/e2e/reader-tap-zones.spec.ts",
+    "test:ergonomics": "playwright test tests/e2e/library-ergonomics.spec.ts tests/e2e/reader-ergonomics.spec.ts tests/e2e/pdf-reader-ergonomics.spec.ts tests/e2e/reader-navigation-controls.spec.ts tests/e2e/reader-tap-zones.spec.ts",
     "test:data-durability": "playwright test tests/e2e/data-portability.spec.ts --project=chromium-desktop --project=firefox-desktop --project=webkit-desktop",
     "certify:compatibility": "node scripts/certification/publication-corpus.mjs",
     "certify:performance": "node scripts/certification/performance-budget.mjs",
