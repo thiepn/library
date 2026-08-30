@@ -1,0 +1,137 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import '../styles/data-portability.css';
+---
+<BaseLayout
+  title="Data & backup"
+  description="Inspect, back up, and restore browser-local Thiepn Library reading data without automatic cloud sync."
+  noindex
+>
+  <div class="page data-portability" data-data-portability>
+    <header class="data-portability__intro">
+      <p class="eyebrow">Local data</p>
+      <h1>Data & backup</h1>
+      <p>Your reading state is stored in this browser. Thiepn Library does not automatically sync it to a cloud account. Use a backup file when you want to keep a copy or move your reading state to another browser.</p>
+      <span class="data-portability__local">Browser-local · manual backup</span>
+    </header>
+
+    <div class="data-portability__grid">
+      <section class="data-portability__card" aria-labelledby="backup-heading">
+        <p class="eyebrow">Export</p>
+        <h2 id="backup-heading">Create a backup</h2>
+        <p>Downloads a readable JSON file containing saved books, reading activity, EPUB/PDF positions, bookmarks, highlights and notes, reader settings, and personal-book metadata.</p>
+        <p class="data-portability__warning"><strong>Personal EPUB/PDF file bytes are not included.</strong> Keep the original files. After restoring on another browser, re-import the matching files and the Library reconnects restored metadata by content hash.</p>
+        <div class="data-portability__actions">
+          <button class="data-portability__button" type="button" data-backup-download>Create backup</button>
+        </div>
+        <p class="data-portability__status" data-backup-status aria-live="polite"></p>
+      </section>
+
+      <section class="data-portability__card" aria-labelledby="restore-heading">
+        <p class="eyebrow">Restore</p>
+        <h2 id="restore-heading">Restore from backup</h2>
+        <p>Restore is merge-safe: it does not clear your current Library. Newer current records are preserved, and a backup from a different EPUB release cannot overwrite the current release position.</p>
+        <label for="library-backup-file">Backup JSON file</label>
+        <input
+          id="library-backup-file"
+          class="data-portability__file"
+          data-backup-file
+          type="file"
+          accept=".json,application/json"
+        />
+        <div class="data-portability__actions">
+          <button class="data-portability__button" type="button" data-backup-restore disabled>Restore backup</button>
+        </div>
+        <p class="data-portability__status" data-restore-status aria-live="polite"></p>
+      </section>
+    </div>
+
+    <section class="data-portability__details" aria-labelledby="included-heading">
+      <div>
+        <p class="eyebrow">Portable state</p>
+        <h2 id="included-heading">What moves with a backup</h2>
+      </div>
+      <ul>
+        <li>My Library favorites and reading activity</li>
+        <li>Native EPUB CFI progress and legacy web-reader progress</li>
+        <li>EPUB bookmarks, highlights, and notes</li>
+        <li>PDF page progress and PDF bookmarks</li>
+        <li>Library appearance plus EPUB and PDF reader settings</li>
+        <li>Personal-book metadata and content hashes, but not the private book files themselves</li>
+      </ul>
+      <p>A restore validates the complete backup before writing. Database changes use one transaction, so an interrupted or quota-failed restore is aborted instead of leaving a partially restored Library.</p>
+    </section>
+  </div>
+
+  <script>
+    import { LIBRARY_BACKUP_MAX_BYTES } from '../lib/data-portability/archive';
+    import { createLibraryBackup, restoreLibraryBackupText } from '../lib/data-portability/storage';
+
+    const backupButton = document.querySelector<HTMLButtonElement>('[data-backup-download]');
+    const backupStatus = document.querySelector<HTMLElement>('[data-backup-status]');
+    const fileInput = document.querySelector<HTMLInputElement>('[data-backup-file]');
+    const restoreButton = document.querySelector<HTMLButtonElement>('[data-backup-restore]');
+    const restoreStatus = document.querySelector<HTMLElement>('[data-restore-status]');
+    let selectedFile: File | undefined;
+
+    function setStatus(node: HTMLElement | null, message: string, state: 'ok' | 'error' = 'ok') {
+      if (!node) return;
+      node.textContent = message;
+      node.dataset.state = state;
+    }
+
+    function downloadJson(text: string) {
+      const blob = new Blob([text], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      const date = new Date().toISOString().slice(0, 10);
+      link.href = url;
+      link.download = `thiepn-library-backup-${date}.json`;
+      document.body.append(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    backupButton?.addEventListener('click', async () => {
+      backupButton.disabled = true;
+      setStatus(backupStatus, 'Creating backup…');
+      try {
+        const result = await createLibraryBackup();
+        downloadJson(result.json);
+        const warning = result.warnings.length ? ` ${result.warnings.length} note${result.warnings.length === 1 ? '' : 's'} recorded in the backup.` : '';
+        setStatus(backupStatus, `Backup created with ${result.summary.records} record${result.summary.records === 1 ? '' : 's'} and ${result.summary.settings} settings section${result.summary.settings === 1 ? '' : 's'}.${warning}`);
+      } catch (error) {
+        setStatus(backupStatus, error instanceof Error ? error.message : 'Unable to create the backup.', 'error');
+      } finally {
+        backupButton.disabled = false;
+      }
+    });
+
+    fileInput?.addEventListener('change', () => {
+      selectedFile = fileInput.files?.[0];
+      if (restoreButton) restoreButton.disabled = !selectedFile;
+      if (!selectedFile) setStatus(restoreStatus, '');
+      else if (selectedFile.size > LIBRARY_BACKUP_MAX_BYTES) {
+        setStatus(restoreStatus, 'This backup is larger than the supported 8 MB metadata limit.', 'error');
+        if (restoreButton) restoreButton.disabled = true;
+      } else setStatus(restoreStatus, `${selectedFile.name} selected.`);
+    });
+
+    restoreButton?.addEventListener('click', async () => {
+      if (!selectedFile) return;
+      restoreButton.disabled = true;
+      setStatus(restoreStatus, 'Validating and restoring backup…');
+      try {
+        const report = await restoreLibraryBackupText(await selectedFile.text());
+        const kept = report.keptCurrentRecords ? ` ${report.keptCurrentRecords} newer current record${report.keptCurrentRecords === 1 ? ' was' : 's were'} kept.` : '';
+        const notes = report.warnings.length ? ` ${report.warnings.length} note${report.warnings.length === 1 ? '' : 's'} reported.` : '';
+        setStatus(restoreStatus, `Restore complete: ${report.restoredRecords} record${report.restoredRecords === 1 ? '' : 's'} and ${report.restoredSettings} settings section${report.restoredSettings === 1 ? '' : 's'} restored.${kept}${notes} Reload the page to apply all appearance settings.`);
+      } catch (error) {
+        setStatus(restoreStatus, error instanceof Error ? error.message : 'The backup could not be restored. No partial restore was kept.', 'error');
+      } finally {
+        restoreButton.disabled = !selectedFile;
+      }
+    });
+  </script>
+</BaseLayout>

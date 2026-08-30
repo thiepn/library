@@ -105,7 +105,7 @@ if (present) {
 
   pass(
     'PDF_READER_ER4_ZOOM_FIT',
-    runtime.includes("PdfFitMode = 'width' | 'page' | 'custom'") || state.includes("PdfFitMode = 'width' | 'page' | 'custom'")
+    (runtime.includes("PdfFitMode = 'width' | 'page' | 'custom'") || state.includes("PdfFitMode = 'width' | 'page' | 'custom'"))
       && runtime.includes("this.settings.fit === 'width'")
       && runtime.includes("this.settings.fit === 'page'")
       && runtime.includes('changeZoom')
@@ -116,22 +116,25 @@ if (present) {
 
   pass(
     'PDF_READER_ER4_PROGRESS',
-    state.includes("DB_NAME = 'thiepn-library-pdf-reader'")
-      && state.includes("PROGRESS_STORE = 'progress'")
+    state.includes("LEGACY_DB_NAME = 'thiepn-library-pdf-reader'")
+      && state.includes("PROGRESS_STORE = 'pdfProgress'")
+      && state.includes('openLibraryDb()')
+      && state.includes('getLegacyProgress(identity)')
       && state.includes('furthestPage')
       && runtime.includes('getPdfProgress(this.candidate.identity)')
       && runtime.includes('setPdfProgress(this.candidate.identity'),
-    'Page-based resume and monotonic furthest progress persist locally in a PDF-specific exact-release store',
+    'Page-based resume and monotonic furthest progress persist in the main exact-release state database while historical PDF state remains readable',
   );
 
   pass(
     'PDF_READER_ER4_BOOKMARKS',
-    state.includes("BOOKMARK_STORE = 'bookmarks'")
+    state.includes("BOOKMARK_STORE = 'pdfBookmarks'")
+      && state.includes('getLegacyBookmarks(identity)')
       && state.includes('togglePdfBookmark')
       && runtime.includes('toggleCurrentBookmark')
       && runtime.includes('renderBookmarks()')
       && shell.includes('data-pdf-bookmark-panel'),
-    'Page bookmarks persist locally and reopen through the same page navigation controller',
+    'Page bookmarks persist locally in the main portable state database and reopen through the same page navigation controller',
   );
 
   pass(

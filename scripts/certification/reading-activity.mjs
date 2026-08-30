@@ -45,13 +45,13 @@ if (present) {
 
   pass(
     'READING_ACTIVITY_ER6_STORAGE',
-    db.includes('const DB_VERSION = 8')
+    db.includes('const DB_VERSION = 9')
       && db.includes("| 'readingActivity'")
       && db.includes("['readingActivity', 'workId']")
       && db.includes('ReadingActivityRecordV1')
       && db.includes('recordReadingActivity')
       && db.includes('getReadingActivity'),
-    'ER6 uses a dedicated non-destructive DB v8 activity store instead of overloading EPUB, legacy, PDF, or historical reserved stores',
+    'RR8 DB v9 non-destructively retains the dedicated readingActivity store originally added in v8',
   );
 
   const activityInterface = db.slice(
@@ -80,7 +80,7 @@ if (present) {
       && model.includes('activity.edition === identity.edition')
       && model.includes('activity.releaseVersion === identity.releaseVersion')
       && client.includes('isExactReadingActivity(activity, request)'),
-    'Current-release Library state accepts activity only for the exact work, edition, and release identity',
+    'Current-release Library state accepts activity only for the exact work/edition/release identity',
   );
 
   pass(
@@ -172,7 +172,7 @@ if (present) {
 
   pass(
     'READING_ACTIVITY_ER6_CROSS_TAB',
-    db.includes("broadcast('readingActivity', workId)")
+    db.includes("broadcast('readingActivity', input.workId)")
       && client.includes('subscribeUnifiedReadingState(listener)'),
     'Activity invalidation rides the existing Library channel while EPUB/PDF subscriptions remain authoritative for their native progress',
   );

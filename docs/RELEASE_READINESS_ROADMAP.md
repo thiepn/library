@@ -156,7 +156,7 @@ Exit criteria:
 
 ## Phase 7 — Reading ergonomics and product UX polish
 
-**Status:** implementation campaign active on `rr7-reading-ergonomics`. Automated browser/device-profile evidence may close code-level defects, but physical-device evidence remains a separate release requirement.
+**Status:** automated implementation and production certification are complete. Physical-device evidence remains a separate release requirement and is not replaced by the RR7 browser/device-profile suite.
 
 **Purpose:** remove real-world friction not visible in architecture tests.
 
@@ -176,6 +176,8 @@ Exit criteria:
 - all confirmed UX P0/P1/P2 defects are fixed or validly dispositioned.
 
 ## Phase 8 — Data durability, migration, backup, and portability
+
+**Status:** active implementation campaign on `rr8-data-durability`. Physical-device evidence remains separate and continues to block final v1.0 certification.
 
 **Purpose:** prevent browser-local reading state from becoming fragile or trapped.
 
@@ -219,4 +221,4 @@ Exit criteria:
 
 ## Current state
 
-RR1 is implemented on its release branch. RR2 provides the matrix, schema, validator, workflow, defect form, and documentation required to collect honest physical-device evidence. The current evidence count remains **0/12**; physical certification is not claimed until the named devices are actually operated and the exact-build gate passes. RR3–RR6 automated release-readiness gates are integrated. RR7 is now the active implementation campaign; the existing ER7 device-profile work is treated as automated UX coverage, not physical-device proof.
+RR1 is implemented on its release branch. RR2 provides the matrix, schema, validator, workflow, defect form, and documentation required to collect honest physical-device evidence. The current evidence count remains **0/12**; physical certification is not claimed until the named devices are actually operated and the exact-build gate passes. RR3–RR7 automated release-readiness gates are integrated and production-certified. RR8 is now the active implementation campaign for persisted-schema versioning, migration safety, manual backup/restore, and local data portability. RR8 does not change the RR2/RR7 physical-evidence boundary.

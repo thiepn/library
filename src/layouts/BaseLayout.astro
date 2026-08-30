@@ -49,7 +49,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).hr
     <main id="main"><slot /></main>
     <footer class="site-footer">
       <span>THIEPN / LIBRARY</span>
-      <nav aria-label="Footer"><a href={href('/privacy')}>Privacy</a><a href={href('/annotations')}>Annotations</a><a href={href('/about')}>About</a></nav>
+      <nav aria-label="Footer"><a href={href('/privacy')}>Privacy</a><a href={href('/annotations')}>Annotations</a><a href={href('/data')}>Data & backup</a><a href={href('/about')}>About</a></nav>
       <span>Local-first reading</span>
     </footer>
     <script>
@@ -69,31 +69,19 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).hr
       window.addEventListener('pagehide', unmountReadingActivityLibraryState, { once: true });
     </script>
     <script>
-      type Appearance = 'system' | 'light' | 'dark';
-      interface LibrarySettings { appearance?: Appearance; [key: string]: unknown; }
-      const key = 'thiepn.library.settings.v1';
+      import { getAppSettings, nextAppAppearance, setAppSettings, type AppAppearance } from '../lib/client/app-settings';
       const root = document.documentElement;
       const button = document.querySelector<HTMLElement>('[data-appearance-toggle]');
-      const valid = new Set<Appearance>(['system', 'light', 'dark']);
-      const readSettings = (): LibrarySettings => {
-        try { return JSON.parse(localStorage.getItem(key) ?? '{}') as LibrarySettings; }
-        catch { return {}; }
-      };
-      const read = (): Appearance => {
-        const value = readSettings().appearance;
-        return value && valid.has(value) ? value : 'system';
-      };
-      const apply = (appearance: Appearance) => {
+      const apply = (appearance: AppAppearance) => {
         if (appearance === 'system') delete root.dataset.theme;
         else root.dataset.theme = appearance;
         if (button) button.textContent = appearance === 'system' ? 'Theme' : `${appearance.charAt(0).toUpperCase()}${appearance.slice(1)}`;
       };
-      let appearance: Appearance = read();
-      apply(appearance);
+      let settings = getAppSettings();
+      apply(settings.appearance);
       button?.addEventListener('click', () => {
-        appearance = appearance === 'system' ? 'light' : appearance === 'light' ? 'dark' : 'system';
-        localStorage.setItem(key, JSON.stringify({ ...readSettings(), appearance }));
-        apply(appearance);
+        settings = setAppSettings({ ...settings, appearance: nextAppAppearance(settings.appearance) });
+        apply(settings.appearance);
       });
     </script>
   </body>

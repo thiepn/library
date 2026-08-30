@@ -3,17 +3,24 @@ import {
   inspectPublication,
   type PublicationCompatibilityReport,
 } from '../publication-compatibility';
+import {
+  getPortablePersonalBookMetadata,
+  getPortablePersonalBookMetadataRecords,
+  type PortablePersonalBookMetadataV1,
+} from '../data-portability/personal-metadata';
 import { LibraryStorageError, normalizeLibraryStorageError } from './storage-reliability';
 
 const PERSONAL_DB_NAME = 'thiepn-library-personal-books';
-const PERSONAL_DB_VERSION = 2;
+const PERSONAL_DB_VERSION = 3;
 const PERSONAL_STORE = 'books';
 const PERSONAL_CHANNEL = 'thiepn-library-personal-books';
 const MAX_IMPORT_BYTES = 250 * 1024 * 1024;
+export const PERSONAL_BOOK_SCHEMA_VERSION = 1 as const;
 
 export type PersonalBookFormat = 'epub' | 'pdf';
 
 export interface PersonalBookRecord {
+  schemaVersion: typeof PERSONAL_BOOK_SCHEMA_VERSION;
   id: string;
   format: PersonalBookFormat;
   title: string;
@@ -34,8 +41,32 @@ type StoredPersonalBookRecord = Omit<PersonalBookRecord, 'file'> & {
   file: Blob | ArrayBuffer;
 };
 
+type HistoricalPersonalBookRecord = Omit<StoredPersonalBookRecord, 'schemaVersion'> & {
+  schemaVersion?: undefined;
+};
+
 export interface PersonalBookSummary extends Omit<PersonalBookRecord, 'file' | 'cover'> {
   cover?: Blob;
+}
+
+function isStoredPersonalBookRecord(value: unknown): value is StoredPersonalBookRecord | HistoricalPersonalBookRecord {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) return false;
+  const record = value as Partial<StoredPersonalBookRecord> & { schemaVersion?: unknown };
+  return (record.schemaVersion === undefined || record.schemaVersion === PERSONAL_BOOK_SCHEMA_VERSION)
+    && typeof record.id === 'string' && record.id.length > 0
+    && (record.format === 'epub' || record.format === 'pdf')
+    && typeof record.title === 'string'
+    && typeof record.fileName === 'string'
+    && typeof record.mimeType === 'string'
+    && typeof record.size === 'number' && Number.isFinite(record.size) && record.size >= 0
+    && typeof record.sha256 === 'string' && /^[0-9a-f]{64}$/i.test(record.sha256)
+    && typeof record.importedAt === 'string'
+    && typeof record.updatedAt === 'string'
+    && (record.file instanceof Blob || record.file instanceof ArrayBuffer);
+}
+
+function toVersionedStoredRecord(record: StoredPersonalBookRecord | HistoricalPersonalBookRecord): StoredPersonalBookRecord {
+  return { ...record, schemaVersion: PERSONAL_BOOK_SCHEMA_VERSION };
 }
 
 function openPersonalBookDb(): Promise<IDBDatabase> {
@@ -53,9 +84,24 @@ function openPersonalBookDb(): Promise<IDBDatabase> {
       return;
     }
 
-    open.addEventListener('upgradeneeded', () => {
+    open.addEventListener('upgradeneeded', (event) => {
       const db = open.result;
+      const transaction = open.transaction;
       if (!db.objectStoreNames.contains(PERSONAL_STORE)) db.createObjectStore(PERSONAL_STORE, { keyPath: 'id' });
+
+      const oldVersion = (event as IDBVersionChangeEvent).oldVersion;
+      if (oldVersion < 3 && transaction && db.objectStoreNames.contains(PERSONAL_STORE)) {
+        const store = transaction.objectStore(PERSONAL_STORE);
+        const cursorRequest = store.openCursor();
+        cursorRequest.addEventListener('success', () => {
+          const cursor = cursorRequest.result;
+          if (!cursor) return;
+          if (isStoredPersonalBookRecord(cursor.value) && cursor.value.schemaVersion !== PERSONAL_BOOK_SCHEMA_VERSION) {
+            cursor.update(toVersionedStoredRecord(cursor.value));
+          }
+          cursor.continue();
+        });
+      }
     });
     open.addEventListener('success', () => {
       const db = open.result;
@@ -167,11 +213,25 @@ async function extractEpubMetadata(buffer: ArrayBuffer): Promise<Pick<PersonalBo
   }
 }
 
-function normalizeStoredRecord(record: StoredPersonalBookRecord): PersonalBookRecord {
+function normalizeStoredRecord(record: StoredPersonalBookRecord | HistoricalPersonalBookRecord): PersonalBookRecord {
   const file = record.file instanceof Blob
     ? record.file
     : new Blob([record.file], { type: record.mimeType });
-  return { ...record, file };
+  return { ...record, schemaVersion: PERSONAL_BOOK_SCHEMA_VERSION, file };
+}
+
+function applyPortableMetadata(record: PersonalBookRecord, metadata?: PortablePersonalBookMetadataV1): PersonalBookRecord {
+  if (!metadata || metadata.id !== record.id || metadata.sha256 !== record.sha256 || metadata.format !== record.format) return record;
+  return {
+    ...record,
+    title: metadata.title,
+    ...(metadata.creator ? { creator: metadata.creator } : { creator: record.creator }),
+    ...(metadata.language ? { language: metadata.language } : { language: record.language }),
+    fileName: metadata.fileName || record.fileName,
+    importedAt: metadata.importedAt || record.importedAt,
+    updatedAt: metadata.updatedAt > record.updatedAt ? metadata.updatedAt : record.updatedAt,
+    ...(metadata.compatibility ? { compatibility: metadata.compatibility as PublicationCompatibilityReport } : {}),
+  };
 }
 
 function storageError(error: unknown): Error {
@@ -206,6 +266,7 @@ export async function importPersonalBook(file: File): Promise<{ record: Personal
   const title = metadata.title === 'Untitled book' ? cleanFileTitle(file.name) : metadata.title;
   const mimeType = format === 'epub' ? 'application/epub+zip' : 'application/pdf';
   const record: PersonalBookRecord = {
+    schemaVersion: PERSONAL_BOOK_SCHEMA_VERSION,
     id,
     format,
     title,
@@ -232,22 +293,31 @@ export async function importPersonalBook(file: File): Promise<{ record: Personal
     throw storageError(error);
   }
   broadcast('imported', id);
-  return { record, duplicate: false };
+  const restoredMetadata = await getPortablePersonalBookMetadata(id).catch(() => undefined);
+  return { record: applyPortableMetadata(record, restoredMetadata), duplicate: false };
 }
 
 export async function getPersonalBook(id: string): Promise<PersonalBookRecord | undefined> {
   if (!id) return undefined;
-  const record = await withStore('readonly', (store) => request<StoredPersonalBookRecord | undefined>(store.get(id)));
-  return record ? normalizeStoredRecord(record) : undefined;
+  const stored = await withStore('readonly', (store) => request<unknown>(store.get(id)));
+  if (!isStoredPersonalBookRecord(stored)) return undefined;
+  const record = normalizeStoredRecord(stored);
+  const restoredMetadata = await getPortablePersonalBookMetadata(id).catch(() => undefined);
+  return applyPortableMetadata(record, restoredMetadata);
 }
 
 export async function getPersonalBooks(): Promise<PersonalBookSummary[]> {
-  return withStore('readonly', async (store) => {
-    const records = await request<StoredPersonalBookRecord[]>(store.getAll());
-    return records
-      .map(({ file: _file, ...summary }) => summary)
-      .sort((a, b) => b.importedAt.localeCompare(a.importedAt));
-  });
+  const [storedRecords, restoredMetadata] = await Promise.all([
+    withStore('readonly', (store) => request<unknown[]>(store.getAll())),
+    getPortablePersonalBookMetadataRecords().catch(() => []),
+  ]);
+  const metadataById = new Map(restoredMetadata.map((metadata) => [metadata.id, metadata]));
+  return storedRecords
+    .filter(isStoredPersonalBookRecord)
+    .map(normalizeStoredRecord)
+    .map((record) => applyPortableMetadata(record, metadataById.get(record.id)))
+    .map(({ file: _file, ...summary }) => summary)
+    .sort((a, b) => b.importedAt.localeCompare(a.importedAt));
 }
 
 export async function deletePersonalBook(id: string): Promise<void> {
