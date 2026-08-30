@@ -1,4 +1,5 @@
-const ACTIVE_CONTENT_ELEMENTS = new Set(['script', 'iframe', 'object', 'embed', 'applet', 'base']);
+const ACTIVE_CONTENT_ELEMENTS = new Set(['script', 'iframe', 'object', 'embed', 'applet']);
+ACTIVE_CONTENT_ELEMENTS.add('base');
 const SCRIPT_URL_ATTRIBUTES = new Set(['href', 'src', 'action', 'formaction']);
 
 export const READER_EPUB_CSP = [
