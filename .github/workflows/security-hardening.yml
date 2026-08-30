@@ -1,0 +1,67 @@
+name: Security Hardening
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rr9-security-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  security-hardening:
+    name: Security Hardening
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - name: Setup pnpm and Node
+        uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2
+        with:
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+          cache: true
+
+      - name: Install frozen dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Certify RR9 source security and release boundaries
+        run: pnpm certify:security
+
+      - name: Audit production dependencies for high or critical advisories
+        run: pnpm security:audit
+
+      - name: Generate and check production license inventory
+        run: pnpm security:licenses
+
+      - name: Generate deterministic CycloneDX SBOM
+        run: pnpm security:sbom
+
+      - name: Install browser engines and system dependencies
+        run: pnpm exec playwright install --with-deps chromium firefox webkit
+
+      - name: Build static Library
+        run: pnpm build
+
+      - name: Run cross-engine publication security acceptance
+        run: pnpm test:security
+
+      - name: Upload RR9 security evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: rr9-security-evidence-${{ github.run_id }}
+          path: |
+            .build/security
+            playwright-report
+            test-results
+          if-no-files-found: warn
+          retention-days: 30
