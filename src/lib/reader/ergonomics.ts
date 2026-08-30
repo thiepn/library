@@ -2,16 +2,24 @@ import { mountReaderShell, type ReaderShellController } from './shell';
 
 const mountedErgonomics = new WeakMap<HTMLElement, ReaderErgonomicsController>();
 
+type ReaderSettingsPanel = 'appearance' | 'mode';
+
 function panelFor(root: HTMLElement, selector: string): HTMLElement {
   const panel = root.querySelector<HTMLElement>(selector);
   if (!panel) throw new Error(`Reader ergonomics is missing required panel: ${selector}`);
   return panel;
 }
 
+function commandFor(root: HTMLElement, command: 'appearance' | 'more'): HTMLButtonElement {
+  const button = root.querySelector<HTMLButtonElement>(`[data-reader-command="${command}"]`);
+  if (!button) throw new Error(`Reader ergonomics is missing required command: ${command}`);
+  return button;
+}
+
 function addPanelCloseButton(
   panel: HTMLElement,
   headingSelector: string,
-  command: 'appearance' | 'more',
+  panelName: ReaderSettingsPanel,
   label: string,
 ): HTMLButtonElement {
   const existing = panel.querySelector<HTMLButtonElement>('[data-reader-panel-close]');
@@ -22,8 +30,7 @@ function addPanelCloseButton(
   const button = document.createElement('button');
   button.type = 'button';
   button.className = 'reader-shell__panel-close';
-  button.dataset.readerPanelClose = '';
-  button.dataset.readerCommand = command;
+  button.dataset.readerPanelClose = panelName;
   button.setAttribute('aria-label', label);
   button.title = label;
   button.textContent = '×';
@@ -43,6 +50,8 @@ export class ReaderErgonomicsController {
   private readonly shell: ReaderShellController;
   private readonly modePanel: HTMLElement;
   private readonly appearancePanel: HTMLElement;
+  private readonly appearanceTrigger: HTMLButtonElement;
+  private readonly modeTrigger: HTMLButtonElement;
   private readonly backdrop: HTMLDivElement;
   private readonly appearanceClose: HTMLButtonElement;
   private readonly modeClose: HTMLButtonElement;
@@ -53,6 +62,8 @@ export class ReaderErgonomicsController {
     this.shell = mountReaderShell(root);
     this.modePanel = panelFor(root, '[data-reader-mode-panel]');
     this.appearancePanel = panelFor(root, '[data-reader-appearance-panel]');
+    this.appearanceTrigger = commandFor(root, 'appearance');
+    this.modeTrigger = commandFor(root, 'more');
     this.appearanceClose = addPanelCloseButton(
       this.appearancePanel,
       '.reader-shell__panel-heading',
@@ -62,7 +73,7 @@ export class ReaderErgonomicsController {
     this.modeClose = addPanelCloseButton(
       this.modePanel,
       '.reader-shell__mode-heading',
-      'more',
+      'mode',
       'Close reading mode',
     );
 
@@ -98,9 +109,18 @@ export class ReaderErgonomicsController {
     const origin = event.target instanceof Element ? event.target : null;
     if (!origin) return;
 
+    const close = origin.closest<HTMLButtonElement>('[data-reader-panel-close]');
+    if (close && this.root.contains(close)) {
+      event.preventDefault();
+      const panel = close.dataset.readerPanelClose === 'mode' ? 'mode' : 'appearance';
+      this.closePanels(panel);
+      return;
+    }
+
     if (origin.closest('[data-reader-panel-backdrop]')) {
       event.preventDefault();
-      this.closePanels();
+      const panel: ReaderSettingsPanel = !this.appearancePanel.hidden ? 'appearance' : 'mode';
+      this.closePanels(panel);
       return;
     }
 
@@ -115,10 +135,12 @@ export class ReaderErgonomicsController {
     this.closePanels();
   };
 
-  private closePanels(): void {
+  private closePanels(restoreFocus?: ReaderSettingsPanel): void {
     this.shell.setModePanelOpen(false);
     this.shell.setAppearancePanelOpen(false);
     this.syncBackdrop();
+    if (restoreFocus === 'appearance') this.appearanceTrigger.focus();
+    if (restoreFocus === 'mode') this.modeTrigger.focus();
   }
 
   private readonly syncBackdrop = () => {
