@@ -8,13 +8,16 @@ const files = [
   'docs/RR7_READING_ERGONOMICS.md',
   'docs/RR7_MODERATED_DEVICE_SCRIPT.md',
   'docs/RR7_FINDINGS.md',
+  'src/lib/client/storage-reliability.ts',
   'src/lib/reader/ergonomics.ts',
   'src/lib/reader/navigation.ts',
   'src/lib/reader/page-rails.ts',
   'src/lib/reader/shell.ts',
   'src/layouts/EpubReaderLayout.astro',
+  'src/pages/saved.astro',
   'src/styles/reader-ergonomics.css',
   'src/styles/reader-page-rails.css',
+  'tests/e2e/library-ergonomics.spec.ts',
   'tests/e2e/reader-ergonomics.spec.ts',
   'tests/e2e/reader-navigation-controls.spec.ts',
   'tests/e2e/reader-tap-zones.spec.ts',
@@ -23,20 +26,42 @@ const files = [
 ];
 
 const present = (await Promise.all(files.map(exists))).every(Boolean);
-pass('RR7_FILES', present, 'RR7 documentation, interaction adapter, navigation surfaces, browser tests, workflow, and package commands are present');
+pass('RR7_FILES', present, 'RR7 documentation, interaction adapter, navigation surfaces, recovery states, browser tests, workflow, and package commands are present');
 
 if (present) {
-  const [doc, moderated, findings, ergonomics, navigation, rails, shell, layout, ergonomicsCss, railCss, tests, navTests, tapTests, workflow, pkg] = await Promise.all([
+  const [
+    doc,
+    moderated,
+    findings,
+    storage,
+    ergonomics,
+    navigation,
+    rails,
+    shell,
+    layout,
+    saved,
+    ergonomicsCss,
+    railCss,
+    libraryTests,
+    tests,
+    navTests,
+    tapTests,
+    workflow,
+    pkg,
+  ] = await Promise.all([
     readFile('docs/RR7_READING_ERGONOMICS.md', 'utf8'),
     readFile('docs/RR7_MODERATED_DEVICE_SCRIPT.md', 'utf8'),
     readFile('docs/RR7_FINDINGS.md', 'utf8'),
+    readFile('src/lib/client/storage-reliability.ts', 'utf8'),
     readFile('src/lib/reader/ergonomics.ts', 'utf8'),
     readFile('src/lib/reader/navigation.ts', 'utf8'),
     readFile('src/lib/reader/page-rails.ts', 'utf8'),
     readFile('src/lib/reader/shell.ts', 'utf8'),
     readFile('src/layouts/EpubReaderLayout.astro', 'utf8'),
+    readFile('src/pages/saved.astro', 'utf8'),
     readFile('src/styles/reader-ergonomics.css', 'utf8'),
     readFile('src/styles/reader-page-rails.css', 'utf8'),
+    readFile('tests/e2e/library-ergonomics.spec.ts', 'utf8'),
     readFile('tests/e2e/reader-ergonomics.spec.ts', 'utf8'),
     readFile('tests/e2e/reader-navigation-controls.spec.ts', 'utf8'),
     readFile('tests/e2e/reader-tap-zones.spec.ts', 'utf8'),
@@ -103,6 +128,18 @@ if (present) {
       && layout.includes('mountReaderErgonomics(root)'),
     'The ergonomics adapter and CSS are mounted on every native EPUB shell without changing EPUB/PDF position identity');
 
+  pass('RR7_STORAGE_RECOVERY',
+    storage.includes("'denied'")
+      && storage.includes('site-storage or private-browsing restrictions')
+      && saved.includes('data-library-error')
+      && saved.includes("normalizeLibraryStorageError(error, 'My Library storage')")
+      && saved.includes("libraryRetry?.addEventListener('click'")
+      && saved.includes('subscribePersonalBooks(() => { void render(); })')
+      && libraryTests.includes('blocked browser storage into an actionable retry state')
+      && libraryTests.includes("name: 'Try again'")
+      && libraryTests.includes('__rr7BlockIndexedDb = false'),
+    'My Library turns browser-storage denial into an actionable, retryable state and routes subscription refresh failures through the guarded renderer');
+
   pass('RR7_PHYSICAL_EVIDENCE_BOUNDARY',
     plainDoc.includes('not a substitute for physical-device operation')
       && moderated.includes('exact release candidate SHA')
@@ -122,6 +159,7 @@ if (present) {
   pass('RR7_PACKAGE_COMMANDS',
     scripts['certify:ergonomics'] === 'node scripts/certification/rr7-ergonomics.mjs'
       && typeof scripts['test:ergonomics'] === 'string'
+      && scripts['test:ergonomics'].includes('library-ergonomics.spec.ts')
       && scripts['test:ergonomics'].includes('reader-ergonomics.spec.ts')
       && scripts['test:ergonomics'].includes('reader-navigation-controls.spec.ts')
       && scripts['test:ergonomics'].includes('reader-tap-zones.spec.ts')
