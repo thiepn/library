@@ -1,0 +1,29 @@
+/* RR7 — product-level interaction ownership above the publication engine. */
+
+.reader-shell__panel-backdrop {
+  position: absolute;
+  z-index: 20;
+  top: calc(var(--reader-topbar-height) + var(--reader-safe-top));
+  right: var(--reader-safe-right);
+  bottom: calc(var(--reader-bottombar-height) + var(--reader-safe-bottom));
+  left: var(--reader-safe-left);
+  background: color-mix(in srgb, var(--reader-shell-ink) 4%, transparent);
+  cursor: default;
+  touch-action: manipulation;
+}
+
+.reader-shell__panel-backdrop[hidden] {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reader-shell__panel-backdrop {
+    scroll-behavior: auto;
+  }
+}
+
+@media (forced-colors: active) {
+  .reader-shell__panel-backdrop {
+    background: transparent;
+  }
+}
