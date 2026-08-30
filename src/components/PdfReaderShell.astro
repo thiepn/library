@@ -69,6 +69,19 @@ const {
     tabindex="-1"
     aria-label="PDF page"
   >
+    <button
+      type="button"
+      class="pdf-reader__page-rail pdf-reader__page-rail--previous"
+      data-pdf-page-rail-previous
+      aria-label="Previous PDF page"
+    >‹</button>
+    <button
+      type="button"
+      class="pdf-reader__page-rail pdf-reader__page-rail--next"
+      data-pdf-page-rail-next
+      aria-label="Next PDF page"
+    >›</button>
+
     <div class="pdf-reader__page" data-pdf-page>
       <canvas data-pdf-canvas aria-hidden="true"></canvas>
       <div class="textLayer" data-pdf-text-layer aria-label="Selectable PDF text"></div>
