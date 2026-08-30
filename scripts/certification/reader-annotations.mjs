@@ -29,8 +29,12 @@ if (present) {
 
   pass(
     'EPUB_READER_ANNOTATION_EXISTING_STORE',
-    store.includes("openLibraryDb") && store.includes("objectStoreNames.contains('annotations')") && db.includes('const DB_VERSION = 8'),
-    'Native annotations continue to reuse the unchanged annotations store after the additive ER6 IndexedDB v8 activity-store upgrade',
+    store.includes('openLibraryDb')
+      && store.includes("objectStoreNames.contains('annotations')")
+      && db.includes('const DB_VERSION = 9')
+      && db.includes("['annotations', 'id']")
+      && !db.includes("deleteObjectStore('annotations')"),
+    'Native annotations continue to reuse the unchanged annotations store through the additive RR8 IndexedDB v9 upgrade',
   );
   pass(
     'EPUB_READER_ANNOTATION_RELEASE_IDENTITY',
@@ -67,7 +71,7 @@ if (present) {
     annotations.includes("storageMode: 'session'")
       && annotations.includes('Browser storage is unavailable')
       && store.includes('Cross-tab annotation refresh is best-effort'),
-    'IndexedDB failure degrades to session-only annotations and never blocks reading',
+    'IndexedDB failure degrades annotations to session-only state and never blocks reading',
   );
   pass(
     'EPUB_READER_ANNOTATION_STALE_SAFE',
