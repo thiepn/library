@@ -8,6 +8,29 @@ function panelFor(root: HTMLElement, selector: string): HTMLElement {
   return panel;
 }
 
+function addPanelCloseButton(
+  panel: HTMLElement,
+  headingSelector: string,
+  command: 'appearance' | 'more',
+  label: string,
+): HTMLButtonElement {
+  const existing = panel.querySelector<HTMLButtonElement>('[data-reader-panel-close]');
+  if (existing) return existing;
+  const heading = panel.querySelector<HTMLElement>(headingSelector);
+  if (!heading) throw new Error(`Reader ergonomics is missing required panel heading: ${headingSelector}`);
+
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'reader-shell__panel-close';
+  button.dataset.readerPanelClose = '';
+  button.dataset.readerCommand = command;
+  button.setAttribute('aria-label', label);
+  button.title = label;
+  button.textContent = '×';
+  heading.append(button);
+  return button;
+}
+
 /**
  * Owns reader-level product ergonomics that sit above the format engine.
  *
@@ -21,6 +44,8 @@ export class ReaderErgonomicsController {
   private readonly modePanel: HTMLElement;
   private readonly appearancePanel: HTMLElement;
   private readonly backdrop: HTMLDivElement;
+  private readonly appearanceClose: HTMLButtonElement;
+  private readonly modeClose: HTMLButtonElement;
   private readonly observer: MutationObserver;
   private destroyed = false;
 
@@ -28,6 +53,18 @@ export class ReaderErgonomicsController {
     this.shell = mountReaderShell(root);
     this.modePanel = panelFor(root, '[data-reader-mode-panel]');
     this.appearancePanel = panelFor(root, '[data-reader-appearance-panel]');
+    this.appearanceClose = addPanelCloseButton(
+      this.appearancePanel,
+      '.reader-shell__panel-heading',
+      'appearance',
+      'Close reading appearance',
+    );
+    this.modeClose = addPanelCloseButton(
+      this.modePanel,
+      '.reader-shell__mode-heading',
+      'more',
+      'Close reading mode',
+    );
 
     const existing = root.querySelector<HTMLDivElement>('[data-reader-panel-backdrop]');
     this.backdrop = existing ?? document.createElement('div');
@@ -51,6 +88,8 @@ export class ReaderErgonomicsController {
     this.destroyed = true;
     this.root.removeEventListener('click', this.handleClickCapture, true);
     this.observer.disconnect();
+    this.appearanceClose.remove();
+    this.modeClose.remove();
     this.backdrop.remove();
     mountedErgonomics.delete(this.root);
   }
