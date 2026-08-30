@@ -9,23 +9,22 @@ const files = [
   'src/lib/reader-entry/client.ts',
   'src/lib/reader-entry/dom.ts',
   'src/lib/reader-entry/epub-first-dom.ts',
-  'src/components/ReaderFormatSwitch.astro',
   'src/layouts/BaseLayout.astro',
   'src/pages/works/[slug]/read/index.astro',
   'src/pages/works/[slug]/pdf.astro',
   'scripts/regression/reader-entry.test.ts',
 ];
 const present = (await Promise.all(files.map(exists))).every(Boolean);
+const switchComponentRemoved = !(await exists('src/components/ReaderFormatSwitch.astro'));
 const switchCssRemoved = !(await exists('src/styles/reader-format-switch.css'));
 pass('READER_ENTRY_ER5_FILES', present, 'ER5 continuity model, EPUB-first entry normalizer, hosted reader integration, and regression assets are present');
 
 if (present) {
-  const [continuity, client, dom, epubFirstDom, switchComponent, baseLayout, epubRoute, pdfRoute, personalEpub, personalPdf, pkg] = await Promise.all([
+  const [continuity, client, dom, epubFirstDom, baseLayout, epubRoute, pdfRoute, personalEpub, personalPdf, pkg] = await Promise.all([
     readFile('src/lib/reader-entry/continuity.ts', 'utf8'),
     readFile('src/lib/reader-entry/client.ts', 'utf8'),
     readFile('src/lib/reader-entry/dom.ts', 'utf8'),
     readFile('src/lib/reader-entry/epub-first-dom.ts', 'utf8'),
-    readFile('src/components/ReaderFormatSwitch.astro', 'utf8'),
     readFile('src/layouts/BaseLayout.astro', 'utf8'),
     readFile('src/pages/works/[slug]/read/index.astro', 'utf8'),
     readFile('src/pages/works/[slug]/pdf.astro', 'utf8'),
@@ -121,14 +120,14 @@ if (present) {
   );
 
   pass(
-    'READER_ENTRY_ER5_FORMAT_SWITCH',
-    switchCssRemoved
-      && switchComponent.includes('Cross-format switching is intentionally not rendered')
-      && !switchComponent.includes('<nav')
-      && !switchComponent.includes('reader-format-switch')
-      && epubRoute.includes('`${base}/works/${work.slug}/pdf`')
-      && pdfRoute.includes('`${base}/works/${work.slug}/read`'),
-    'Hosted EPUB/PDF readers no longer render a floating format switch; alternate formats remain addressable from Library/book surfaces and recovery paths',
+    'READER_ENTRY_ER5_FORMAT_SWITCH_REMOVED',
+    switchComponentRemoved
+      && switchCssRemoved
+      && !epubRoute.includes('ReaderFormatSwitch')
+      && !pdfRoute.includes('ReaderFormatSwitch')
+      && !personalEpub.includes('ReaderFormatSwitch')
+      && !personalPdf.includes('ReaderFormatSwitch'),
+    'The cross-format reader switch component, styles, and all hosted/personal reader integrations are completely removed; format choice belongs to Library/book surfaces',
   );
 
   pass(
@@ -136,10 +135,8 @@ if (present) {
     personalEpub.includes('personalReaderWorkId(book)')
       && personalEpub.includes('personalReaderReleaseVersion(book)')
       && personalPdf.includes('personalReaderWorkId(book)')
-      && personalPdf.includes('personalReaderReleaseVersion(book)')
-      && !personalEpub.includes('ReaderFormatSwitch')
-      && !personalPdf.includes('ReaderFormatSwitch'),
-    'Personal single-format books retain content-bound local identities and never receive a fabricated alternate-format switch',
+      && personalPdf.includes('personalReaderReleaseVersion(book)'),
+    'Personal single-format books retain content-bound local identities without fabricated cross-format state',
   );
 
   pass(
