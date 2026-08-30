@@ -65,6 +65,15 @@ Offline downloads validate release identity/size metadata and remove partial cac
 
 The frozen `pnpm-lock.yaml` remains mandatory. pnpm 11's explicit `allowBuilds` policy limits install-time build scripts to the small reviewed set required by the application.
 
+The first RR9 production audit exposed high-severity advisories in two dependency families. RR9 resolves them at the dependency graph instead of suppressing the audit:
+
+- the browser runtime still uses `epubjs` 0.3.93, but its XML parser is overridden from vulnerable `@xmldom/xmldom` 0.7.x to maintained 0.8.15 LTS;
+- Astro is a static build tool rather than shipped browser runtime, so Astro/YAML/Zod are classified as development dependencies instead of production dependencies;
+- the build toolchain is upgraded to Astro 7.2.8, which resolves the vulnerable pre-7.2.8 image-processing line and pulls patched Sharp 0.35.x rather than 0.34.5;
+- the shipped production dependency set is intentionally narrow: `epubjs` and `pdfjs-dist` only.
+
+The production audit and production SBOM represent the code shipped into the browser dependency graph. The complete build toolchain remains frozen in the lockfile and must still pass install, source certification, TypeScript/Astro build, all browser gates, Worker dry-run, and production deployment.
+
 RR9 adds two executable release checks:
 
 1. `pnpm security:audit` runs a production-only advisory audit and fails for any high or critical production dependency advisory. The JSON result is retained as non-secret supply-chain evidence.
