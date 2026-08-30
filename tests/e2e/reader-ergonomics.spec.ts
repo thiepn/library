@@ -23,7 +23,7 @@ async function currentCfi(shell: Locator): Promise<string> {
   return cfi ?? '';
 }
 
-test('@rr7 settings panels own exposed reading-surface clicks without accidental page turns', async ({ page }) => {
+test('@rr7 settings panels have discoverable close controls and own exposed reading-surface clicks', async ({ page }) => {
   const shell = await openFixtureReader(page);
   const backdrop = page.locator('[data-reader-panel-backdrop]');
   const appearancePanel = page.locator('[data-reader-appearance-panel]');
@@ -34,7 +34,17 @@ test('@rr7 settings panels own exposed reading-surface clicks without accidental
   await expect(shell).toHaveAttribute('data-reader-panel', 'appearance');
   await expect(appearancePanel).toBeVisible();
   await expect(backdrop).toBeVisible();
+  const appearanceClose = appearancePanel.getByRole('button', { name: 'Close reading appearance' });
+  await expect(appearanceClose).toBeVisible();
+  await appearanceClose.click();
+  await expect(appearancePanel).toBeHidden();
+  await expect(backdrop).toBeHidden();
+  expect(await currentCfi(shell)).toBe(start);
 
+  // Outside dismissal owns the reading surface, so the same tap cannot leak into
+  // EPUB edge navigation behind the open settings panel.
+  await page.getByRole('button', { name: 'Reading appearance' }).click();
+  await expect(backdrop).toBeVisible();
   await backdrop.click({ position: { x: 18, y: 18 } });
   await expect(appearancePanel).toBeHidden();
   await expect(backdrop).toBeHidden();
@@ -44,7 +54,13 @@ test('@rr7 settings panels own exposed reading-surface clicks without accidental
   await page.getByRole('button', { name: 'Reading mode' }).click();
   await expect(modePanel).toBeVisible();
   await expect(shell).toHaveAttribute('data-reader-panel', 'mode');
+  const modeClose = modePanel.getByRole('button', { name: 'Close reading mode' });
+  await expect(modeClose).toBeVisible();
+  await modeClose.click();
+  await expect(modePanel).toBeHidden();
+  expect(await currentCfi(shell)).toBe(start);
 
+  await page.getByRole('button', { name: 'Reading mode' }).click();
   // Top-bar settings controls stay available so users can switch panels directly.
   await page.getByRole('button', { name: 'Reading appearance' }).click();
   await expect(modePanel).toBeHidden();
