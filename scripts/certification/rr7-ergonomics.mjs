@@ -13,12 +13,16 @@ const files = [
   'src/lib/reader/navigation.ts',
   'src/lib/reader/page-rails.ts',
   'src/lib/reader/shell.ts',
+  'src/lib/pdf-reader/runtime.ts',
+  'src/components/PdfReaderShell.astro',
   'src/layouts/EpubReaderLayout.astro',
   'src/pages/saved.astro',
   'src/styles/reader-ergonomics.css',
   'src/styles/reader-page-rails.css',
+  'src/styles/pdf-reader.css',
   'tests/e2e/library-ergonomics.spec.ts',
   'tests/e2e/reader-ergonomics.spec.ts',
+  'tests/e2e/pdf-reader-ergonomics.spec.ts',
   'tests/e2e/reader-navigation-controls.spec.ts',
   'tests/e2e/reader-tap-zones.spec.ts',
   '.github/workflows/ergonomics.yml',
@@ -27,7 +31,7 @@ const files = [
 ];
 
 const present = (await Promise.all(files.map(exists))).every(Boolean);
-pass('RR7_FILES', present, 'RR7 documentation, interaction adapter, navigation surfaces, recovery states, browser tests, workflows, and package commands are present');
+pass('RR7_FILES', present, 'RR7 documentation, EPUB/PDF interaction surfaces, recovery states, browser tests, workflows, and package commands are present');
 
 if (present) {
   const [
@@ -39,12 +43,16 @@ if (present) {
     navigation,
     rails,
     shell,
+    pdfRuntime,
+    pdfShell,
     layout,
     saved,
     ergonomicsCss,
     railCss,
+    pdfCss,
     libraryTests,
     tests,
+    pdfTests,
     navTests,
     tapTests,
     workflow,
@@ -59,12 +67,16 @@ if (present) {
     readFile('src/lib/reader/navigation.ts', 'utf8'),
     readFile('src/lib/reader/page-rails.ts', 'utf8'),
     readFile('src/lib/reader/shell.ts', 'utf8'),
+    readFile('src/lib/pdf-reader/runtime.ts', 'utf8'),
+    readFile('src/components/PdfReaderShell.astro', 'utf8'),
     readFile('src/layouts/EpubReaderLayout.astro', 'utf8'),
     readFile('src/pages/saved.astro', 'utf8'),
     readFile('src/styles/reader-ergonomics.css', 'utf8'),
     readFile('src/styles/reader-page-rails.css', 'utf8'),
+    readFile('src/styles/pdf-reader.css', 'utf8'),
     readFile('tests/e2e/library-ergonomics.spec.ts', 'utf8'),
     readFile('tests/e2e/reader-ergonomics.spec.ts', 'utf8'),
+    readFile('tests/e2e/pdf-reader-ergonomics.spec.ts', 'utf8'),
     readFile('tests/e2e/reader-navigation-controls.spec.ts', 'utf8'),
     readFile('tests/e2e/reader-tap-zones.spec.ts', 'utf8'),
     readFile('.github/workflows/ergonomics.yml', 'utf8'),
@@ -104,7 +116,29 @@ if (present) {
       && navigation.includes("void this.navigate('next', 'tap')")
       && !ergonomics.includes("navigate('previous'")
       && !ergonomics.includes("navigate('next'"),
-    'RR7 ergonomics does not create a second page-turn implementation; rails, taps, swipes, keyboard, and footer controls remain on canonical navigation');
+    'RR7 ergonomics does not create a second EPUB page-turn implementation; rails, taps, swipes, keyboard, and footer controls remain on canonical navigation');
+
+  pass('RR7_PDF_CANONICAL_NAVIGATION',
+    pdfRuntime.includes('this.elements.railPrevious.addEventListener')
+      && pdfRuntime.includes('this.elements.railNext.addEventListener')
+      && pdfRuntime.includes('this.goToPage(this.page - 1)')
+      && pdfRuntime.includes('this.goToPage(this.page + 1)')
+      && pdfRuntime.includes("addEventListener('touchstart'")
+      && pdfRuntime.includes('hasSelectionWithin(this.elements.textLayer)')
+      && pdfRuntime.includes("this.settings.fit === 'custom'")
+      && pdfShell.includes('data-pdf-page-rail-previous')
+      && pdfShell.includes('data-pdf-page-rail-next')
+      && pdfCss.includes('@media (min-width: 761px) and (hover: hover) and (pointer: fine)')
+      && pdfTests.includes('desktop rails share canonical navigation')
+      && pdfTests.includes('touch swipes turn fitted pages'),
+    'PDF toolbar controls, keyboard, desktop rails, and guarded fitted-page touch swipes share the existing page controller while custom zoom keeps native panning');
+
+  pass('RR7_PDF_INTERACTION_LIFECYCLE',
+    pdfRuntime.includes("this.root.removeAttribute('aria-busy')")
+      && pdfRuntime.includes('private cancelSearch(): boolean')
+      && pdfRuntime.includes("this.elements.searchStatus.textContent = 'Search stopped.'")
+      && pdfTests.includes("not.toHaveAttribute('aria-busy', 'true')"),
+    'PDF page turns return the accessibility busy state to ready and closing/replacing a search cancels background work instead of leaving it running');
 
   pass('RR7_SCROLL_MODE_AFFORDANCES',
     railCss.includes('.reader-shell[data-reader-flow="scrolled"] .reader-shell__bar--bottom .reader-shell__nav-button')
@@ -112,12 +146,16 @@ if (present) {
       && navTests.includes('removes page arrows in scroll mode')
       && navTests.includes("toHaveAttribute('data-reader-flow', 'scrolled')")
       && navTests.includes('toBeHidden()'),
-    'Native scroll mode removes misleading page-turn rails/footer arrows and restores them in paginated mode');
+    'Native EPUB scroll mode removes misleading page-turn rails/footer arrows and restores them in paginated mode');
 
   pass('RR7_GESTURE_GUARDS',
-    tapTests.includes('hasSelection')
-      || navigation.includes('interaction.interactive || interaction.hasSelection'),
-    'Interactive publication content and active text selection remain protected from tap navigation');
+    (tapTests.includes('hasSelection') || navigation.includes('interaction.interactive || interaction.hasSelection'))
+      && pdfRuntime.includes('isInteractiveTarget(event.target)')
+      && pdfRuntime.includes('hasSelectionWithin(this.elements.textLayer)')
+      && pdfRuntime.includes("this.settings.fit === 'custom'")
+      && pdfTests.includes("toHaveValue('custom')")
+      && pdfTests.includes('await expectPage(page, root, 1);'),
+    'Interactive publication content, active text selection, and custom-zoom PDF panning remain protected from accidental navigation gestures');
 
   pass('RR7_CHROME_STABILITY',
     shell.includes('const POINTER_REVEAL_GUARD_MS = 450')
@@ -129,7 +167,7 @@ if (present) {
     layout.includes("import '../styles/reader-ergonomics.css'")
       && layout.includes("import { mountReaderErgonomics } from '../lib/reader/ergonomics'")
       && layout.includes('mountReaderErgonomics(root)'),
-    'The ergonomics adapter and CSS are mounted on every native EPUB shell without changing EPUB/PDF position identity');
+    'The EPUB ergonomics adapter and CSS are mounted on every native EPUB shell without changing EPUB/PDF position identity');
 
   pass('RR7_STORAGE_RECOVERY',
     storage.includes("'denied'")
@@ -174,11 +212,12 @@ if (present) {
       && typeof scripts['test:ergonomics'] === 'string'
       && scripts['test:ergonomics'].includes('library-ergonomics.spec.ts')
       && scripts['test:ergonomics'].includes('reader-ergonomics.spec.ts')
+      && scripts['test:ergonomics'].includes('pdf-reader-ergonomics.spec.ts')
       && scripts['test:ergonomics'].includes('reader-navigation-controls.spec.ts')
       && scripts['test:ergonomics'].includes('reader-tap-zones.spec.ts')
       && typeof scripts['certify:source'] === 'string'
       && scripts['certify:source'].includes('rr7-ergonomics.mjs'),
-    'RR7 source and browser commands are explicit and included in release source certification');
+    'RR7 source and browser commands are explicit for EPUB and PDF and included in release source certification');
 }
 
 const failed = checks.filter((check) => !check.ok);

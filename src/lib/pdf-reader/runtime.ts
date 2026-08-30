@@ -32,6 +32,8 @@ const MAX_SEARCH_RESULTS = 250;
 const MAX_CANVAS_PIXELS = 16_000_000;
 const MAX_CANVAS_DIMENSION = 8_192;
 const MAX_DEVICE_PIXEL_RATIO = 2;
+const SWIPE_MIN_DISTANCE = 56;
+const SWIPE_AXIS_RATIO = 1.25;
 
 export interface PdfReaderHandle {
   destroy(): Promise<void>;
@@ -39,6 +41,7 @@ export interface PdfReaderHandle {
 }
 
 type SearchResult = { page: number; snippet: string };
+type SwipeGesture = { identifier: number; startX: number; startY: number };
 
 type PdfReaderElements = {
   topbar: HTMLElement;
@@ -55,6 +58,8 @@ type PdfReaderElements = {
   pageCount: HTMLElement;
   previous: HTMLButtonElement;
   next: HTMLButtonElement;
+  railPrevious: HTMLButtonElement;
+  railNext: HTMLButtonElement;
   zoomOut: HTMLButtonElement;
   zoomIn: HTMLButtonElement;
   fit: HTMLSelectElement;
@@ -96,6 +101,8 @@ function collectElements(root: HTMLElement): PdfReaderElements {
     pageCount: required(root, '[data-pdf-page-count]'),
     previous: required(root, '[data-pdf-previous]'),
     next: required(root, '[data-pdf-next]'),
+    railPrevious: required(root, '[data-pdf-page-rail-previous]'),
+    railNext: required(root, '[data-pdf-page-rail-next]'),
     zoomOut: required(root, '[data-pdf-zoom-out]'),
     zoomIn: required(root, '[data-pdf-zoom-in]'),
     fit: required(root, '[data-pdf-fit]'),
@@ -125,6 +132,27 @@ function isTypingTarget(target: EventTarget | null): boolean {
     || target instanceof HTMLTextAreaElement
     || target instanceof HTMLSelectElement
     || (target instanceof HTMLElement && target.isContentEditable);
+}
+
+function isInteractiveTarget(target: EventTarget | null): boolean {
+  return target instanceof Element
+    && Boolean(target.closest('a, button, input, select, textarea, label, [contenteditable="true"], [role="button"], [role="link"]'));
+}
+
+function hasSelectionWithin(root: HTMLElement): boolean {
+  const selection = window.getSelection();
+  if (!selection || selection.isCollapsed || selection.rangeCount === 0) return false;
+  const ancestor = selection.getRangeAt(0).commonAncestorContainer;
+  const element = ancestor instanceof Element ? ancestor : ancestor.parentElement;
+  return Boolean(element && root.contains(element));
+}
+
+function findTouch(list: TouchList, identifier: number): Touch | null {
+  for (let index = 0; index < list.length; index += 1) {
+    const touch = list.item(index);
+    if (touch?.identifier === identifier) return touch;
+  }
+  return null;
 }
 
 const PANEL_FOCUSABLE = 'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -195,6 +223,7 @@ class PdfReaderController {
   private searchAbort?: AbortController;
   private searchResults: SearchResult[] = [];
   private activeQuery = '';
+  private swipeGesture: SwipeGesture | undefined;
   private openGeneration = 0;
   private renderGeneration = 0;
   private destroyed = false;
@@ -210,18 +239,20 @@ class PdfReaderController {
 
   private bind() {
     const { signal } = this.abort;
-    this.elements.previous.addEventListener('click', () => void this.goToPage(this.page - 1), { signal });
-    this.elements.next.addEventListener('click', () => void this.goToPage(this.page + 1), { signal });
+    this.elements.previous.addEventListener('click', () => this.runSafely(this.goToPage(this.page - 1)), { signal });
+    this.elements.next.addEventListener('click', () => this.runSafely(this.goToPage(this.page + 1)), { signal });
+    this.elements.railPrevious.addEventListener('click', () => this.runSafely(this.goToPage(this.page - 1)), { signal });
+    this.elements.railNext.addEventListener('click', () => this.runSafely(this.goToPage(this.page + 1)), { signal });
     this.elements.pageInput.addEventListener('change', () => {
-      void this.goToPage(Number(this.elements.pageInput.value));
+      this.runSafely(this.goToPage(Number(this.elements.pageInput.value)));
     }, { signal });
-    this.elements.zoomOut.addEventListener('click', () => void this.changeZoom(-ZOOM_STEP), { signal });
-    this.elements.zoomIn.addEventListener('click', () => void this.changeZoom(ZOOM_STEP), { signal });
+    this.elements.zoomOut.addEventListener('click', () => this.runSafely(this.changeZoom(-ZOOM_STEP)), { signal });
+    this.elements.zoomIn.addEventListener('click', () => this.runSafely(this.changeZoom(ZOOM_STEP)), { signal });
     this.elements.fit.addEventListener('change', () => {
       const value = this.elements.fit.value as PdfFitMode;
       this.settings.fit = value === 'page' || value === 'custom' ? value : 'width';
       setPdfReaderSettings(this.settings);
-      void this.renderCurrentPage();
+      this.runSafely(this.renderCurrentPage());
     }, { signal });
     this.elements.bookmark.addEventListener('click', () => void this.toggleCurrentBookmark(), { signal });
     this.elements.bookmarkToggle.addEventListener('click', () => this.openBookmarks(), { signal });
@@ -236,6 +267,28 @@ class PdfReaderController {
         void this.search(this.elements.searchInput.value);
       }
     }, { signal });
+
+    this.elements.viewport.addEventListener('touchstart', (event) => {
+      this.swipeGesture = undefined;
+      if (event.touches.length !== 1 || this.settings.fit === 'custom' || isInteractiveTarget(event.target)) return;
+      const touch = event.touches.item(0);
+      if (!touch) return;
+      this.swipeGesture = { identifier: touch.identifier, startX: touch.clientX, startY: touch.clientY };
+    }, { signal, passive: true });
+    this.elements.viewport.addEventListener('touchend', (event) => {
+      const gesture = this.swipeGesture;
+      this.swipeGesture = undefined;
+      if (!gesture || this.settings.fit === 'custom' || hasSelectionWithin(this.elements.textLayer)) return;
+      const touch = findTouch(event.changedTouches, gesture.identifier);
+      if (!touch) return;
+      const deltaX = touch.clientX - gesture.startX;
+      const deltaY = touch.clientY - gesture.startY;
+      if (Math.abs(deltaX) < SWIPE_MIN_DISTANCE || Math.abs(deltaX) < Math.abs(deltaY) * SWIPE_AXIS_RATIO) return;
+      if (deltaX < 0) this.runSafely(this.goToPage(this.page + 1));
+      else this.runSafely(this.goToPage(this.page - 1));
+    }, { signal, passive: true });
+    this.elements.viewport.addEventListener('touchcancel', () => { this.swipeGesture = undefined; }, { signal, passive: true });
+
     document.addEventListener('keydown', (event) => {
       const openPanel = !this.elements.searchPanel.hidden
         ? this.elements.searchPanel
@@ -254,23 +307,23 @@ class PdfReaderController {
       if (isTypingTarget(event.target)) return;
       if (event.key === 'ArrowLeft' || event.key === 'PageUp') {
         event.preventDefault();
-        void this.goToPage(this.page - 1);
+        this.runSafely(this.goToPage(this.page - 1));
       } else if (event.key === 'ArrowRight' || event.key === 'PageDown') {
         event.preventDefault();
-        void this.goToPage(this.page + 1);
+        this.runSafely(this.goToPage(this.page + 1));
       } else if (event.key === '+' || event.key === '=') {
         event.preventDefault();
-        void this.changeZoom(ZOOM_STEP);
+        this.runSafely(this.changeZoom(ZOOM_STEP));
       } else if (event.key === '-') {
         event.preventDefault();
-        void this.changeZoom(-ZOOM_STEP);
+        this.runSafely(this.changeZoom(-ZOOM_STEP));
       }
     }, { signal });
 
     this.resizeObserver = new ResizeObserver(() => {
       if (this.settings.fit === 'custom' || !this.document) return;
       if (this.resizeTimer) window.clearTimeout(this.resizeTimer);
-      this.resizeTimer = window.setTimeout(() => void this.renderCurrentPage(), 120);
+      this.resizeTimer = window.setTimeout(() => this.runSafely(this.renderCurrentPage()), 120);
     });
     this.resizeObserver.observe(this.elements.viewport);
   }
@@ -328,6 +381,10 @@ class PdfReaderController {
     try { performance.measure('pdf-reader:open', 'pdf-reader:open-start', 'pdf-reader:first-ready'); } catch {}
   }
 
+  private runSafely(action: Promise<void>): void {
+    void action.catch((error) => this.showFailure(error));
+  }
+
   private showBusy(message: string) {
     this.root.setAttribute('aria-busy', 'true');
     this.elements.status.hidden = false;
@@ -360,8 +417,12 @@ class PdfReaderController {
 
     this.root.dataset.pdfRenderGeneration = String(generation);
     this.elements.pageInput.value = String(requestedPage);
-    this.elements.previous.disabled = requestedPage <= 1;
-    this.elements.next.disabled = requestedPage >= this.pageCount;
+    const atStart = requestedPage <= 1;
+    const atEnd = requestedPage >= this.pageCount;
+    this.elements.previous.disabled = atStart;
+    this.elements.railPrevious.disabled = atStart;
+    this.elements.next.disabled = atEnd;
+    this.elements.railNext.disabled = atEnd;
     this.furthestPage = Math.max(this.furthestPage, requestedPage);
     this.elements.progress.textContent = `${Math.round((requestedPage / this.pageCount) * 100)}% · furthest ${Math.round((this.furthestPage / this.pageCount) * 100)}%`;
     this.elements.zoomLabel.textContent = `${Math.round(viewport.scale * 100)}%`;
@@ -369,6 +430,7 @@ class PdfReaderController {
     this.elements.status.hidden = false;
     this.updateBookmarkButton();
     this.highlightSearchMatches();
+    this.root.removeAttribute('aria-busy');
 
     try {
       const progress = await setPdfProgress(this.candidate.identity, requestedPage, this.pageCount);
@@ -487,7 +549,7 @@ class PdfReaderController {
       button.textContent = bookmark.label;
       button.addEventListener('click', () => {
         this.closeBookmarks();
-        void this.goToPage(bookmark.page);
+        this.runSafely(this.goToPage(bookmark.page));
       }, { signal: this.abort.signal });
       list.append(button);
     }
@@ -525,8 +587,19 @@ class PdfReaderController {
     this.elements.searchInput.focus();
   }
 
+  private cancelSearch(): boolean {
+    const controller = this.searchAbort;
+    if (!controller) return false;
+    controller.abort();
+    delete this.searchAbort;
+    this.elements.searchSubmit.disabled = false;
+    return true;
+  }
+
   private closeSearch() {
     if (this.elements.searchPanel.hidden) return;
+    const stopped = this.cancelSearch();
+    if (stopped) this.elements.searchStatus.textContent = 'Search stopped.';
     this.setPanel(null);
     this.elements.searchToggle.focus();
   }
@@ -539,6 +612,7 @@ class PdfReaderController {
   private async search(rawQuery: string) {
     const pdf = this.document;
     const query = rawQuery.trim();
+    this.cancelSearch();
     if (!pdf || !query) {
       this.activeQuery = '';
       this.searchResults = [];
@@ -547,7 +621,6 @@ class PdfReaderController {
       return;
     }
 
-    this.searchAbort?.abort();
     const controller = new AbortController();
     this.searchAbort = controller;
     const normalizedQuery = normalizeSearch(query);
@@ -594,7 +667,10 @@ class PdfReaderController {
     } catch (error) {
       if (!controller.signal.aborted) this.elements.searchStatus.textContent = `Search unavailable: ${safeMessage(error)}`;
     } finally {
-      if (this.searchAbort === controller) this.elements.searchSubmit.disabled = false;
+      if (this.searchAbort === controller) {
+        delete this.searchAbort;
+        this.elements.searchSubmit.disabled = false;
+      }
     }
   }
 
@@ -620,7 +696,7 @@ class PdfReaderController {
       button.append(page, snippet);
       button.addEventListener('click', () => {
         this.closeSearch();
-        void this.goToPage(result.page);
+        this.runSafely(this.goToPage(result.page));
       }, { signal: this.abort.signal });
       list.append(button);
     }
@@ -657,8 +733,8 @@ class PdfReaderController {
     this.textLayer?.cancel();
     delete this.renderTask;
     delete this.textLayer;
-    this.searchAbort?.abort();
-    delete this.searchAbort;
+    this.cancelSearch();
+    this.swipeGesture = undefined;
     const loading = this.loadingTask;
     delete this.loadingTask;
     const document = this.document;

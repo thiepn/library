@@ -122,8 +122,11 @@ if (present) {
       && runtime.includes('await document?.destroy()')
       && runtime.includes('this.elements.canvas.width = 1')
       && runtime.includes('this.elements.textLayer.replaceChildren()')
-      && runtime.includes('this.searchAbort?.abort()'),
-    'Rendered/search pages, PDF documents, search work, canvas allocations, and text layers have explicit release ownership');
+      && runtime.includes('private cancelSearch(): boolean')
+      && runtime.includes('controller.abort()')
+      && runtime.includes('this.cancelSearch()'),
+    'Rendered/search pages, PDF documents, search work, canvas allocations, and text layers have explicit release ownership through centralized cancellation',
+  );
 
   pass('RR4_WORKFLOW',
     workflow.includes('name: Performance Budget')
