@@ -1,0 +1,20 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout title="Security">
+  <div class="page">
+    <section class="section">
+      <div class="section-heading"><div><p class="eyebrow">05 / Security</p><h1>Security</h1></div></div>
+      <div class="empty">
+        <h2>Publication content is treated as untrusted.</h2>
+        <p>Imported EPUB/PDF files are inspected before persistence. EPUB ZIP traversal, duplicate/encrypted entries, excessive expansion or compression ratios, unsupported encryption, remote publication resources, oversized metadata/covers, and uninspectably large text resources are rejected with bounded errors. PDF encryption and active actions such as JavaScript, launch, submit/import, remote-go-to, rendition, and rich-media actions are rejected.</p>
+        <p>EPUB documents are sanitized before rendering. Publisher scripts, active embedded frames/objects, refresh redirects, event-handler attributes, JavaScript URLs, and remote resource-bearing attributes are removed. Each rendered EPUB document receives a deny-by-default content security policy: publication script, frame, worker, connection, object, and form execution is disabled; local archive assets are limited to reader-created blob/data resources.</p>
+        <p>The PDF reader uses PDF.js as a custom canvas/text integration with evaluation disabled. It does not mount the stock PDF scripting/annotation application layer. Personal book bytes remain local in IndexedDB and are excluded from ordinary JSON backups and CI evidence.</p>
+        <h2>Site policy</h2>
+        <p>The application ships a restrictive HTML content security policy and a no-referrer policy. GitHub Pages is the current HTML host and does not provide a repository-controlled arbitrary response-header layer, so the application does not claim header-only controls such as <code>frame-ancestors</code> or Permissions-Policy unless the production host actually serves them. The release verifier checks the policy that is truly present in live HTML rather than treating an unused source header file as evidence.</p>
+        <h2>Dependencies and CI</h2>
+        <p>Production dependencies are lockfile-controlled, package build scripts are explicitly allowed or denied, new package releases have a minimum age before routine resolution, high/critical production advisories block the security gate, license inventory and a CycloneDX SBOM are generated, and third-party GitHub Actions are pinned to full commit SHAs.</p>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
