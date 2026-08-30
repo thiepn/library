@@ -6,9 +6,13 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     <section class="section">
       <div class="section-heading"><div><p class="eyebrow">04 / Privacy</p><h1>Privacy</h1></div></div>
       <div class="empty">
-        <p>The public Library is static-first and uses no behavioral analytics in the v1 architecture. Reading state, saved works, offline state, annotations, and personal book imports are designed to remain in the browser.</p>
-        <p>When you import an EPUB or PDF into My Library, the file is stored in this browser’s local IndexedDB storage. Thiepn Library does not upload the personal book to a server. EPUB metadata and covers are read locally for display in My Library; personal EPUB reading also occurs from the locally stored file.</p>
-        <p>Clearing browser site data can remove locally imported books and reading state. Browser storage may also be subject to device storage policies. The optional Ask Library service is separate from the public application and must be owner-authenticated before provider work occurs.</p>
+        <h2>Local-first by design</h2>
+        <p>Thiepn Library has no account system, behavioral analytics, advertising, or automatic cloud synchronization in the v1 application. Reading progress, saved works, offline-download state, bookmarks, highlights, notes, reader settings, backups, and personal-book records are designed to remain in this browser unless you deliberately export a backup or remove the data yourself.</p>
+        <p>When you import an EPUB or PDF into My Library, the file is inspected and stored locally in this browser’s IndexedDB storage. The personal book is not uploaded to Thiepn Library. EPUB metadata and an optional cover are read locally for the library card, and personal EPUB/PDF reading occurs from the locally stored file.</p>
+        <p>Manual JSON backups contain portable reading state and personal-book metadata, but they do not contain the bytes of your personal EPUB/PDF files or their cover blobs. Restoring on another browser may therefore ask you to re-import matching files.</p>
+        <p>Normal use still makes ordinary network requests for the public website, published book media, and the Google Fonts styles/font files used by the interface. Those requests are infrastructure/asset delivery, not behavioral tracking. The public application does not send your local reading history, annotations, or personal-book contents with those requests.</p>
+        <p>Clearing browser site data, browser storage eviction, device loss, or browser-profile removal can delete local state and personal imports. Use the Backup page for portable state and keep your original personal EPUB/PDF files separately.</p>
+        <p>The optional Ask Library service, if enabled separately, is outside the local reader path and must be explicitly invoked. Its provider/network behavior is not required for ordinary public reading.</p>
       </div>
     </section>
   </div>
