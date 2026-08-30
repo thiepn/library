@@ -59,8 +59,9 @@ const root = await rootResponse.text();
 if (!root.length) throw new Error('Empty production root response');
 console.log(`LIVE ${origin}/`);
 const headerCsp = rootResponse.headers.get('content-security-policy');
-const metaCsp = root.match(/<meta\s+http-equiv=["']Content-Security-Policy["']\s+content=["']([^"']+)["']/i)?.[1]
-  ?? root.match(/<meta\s+content=["']([^"']+)["']\s+http-equiv=["']Content-Security-Policy["']/i)?.[1];
+const metaTag = root.match(/<meta\b[^>]*http-equiv=["']Content-Security-Policy["'][^>]*>/i)?.[0];
+const metaCsp = metaTag?.match(/\bcontent="([^"]*)"/i)?.[1]
+  ?? metaTag?.match(/\bcontent='([^']*)'/i)?.[1];
 const effectiveCspEvidence = headerCsp ?? metaCsp;
 if (!effectiveCspEvidence
   || !effectiveCspEvidence.includes("default-src 'self'")
