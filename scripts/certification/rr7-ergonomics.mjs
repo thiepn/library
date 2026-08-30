@@ -43,6 +43,7 @@ if (present) {
     readFile('.github/workflows/ergonomics.yml', 'utf8'),
     readFile('package.json', 'utf8'),
   ]);
+  const plainDoc = doc.replaceAll('**', '');
 
   pass('RR7_PANEL_INTERACTION_OWNERSHIP',
     ergonomics.includes("'[data-reader-panel-backdrop]'")
@@ -88,11 +89,11 @@ if (present) {
   pass('RR7_LAYOUT_MOUNT',
     layout.includes("import '../styles/reader-ergonomics.css'")
       && layout.includes("import { mountReaderErgonomics } from '../lib/reader/ergonomics'")
-      && layout.includes("mountReaderErgonomics(root)"),
+      && layout.includes('mountReaderErgonomics(root)'),
     'The ergonomics adapter and CSS are mounted on every native EPUB shell without changing EPUB/PDF position identity');
 
   pass('RR7_PHYSICAL_EVIDENCE_BOUNDARY',
-    doc.includes('not a substitute for physical-device operation')
+    plainDoc.includes('not a substitute for physical-device operation')
       && moderated.includes('exact release candidate SHA')
       && moderated.includes('Do not compensate for defects with undocumented workarounds')
       && findings.includes('Physical device operation')
