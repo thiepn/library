@@ -156,6 +156,8 @@ Exit criteria:
 
 ## Phase 7 — Reading ergonomics and product UX polish
 
+**Status:** implementation campaign active on `rr7-reading-ergonomics`. Automated browser/device-profile evidence may close code-level defects, but physical-device evidence remains a separate release requirement.
+
 **Purpose:** remove real-world friction not visible in architecture tests.
 
 Implementation:
@@ -217,4 +219,4 @@ Exit criteria:
 
 ## Current state
 
-RR1 is implemented on its release branch. RR2 now provides the matrix, schema, validator, workflow, defect form, and documentation required to collect honest physical-device evidence. The current evidence count remains **0/12**; physical certification is not claimed until the named devices are actually operated and the exact-build gate passes.
+RR1 is implemented on its release branch. RR2 provides the matrix, schema, validator, workflow, defect form, and documentation required to collect honest physical-device evidence. The current evidence count remains **0/12**; physical certification is not claimed until the named devices are actually operated and the exact-build gate passes. RR3–RR6 automated release-readiness gates are integrated. RR7 is now the active implementation campaign; the existing ER7 device-profile work is treated as automated UX coverage, not physical-device proof.

@@ -1,0 +1,57 @@
+name: Reading Ergonomics Acceptance
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: rr7-ergonomics-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  reading-ergonomics-acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup pnpm and Node
+        uses: pnpm/setup@v2
+        with:
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+          cache: true
+
+      - name: Install frozen dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Certify RR7 source ownership and evidence boundaries
+        run: pnpm certify:ergonomics
+
+      - name: Install browser engines and system dependencies
+        run: pnpm exec playwright install --with-deps chromium firefox webkit
+
+      - name: Build static Library
+        run: pnpm build
+
+      - name: Run cross-engine reader ergonomics acceptance
+        id: ergonomics
+        run: pnpm test:ergonomics
+
+      - name: Upload failed ergonomics evidence
+        if: failure() && steps.ergonomics.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-ergonomics-report-${{ github.run_id }}
+          path: |
+            playwright-report
+            test-results
+          if-no-files-found: warn
+          retention-days: 14

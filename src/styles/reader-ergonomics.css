@@ -1,0 +1,63 @@
+/* RR7 — product-level interaction ownership above the publication engine. */
+
+.reader-shell__panel-backdrop {
+  position: absolute;
+  z-index: 20;
+  top: calc(var(--reader-topbar-height) + var(--reader-safe-top));
+  right: var(--reader-safe-right);
+  bottom: calc(var(--reader-bottombar-height) + var(--reader-safe-bottom));
+  left: var(--reader-safe-left);
+  background: color-mix(in srgb, var(--reader-shell-ink) 4%, transparent);
+  cursor: default;
+  touch-action: manipulation;
+}
+
+.reader-shell__panel-backdrop[hidden] {
+  display: none;
+}
+
+.reader-shell__panel-close {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  display: inline-grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid var(--reader-shell-rule);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--reader-shell-secondary);
+  font: inherit;
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.reader-shell__panel-close:hover {
+  color: var(--reader-shell-ink);
+  border-color: var(--reader-shell-secondary);
+}
+
+@media (hover: none) and (pointer: coarse), (max-width: 760px) {
+  .reader-shell__panel-close {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reader-shell__panel-backdrop {
+    scroll-behavior: auto;
+  }
+}
+
+@media (forced-colors: active) {
+  .reader-shell__panel-backdrop {
+    background: transparent;
+  }
+
+  .reader-shell__panel-close {
+    border-color: CanvasText;
+    color: ButtonText;
+  }
+}

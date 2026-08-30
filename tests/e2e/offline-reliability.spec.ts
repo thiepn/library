@@ -3,22 +3,58 @@ import { prepareOfflineHostedFixtures } from './offline-fixtures';
 import { setRr5Offline } from './offline-network';
 
 const STABLE_PUBLICATION_CACHE = 'thiepn-library-offline-publications-v1';
+const SW_CONTROL_TIMEOUT_MS = 30_000;
+const SW_CONTROL_RELOAD_ATTEMPTS = 2;
 let fixtures: Awaited<ReturnType<typeof prepareOfflineHostedFixtures>>;
 
 test.beforeAll(async () => {
   fixtures = await prepareOfflineHostedFixtures();
 });
 
+async function serviceWorkerControlState(page: Page) {
+  return page.evaluate(async () => {
+    const registration = await navigator.serviceWorker.getRegistration('/library/');
+    return {
+      activeScript: registration?.active?.scriptURL ?? '',
+      activeState: registration?.active?.state ?? '',
+      controllerScript: navigator.serviceWorker.controller?.scriptURL ?? '',
+      controllerState: navigator.serviceWorker.controller?.state ?? '',
+    };
+  });
+}
+
 async function ensureControlled(page: Page) {
   await page.goto('/library/downloads');
+
+  // `registration.active` can already exist while its state is still `activating`.
+  // This worker performs cache migration before clients.claim(), and WebKit can
+  // otherwise reload the page in that gap. Wait for activation to finish first.
   await page.waitForFunction(async () => {
     const registration = await navigator.serviceWorker.getRegistration('/library/');
-    return Boolean(registration?.active || navigator.serviceWorker.controller);
-  }, undefined, { timeout: 15_000 });
+    return Boolean(
+      navigator.serviceWorker.controller
+      || registration?.active?.state === 'activated'
+    );
+  }, undefined, { timeout: SW_CONTROL_TIMEOUT_MS });
+
   if (!(await page.evaluate(() => Boolean(navigator.serviceWorker.controller)))) {
-    await page.reload({ waitUntil: 'domcontentloaded' });
-    await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller), undefined, { timeout: 15_000 });
+    await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller), undefined, { timeout: 5_000 }).catch(() => {});
   }
+
+  // A newly activated worker should claim this client. Some WebKit runs only
+  // expose the controller to Playwright after the next navigation, so allow a
+  // small bounded number of real navigations. Passing still requires a genuine
+  // service-worker controller; an active-but-uncontrolled registration is not enough.
+  for (let attempt = 0; attempt < SW_CONTROL_RELOAD_ATTEMPTS; attempt++) {
+    if (await page.evaluate(() => Boolean(navigator.serviceWorker.controller))) break;
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller), undefined, { timeout: 10_000 }).catch(() => {});
+  }
+
+  const controlState = await serviceWorkerControlState(page);
+  expect(controlState.activeState, `Service worker did not finish activation: ${JSON.stringify(controlState)}`).toBe('activated');
+  expect(controlState.controllerScript, `Activated service worker did not control the page after bounded reloads: ${JSON.stringify(controlState)}`).toContain('/library/service-worker');
+  expect(controlState.controllerState, `Service-worker controller is not activated: ${JSON.stringify(controlState)}`).toBe('activated');
   await expect(page.getByRole('heading', { level: 1, name: 'Offline downloads' })).toBeVisible();
 }
 
