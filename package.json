@@ -51,6 +51,7 @@
   },
   "devDependencies": {
     "astro": "7.2.8",
+    "@astrojs/markdown-remark": "7.2.4",
     "yaml": "^2.8.1",
     "zod": "^4.1.5",
     "@astrojs/check": "^0.9.4",
