@@ -8,6 +8,7 @@ import '../styles/reader-annotations.css';
 import '../styles/reader-mobile.css';
 import '../styles/reader-desktop.css';
 import '../styles/reader-page-rails.css';
+import '../styles/reader-ergonomics.css';
 import '../styles/reader-accessibility.css';
 import '../styles/reader-device-ux.css';
 
@@ -67,6 +68,11 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).hr
     <slot />
     <script>
       import { registerLibraryPwa } from '../lib/client/pwa';
+      import { mountReaderErgonomics } from '../lib/reader/ergonomics';
+
+      document.querySelectorAll<HTMLElement>('[data-reader-shell]').forEach((root) => {
+        mountReaderErgonomics(root);
+      });
       void registerLibraryPwa();
     </script>
   </body>
