@@ -34,7 +34,6 @@ const MAX_CANVAS_DIMENSION = 8_192;
 const MAX_DEVICE_PIXEL_RATIO = 2;
 const SWIPE_MIN_DISTANCE = 56;
 const SWIPE_AXIS_RATIO = 1.25;
-const SWIPE_SCROLL_TOLERANCE = 3;
 
 export interface PdfReaderHandle {
   destroy(): Promise<void>;
@@ -272,7 +271,6 @@ class PdfReaderController {
     this.elements.viewport.addEventListener('touchstart', (event) => {
       this.swipeGesture = undefined;
       if (event.touches.length !== 1 || this.settings.fit === 'custom' || isInteractiveTarget(event.target)) return;
-      if (this.elements.viewport.scrollWidth > this.elements.viewport.clientWidth + SWIPE_SCROLL_TOLERANCE) return;
       const touch = event.touches.item(0);
       if (!touch) return;
       this.swipeGesture = { identifier: touch.identifier, startX: touch.clientX, startY: touch.clientY };
@@ -281,7 +279,6 @@ class PdfReaderController {
       const gesture = this.swipeGesture;
       this.swipeGesture = undefined;
       if (!gesture || this.settings.fit === 'custom' || hasSelectionWithin(this.elements.textLayer)) return;
-      if (this.elements.viewport.scrollWidth > this.elements.viewport.clientWidth + SWIPE_SCROLL_TOLERANCE) return;
       const touch = findTouch(event.changedTouches, gesture.identifier);
       if (!touch) return;
       const deltaX = touch.clientX - gesture.startX;
