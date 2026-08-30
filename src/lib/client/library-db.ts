@@ -1,11 +1,16 @@
 const DB_NAME = 'thiepn-library';
-const DB_VERSION = 8;
+const DB_VERSION = 9;
 const CHANNEL = 'thiepn-library';
+
+export const LIBRARY_DB_VERSION = DB_VERSION;
+export const LIBRARY_CHANNEL = CHANNEL;
 
 // P12 compatibility history: before P29 the legacy/native bridge used `DB_VERSION = 6`.
 // Its Legacy progress writer protected native records with
 // `if (isReaderProgressRecordV2(existing)) return`. P29 keeps the same safety invariant
 // by moving legacy writes into a separate store, while preserving the old API aliases.
+// RR8 keeps those historical stores intact while adding portable PDF state and
+// metadata-only personal-book recovery to the same transactional state database.
 
 export type StoreName =
   | 'recent'
@@ -17,12 +22,22 @@ export type StoreName =
   | 'annotations'
   | 'annotationStats'
   | 'readingSessions'
-  | 'readingActivity';
+  | 'readingActivity'
+  | 'pdfProgress'
+  | 'pdfBookmarks'
+  | 'portablePersonalMetadata';
 
-export interface FavoriteRecord {
+export const FAVORITE_SCHEMA_VERSION = 1 as const;
+export const LEGACY_PROGRESS_SCHEMA_VERSION = 1 as const;
+export const LEGACY_ANNOTATION_SCHEMA_VERSION = 1 as const;
+
+export interface FavoriteRecordV1 {
+  schemaVersion: typeof FAVORITE_SCHEMA_VERSION;
   workId: string;
   savedAt: string;
 }
+
+type LegacyFavoriteRecord = Omit<FavoriteRecordV1, 'schemaVersion'>;
 
 /** Legacy chapter/scroll progress retained while the old Markdown reader remains available. */
 export interface ProgressRecord {
@@ -30,6 +45,10 @@ export interface ProgressRecord {
   chapterId: string;
   percent: number;
   updatedAt: string;
+}
+
+export interface StoredLegacyProgressRecordV1 extends ProgressRecord {
+  schemaVersion: typeof LEGACY_PROGRESS_SCHEMA_VERSION;
 }
 
 /** Native EPUB reader progress. Percentages are normalized to the 0..1 range. */
@@ -59,9 +78,10 @@ export interface ReadingActivityRecordV1 {
   openedAt: string;
 }
 
-export type StoredProgressRecord = ProgressRecord | ReaderProgressRecordV2;
+export type StoredProgressRecord = ProgressRecord | StoredLegacyProgressRecordV1 | ReaderProgressRecordV2;
 
 export interface AnnotationRecord {
+  schemaVersion?: typeof LEGACY_ANNOTATION_SCHEMA_VERSION;
   id: string;
   workId: string;
   chapterId?: string;
@@ -69,6 +89,10 @@ export interface AnnotationRecord {
   note: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface LegacyAnnotationRecordV1 extends AnnotationRecord {
+  schemaVersion: typeof LEGACY_ANNOTATION_SCHEMA_VERSION;
 }
 
 const storeDefinitions: Array<[StoreName, string]> = [
@@ -82,6 +106,9 @@ const storeDefinitions: Array<[StoreName, string]> = [
   ['annotationStats', 'workId'],
   ['readingSessions', 'id'],
   ['readingActivity', 'workId'],
+  ['pdfProgress', 'id'],
+  ['pdfBookmarks', 'id'],
+  ['portablePersonalMetadata', 'id'],
 ];
 
 function request<T>(value: IDBRequest<T>): Promise<T> {
@@ -91,14 +118,88 @@ function request<T>(value: IDBRequest<T>): Promise<T> {
   });
 }
 
-function isLegacyProgressRecord(value: unknown): value is ProgressRecord {
+function isLegacyFavoriteRecord(value: unknown): value is LegacyFavoriteRecord {
+  if (typeof value !== 'object' || value === null) return false;
+  const record = value as Partial<LegacyFavoriteRecord> & { schemaVersion?: unknown };
+  return record.schemaVersion === undefined
+    && typeof record.workId === 'string'
+    && record.workId.length > 0
+    && typeof record.savedAt === 'string';
+}
+
+export function isFavoriteRecordV1(value: unknown): value is FavoriteRecordV1 {
+  if (typeof value !== 'object' || value === null) return false;
+  const record = value as Partial<FavoriteRecordV1>;
+  return record.schemaVersion === FAVORITE_SCHEMA_VERSION
+    && typeof record.workId === 'string'
+    && record.workId.length > 0
+    && typeof record.savedAt === 'string';
+}
+
+function isLegacyProgressRecord(value: unknown): value is ProgressRecord | StoredLegacyProgressRecordV1 {
   if (typeof value !== 'object' || value === null || isReaderProgressRecordV2(value)) return false;
-  const record = value as Partial<ProgressRecord>;
-  return typeof record.workId === 'string'
+  const record = value as Partial<ProgressRecord> & { schemaVersion?: unknown };
+  return (record.schemaVersion === undefined || record.schemaVersion === LEGACY_PROGRESS_SCHEMA_VERSION)
+    && typeof record.workId === 'string'
     && typeof record.chapterId === 'string'
     && typeof record.percent === 'number'
     && Number.isFinite(record.percent)
     && typeof record.updatedAt === 'string';
+}
+
+export function isStoredLegacyProgressRecordV1(value: unknown): value is StoredLegacyProgressRecordV1 {
+  return isLegacyProgressRecord(value)
+    && (value as { schemaVersion?: unknown }).schemaVersion === LEGACY_PROGRESS_SCHEMA_VERSION;
+}
+
+function toStoredLegacyProgress(record: ProgressRecord | StoredLegacyProgressRecordV1): StoredLegacyProgressRecordV1 {
+  return {
+    schemaVersion: LEGACY_PROGRESS_SCHEMA_VERSION,
+    workId: record.workId,
+    chapterId: record.chapterId,
+    percent: Math.min(100, Math.max(0, Number.isFinite(record.percent) ? record.percent : 0)),
+    updatedAt: record.updatedAt,
+  };
+}
+
+function toPublicLegacyProgress(record: ProgressRecord | StoredLegacyProgressRecordV1): ProgressRecord {
+  return {
+    workId: record.workId,
+    chapterId: record.chapterId,
+    percent: record.percent,
+    updatedAt: record.updatedAt,
+  };
+}
+
+function isLegacyAnnotationCandidate(value: unknown): value is AnnotationRecord {
+  if (typeof value !== 'object' || value === null) return false;
+  const record = value as Partial<AnnotationRecord> & { cfiRange?: unknown; schemaVersion?: unknown };
+  return record.cfiRange === undefined
+    && (record.schemaVersion === undefined || record.schemaVersion === LEGACY_ANNOTATION_SCHEMA_VERSION)
+    && typeof record.id === 'string' && record.id.length > 0
+    && typeof record.workId === 'string' && record.workId.length > 0
+    && typeof record.note === 'string'
+    && typeof record.createdAt === 'string'
+    && typeof record.updatedAt === 'string';
+}
+
+export function isLegacyAnnotationRecordV1(value: unknown): value is LegacyAnnotationRecordV1 {
+  return isLegacyAnnotationCandidate(value)
+    && (value as { schemaVersion?: unknown }).schemaVersion === LEGACY_ANNOTATION_SCHEMA_VERSION;
+}
+
+function migrateCursor(
+  store: IDBObjectStore,
+  transform: (value: unknown) => unknown | undefined,
+): void {
+  const cursorRequest = store.openCursor();
+  cursorRequest.addEventListener('success', () => {
+    const cursor = cursorRequest.result;
+    if (!cursor) return;
+    const next = transform(cursor.value);
+    if (next !== undefined) cursor.update(next);
+    cursor.continue();
+  });
 }
 
 export function openLibraryDb(): Promise<IDBDatabase> {
@@ -106,14 +207,21 @@ export function openLibraryDb(): Promise<IDBDatabase> {
     const open = indexedDB.open(DB_NAME, DB_VERSION);
     open.addEventListener('upgradeneeded', (event) => {
       const db = open.result;
+      const transaction = open.transaction;
       for (const [name, keyPath] of storeDefinitions) {
         if (!db.objectStoreNames.contains(name)) db.createObjectStore(name, { keyPath });
+      }
+
+      if (transaction) {
+        const pdfBookmarks = transaction.objectStore('pdfBookmarks');
+        if (!pdfBookmarks.indexNames.contains('publicationKey')) {
+          pdfBookmarks.createIndex('publicationKey', 'publicationKey', { unique: false });
+        }
       }
 
       // P29: preserve any pre-bridge Markdown position before native progress can
       // replace the old shared `progress` value for the same workId.
       const oldVersion = (event as IDBVersionChangeEvent).oldVersion;
-      const transaction = open.transaction;
       if (oldVersion < 7 && transaction) {
         const shared = transaction.objectStore('progress');
         const legacy = transaction.objectStore('legacyProgress');
@@ -121,12 +229,37 @@ export function openLibraryDb(): Promise<IDBDatabase> {
         cursorRequest.addEventListener('success', () => {
           const cursor = cursorRequest.result;
           if (!cursor) return;
-          if (isLegacyProgressRecord(cursor.value)) legacy.put(cursor.value);
+          if (isLegacyProgressRecord(cursor.value)) legacy.put(toStoredLegacyProgress(cursor.value));
           cursor.continue();
         });
       }
+
+      // RR8 v9 makes actively portable historical records explicitly versioned.
+      // This is additive and never deletes an old store or changes native position identity.
+      if (oldVersion < 9 && transaction) {
+        migrateCursor(transaction.objectStore('favorites'), (value) => {
+          if (!isLegacyFavoriteRecord(value)) return undefined;
+          return { schemaVersion: FAVORITE_SCHEMA_VERSION, ...value } satisfies FavoriteRecordV1;
+        });
+        migrateCursor(transaction.objectStore('legacyProgress'), (value) => {
+          if (!isLegacyProgressRecord(value) || isStoredLegacyProgressRecordV1(value)) return undefined;
+          return toStoredLegacyProgress(value);
+        });
+        migrateCursor(transaction.objectStore('progress'), (value) => {
+          if (!isLegacyProgressRecord(value) || isStoredLegacyProgressRecordV1(value)) return undefined;
+          return toStoredLegacyProgress(value);
+        });
+        migrateCursor(transaction.objectStore('annotations'), (value) => {
+          if (!isLegacyAnnotationCandidate(value) || isLegacyAnnotationRecordV1(value)) return undefined;
+          return { ...value, schemaVersion: LEGACY_ANNOTATION_SCHEMA_VERSION } satisfies LegacyAnnotationRecordV1;
+        });
+      }
     });
-    open.addEventListener('success', () => resolve(open.result));
+    open.addEventListener('success', () => {
+      const db = open.result;
+      db.addEventListener('versionchange', () => db.close());
+      resolve(db);
+    });
     open.addEventListener('error', () => reject(open.error ?? new Error('Unable to open Library state')));
     open.addEventListener('blocked', () => reject(new Error('Library state upgrade is blocked by another tab')));
   });
@@ -181,19 +314,29 @@ export function isReaderProgressRecordV2(value: unknown): value is ReaderProgres
 
 export async function getFavoriteWorkIds(): Promise<string[]> {
   return withStore('favorites', 'readonly', async (store) => {
-    const values = await request<FavoriteRecord[]>(store.getAll());
-    return values.map((record) => record.workId);
+    const values = await request<unknown[]>(store.getAll());
+    return values
+      .filter((record): record is FavoriteRecordV1 | LegacyFavoriteRecord => isFavoriteRecordV1(record) || isLegacyFavoriteRecord(record))
+      .map((record) => record.workId);
   });
 }
 
 export async function isFavorite(workId: string): Promise<boolean> {
-  return withStore('favorites', 'readonly', async (store) => Boolean(await request(store.get(workId))));
+  return withStore('favorites', 'readonly', async (store) => {
+    const value = await request<unknown>(store.get(workId));
+    return isFavoriteRecordV1(value) || isLegacyFavoriteRecord(value);
+  });
 }
 
 export async function setFavorite(workId: string, saved: boolean): Promise<void> {
   await withStore('favorites', 'readwrite', async (store) => {
-    if (saved) await request(store.put({ workId, savedAt: new Date().toISOString() } satisfies FavoriteRecord));
-    else await request(store.delete(workId));
+    if (saved) {
+      await request(store.put({
+        schemaVersion: FAVORITE_SCHEMA_VERSION,
+        workId,
+        savedAt: new Date().toISOString(),
+      } satisfies FavoriteRecordV1));
+    } else await request(store.delete(workId));
   });
   broadcast('favorites', workId);
 }
@@ -211,20 +354,20 @@ export async function toggleFavorite(workId: string): Promise<boolean> {
  */
 export async function getLegacyProgress(workId: string): Promise<ProgressRecord | undefined> {
   const sidecar = await withStore('legacyProgress', 'readonly', async (store) => {
-    const stored = await request<ProgressRecord | undefined>(store.get(workId));
-    return isLegacyProgressRecord(stored) ? stored : undefined;
+    const stored = await request<unknown>(store.get(workId));
+    return isLegacyProgressRecord(stored) ? toPublicLegacyProgress(stored) : undefined;
   });
   if (sidecar) return sidecar;
 
   const shared = await withStore('progress', 'readonly', async (store) => {
     const stored = await request<StoredProgressRecord | undefined>(store.get(workId));
-    return isLegacyProgressRecord(stored) ? stored : undefined;
+    return isLegacyProgressRecord(stored) ? toPublicLegacyProgress(stored) : undefined;
   });
   if (!shared) return undefined;
 
   try {
     await withStore('legacyProgress', 'readwrite', async (store) => {
-      await request(store.put(shared));
+      await request(store.put(toStoredLegacyProgress(shared)));
     });
   } catch {
     // The recovered value is still usable for this launch even if sidecar repair fails.
@@ -235,13 +378,10 @@ export async function getLegacyProgress(workId: string): Promise<ProgressRecord 
 /** Legacy writer isolated from native EPUB progress. */
 export async function setLegacyProgress(workId: string, progress: ProgressRecord): Promise<void> {
   if (progress.workId !== workId) throw new Error('Progress work identity mismatch');
-  const next: ProgressRecord = {
-    ...progress,
-    percent: Math.min(100, Math.max(0, Number.isFinite(progress.percent) ? progress.percent : 0)),
-  };
+  const next = toStoredLegacyProgress(progress);
   let changed = false;
   await withStore('legacyProgress', 'readwrite', async (store) => {
-    const existing = await request<ProgressRecord | undefined>(store.get(workId));
+    const existing = await request<unknown>(store.get(workId));
     if (isLegacyProgressRecord(existing) && existing.percent > next.percent) return;
     await request(store.put(next));
     changed = true;
@@ -301,7 +441,7 @@ export async function setReaderProgress(workId: string, progress: ReaderProgress
   broadcast('progress', workId);
 }
 
-function isReadingActivityRecordV1(value: unknown): value is ReadingActivityRecordV1 {
+export function isReadingActivityRecordV1(value: unknown): value is ReadingActivityRecordV1 {
   if (typeof value !== 'object' || value === null) return false;
   const record = value as Partial<ReadingActivityRecordV1>;
   return record.schemaVersion === 1
@@ -367,7 +507,9 @@ export async function deleteReadingActivity(workId: string): Promise<void> {
 export async function getAnnotations(): Promise<AnnotationRecord[]> {
   return withStore('annotations', 'readonly', async (store) => {
     const values = await request<AnnotationRecord[]>(store.getAll());
-    return values.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+    return values
+      .filter((record) => typeof record?.updatedAt === 'string')
+      .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
   });
 }
 
