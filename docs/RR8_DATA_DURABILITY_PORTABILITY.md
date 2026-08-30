@@ -82,7 +82,8 @@ Restore is **replace-present-categories**:
 
 - if a category exists in the archive, that browser category is replaced by the validated archive records;
 - if a category is omitted, the existing browser category is untouched;
-- duplicate records inside keyed stores resolve deterministically through their canonical IDs during validation/normalization;
+- duplicate canonical identities are rejected before any write rather than resolved by insertion order;
+- PDF and personal-book identity fields are checked against their canonical release/SHA-derived identities before restore;
 - personal-book binaries already present locally are not deleted by metadata restore;
 - personal metadata whose SHA-256 file is absent becomes a relink requirement.
 
@@ -108,6 +109,8 @@ A failed transaction inside either IndexedDB database remains natively atomic. T
 - Wrong backup format: reject before writes.
 - Future/unknown backup schema: reject before writes; never guess.
 - Invalid category/record: reject the complete import before writes.
+- Duplicate canonical identity: reject the complete import before writes; never let array order select a winner.
+- Inconsistent PDF release identity or personal-book SHA-derived identity: reject before writes.
 - Corrupt records already present locally: export only recognized valid current/supported legacy records.
 - Quota, denied storage, abort, or transaction failure during restore: roll back committed earlier backends.
 - Multiple tabs blocking a database upgrade: surface the existing explicit blocked-storage error and leave current state intact.
@@ -137,8 +140,10 @@ RR8 is manual portability, not account sync. Thiepn Library does not automatical
 5. injected cross-backend write failure followed by compensation;
 6. historical main DB v8 and personal DB v2 upgrades into versioned portable state.
 
-The RR8 workflow also re-runs RR5 storage-reliability coverage so quota, interruption, denied storage, blocked upgrade, offline personal books, cache isolation, and ephemeral-session behavior remain protected.
+`tests/e2e/data-portability-conflicts.spec.ts` additionally verifies that a duplicate canonical identity is rejected before it can replace current state.
+
+The RR8 workflow also re-runs RR5 storage-reliability coverage in the service-worker-enabled offline profile so quota, interruption, denied storage, blocked upgrade, offline personal books, cache isolation, and ephemeral-session behavior remain protected.
 
 ## Exit criterion
 
-RR8 can close when the exact pull-request head passes source certification, build/type checking, the dedicated cross-engine portability suite, existing storage-reliability tests, and the repository’s other required checks. This phase does not waive the separate physical-device evidence gate or any unresolved production deployment gate.
+RR8 can close when the exact pull-request head passes source certification, build/type checking, the dedicated cross-engine portability suite, existing storage-reliability tests, and the repository’s other required checks. Production Pages artifact upload is also gated on RR8 after RR7. This phase does not waive the separate physical-device evidence gate or any unresolved production deployment gate.
