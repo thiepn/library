@@ -135,10 +135,12 @@ if (present) {
   );
   pass(
     'PERSONAL_IMPORT_ER2_VERSIONCHANGE',
-    storage.includes('const PERSONAL_DB_VERSION = 2')
+    storage.includes('const PERSONAL_DB_VERSION = 3')
+      && storage.includes('PERSONAL_BOOK_SCHEMA_VERSION = 1')
+      && storage.includes('oldVersion < 3')
       && storage.includes("db.addEventListener('versionchange', () => db.close())")
       && storage.includes("'blocked'"),
-    'RR5 extends personal-book storage through a non-destructive schema version and closes older connections when a newer tab requests an upgrade',
+    'Personal-book storage remains non-destructive through RR8 DB v3, versions existing records in place, and closes older connections when a newer tab requests an upgrade',
   );
   pass(
     'PERSONAL_IMPORT_ER2_PRIVACY_COPY',
