@@ -22,12 +22,12 @@ jobs:
       R2_BUCKET: thiepn-library-publications
     steps:
       - name: Checkout ingest request
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
           fetch-depth: 0
 
       - name: Setup pnpm and Node
-        uses: pnpm/setup@v2
+        uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2
         with:
           version: 11.21.0
           runtime: node@22.12.0
