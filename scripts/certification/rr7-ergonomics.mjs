@@ -52,10 +52,21 @@ if (present) {
       && ergonomics.includes("command.dataset.readerCommand === 'appearance'")
       && ergonomics.includes("command.dataset.readerCommand === 'more'")
       && ergonomicsCss.includes('z-index: 20')
-      && tests.includes('without accidental page turns')
+      && tests.includes('own exposed reading-surface clicks')
       && tests.includes("toHaveAttribute('data-reader-panel', 'appearance')")
       && tests.includes('expect(await currentCfi(shell)).toBe(start)'),
     'Floating EPUB settings own exposed reading-surface clicks and dismiss without leaking an accidental page turn');
+
+  pass('RR7_PANEL_CLOSE_CONTROLS',
+    ergonomics.includes('function addPanelCloseButton(')
+      && ergonomics.includes("'Close reading appearance'")
+      && ergonomics.includes("'Close reading mode'")
+      && ergonomicsCss.includes('.reader-shell__panel-close')
+      && ergonomicsCss.includes('width: 44px')
+      && ergonomicsCss.includes('height: 44px')
+      && tests.includes("name: 'Close reading appearance'")
+      && tests.includes("name: 'Close reading mode'"),
+    'Appearance and reading-mode sheets expose explicit close controls, including 44px phone targets, without creating a second panel-state owner');
 
   pass('RR7_CANONICAL_NAVIGATION_PATH',
     rails.includes('ReaderNavigationController')
