@@ -15,9 +15,10 @@ const files = [
   'src/pages/works/[slug]/pdf.astro',
   'src/pages/personal/pdf.astro',
   'scripts/regression/pdf-canonical.test.ts',
+  'tests/e2e/pdf-reader-ergonomics.spec.ts',
 ];
 const present = (await Promise.all(files.map(exists))).every(Boolean);
-pass('PDF_READER_ER4_FILES', present, 'ER4 canonical PDF source, runtime, local state, shared shell/layout, hosted/personal routes, styles, and regression assets are present');
+pass('PDF_READER_ER4_FILES', present, 'ER4 canonical PDF source, runtime, local state, shared shell/layout, hosted/personal routes, styles, regression assets, and RR7 browser acceptance are present');
 
 if (present) {
   const [canonical, runtime, state, shell, layout, css, hosted, personal, pkg] = await Promise.all([
@@ -84,6 +85,22 @@ if (present) {
       && runtime.includes('this.goToPage(this.page + 1)')
       && shell.includes('data-pdf-page-input'),
     'Previous/next controls, direct page entry, and keyboard page navigation share the same page controller',
+  );
+
+  pass(
+    'PDF_READER_RR7_ERGONOMICS',
+    runtime.includes('const SWIPE_MIN_DISTANCE = 56')
+      && runtime.includes("addEventListener('touchstart'")
+      && runtime.includes('hasSelectionWithin(this.elements.textLayer)')
+      && runtime.includes("this.settings.fit === 'custom'")
+      && runtime.includes('this.elements.railPrevious.disabled = atStart')
+      && runtime.includes("this.root.removeAttribute('aria-busy')")
+      && runtime.includes('private cancelSearch(): boolean')
+      && shell.includes('data-pdf-page-rail-previous')
+      && shell.includes('data-pdf-page-rail-next')
+      && css.includes('@media (min-width: 761px) and (hover: hover) and (pointer: fine)')
+      && pkg.includes('pdf-reader-ergonomics.spec.ts'),
+    'RR7 PDF ergonomics adds discoverable desktop rails, guarded fitted-page touch swipes, accurate busy state, and cancellable background search while preserving the canonical page controller',
   );
 
   pass(
