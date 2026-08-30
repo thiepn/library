@@ -1,0 +1,108 @@
+name: v1 Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      expected_source_sha:
+        description: Exact 40-character production source SHA to certify and tag
+        required: true
+        type: string
+
+concurrency:
+  group: v1-release
+  cancel-in-progress: false
+
+jobs:
+  gate:
+    name: Certify v1 source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    permissions:
+      contents: read
+    env:
+      EXPECTED_SOURCE_SHA: ${{ inputs.expected_source_sha }}
+      GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - name: Require exact SHA input
+        shell: bash
+        run: '[[ "$EXPECTED_SOURCE_SHA" =~ ^[a-f0-9]{40}$ ]]'
+
+      - name: Checkout exact candidate source
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ inputs.expected_source_sha }}
+          fetch-depth: 0
+
+      - name: Setup pnpm and Node
+        uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2
+        with:
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+          cache: true
+
+      - name: Install frozen dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Certify exact physical-device release evidence
+        run: pnpm certify:physical:release -- --expected-sha "$EXPECTED_SOURCE_SHA"
+
+      - name: Certify RR9 source boundaries
+        run: pnpm certify:security
+
+      - name: Audit production dependencies
+        run: pnpm security:audit
+
+      - name: Check production licenses
+        run: pnpm security:licenses
+
+      - name: Generate release SBOM
+        run: pnpm security:sbom
+
+      - name: Run complete source/reader/build certification
+        run: pnpm release:certify
+
+      - name: Verify exact production deployment
+        run: pnpm verify:production
+
+      - name: Enforce v1 protected-main and production-identity gate
+        run: pnpm release:v1:gate -- --expected-sha "$EXPECTED_SOURCE_SHA"
+
+      - name: Upload final v1 dependency evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: v1-release-evidence-${{ inputs.expected_source_sha }}
+          path: |
+            .build/security
+          if-no-files-found: warn
+          retention-days: 90
+
+  tag:
+    name: Tag v1.0.0
+    needs: gate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      EXPECTED_SOURCE_SHA: ${{ inputs.expected_source_sha }}
+    steps:
+      - name: Checkout exact certified source
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ inputs.expected_source_sha }}
+          fetch-depth: 0
+
+      - name: Create immutable v1.0.0 tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE_SHA"
+          if git rev-parse -q --verify refs/tags/v1.0.0 >/dev/null; then
+            echo 'v1.0.0 already exists; refusing to move or replace it.' >&2
+            exit 1
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git tag -a v1.0.0 -m "Thiepn Library v1.0.0"
+          git push origin v1.0.0
