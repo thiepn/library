@@ -46,6 +46,12 @@ export function choosePrimaryReadingEntry(entries: ReadingEntryState[]): Reading
   const normalized = entries.map(normalizeReadingEntry);
   if (!normalized.length) return undefined;
 
+  // The Library's reflowable EPUB reader is the canonical general reading entry.
+  // PDF keeps its own progress and remains explicitly available from Library/book
+  // surfaces, but recent PDF activity does not silently replace the normal reader.
+  const epub = normalized.find((entry) => entry.format === 'epub');
+  if (epub) return epub;
+
   const active = normalized
     .filter(isReadingInProgress)
     .sort((a, b) => timestamp(b.updatedAt) - timestamp(a.updatedAt));

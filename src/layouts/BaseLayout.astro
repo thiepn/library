@@ -57,7 +57,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).hr
       void registerLibraryPwa();
     </script>
     <script>
+      import { normalizeEpubFirstReaderEntries } from '../lib/reader-entry/epub-first-dom';
       import { mountUnifiedReaderEntry } from '../lib/reader-entry/dom';
+      normalizeEpubFirstReaderEntries();
       const unmountUnifiedReaderEntry = mountUnifiedReaderEntry();
       window.addEventListener('pagehide', unmountUnifiedReaderEntry, { once: true });
     </script>

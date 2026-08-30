@@ -8,23 +8,24 @@ const files = [
   'src/lib/reader-entry/continuity.ts',
   'src/lib/reader-entry/client.ts',
   'src/lib/reader-entry/dom.ts',
+  'src/lib/reader-entry/epub-first-dom.ts',
   'src/components/ReaderFormatSwitch.astro',
-  'src/styles/reader-format-switch.css',
   'src/layouts/BaseLayout.astro',
   'src/pages/works/[slug]/read/index.astro',
   'src/pages/works/[slug]/pdf.astro',
   'scripts/regression/reader-entry.test.ts',
 ];
 const present = (await Promise.all(files.map(exists))).every(Boolean);
-pass('READER_ENTRY_ER5_FILES', present, 'ER5 continuity model, client adapter, UI bridge, format switch, hosted reader integration, and regression assets are present');
+const switchCssRemoved = !(await exists('src/styles/reader-format-switch.css'));
+pass('READER_ENTRY_ER5_FILES', present, 'ER5 continuity model, EPUB-first entry normalizer, hosted reader integration, and regression assets are present');
 
 if (present) {
-  const [continuity, client, dom, switchComponent, switchCss, baseLayout, epubRoute, pdfRoute, personalEpub, personalPdf, pkg] = await Promise.all([
+  const [continuity, client, dom, epubFirstDom, switchComponent, baseLayout, epubRoute, pdfRoute, personalEpub, personalPdf, pkg] = await Promise.all([
     readFile('src/lib/reader-entry/continuity.ts', 'utf8'),
     readFile('src/lib/reader-entry/client.ts', 'utf8'),
     readFile('src/lib/reader-entry/dom.ts', 'utf8'),
+    readFile('src/lib/reader-entry/epub-first-dom.ts', 'utf8'),
     readFile('src/components/ReaderFormatSwitch.astro', 'utf8'),
-    readFile('src/styles/reader-format-switch.css', 'utf8'),
     readFile('src/layouts/BaseLayout.astro', 'utf8'),
     readFile('src/pages/works/[slug]/read/index.astro', 'utf8'),
     readFile('src/pages/works/[slug]/pdf.astro', 'utf8'),
@@ -62,9 +63,11 @@ if (present) {
 
   pass(
     'READER_ENTRY_ER5_RECENCY',
-    continuity.includes('.filter(isReadingInProgress)')
+    continuity.includes("const epub = normalized.find((entry) => entry.format === 'epub')")
+      && continuity.includes('if (epub) return epub;')
+      && continuity.includes('.filter(isReadingInProgress)')
       && continuity.includes('timestamp(b.updatedAt) - timestamp(a.updatedAt)'),
-    'When multiple formats are in progress, the unified entry resumes the most recently used in-progress format',
+    'EPUB is the canonical general entry when available; without EPUB, in-progress fallbacks still honor most-recent use',
   );
 
   pass(
@@ -74,9 +77,19 @@ if (present) {
   );
 
   pass(
+    'READER_ENTRY_ER5_EPUB_FIRST_SURFACES',
+    epubFirstDom.includes("document.querySelectorAll<HTMLElement>('[data-catalog-work]')")
+      && epubFirstDom.includes("'[data-format=\"epub\"]'")
+      && epubFirstDom.includes("'[data-saved-work][data-has-epub=\"true\"]'")
+      && epubFirstDom.includes("dataset.webReadable = 'true'")
+      && epubFirstDom.includes('dataset.readerHref = hostedReaderHref(slug)'),
+    'Catalog, detail, Continue Reading, and My Library normalize hosted EPUB availability into the native reader route before continuity mounts',
+  );
+
+  pass(
     'READER_ENTRY_ER5_CATALOG',
     dom.includes("document.querySelectorAll<HTMLElement>('[data-catalog-work]')")
-      && dom.includes("cta.dataset.readerFormat = primary.format")
+      && dom.includes('cta.dataset.readerFormat = primary.format')
       && dom.includes('Continue ${formatReadingFormat(entry.format)}'),
     'Library cards and Continue Reading use one format-aware entry decision instead of EPUB-only progress',
   );
@@ -100,28 +113,22 @@ if (present) {
 
   pass(
     'READER_ENTRY_ER5_GLOBAL_MOUNT',
-    baseLayout.includes("mountUnifiedReaderEntry")
+    baseLayout.includes('normalizeEpubFirstReaderEntries')
+      && baseLayout.includes('normalizeEpubFirstReaderEntries();')
+      && baseLayout.indexOf('normalizeEpubFirstReaderEntries();') < baseLayout.indexOf('mountUnifiedReaderEntry()')
       && baseLayout.includes("window.addEventListener('pagehide', unmountUnifiedReaderEntry"),
-    'Unified entry behavior is mounted once for ordinary Library surfaces and explicitly torn down on page lifecycle exit',
+    'EPUB-first route normalization runs before the existing unified entry behavior and is torn down with the normal page lifecycle',
   );
 
   pass(
     'READER_ENTRY_ER5_FORMAT_SWITCH',
-    epubRoute.includes('<ReaderFormatSwitch current="epub" href={pdfReaderHref} />')
-      && pdfRoute.includes('<ReaderFormatSwitch current="pdf" href={epubReaderHref} />')
+    switchCssRemoved
+      && switchComponent.includes('Cross-format switching is intentionally not rendered')
+      && !switchComponent.includes('<nav')
+      && !switchComponent.includes('reader-format-switch')
       && epubRoute.includes('`${base}/works/${work.slug}/pdf`')
       && pdfRoute.includes('`${base}/works/${work.slug}/read`'),
-    'Hosted EPUB and PDF readers expose explicit integrated-reader switching without routing through downloads or raw files',
-  );
-
-  pass(
-    'READER_ENTRY_ER5_SWITCH_ACCESSIBLE',
-    switchComponent.includes('aria-label="Reading format"')
-      && switchComponent.includes('aria-current="page"')
-      && switchComponent.includes('aria-label={`Switch to ${alternate}`}')
-      && switchCss.includes(':focus-visible')
-      && switchCss.includes('@media (forced-colors: active)'),
-    'Cross-format switching is named, keyboard-visible, current-format aware, and forced-colors compatible',
+    'Hosted EPUB/PDF readers no longer render a floating format switch; alternate formats remain addressable from Library/book surfaces and recovery paths',
   );
 
   pass(
@@ -140,8 +147,10 @@ if (present) {
     !client.includes('fetch(')
       && !client.includes('XMLHttpRequest')
       && !dom.includes('fetch(')
-      && !dom.includes('XMLHttpRequest'),
-    'Cross-format continuity is computed entirely from existing browser-local state and introduces no telemetry or upload path',
+      && !dom.includes('XMLHttpRequest')
+      && !epubFirstDom.includes('fetch(')
+      && !epubFirstDom.includes('XMLHttpRequest'),
+    'Cross-format continuity and EPUB-first routing are computed entirely from existing browser-local/static state and introduce no telemetry or upload path',
   );
 
   pass(
