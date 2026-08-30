@@ -84,28 +84,32 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       });
     });
 
-    restoreButton?.addEventListener('click', () => input?.click());
-    input?.addEventListener('change', () => {
-      const file = input.files?.[0];
-      if (!file) return;
-      input.value = '';
-      if (!confirm('Restore this Library backup? Categories present in the backup will replace the matching data in this browser.')) return;
+    if (restoreButton && input) {
+      const restoreControl = restoreButton;
+      const restoreInput = input;
+      restoreControl.addEventListener('click', () => restoreInput.click());
+      restoreInput.addEventListener('change', () => {
+        const file = restoreInput.files?.[0];
+        if (!file) return;
+        restoreInput.value = '';
+        if (!confirm('Restore this Library backup? Categories present in the backup will replace the matching data in this browser.')) return;
 
-      restoreButton.disabled = true;
-      exportButton?.setAttribute('disabled', '');
-      setStatus('working', `Validating ${file.name}…`);
-      void file.text().then(restoreLibraryBackupJson).then((result) => {
-        const relink = result.personalBooksNeedingFiles > 0
-          ? ` ${result.personalBooksNeedingFiles} personal book file${result.personalBooksNeedingFiles === 1 ? '' : 's'} still need to be re-imported in My Library.`
-          : '';
-        setStatus('ok', `Restore complete: ${result.restoredCategories.join(', ') || 'no categories'}.${relink}`);
-      }).catch((error) => {
-        setStatus('error', error instanceof Error ? error.message : 'Unable to restore this backup.');
-      }).finally(() => {
-        restoreButton.disabled = false;
-        exportButton?.removeAttribute('disabled');
+        restoreControl.disabled = true;
+        exportButton?.setAttribute('disabled', '');
+        setStatus('working', `Validating ${file.name}…`);
+        void file.text().then(restoreLibraryBackupJson).then((result) => {
+          const relink = result.personalBooksNeedingFiles > 0
+            ? ` ${result.personalBooksNeedingFiles} personal book file${result.personalBooksNeedingFiles === 1 ? '' : 's'} still need to be re-imported in My Library.`
+            : '';
+          setStatus('ok', `Restore complete: ${result.restoredCategories.join(', ') || 'no categories'}.${relink}`);
+        }).catch((error) => {
+          setStatus('error', error instanceof Error ? error.message : 'Unable to restore this backup.');
+        }).finally(() => {
+          restoreControl.disabled = false;
+          exportButton?.removeAttribute('disabled');
+        });
       });
-    });
+    }
   </script>
 </BaseLayout>
 
