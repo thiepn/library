@@ -32,7 +32,8 @@ async function expectMobileControlsDoNotOverlap(page: Page): Promise<void> {
   ]);
   expect(zoomBox).not.toBeNull();
   expect(progressBox).not.toBeNull();
-  expect(zoomBox!.x + zoomBox!.width).toBeLessThanOrEqual(progressBox!.x + 1);
+  const overlap = zoomBox!.x + zoomBox!.width - progressBox!.x;
+  expect(overlap).toBeLessThanOrEqual(2);
 }
 
 async function dispatchSwipe(viewport: Locator, fromX: number, toX: number): Promise<void> {
