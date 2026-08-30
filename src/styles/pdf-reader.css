@@ -149,6 +149,10 @@
     outline-offset: 2px;
   }
 
+  .pdf-reader .pdf-reader__page-rail {
+    display: none;
+  }
+
   .pdf-reader__controlbar {
     gap: 12px;
     padding: 6px max(12px, env(safe-area-inset-right)) 6px max(12px, env(safe-area-inset-left));
@@ -306,6 +310,46 @@
     border: 0;
   }
 
+  @media (min-width: 761px) and (hover: hover) and (pointer: fine) {
+    .pdf-reader[data-pdf-reader-state="ready"] .pdf-reader__page-rail {
+      position: fixed;
+      z-index: 18;
+      inset-block-start: calc(50% + 55px);
+      display: grid;
+      width: 52px;
+      height: 116px;
+      place-items: center;
+      padding: 0;
+      border: 1px solid color-mix(in srgb, var(--pdf-text) 14%, transparent);
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--pdf-surface) 88%, transparent);
+      color: var(--pdf-text);
+      box-shadow: 0 8px 24px rgb(0 0 0 / 0.08);
+      font-size: 1.65rem;
+      line-height: 1;
+      opacity: 0.34;
+      transform: translateY(-50%);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transition: opacity 120ms ease, background 120ms ease, box-shadow 120ms ease;
+    }
+
+    .pdf-reader__page-rail--previous { inset-inline-start: clamp(8px, 1.3vw, 20px); }
+    .pdf-reader__page-rail--next { inset-inline-end: clamp(8px, 1.3vw, 20px); }
+
+    .pdf-reader[data-pdf-reader-state="ready"] .pdf-reader__page-rail:not(:disabled):hover,
+    .pdf-reader[data-pdf-reader-state="ready"] .pdf-reader__page-rail:not(:disabled):focus-visible {
+      background: var(--pdf-surface);
+      box-shadow: 0 10px 28px rgb(0 0 0 / 0.14);
+      opacity: 0.96;
+    }
+
+    .pdf-reader[data-pdf-reader-state="ready"] .pdf-reader__page-rail:disabled {
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
+
   @media (max-width: 760px) {
     :root {
       --pdf-topbar: 58px;
@@ -370,6 +414,13 @@
     .pdf-reader__topbar,
     .pdf-reader__controlbar { border: 1px solid CanvasText; }
     .textLayer .pdf-reader__search-hit { outline: 2px solid Highlight; }
+    .pdf-reader[data-pdf-reader-state="ready"] .pdf-reader__page-rail {
+      border: 1px solid ButtonText;
+      background: Canvas;
+      color: ButtonText;
+      opacity: 1;
+    }
+    .pdf-reader[data-pdf-reader-state="ready"] .pdf-reader__page-rail:disabled { display: none; }
   }
 
   @media (prefers-color-scheme: dark) {
