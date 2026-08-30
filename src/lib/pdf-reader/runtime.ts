@@ -224,7 +224,7 @@ class PdfReaderController {
   private searchAbort?: AbortController;
   private searchResults: SearchResult[] = [];
   private activeQuery = '';
-  private swipeGesture?: SwipeGesture;
+  private swipeGesture: SwipeGesture | undefined;
   private openGeneration = 0;
   private renderGeneration = 0;
   private destroyed = false;
