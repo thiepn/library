@@ -5,15 +5,19 @@ import YAML from 'yaml';
 const exists = async (file) => { try { await access(file); return true; } catch { return false; } };
 const required = [
   'pnpm-lock.yaml',
-  'dist/_headers',
   'dist/library/index.html',
   'dist/library/search/index.html',
   'dist/library/downloads/index.html',
+  'dist/library/privacy/index.html',
+  'dist/library/security/index.html',
+  'dist/library/support/index.html',
+  'dist/library/backup/index.html',
   'dist/library/sitemap.xml',
   'dist/library/pagefind/pagefind.js',
   'dist/library/service-worker.js',
   'dist/library/manifest.webmanifest',
   'dist/library/offline-assets.json',
+  'dist/library/release-identity.json',
   'dist/library/app-icon.svg',
   'dist/library/app-icon-maskable.svg',
   'dist/library/offline/index.html',
@@ -23,6 +27,23 @@ for (const file of required) if (!(await exists(file))) missing.push(file);
 if (missing.length) {
   console.error(`AUTOMATED_RC_BLOCKED missing: ${missing.join(', ')}`);
   process.exit(1);
+}
+
+const rootHtml = await readFile('dist/library/index.html', 'utf8');
+if (!rootHtml.includes('http-equiv="Content-Security-Policy"')
+  || !rootHtml.includes("default-src 'self'")
+  || !rootHtml.includes("object-src 'none'")
+  || !rootHtml.includes("script-src 'self'")
+  || !rootHtml.includes('name="referrer" content="no-referrer"')) {
+  throw new Error('AUTOMATED_RC_BLOCKED RR9 application CSP/referrer policy was not built');
+}
+if (!rootHtml.includes('/library/security') || !rootHtml.includes('/library/support') || !rootHtml.includes('/library/privacy')) {
+  throw new Error('AUTOMATED_RC_BLOCKED RR9 public policy/support navigation was not built');
+}
+
+const releaseIdentity = JSON.parse(await readFile('dist/library/release-identity.json', 'utf8'));
+if (releaseIdentity.schemaVersion !== 1 || typeof releaseIdentity.sourceSha !== 'string' || !releaseIdentity.sourceSha) {
+  throw new Error('AUTOMATED_RC_BLOCKED RR9 release identity is invalid');
 }
 
 const manifest = JSON.parse(await readFile('dist/library/manifest.webmanifest', 'utf8'));
