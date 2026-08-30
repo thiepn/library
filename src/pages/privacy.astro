@@ -8,7 +8,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <div class="empty">
         <p>The public Library is static-first and uses no behavioral analytics in the v1 architecture. Reading state, saved works, offline state, annotations, and personal book imports are designed to remain in the browser.</p>
         <p>When you import an EPUB or PDF into My Library, the file is stored in this browser’s local IndexedDB storage. Thiepn Library does not upload the personal book to a server. EPUB metadata and covers are read locally for display in My Library; personal EPUB reading also occurs from the locally stored file.</p>
-        <p>Clearing browser site data can remove locally imported books and reading state. Browser storage may also be subject to device storage policies. The optional Ask Library service is separate from the public application and must be owner-authenticated before provider work occurs.</p>
+        <p>Thiepn Library does not automatically cloud-sync your reading data. The Data & backup page creates a manual JSON backup on your device containing portable reading state and personal-book metadata. Ordinary backups do not contain the private EPUB/PDF file bytes; keep those files separately and re-import matching files after restore.</p>
+        <p>Clearing browser site data can remove locally imported books and reading state. Browser storage may also be subject to device storage policies, so local storage alone should not be treated as an archival backup. The optional Ask Library service is separate from the public application and must be owner-authenticated before provider work occurs.</p>
       </div>
     </section>
   </div>
