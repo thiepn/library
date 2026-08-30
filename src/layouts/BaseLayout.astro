@@ -6,11 +6,29 @@ const pageTitle = title === 'Thiepn Library' ? title : `${title} — Thiepn Libr
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const href = (path = '') => `${base}${path}`;
 const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).href;
+const contentSecurityPolicy = [
+  "default-src 'self'",
+  "base-uri 'self'",
+  "object-src 'none'",
+  "script-src 'self'",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "font-src 'self' https://fonts.gstatic.com",
+  "img-src 'self' data: blob: https://media.library.thiepn.dev",
+  "media-src 'self' data: blob: https://media.library.thiepn.dev",
+  "connect-src 'self' https://media.library.thiepn.dev",
+  "frame-src 'self' blob:",
+  "worker-src 'self' blob:",
+  "form-action 'self'",
+  "manifest-src 'self'",
+  'upgrade-insecure-requests',
+].join('; ');
 ---
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta http-equiv="Content-Security-Policy" content={contentSecurityPolicy} />
+    <meta name="referrer" content="no-referrer" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#F5F3EE" />
     <meta name="application-name" content="Thiepn Library" />
@@ -49,7 +67,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).hr
     <main id="main"><slot /></main>
     <footer class="site-footer">
       <span>THIEPN / LIBRARY</span>
-      <nav aria-label="Footer"><a href={href('/privacy')}>Privacy</a><a href={href('/annotations')}>Annotations</a><a href={href('/backup')}>Backup</a><a href={href('/about')}>About</a></nav>
+      <nav aria-label="Footer"><a href={href('/privacy')}>Privacy</a><a href={href('/security')}>Security</a><a href={href('/support')}>Support</a><a href={href('/annotations')}>Annotations</a><a href={href('/backup')}>Backup</a><a href={href('/about')}>About</a></nav>
       <span>Local-first reading</span>
     </footer>
     <script>
