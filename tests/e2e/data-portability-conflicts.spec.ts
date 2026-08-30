@@ -1,8 +1,8 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 
 const MAIN_DB = 'thiepn-library';
 
-async function ensurePortableStorage(page: Parameters<typeof test>[0] extends never ? never : any) {
+async function ensurePortableStorage(page: Page) {
   const [download] = await Promise.all([
     page.waitForEvent('download'),
     page.locator('[data-library-backup-export]').click(),
