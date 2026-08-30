@@ -28,9 +28,16 @@ test('@rr7 settings panels have discoverable close controls and own exposed read
   const backdrop = page.locator('[data-reader-panel-backdrop]');
   const appearancePanel = page.locator('[data-reader-appearance-panel]');
   const modePanel = page.locator('[data-reader-mode-panel]');
+  const appearanceTrigger = page.locator('[data-reader-command="appearance"]');
+  const modeTrigger = page.locator('[data-reader-command="more"]');
+
+  // Canonical reader command markers stay unique. Sheet close controls have their
+  // own identity so RR6 focus/reflow/touch-target queries do not become ambiguous.
+  await expect(appearanceTrigger).toHaveCount(1);
+  await expect(modeTrigger).toHaveCount(1);
 
   const start = await currentCfi(shell);
-  await page.getByRole('button', { name: 'Reading appearance' }).click();
+  await appearanceTrigger.click();
   await expect(shell).toHaveAttribute('data-reader-panel', 'appearance');
   await expect(appearancePanel).toBeVisible();
   await expect(backdrop).toBeVisible();
@@ -39,30 +46,33 @@ test('@rr7 settings panels have discoverable close controls and own exposed read
   await appearanceClose.click();
   await expect(appearancePanel).toBeHidden();
   await expect(backdrop).toBeHidden();
+  await expect(appearanceTrigger).toBeFocused();
   expect(await currentCfi(shell)).toBe(start);
 
   // Outside dismissal owns the reading surface, so the same tap cannot leak into
   // EPUB edge navigation behind the open settings panel.
-  await page.getByRole('button', { name: 'Reading appearance' }).click();
+  await appearanceTrigger.click();
   await expect(backdrop).toBeVisible();
   await backdrop.click({ position: { x: 18, y: 18 } });
   await expect(appearancePanel).toBeHidden();
   await expect(backdrop).toBeHidden();
   await expect(shell).toHaveAttribute('data-reader-panel', 'none');
+  await expect(appearanceTrigger).toBeFocused();
   expect(await currentCfi(shell)).toBe(start);
 
-  await page.getByRole('button', { name: 'Reading mode' }).click();
+  await modeTrigger.click();
   await expect(modePanel).toBeVisible();
   await expect(shell).toHaveAttribute('data-reader-panel', 'mode');
   const modeClose = modePanel.getByRole('button', { name: 'Close reading mode' });
   await expect(modeClose).toBeVisible();
   await modeClose.click();
   await expect(modePanel).toBeHidden();
+  await expect(modeTrigger).toBeFocused();
   expect(await currentCfi(shell)).toBe(start);
 
-  await page.getByRole('button', { name: 'Reading mode' }).click();
+  await modeTrigger.click();
   // Top-bar settings controls stay available so users can switch panels directly.
-  await page.getByRole('button', { name: 'Reading appearance' }).click();
+  await appearanceTrigger.click();
   await expect(modePanel).toBeHidden();
   await expect(appearancePanel).toBeVisible();
   await expect(shell).toHaveAttribute('data-reader-panel', 'appearance');
