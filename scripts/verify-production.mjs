@@ -7,13 +7,13 @@ const origin = 'https://thiepn.dev/library';
 const worksRoot = path.join(process.cwd(), 'src/content/works');
 const releasesRoot = path.join(process.cwd(), 'src/publications/releases');
 
-async function fetchBytes(url) {
+async function fetchResponse(url) {
   let last;
   for (let attempt = 1; attempt <= 8; attempt++) {
     try {
       const response = await fetch(url, { redirect: 'follow' });
       if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
-      return Buffer.from(await response.arrayBuffer());
+      return response;
     } catch (error) {
       last = error;
       await new Promise((resolve) => setTimeout(resolve, 3000));
@@ -22,11 +22,58 @@ async function fetchBytes(url) {
   throw last;
 }
 
+async function fetchBytes(url) {
+  const response = await fetchResponse(url);
+  return Buffer.from(await response.arrayBuffer());
+}
+
 async function requireRoute(url) {
   const bytes = await fetchBytes(url);
   if (!bytes.length) throw new Error(`Empty production response: ${url}`);
   console.log(`LIVE ${url}`);
   return bytes;
+}
+
+function requireHeader(response, name, expected) {
+  const value = response.headers.get(name) ?? '';
+  if (expected instanceof RegExp ? !expected.test(value) : value.toLowerCase() !== expected.toLowerCase()) {
+    throw new Error(`Production security header mismatch: ${name}=${JSON.stringify(value)}`);
+  }
+  return value;
+}
+
+async function verifySecurityHeaders() {
+  const response = await fetchResponse(`${origin}/`);
+  requireHeader(response, 'strict-transport-security', /max-age=31536000/i);
+  requireHeader(response, 'x-content-type-options', 'nosniff');
+  requireHeader(response, 'x-frame-options', 'DENY');
+  requireHeader(response, 'x-permitted-cross-domain-policies', 'none');
+  requireHeader(response, 'cross-origin-opener-policy', 'same-origin');
+  requireHeader(response, 'cross-origin-resource-policy', 'same-origin');
+  requireHeader(response, 'origin-agent-cluster', '?1');
+  const permissions = requireHeader(response, 'permissions-policy', /camera=\(\)/i);
+  for (const permission of ['microphone=()', 'geolocation=()', 'payment=()', 'usb=()']) {
+    if (!permissions.toLowerCase().includes(permission)) throw new Error(`Production Permissions-Policy is missing ${permission}.`);
+  }
+  const csp = requireHeader(response, 'content-security-policy', /default-src 'self'/i);
+  const requiredCsp = [
+    "base-uri 'none'",
+    "frame-ancestors 'none'",
+    "form-action 'none'",
+    "object-src 'none'",
+    "manifest-src 'self'",
+    "script-src 'self'",
+    "worker-src 'self' blob:",
+    'upgrade-insecure-requests',
+  ];
+  for (const directive of requiredCsp) {
+    if (!csp.includes(directive)) throw new Error(`Production CSP is missing ${directive}.`);
+  }
+
+  const workerResponse = await fetchResponse(`${origin}/service-worker.js`);
+  requireHeader(workerResponse, 'cache-control', /no-cache/i);
+  requireHeader(workerResponse, 'service-worker-allowed', '/library/');
+  console.log('LIVE_SECURITY_HEADERS_PASS');
 }
 
 for (const entry of await readdir(worksRoot, { withFileTypes: true })) {
@@ -52,6 +99,9 @@ await requireRoute(`${origin}/`);
 await requireRoute(`${origin}/search`);
 await requireRoute(`${origin}/subjects`);
 await requireRoute(`${origin}/collections`);
+await requireRoute(`${origin}/security`);
+await requireRoute(`${origin}/privacy`);
+await requireRoute(`${origin}/backup`);
 const downloads = (await requireRoute(`${origin}/downloads/`)).toString('utf8');
 if (!downloads.includes('Offline downloads') || !downloads.includes('data-offline-library')) {
   throw new Error('Production RR5 offline-download manager mismatch');
@@ -91,4 +141,5 @@ if (!serviceWorker.includes("const SW_VERSION = 'rr5-v1'")
 const offline = (await requireRoute(`${origin}/offline/`)).toString('utf8');
 if (!offline.includes('You’re offline.')) throw new Error('Production offline fallback mismatch');
 
+await verifySecurityHeaders();
 console.log('PRODUCTION_VERIFICATION_PASS');

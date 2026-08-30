@@ -1,0 +1,74 @@
+name: Security Release Hardening
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rr9-security-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  security-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup pnpm and Node
+        uses: pnpm/setup@v2
+        with:
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+          cache: true
+
+      - name: Install frozen dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Certify RR9 source security and launch boundaries
+        run: pnpm certify:security
+
+      - name: Audit production dependencies
+        run: pnpm security:audit
+
+      - name: Generate production SBOM and license evidence
+        run: pnpm security:supply-chain
+
+      - name: Build static Library
+        run: pnpm build
+
+      - name: Validate Cloudflare edge deployment bundle
+        run: pnpm security:worker:dry-run
+
+      - name: Install browser engines and system dependencies
+        run: pnpm exec playwright install --with-deps chromium firefox webkit
+
+      - name: Run hostile-publication security acceptance
+        run: pnpm test:security
+
+      - name: Upload RR9 supply-chain evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rr9-supply-chain-${{ github.run_id }}
+          path: artifacts/security
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload failed RR9 browser evidence
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rr9-security-browser-failure-${{ github.run_id }}
+          path: |
+            playwright-report
+            test-results
+          if-no-files-found: ignore
+          retention-days: 14
