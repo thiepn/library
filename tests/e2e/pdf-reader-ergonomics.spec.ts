@@ -25,6 +25,16 @@ async function expectPage(page: Page, root: Locator, pageNumber: number): Promis
   await expect(page.locator('[data-pdf-status]')).toContainText(`Page ${pageNumber} of 2`);
 }
 
+async function expectMobileControlsDoNotOverlap(page: Page): Promise<void> {
+  const [zoomBox, progressBox] = await Promise.all([
+    page.locator('.pdf-reader__zoom-controls').boundingBox(),
+    page.locator('[data-pdf-progress]').boundingBox(),
+  ]);
+  expect(zoomBox).not.toBeNull();
+  expect(progressBox).not.toBeNull();
+  expect(zoomBox!.x + zoomBox!.width).toBeLessThanOrEqual(progressBox!.x + 1);
+}
+
 async function dispatchSwipe(viewport: Locator, fromX: number, toX: number): Promise<void> {
   await viewport.evaluate((element, input) => {
     const makeTouch = (clientX: number) => ({ identifier: 41, clientX, clientY: 280 });
@@ -71,9 +81,11 @@ test('@rr7 PDF desktop rails share canonical navigation and clear busy state aft
 test('@rr7 PDF touch swipes turn fitted pages without replacing native zoom panning', async ({ page }, testInfo) => {
   test.skip(!testInfo.project.name.endsWith('-phone'), 'Touch-swipe acceptance only.');
   const { root, viewport } = await openTwoPagePdf(page);
+  await expectMobileControlsDoNotOverlap(page);
 
   await dispatchSwipe(viewport, 320, 70);
   await expectPage(page, root, 2);
+  await expectMobileControlsDoNotOverlap(page);
 
   await dispatchSwipe(viewport, 70, 320);
   await expectPage(page, root, 1);
