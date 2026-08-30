@@ -45,13 +45,13 @@ if (present) {
 
   pass(
     'READING_ACTIVITY_ER6_STORAGE',
-    db.includes('const DB_VERSION = 8')
+    db.includes('const DB_VERSION = 9')
       && db.includes("| 'readingActivity'")
       && db.includes("['readingActivity', 'workId']")
       && db.includes('ReadingActivityRecordV1')
       && db.includes('recordReadingActivity')
       && db.includes('getReadingActivity'),
-    'ER6 uses a dedicated non-destructive DB v8 activity store instead of overloading EPUB, legacy, PDF, or historical reserved stores',
+    'ER6 keeps its dedicated non-destructive activity store through the additive RR8 DB v9 record-versioning migration instead of overloading EPUB, legacy, PDF, or historical reserved stores',
   );
 
   const activityInterface = db.slice(
