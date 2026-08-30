@@ -13,16 +13,17 @@ const files = [
   'src/pages/backup.astro',
   'src/layouts/BaseLayout.astro',
   'tests/e2e/data-portability.spec.ts',
+  'tests/e2e/data-portability-conflicts.spec.ts',
   '.github/workflows/data-durability.yml',
   '.github/workflows/deploy.yml',
   'package.json',
 ];
 
 const present = (await Promise.all(files.map(exists))).every(Boolean);
-pass('RR8_FILES', present, 'RR8 implementation, documentation, user surface, browser acceptance, dedicated workflow, production gate, and package commands are present');
+pass('RR8_FILES', present, 'RR8 implementation, documentation, user surface, browser acceptance, conflict acceptance, dedicated workflow, production gate, and package commands are present');
 
 if (present) {
-  const [doc, libraryDb, personal, portability, pdf, page, layout, tests, workflow, deployment, pkg] = await Promise.all([
+  const [doc, libraryDb, personal, portability, pdf, page, layout, tests, conflicts, workflow, deployment, pkg] = await Promise.all([
     readFile('docs/RR8_DATA_DURABILITY_PORTABILITY.md', 'utf8'),
     readFile('src/lib/client/library-db.ts', 'utf8'),
     readFile('src/lib/client/personal-books.ts', 'utf8'),
@@ -31,6 +32,7 @@ if (present) {
     readFile('src/pages/backup.astro', 'utf8'),
     readFile('src/layouts/BaseLayout.astro', 'utf8'),
     readFile('tests/e2e/data-portability.spec.ts', 'utf8'),
+    readFile('tests/e2e/data-portability-conflicts.spec.ts', 'utf8'),
     readFile('.github/workflows/data-durability.yml', 'utf8'),
     readFile('.github/workflows/deploy.yml', 'utf8'),
     readFile('package.json', 'utf8'),
@@ -84,6 +86,16 @@ if (present) {
       && tests.includes('Unsupported Library backup schema version'),
     'Restore validates first, replaces only present categories, and rejects unsupported/corrupt archives before writes');
 
+  pass('RR8_DUPLICATE_IDENTITY_REJECTION',
+    portability.includes('function assertUniqueRecords')
+      && portability.includes('Duplicate ${label} identity')
+      && portability.includes('record.id !== pdfReaderIdentityKey(record.identity)')
+      && portability.includes('record.id !== `${record.format}-${record.sha256.slice(0, 32)}`')
+      && conflicts.includes('duplicate backup identities are rejected before current state changes')
+      && conflicts.includes("toContainText('Duplicate favorite identity')")
+      && conflicts.includes("toEqual(['existing-favorite'])"),
+    'Ambiguous duplicate/canonical identity conflicts are rejected before mutation and browser-tested against preserved current state');
+
   pass('RR8_ATOMIC_MAIN_AND_PDF',
     libraryDb.includes("db.transaction([...requested], 'readwrite')")
       && pdf.includes("db.transaction(stores, 'readwrite')")
@@ -117,12 +129,13 @@ if (present) {
   const parsedPackage = JSON.parse(pkg);
   pass('RR8_COMMANDS_AND_CI',
     parsedPackage.scripts?.['test:durability']?.includes('data-portability.spec.ts')
+      && parsedPackage.scripts?.['test:durability']?.includes('data-portability-conflicts.spec.ts')
       && parsedPackage.scripts?.['test:durability']?.includes('playwright.offline.config.ts tests/e2e/storage-reliability.spec.ts')
       && parsedPackage.scripts?.['certify:durability'] === 'node scripts/certification/rr8-data-durability.mjs'
       && parsedPackage.scripts?.['certify:source']?.includes('rr8-data-durability.mjs')
       && workflow.includes('pnpm certify:durability')
       && workflow.includes('pnpm test:durability'),
-    'RR8 runs portability in the baseline matrix, storage reliability in its service-worker-enabled profile, and participates in release source certification');
+    'RR8 runs portability/conflict acceptance in the baseline matrix, storage reliability in its service-worker-enabled profile, and participates in release source certification');
 
   const ergonomicsIndex = deployment.indexOf('id: ergonomics');
   const durabilityIndex = deployment.indexOf('id: durability');
