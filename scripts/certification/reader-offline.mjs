@@ -21,7 +21,7 @@ const present = (await Promise.all(files.map(exists))).every(Boolean);
 pass('EPUB_READER_OFFLINE_P28', present, 'P28 service-worker scope, manifest/install metadata, registration, fallback, reader integration, documentation, and certification foundation remain present');
 
 if (present) {
-  const [sw, manifestRaw, pwa, offline, baseLayout, readerLayout, launcher, headers, pkg, verifier, postbuild] = await Promise.all([
+  const [sw, manifestRaw, pwa, offline, baseLayout, readerLayout, launcher, pkg, verifier, postbuild] = await Promise.all([
     readFile('public/service-worker.js', 'utf8'),
     readFile('public/manifest.webmanifest', 'utf8'),
     readFile('src/lib/client/pwa.ts', 'utf8'),
@@ -29,7 +29,6 @@ if (present) {
     readFile('src/layouts/BaseLayout.astro', 'utf8'),
     readFile('src/layouts/EpubReaderLayout.astro', 'utf8'),
     readFile('src/pages/works/[slug]/read/index.astro', 'utf8'),
-    readFile('public/_headers', 'utf8'),
     readFile('package.json', 'utf8'),
     readFile('scripts/verify-production.mjs', 'utf8'),
     readFile('scripts/certification/post-build.mjs', 'utf8'),
@@ -154,12 +153,13 @@ if (present) {
   );
 
   pass(
-    'EPUB_READER_OFFLINE_HEADERS',
-    headers.includes('/library/service-worker.js')
-      && headers.includes('Cache-Control: no-cache')
-      && headers.includes('Service-Worker-Allowed: /library/')
-      && headers.includes('/library/manifest.webmanifest'),
-    'Deployment headers keep the worker and manifest revalidatable instead of pinning them as immutable assets',
+    'EPUB_READER_OFFLINE_HOST_POLICY',
+    baseLayout.includes('http-equiv="Content-Security-Policy"')
+      && readerLayout.includes('http-equiv="Content-Security-Policy"')
+      && baseLayout.includes('name="referrer" content="no-referrer"')
+      && readerLayout.includes('name="referrer" content="no-referrer"')
+      && verifier.includes('CSP_META_FALLBACK_PRESENT'),
+    'GitHub Pages-hosted application and native reader documents own their actual CSP/referrer policy; production verification checks the live policy instead of relying on an inert _headers file',
   );
 
   pass(
@@ -167,10 +167,12 @@ if (present) {
     verifier.includes("`${origin}/manifest.webmanifest`")
       && verifier.includes("`${origin}/service-worker.js`")
       && verifier.includes("`${origin}/offline/`")
+      && verifier.includes("`${origin}/release-identity.json`")
       && postbuild.includes("'dist/library/service-worker.js'")
       && postbuild.includes("'dist/library/manifest.webmanifest'")
+      && postbuild.includes("'dist/library/release-identity.json'")
       && postbuild.includes("'dist/library/offline/index.html'"),
-    'Post-build and production verification still require the foundational worker, manifest, and offline fallback',
+    'Post-build and production verification require the worker, manifest, offline fallback, and exact deployed source identity',
   );
 
   const forbiddenTitles = ['ai-for-the-kingdom', 'how-to-love-god', 'the-unfinished-mission'];
