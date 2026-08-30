@@ -21,6 +21,9 @@ export type PublicationCompatibilityCode =
   | 'epub-resource-missing'
   | 'epub-encryption-unsupported'
   | 'epub-remote-resource'
+  | 'epub-metadata-size-limit'
+  | 'epub-cover-size-limit'
+  | 'epub-inspection-size-limit'
   | 'pdf-header-invalid'
   | 'pdf-eof-missing'
   | 'pdf-encrypted'
@@ -63,6 +66,9 @@ const MAX_EXPANDED_BYTES = 512 * 1024 * 1024;
 const MAX_ENTRY_BYTES = 128 * 1024 * 1024;
 const MAX_COMPRESSION_RATIO = 500;
 const MAX_INSPECTION_ENTRY_BYTES = 8 * 1024 * 1024;
+const MAX_METADATA_BYTES = 512 * 1024;
+const MAX_METADATA_FIELD_CHARS = 4_096;
+const MAX_COVER_BYTES = 8 * 1024 * 1024;
 const textDecoder = new TextDecoder('utf-8', { fatal: false });
 const latin1Decoder = new TextDecoder('windows-1252', { fatal: false });
 
@@ -271,7 +277,9 @@ function normalizePackagePath(basePath: string, href: string): string | undefine
 
 function remoteReferences(text: string): boolean {
   return /(?:src|poster|data)\s*=\s*["']\s*(?:https?:)?\/\//i.test(text)
+    || /srcset\s*=\s*["'][^"']*(?:https?:)?\/\//i.test(text)
     || /<link\b[^>]*href\s*=\s*["']\s*(?:https?:)?\/\//i.test(text)
+    || /<(?:image|use|feImage)\b[^>]*(?:href|xlink:href)\s*=\s*["']\s*(?:https?:)?\/\//i.test(text)
     || /url\(\s*["']?\s*(?:https?:)?\/\//i.test(text)
     || /@import\s+(?:url\()?\s*["']?\s*(?:https?:)?\/\//i.test(text);
 }
@@ -283,6 +291,21 @@ function tags(text: string, pattern: RegExp): string[] {
 function highestDisposition(current: PublicationCompatibilityDisposition, next: PublicationCompatibilityDisposition): PublicationCompatibilityDisposition {
   const rank: Record<PublicationCompatibilityDisposition, number> = { supported: 0, degraded: 1, unsupported: 2, hostile: 3 };
   return rank[next] > rank[current] ? next : current;
+}
+
+function textLikeManifestType(mediaType: string): boolean {
+  return /(?:xhtml|html|xml|css|javascript|svg|x-dtbncx)/i.test(mediaType);
+}
+
+function enforceMetadataFieldBounds(packageText: string): void {
+  for (const name of ['title', 'creator', 'language']) {
+    const pattern = new RegExp(`<dc:${name}\\b[^>]*>([\\s\\S]*?)<\\/dc:${name}>`, 'gi');
+    for (const match of packageText.matchAll(pattern)) {
+      if ((match[1] ?? '').length > MAX_METADATA_FIELD_CHARS) {
+        failure('epub-metadata-size-limit', `This EPUB contains an oversized ${name} metadata field.`, 'hostile');
+      }
+    }
+  }
 }
 
 async function inspectEpub(buffer: ArrayBuffer): Promise<PublicationCompatibilityReport> {
@@ -297,16 +320,20 @@ async function inspectEpub(buffer: ArrayBuffer): Promise<PublicationCompatibilit
 
   const container = byName.get('META-INF/container.xml');
   if (!container) failure('epub-container-missing', 'This EPUB is missing META-INF/container.xml.');
+  if (container.uncompressedSize > MAX_METADATA_BYTES) {
+    failure('epub-metadata-size-limit', 'This EPUB container metadata is too large to inspect safely.', 'hostile');
+  }
   const containerText = textDecoder.decode(await readZipEntry(buffer, container));
   const rootfileTag = containerText.match(/<rootfile\b[^>]*>/i)?.[0];
   const packagePath = rootfileTag ? attribute(rootfileTag, 'full-path') : undefined;
   if (!packagePath || !safeZipName(packagePath)) failure('epub-package-missing', 'This EPUB does not identify a safe package document.');
   const packageEntry = byName.get(packagePath);
   if (!packageEntry) failure('epub-package-missing', `This EPUB package document is missing: ${packagePath}.`);
-  if (packageEntry.uncompressedSize > MAX_INSPECTION_ENTRY_BYTES) {
-    failure('epub-package-missing', 'This EPUB package document is too large to inspect safely.');
+  if (packageEntry.uncompressedSize > MAX_METADATA_BYTES) {
+    failure('epub-metadata-size-limit', 'This EPUB package metadata is too large to inspect safely.', 'hostile');
   }
   const packageText = textDecoder.decode(await readZipEntry(buffer, packageEntry));
+  enforceMetadataFieldBounds(packageText);
   const packageTag = packageText.match(/<package\b[^>]*>/i)?.[0] ?? '';
   const version = attribute(packageTag, 'version') ?? 'unknown';
   const packageDirectory = packagePath.includes('/') ? packagePath.slice(0, packagePath.lastIndexOf('/')) : '';
@@ -353,6 +380,21 @@ async function inspectEpub(buffer: ArrayBuffer): Promise<PublicationCompatibilit
     disposition = highestDisposition(disposition, 'degraded');
   } else features.add(navItem ? 'epub3-navigation' : 'epub2-ncx');
 
+  const legacyCoverTag = tags(packageText, /<meta\b[^>]*>/gi)
+    .find((tag) => attribute(tag, 'name')?.toLowerCase() === 'cover');
+  const legacyCoverId = legacyCoverTag ? attribute(legacyCoverTag, 'content') : undefined;
+  const coverItem = [...manifest.entries()].find(([id, item]) =>
+    id === legacyCoverId || /(?:^|\s)cover-image(?:\s|$)/i.test(item.properties));
+  if (coverItem) {
+    const [, item] = coverItem;
+    const resolved = normalizePackagePath(packageDirectory, item.href);
+    if (!resolved) failure('epub-remote-resource', `This EPUB references a remote cover resource: ${item.href}.`, 'hostile');
+    const entry = byName.get(resolved);
+    if (entry && entry.uncompressedSize > MAX_COVER_BYTES) {
+      failure('epub-cover-size-limit', 'This EPUB cover exceeds the 8 MB safety limit.', 'hostile');
+    }
+  }
+
   for (const item of manifest.values()) {
     const resolved = normalizePackagePath(packageDirectory, item.href);
     if (!resolved) {
@@ -365,7 +407,10 @@ async function inspectEpub(buffer: ArrayBuffer): Promise<PublicationCompatibilit
       }
       continue;
     }
-    if (entry.uncompressedSize <= MAX_INSPECTION_ENTRY_BYTES && /(?:xhtml|html|xml|css|javascript|svg)/i.test(item.mediaType)) {
+    if (textLikeManifestType(item.mediaType)) {
+      if (entry.uncompressedSize > MAX_INSPECTION_ENTRY_BYTES) {
+        failure('epub-inspection-size-limit', `The EPUB text resource “${resolved}” is too large to inspect safely.`, 'hostile');
+      }
       inspectableTexts.push(textDecoder.decode(await readZipEntry(buffer, entry)));
     }
     if (/^image\//i.test(item.mediaType)) features.add('images');
@@ -403,6 +448,9 @@ async function inspectEpub(buffer: ArrayBuffer): Promise<PublicationCompatibilit
 
   const encryption = byName.get('META-INF/encryption.xml');
   if (encryption) {
+    if (encryption.uncompressedSize > MAX_METADATA_BYTES) {
+      failure('epub-inspection-size-limit', 'This EPUB encryption metadata is too large to inspect safely.', 'hostile');
+    }
     const encryptionText = textDecoder.decode(await readZipEntry(buffer, encryption));
     const algorithms = [...encryptionText.matchAll(/Algorithm\s*=\s*["']([^"']+)["']/gi)].map((match) => match[1]);
     const fontOnly = algorithms.length > 0 && algorithms.every((algorithm) =>
@@ -454,6 +502,23 @@ function includesAscii(bytes: Uint8Array, token: string): boolean {
   return false;
 }
 
+function isPdfDelimiter(byte: number | undefined): boolean {
+  return byte === undefined || byte <= 0x20 || byte === 0x25 || byte === 0x28 || byte === 0x29
+    || byte === 0x2f || byte === 0x3c || byte === 0x3e || byte === 0x5b || byte === 0x5d || byte === 0x7b || byte === 0x7d;
+}
+
+function includesPdfName(bytes: Uint8Array, token: string): boolean {
+  const target = [...token].map((character) => character.charCodeAt(0));
+  outer: for (let index = 0; index <= bytes.length - target.length; index += 1) {
+    if (bytes[index] !== target[0]) continue;
+    for (let offset = 1; offset < target.length; offset += 1) {
+      if (bytes[index + offset] !== target[offset]) continue outer;
+    }
+    if (isPdfDelimiter(bytes[index + target.length])) return true;
+  }
+  return false;
+}
+
 function countAscii(bytes: Uint8Array, token: string): number {
   const target = [...token].map((character) => character.charCodeAt(0));
   let count = 0;
@@ -475,12 +540,17 @@ function inspectPdf(buffer: ArrayBuffer): PublicationCompatibilityReport {
   if (!version) failure('pdf-header-invalid', 'This file does not have a valid PDF header.');
   const tail = latin1Decoder.decode(bytes.slice(Math.max(0, bytes.length - 65_536)));
   if (!tail.includes('%%EOF')) failure('pdf-eof-missing', 'This PDF is incomplete or missing its end marker.');
-  if (includesAscii(bytes, '/Encrypt')) failure('pdf-encrypted', 'Password-protected or encrypted PDFs are not supported.');
+  if (includesPdfName(bytes, '/Encrypt')) failure('pdf-encrypted', 'Password-protected or encrypted PDFs are not supported.');
   if (
-    includesAscii(bytes, '/JavaScript')
-    || includesAscii(bytes, '/Launch')
-    || includesAscii(bytes, '/RichMedia')
-  ) failure('pdf-active-content', 'PDF files containing active scripts, launch actions, or rich media are blocked.', 'hostile');
+    includesPdfName(bytes, '/JavaScript')
+    || includesPdfName(bytes, '/JS')
+    || includesPdfName(bytes, '/Launch')
+    || includesPdfName(bytes, '/RichMedia')
+    || includesPdfName(bytes, '/SubmitForm')
+    || includesPdfName(bytes, '/ImportData')
+    || includesPdfName(bytes, '/Rendition')
+    || includesPdfName(bytes, '/GoToR')
+  ) failure('pdf-active-content', 'PDF files containing active scripts, launch actions, remote actions, or rich media are blocked.', 'hostile');
 
   const features = new Set<string>();
   if (includesAscii(bytes, '/AcroForm')) features.add('forms');
