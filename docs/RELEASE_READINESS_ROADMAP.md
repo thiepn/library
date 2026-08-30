@@ -198,7 +198,7 @@ Exit criteria:
 
 ## Phase 9 — Security, privacy, and dependency hardening plus v1.0 launch
 
-**Status:** next active implementation phase.
+**Status:** implementation campaign active on `rr9-security-v1-launch`. The automated/code-level hardening can be production-certified independently, but the final `v1.0.0` tag remains blocked until protected-main and exact-SHA physical-device requirements pass.
 
 **Purpose:** certify safe publication processing and produce an operable, reversible v1.0.
 
@@ -223,4 +223,4 @@ Exit criteria:
 
 ## Current state
 
-RR1–RR8 automated/code-level release-readiness work is integrated. RR7 and RR8 are production-certified on the current release lineage, including the RR8 backup/restore/migration gate. RR2 physical-device evidence remains **0/12**; physical certification is not claimed until the named devices are actually operated for the exact release SHA. Phase 9 — security, privacy, dependency hardening, and v1.0 launch — is the next active implementation phase.
+RR1–RR8 automated/code-level release-readiness work is integrated. RR7 and RR8 are production-certified on the current release lineage, including the RR8 backup/restore/migration gate. RR9 is the active implementation campaign. RR2 physical-device evidence remains **0/12**, and `main` is currently unprotected; neither condition may be bypassed or represented as complete. The package therefore remains on the `1.0.0-rc.1` release-candidate line until the final exact-SHA physical and protected-main gates pass.
