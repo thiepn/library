@@ -25,7 +25,7 @@ import {
 } from '../pdf-reader/state';
 import { isReaderAnnotationRecordV2, type ReaderAnnotationRecordV2 } from '../reader/annotation-store';
 import { isReaderBookmarkRecordV2, type ReaderBookmarkRecordV2 } from '../reader/bookmark-store';
-import { parseReaderSettings, type ReaderSettingsRecord } from '../reader/settings';
+import type { ReaderSettingsRecord } from '../reader/settings';
 import {
   isPortablePersonalBookMetadataV1,
   type PortablePersonalBookMetadataV1,
@@ -99,6 +99,42 @@ function validIsoLike(value: unknown): value is string {
   return typeof value === 'string' && value.length > 0 && Number.isFinite(Date.parse(value));
 }
 
+function isChoice<T extends string>(value: unknown, choices: readonly T[]): value is T {
+  return typeof value === 'string' && choices.includes(value as T);
+}
+
+function isNumberInRange(value: unknown, min: number, max: number): value is number {
+  return typeof value === 'number' && Number.isFinite(value) && value >= min && value <= max;
+}
+
+/** Pure RR8 archive validator: intentionally does not load the runtime reader settings module. */
+function parsePortableReaderSettings(value: unknown): ReaderSettingsRecord | null {
+  if (!isRecord(value) || value.schemaVersion !== 1) return null;
+  if (!isChoice(value.fontFamily, ['publisher', 'literata', 'serif', 'sans', 'accessible'] as const)) return null;
+  if (!isNumberInRange(value.fontScale, 0.8, 1.8)) return null;
+  if (!isNumberInRange(value.lineHeight, 1.2, 2.1)) return null;
+  if (!isNumberInRange(value.paragraphSpacing, 0, 1.2)) return null;
+  if (!isChoice(value.alignment, ['left', 'justify'] as const)) return null;
+  if (!isChoice(value.theme, ['light', 'warm', 'sepia', 'gray', 'dark', 'black'] as const)) return null;
+  if (!isChoice(value.textWidth, ['narrow', 'medium', 'wide'] as const)) return null;
+  if (!isChoice(value.pageMargins, ['small', 'medium', 'large'] as const)) return null;
+  if (!isChoice(value.flow, ['paginated', 'scrolled'] as const)) return null;
+  if (!isChoice(value.spread, ['auto', 'single', 'double'] as const)) return null;
+  return {
+    schemaVersion: 1,
+    fontFamily: value.fontFamily,
+    fontScale: value.fontScale,
+    lineHeight: value.lineHeight,
+    paragraphSpacing: value.paragraphSpacing,
+    alignment: value.alignment,
+    theme: value.theme,
+    textWidth: value.textWidth,
+    pageMargins: value.pageMargins,
+    flow: value.flow,
+    spread: value.spread,
+  };
+}
+
 function assertUnique<T>(values: T[], key: (value: T) => string, label: string): void {
   const seen = new Set<string>();
   for (const value of values) {
@@ -166,7 +202,7 @@ function parseSettings(value: unknown): LibraryBackupSettingsV1 | undefined {
   if (value === undefined) return undefined;
   if (!isRecord(value)) throw new LibraryBackupError('Backup settings are invalid.');
   const app = value.app === undefined ? undefined : parseAppSettings(value.app);
-  const epub = value.epub === undefined ? undefined : parseReaderSettings(value.epub);
+  const epub = value.epub === undefined ? undefined : parsePortableReaderSettings(value.epub);
   const pdf = value.pdf === undefined ? undefined : parsePdfReaderSettings(value.pdf);
   if (value.app !== undefined && !app) throw new LibraryBackupError('Application settings are invalid or unsupported.');
   if (value.epub !== undefined && !epub) throw new LibraryBackupError('EPUB reader settings are invalid or unsupported.');
@@ -264,8 +300,6 @@ export function summarizeLibraryBackup(archive: LibraryBackupArchiveV1): Library
   };
 }
 
-// Keep explicit schema constants referenced by this archive module so source-level
-// certification can prove every historical portable record has a frozen version.
 export const RR8_PORTABLE_RECORD_SCHEMAS = {
   favorite: FAVORITE_SCHEMA_VERSION,
   legacyProgress: LEGACY_PROGRESS_SCHEMA_VERSION,
