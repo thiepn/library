@@ -2,7 +2,9 @@
 
 ## Status
 
-Implementation and automated acceptance are defined in this phase branch. RR8 is not release-certified until the dedicated workflow and the existing release gates pass on the exact pull-request head.
+**Complete and production-certified.** RR8 merged to `main` through PR #41 as source commit `4699c39f3c409d8a274e4989804d30211dbe7a9f`. The dedicated Data Durability workflow passed on that mainline source, and production deployment run `33337028919` passed the RR8 durability gate before the Pages artifact was uploaded, followed by successful live verification.
+
+This closes the automated/code-level RR8 phase. Physical-device evidence remains a separate v1.0 release requirement and is not implied by browser automation.
 
 ## Storage topology
 
@@ -144,6 +146,15 @@ RR8 is manual portability, not account sync. Thiepn Library does not automatical
 
 The RR8 workflow also re-runs RR5 storage-reliability coverage in the service-worker-enabled offline profile so quota, interruption, denied storage, blocked upgrade, offline personal books, cache isolation, and ephemeral-session behavior remain protected.
 
-## Exit criterion
+## Closeout evidence
 
-RR8 can close when the exact pull-request head passes source certification, build/type checking, the dedicated cross-engine portability suite, existing storage-reliability tests, and the repository’s other required checks. Production Pages artifact upload is also gated on RR8 after RR7. This phase does not waive the separate physical-device evidence gate or any unresolved production deployment gate.
+RR8 exit criteria are satisfied for the automated/code-level phase:
+
+- PR #41 merged successfully;
+- source commit `4699c39f3c409d8a274e4989804d30211dbe7a9f` passed the dedicated Data Durability workflow;
+- Quality and the existing release-readiness workflows remained green;
+- production run `33337028919` passed RR8 after RR7 and before Pages artifact upload;
+- GitHub Pages deployment and live application/media verification succeeded;
+- the production status record reports no blockers.
+
+The remaining v1.0 release boundary is the separately tracked exact-SHA physical-device campaign plus Phase 9 security/privacy/dependency hardening and launch work.
