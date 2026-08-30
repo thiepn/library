@@ -14,14 +14,15 @@ const files = [
   'src/layouts/BaseLayout.astro',
   'tests/e2e/data-portability.spec.ts',
   '.github/workflows/data-durability.yml',
+  '.github/workflows/deploy.yml',
   'package.json',
 ];
 
 const present = (await Promise.all(files.map(exists))).every(Boolean);
-pass('RR8_FILES', present, 'RR8 implementation, documentation, user surface, browser acceptance, workflow, and package commands are present');
+pass('RR8_FILES', present, 'RR8 implementation, documentation, user surface, browser acceptance, dedicated workflow, production gate, and package commands are present');
 
 if (present) {
-  const [doc, libraryDb, personal, portability, pdf, page, layout, tests, workflow, pkg] = await Promise.all([
+  const [doc, libraryDb, personal, portability, pdf, page, layout, tests, workflow, deployment, pkg] = await Promise.all([
     readFile('docs/RR8_DATA_DURABILITY_PORTABILITY.md', 'utf8'),
     readFile('src/lib/client/library-db.ts', 'utf8'),
     readFile('src/lib/client/personal-books.ts', 'utf8'),
@@ -31,6 +32,7 @@ if (present) {
     readFile('src/layouts/BaseLayout.astro', 'utf8'),
     readFile('tests/e2e/data-portability.spec.ts', 'utf8'),
     readFile('.github/workflows/data-durability.yml', 'utf8'),
+    readFile('.github/workflows/deploy.yml', 'utf8'),
     readFile('package.json', 'utf8'),
   ]);
 
@@ -115,11 +117,25 @@ if (present) {
   const parsedPackage = JSON.parse(pkg);
   pass('RR8_COMMANDS_AND_CI',
     parsedPackage.scripts?.['test:durability']?.includes('data-portability.spec.ts')
+      && parsedPackage.scripts?.['test:durability']?.includes('playwright.offline.config.ts tests/e2e/storage-reliability.spec.ts')
       && parsedPackage.scripts?.['certify:durability'] === 'node scripts/certification/rr8-data-durability.mjs'
       && parsedPackage.scripts?.['certify:source']?.includes('rr8-data-durability.mjs')
       && workflow.includes('pnpm certify:durability')
       && workflow.includes('pnpm test:durability'),
-    'RR8 has dedicated source/browser commands, CI ownership, and participates in release source certification');
+    'RR8 runs portability in the baseline matrix, storage reliability in its service-worker-enabled profile, and participates in release source certification');
+
+  const ergonomicsIndex = deployment.indexOf('id: ergonomics');
+  const durabilityIndex = deployment.indexOf('id: durability');
+  const pagesIndex = deployment.indexOf('actions/upload-pages-artifact@v4');
+  pass('RR8_PRODUCTION_GATE',
+    deployment.includes('Run RR8 data durability, migration, backup, and portability acceptance')
+      && deployment.includes('run: pnpm test:durability')
+      && deployment.includes("if: failure() && steps.durability.outcome == 'failure'")
+      && deployment.includes('RR8 data durability/migration/backup/portability acceptance before artifact upload')
+      && ergonomicsIndex >= 0
+      && durabilityIndex > ergonomicsIndex
+      && pagesIndex > durabilityIndex,
+    'Production Pages upload is gated on RR8 after RR7 and records the durability outcome');
 
   pass('RR8_NO_CLOUD_SYNC_PRETENSE',
     doc.includes('manual portability, not account sync')
