@@ -22,11 +22,12 @@ const files = [
   'tests/e2e/reader-navigation-controls.spec.ts',
   'tests/e2e/reader-tap-zones.spec.ts',
   '.github/workflows/ergonomics.yml',
+  '.github/workflows/deploy.yml',
   'package.json',
 ];
 
 const present = (await Promise.all(files.map(exists))).every(Boolean);
-pass('RR7_FILES', present, 'RR7 documentation, interaction adapter, navigation surfaces, recovery states, browser tests, workflow, and package commands are present');
+pass('RR7_FILES', present, 'RR7 documentation, interaction adapter, navigation surfaces, recovery states, browser tests, workflows, and package commands are present');
 
 if (present) {
   const [
@@ -47,6 +48,7 @@ if (present) {
     navTests,
     tapTests,
     workflow,
+    deploy,
     pkg,
   ] = await Promise.all([
     readFile('docs/RR7_READING_ERGONOMICS.md', 'utf8'),
@@ -66,6 +68,7 @@ if (present) {
     readFile('tests/e2e/reader-navigation-controls.spec.ts', 'utf8'),
     readFile('tests/e2e/reader-tap-zones.spec.ts', 'utf8'),
     readFile('.github/workflows/ergonomics.yml', 'utf8'),
+    readFile('.github/workflows/deploy.yml', 'utf8'),
     readFile('package.json', 'utf8'),
   ]);
   const plainDoc = doc.replaceAll('**', '');
@@ -154,6 +157,16 @@ if (present) {
       && workflow.includes('pnpm test:ergonomics')
       && workflow.includes('playwright install --with-deps chromium firefox webkit'),
     'RR7 has an independent cross-engine CI signal with source and browser acceptance');
+
+  pass('RR7_PRODUCTION_GATE',
+    deploy.includes('ergonomics: ${{ steps.ergonomics.outcome }}')
+      && deploy.includes('Run RR7 reading ergonomics and product UX acceptance')
+      && deploy.includes('id: ergonomics')
+      && deploy.includes('run: pnpm test:ergonomics')
+      && deploy.includes('production-reading-ergonomics-${{ github.run_id }}')
+      && deploy.includes('ERGONOMICS_RESULT: ${{ needs.build.outputs.ergonomics }}')
+      && deploy.includes('RR7 reading ergonomics/product UX acceptance before artifact upload'),
+    'Production cannot upload the Pages artifact until the explicit RR7 ergonomics suite passes, and the deployment report records that outcome');
 
   const scripts = JSON.parse(pkg).scripts ?? {};
   pass('RR7_PACKAGE_COMMANDS',
