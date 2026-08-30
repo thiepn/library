@@ -20,6 +20,7 @@ import {
   replacePendingPersonalBookMetadata,
   type PersonalBookPortableMetadataV1,
 } from './personal-books';
+import { pdfReaderIdentityKey } from '../pdf-reader/canonical';
 import {
   getPdfReaderStateSnapshot,
   isPdfBookmarkRecord,
@@ -157,6 +158,15 @@ function isCollection<T>(value: unknown, validator: (candidate: unknown) => cand
     && value.records.every(validator);
 }
 
+function assertUniqueRecords<T>(records: readonly T[], key: (record: T) => string, label: string): void {
+  const seen = new Set<string>();
+  for (const record of records) {
+    const identity = key(record);
+    if (seen.has(identity)) throw new Error(`Duplicate ${label} identity: ${identity}. No Library data was changed.`);
+    seen.add(identity);
+  }
+}
+
 function parseSiteSettings(value: unknown): PortableSiteSettingsV1 | null {
   if (!isRecord(value) || value.schemaVersion !== 1) return null;
   if (value.appearance !== 'system' && value.appearance !== 'light' && value.appearance !== 'dark') return null;
@@ -260,18 +270,61 @@ export async function createLibraryBackupJson(): Promise<string> {
 
 function validateMain(value: unknown): asserts value is PortableMainStateV1 {
   if (!isRecord(value) || value.schemaVersion !== 1) throw new Error('Unsupported main-state backup schema.');
-  if (value.favorites !== undefined && !isCollection(value.favorites, isFavoriteRecord)) throw new Error('Invalid favorites backup records.');
-  if (value.epubProgress !== undefined && !isCollection(value.epubProgress, isReaderProgressRecordV2)) throw new Error('Invalid EPUB progress backup records.');
-  if (value.legacyProgress !== undefined && !isCollection(value.legacyProgress, isLegacyProgressRecord)) throw new Error('Invalid legacy progress backup records.');
-  if (value.bookmarks !== undefined && !isCollection(value.bookmarks, isReaderBookmarkRecordV2)) throw new Error('Invalid EPUB bookmark backup records.');
-  if (value.annotations !== undefined && !isCollection(value.annotations, isPortableAnnotationRecord)) throw new Error('Invalid annotation backup records.');
-  if (value.readingActivity !== undefined && !isCollection(value.readingActivity, isReadingActivityRecordV1)) throw new Error('Invalid reading activity backup records.');
+
+  if (value.favorites !== undefined) {
+    const collection = value.favorites;
+    if (!isCollection(collection, isFavoriteRecord)) throw new Error('Invalid favorites backup records.');
+    assertUniqueRecords(collection.records, (record) => record.workId, 'favorite');
+  }
+  if (value.epubProgress !== undefined) {
+    const collection = value.epubProgress;
+    if (!isCollection(collection, isReaderProgressRecordV2)) throw new Error('Invalid EPUB progress backup records.');
+    assertUniqueRecords(collection.records, (record) => record.workId, 'EPUB progress');
+  }
+  if (value.legacyProgress !== undefined) {
+    const collection = value.legacyProgress;
+    if (!isCollection(collection, isLegacyProgressRecord)) throw new Error('Invalid legacy progress backup records.');
+    assertUniqueRecords(collection.records, (record) => record.workId, 'legacy progress');
+  }
+  if (value.bookmarks !== undefined) {
+    const collection = value.bookmarks;
+    if (!isCollection(collection, isReaderBookmarkRecordV2)) throw new Error('Invalid EPUB bookmark backup records.');
+    assertUniqueRecords(collection.records, (record) => record.id, 'EPUB bookmark');
+  }
+  if (value.annotations !== undefined) {
+    const collection = value.annotations;
+    if (!isCollection(collection, isPortableAnnotationRecord)) throw new Error('Invalid annotation backup records.');
+    assertUniqueRecords(collection.records, (record) => record.id, 'annotation');
+  }
+  if (value.readingActivity !== undefined) {
+    const collection = value.readingActivity;
+    if (!isCollection(collection, isReadingActivityRecordV1)) throw new Error('Invalid reading activity backup records.');
+    assertUniqueRecords(collection.records, (record) => record.workId, 'reading activity');
+  }
 }
 
 function validatePdf(value: unknown): asserts value is PortablePdfStateV1 {
   if (!isRecord(value) || value.schemaVersion !== 1) throw new Error('Unsupported PDF-state backup schema.');
-  if (value.progress !== undefined && !isCollection(value.progress, isPdfProgressRecord)) throw new Error('Invalid PDF progress backup records.');
-  if (value.bookmarks !== undefined && !isCollection(value.bookmarks, isPdfBookmarkRecord)) throw new Error('Invalid PDF bookmark backup records.');
+
+  if (value.progress !== undefined) {
+    const collection = value.progress;
+    if (!isCollection(collection, isPdfProgressRecord)) throw new Error('Invalid PDF progress backup records.');
+    for (const record of collection.records) {
+      if (record.id !== pdfReaderIdentityKey(record.identity)) throw new Error('Invalid PDF progress identity. No Library data was changed.');
+    }
+    assertUniqueRecords(collection.records, (record) => record.id, 'PDF progress');
+  }
+  if (value.bookmarks !== undefined) {
+    const collection = value.bookmarks;
+    if (!isCollection(collection, isPdfBookmarkRecord)) throw new Error('Invalid PDF bookmark backup records.');
+    for (const record of collection.records) {
+      const publicationKey = pdfReaderIdentityKey(record.identity);
+      if (record.publicationKey !== publicationKey || record.id !== `${publicationKey}::page:${record.page}`) {
+        throw new Error('Invalid PDF bookmark identity. No Library data was changed.');
+      }
+    }
+    assertUniqueRecords(collection.records, (record) => record.id, 'PDF bookmark');
+  }
   if (value.settings !== undefined && !isPdfReaderSettings(value.settings)) throw new Error('Invalid PDF settings backup record.');
 }
 
@@ -291,6 +344,13 @@ function validatePersonalBooks(value: unknown): asserts value is PortablePersona
     && !('file' in record) && !('cover' in record) && !('data' in record))) {
     throw new Error('Invalid personal-book metadata backup records.');
   }
+  const records = value.records as PersonalBookPortableMetadataV1[];
+  for (const record of records) {
+    if (record.id !== `${record.format}-${record.sha256.slice(0, 32)}`) {
+      throw new Error('Invalid personal-book identity. No Library data was changed.');
+    }
+  }
+  assertUniqueRecords(records, (record) => record.sha256, 'personal-book content');
 }
 
 export function parseLibraryBackupJson(raw: string): LibraryBackupV1 {
