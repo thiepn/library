@@ -28,7 +28,7 @@
     "test:security": "playwright test tests/e2e/security-hardening.spec.ts",
     "security:audit": "node scripts/security/audit-dependencies.mjs",
     "security:supply-chain": "node scripts/security/generate-supply-chain-evidence.mjs",
-    "security:worker:dry-run": "wrangler deploy --dry-run --outdir artifacts/security/wrangler-dry-run",
+    "security:worker:dry-run": "wrangler deploy --dry-run --outdir .wrangler-dry-run",
     "certify:compatibility": "node scripts/certification/publication-corpus.mjs",
     "certify:performance": "node scripts/certification/performance-budget.mjs",
     "certify:offline-reliability": "node scripts/certification/offline-reliability.mjs",
