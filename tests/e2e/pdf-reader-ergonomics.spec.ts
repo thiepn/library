@@ -28,11 +28,19 @@ async function expectPage(page: Page, root: Locator, pageNumber: number): Promis
 async function dispatchSwipe(viewport: Locator, fromX: number, toX: number): Promise<void> {
   await viewport.evaluate((element, input) => {
     const makeTouch = (clientX: number) => ({ identifier: 41, clientX, clientY: 280 });
-    const dispatch = (type: string, touches: unknown[], changedTouches: unknown[]) => {
+    const makeTouchList = (items: Array<{ identifier: number; clientX: number; clientY: number }>) => ({
+      length: items.length,
+      item: (index: number) => items[index] ?? null,
+    });
+    const dispatch = (
+      type: string,
+      touches: Array<{ identifier: number; clientX: number; clientY: number }>,
+      changedTouches: Array<{ identifier: number; clientX: number; clientY: number }>,
+    ) => {
       const event = new Event(type, { bubbles: true, cancelable: true });
       Object.defineProperties(event, {
-        touches: { configurable: true, value: touches },
-        changedTouches: { configurable: true, value: changedTouches },
+        touches: { configurable: true, value: makeTouchList(touches) },
+        changedTouches: { configurable: true, value: makeTouchList(changedTouches) },
       });
       element.dispatchEvent(event);
     };
