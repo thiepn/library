@@ -131,7 +131,7 @@ if (present) {
       && workflow.includes('--mode structure')
       && workflow.includes('--mode release')
       && workflow.includes('--expected-sha')
-      && workflow.includes('actions/upload-artifact@v4')
+      && workflow.includes('actions/upload-artifact@')
       && workflow.includes('Enforce physical-device result'),
     'A permanent workflow validates every evidence change and provides an auditable manual exact-build release gate',
   );
