@@ -10,6 +10,7 @@ on:
       - 'tests/compatibility/**'
       - 'tests/e2e/compatibility-fixtures.ts'
       - 'tests/e2e/publication-compatibility.spec.ts'
+      - 'tests/e2e/security-boundaries.spec.ts'
       - 'scripts/certification/publication-corpus.mjs'
       - 'docs/RR3_PUBLICATION_COMPATIBILITY.md'
       - '.github/workflows/publication-compatibility.yml'
@@ -25,6 +26,7 @@ on:
       - 'tests/compatibility/**'
       - 'tests/e2e/compatibility-fixtures.ts'
       - 'tests/e2e/publication-compatibility.spec.ts'
+      - 'tests/e2e/security-boundaries.spec.ts'
       - 'scripts/certification/publication-corpus.mjs'
       - 'docs/RR3_PUBLICATION_COMPATIBILITY.md'
       - '.github/workflows/publication-compatibility.yml'
@@ -45,10 +47,10 @@ jobs:
     timeout-minutes: 40
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
 
       - name: Setup pnpm and Node
-        uses: pnpm/setup@v2
+        uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2
         with:
           version: 11.21.0
           runtime: node@22.12.0
@@ -72,7 +74,7 @@ jobs:
 
       - name: Upload failed compatibility evidence
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: publication-compatibility-failure-${{ github.run_id }}
           path: |
