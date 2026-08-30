@@ -4,18 +4,45 @@ import { setRr5Offline } from './offline-network';
 
 const PERSONAL_DB = 'thiepn-library-personal-books';
 const STABLE_PUBLICATION_CACHE = 'thiepn-library-offline-publications-v1';
+const SW_CONTROL_TIMEOUT_MS = 30_000;
+const SW_CONTROL_RELOAD_ATTEMPTS = 2;
 
 const filePayload = (name: string, buffer: Buffer, mimeType = 'application/pdf') => ({ name, mimeType, buffer });
+
+async function serviceWorkerControlState(page: Page) {
+  return page.evaluate(async () => {
+    const registration = await navigator.serviceWorker.getRegistration('/library/');
+    return {
+      activeState: registration?.active?.state ?? '',
+      controllerScript: navigator.serviceWorker.controller?.scriptURL ?? '',
+      controllerState: navigator.serviceWorker.controller?.state ?? '',
+    };
+  });
+}
 
 async function ensureWorkerControlled(page: Page) {
   await page.waitForFunction(async () => {
     const registration = await navigator.serviceWorker.getRegistration('/library/');
-    return Boolean(registration?.active || navigator.serviceWorker.controller);
-  }, undefined, { timeout: 15_000 });
+    return Boolean(
+      navigator.serviceWorker.controller
+      || registration?.active?.state === 'activated'
+    );
+  }, undefined, { timeout: SW_CONTROL_TIMEOUT_MS });
+
   if (!(await page.evaluate(() => Boolean(navigator.serviceWorker.controller)))) {
-    await page.reload({ waitUntil: 'domcontentloaded' });
-    await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller), undefined, { timeout: 15_000 });
+    await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller), undefined, { timeout: 5_000 }).catch(() => {});
   }
+
+  for (let attempt = 0; attempt < SW_CONTROL_RELOAD_ATTEMPTS; attempt++) {
+    if (await page.evaluate(() => Boolean(navigator.serviceWorker.controller))) break;
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller), undefined, { timeout: 10_000 }).catch(() => {});
+  }
+
+  const state = await serviceWorkerControlState(page);
+  expect(state.activeState, `Service worker did not finish activation: ${JSON.stringify(state)}`).toBe('activated');
+  expect(state.controllerScript, `Activated service worker did not control the page after bounded reloads: ${JSON.stringify(state)}`).toContain('/library/service-worker');
+  expect(state.controllerState, `Service-worker controller is not activated: ${JSON.stringify(state)}`).toBe('activated');
 }
 
 test('@rr5 quota exhaustion is explicit and leaves no partial personal book', async ({ page }) => {
@@ -120,13 +147,18 @@ test('@rr5 blocked v1 personal storage reports the older tab and then upgrades w
 
   await page.goto('/library/saved');
   await expect(page.locator('[data-saved-count]')).toHaveText('Local library unavailable');
-  await expect(page.locator('[data-saved-empty]')).toContainText('did not allow the local Library database to open');
+  const failure = page.locator('[data-library-error]');
+  await expect(failure).toBeVisible();
+  await expect(page.locator('[data-library-error-message]')).toContainText('blocked by another Library tab');
+  const retry = failure.getByRole('button', { name: 'Try again' });
+  await expect(retry).toBeVisible();
 
   await blocker.evaluate(() => {
     (window as typeof window & { __rr5BlockedDb?: IDBDatabase }).__rr5BlockedDb?.close();
   });
   await blocker.close();
-  await page.reload();
+  await retry.click();
+  await expect(failure).toBeHidden();
   await expect(page.getByRole('heading', { level: 3, name: 'RR5 v1 preserved' })).toBeVisible();
 });
 
