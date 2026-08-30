@@ -2,7 +2,6 @@
 import BaseLayout from '../../../../layouts/BaseLayout.astro';
 import EpubReaderLayout from '../../../../layouts/EpubReaderLayout.astro';
 import ReaderShell from '../../../../components/reader/ReaderShell.astro';
-import ReaderFormatSwitch from '../../../../components/ReaderFormatSwitch.astro';
 import { getWorks, type ResolvedWork } from '../../../../lib/content/repository';
 import { getChaptersForWork } from '../../../../lib/content/chapters';
 import {
@@ -51,7 +50,6 @@ const pdfReaderHref = work.release?.artifacts.pdf
     noindex
   >
     <div data-reader-publication={JSON.stringify(publication)} hidden></div>
-    {pdfReaderHref && <ReaderFormatSwitch current="epub" href={pdfReaderHref} />}
     {first && (
       <div
         data-reader-legacy-bridge

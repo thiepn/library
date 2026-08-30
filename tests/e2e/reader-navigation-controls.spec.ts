@@ -23,6 +23,21 @@ async function currentCfi(shell: Locator): Promise<string> {
   return cfi ?? '';
 }
 
+async function dispatchReaderWheel(page: Page, deltaY: number): Promise<boolean> {
+  const frame = page.locator('[data-reader-viewport] iframe').first();
+  await expect(frame).toBeVisible();
+  return frame.evaluate((element, delta) => {
+    const iframe = element as HTMLIFrameElement;
+    const document = iframe.contentDocument;
+    const frameWindow = iframe.contentWindow;
+    if (!document || !frameWindow) throw new Error('Reader iframe is not available.');
+    const WheelEventCtor = (frameWindow as unknown as { WheelEvent: typeof WheelEvent }).WheelEvent;
+    const event = new WheelEventCtor('wheel', { deltaY: delta, bubbles: true, cancelable: true });
+    document.dispatchEvent(event);
+    return event.defaultPrevented;
+  }, deltaY);
+}
+
 test('desktop paginated reader exposes reliable edge controls and removes page arrows in scroll mode', async ({ page }) => {
   test.skip(test.info().project.name.endsWith('-phone'), 'Desktop page rails are intentionally hidden on touch-first phone profiles.');
 
@@ -59,4 +74,23 @@ test('desktop paginated reader exposes reliable edge controls and removes page a
   await expect(shell).toHaveAttribute('data-reader-flow', 'paginated');
   await expect(nextRail).toBeVisible();
   await expect(footerNext).toBeVisible();
+});
+
+test('desktop wheel and trackpad scrolling turns paginated EPUB pages but stays native in scroll mode', async ({ page }) => {
+  test.skip(test.info().project.name.endsWith('-phone'), 'Wheel page turns are a desktop fine-pointer behavior.');
+
+  const shell = await openFixtureReader(page);
+  const start = await currentCfi(shell);
+
+  expect(await dispatchReaderWheel(page, 72)).toBe(true);
+  await expect.poll(() => shell.getAttribute('data-reader-location-cfi'), { timeout: 5_000 }).not.toBe(start);
+
+  await page.waitForTimeout(300);
+  expect(await dispatchReaderWheel(page, -72)).toBe(true);
+  await expect.poll(() => shell.getAttribute('data-reader-location-cfi'), { timeout: 5_000 }).toBe(start);
+
+  await page.getByRole('button', { name: 'Reading mode' }).click();
+  await page.getByRole('button', { name: 'Scroll', exact: true }).click();
+  await expect(shell).toHaveAttribute('data-reader-flow', 'scrolled');
+  expect(await dispatchReaderWheel(page, 120)).toBe(false);
 });
