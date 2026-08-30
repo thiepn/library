@@ -20,8 +20,11 @@ const required = [
   'scripts/security/generate-sbom.mjs',
   'scripts/security/check-license-inventory.mjs',
   'scripts/release/v1-gate.mjs',
+  'scripts/prepare-deploy.mjs',
+  'scripts/verify-production.mjs',
   '.github/workflows/security-hardening.yml',
   '.github/workflows/v1-release.yml',
+  '.github/workflows/publication-ingest.yml',
   '.github/dependabot.yml',
   '.github/workflows/deploy.yml',
   'pnpm-workspace.yaml',
@@ -31,7 +34,7 @@ const present = (await Promise.all(required.map(exists))).every(Boolean);
 pass('RR9_FILES', present, 'RR9 security, privacy, dependency, release, documentation, workflow, and executable acceptance owners are present');
 
 if (present) {
-  const [doc, ops, securityDoc, changelog, privacy, securityPage, supportPage, layout, epubSecurity, inspector, pdfRuntime, tests, sbom, licenses, v1Gate, securityWorkflow, v1Workflow, dependabot, deploy, workspace, packageText] = await Promise.all(required.map((file) => readFile(file, 'utf8')));
+  const [doc, ops, securityDoc, changelog, privacy, securityPage, supportPage, layout, epubSecurity, inspector, pdfRuntime, tests, sbom, licenses, v1Gate, prepareDeploy, verifyProduction, securityWorkflow, v1Workflow, publicationIngest, dependabot, deploy, workspace, packageText] = await Promise.all(required.map((file) => readFile(file, 'utf8')));
   const pkg = JSON.parse(packageText);
 
   pass('RR9_APP_CSP',
@@ -123,6 +126,16 @@ if (present) {
   const artifactLeak = workflowTexts.some(({ text }) =>
     text.includes('actions/upload-artifact@') && /(?:^|\n)\s+(?:incoming\/|\.publication-ingress\/|src\/content\/works\/)/m.test(text));
   pass('RR9_CI_ARTIFACT_PRIVACY', !artifactLeak && securityWorkflow.includes('path: |\n            .build/security\n            playwright-report\n            test-results'), 'CI artifacts are limited to deterministic reports/test evidence and exclude publication ingress or personal-file payloads');
+
+  pass('RR9_PROTECTED_MAIN_COMPAT',
+    !deploy.includes('git push origin HEAD:main')
+      && !deploy.includes('Record production deployment outcome')
+      && deploy.includes('production-deployment-${{ github.run_id }}')
+      && prepareDeploy.includes('release-identity.json')
+      && verifyProduction.includes('Production source identity mismatch')
+      && !publicationIngest.includes('git push origin HEAD:main')
+      && publicationIngest.includes('gh pr create'),
+    'Deployment and verified publication promotion no longer require direct writes to protected main');
 
   const durabilityIndex = deploy.indexOf('id: durability');
   const securityIndex = deploy.indexOf('id: security');
