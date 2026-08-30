@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout title="Security" description="How Thiepn Library contains untrusted EPUB/PDF content and protects browser-local reading data.">
+  <div class="page">
+    <section class="section">
+      <div class="section-heading"><div><p class="eyebrow">Security</p><h1>Publication &amp; data security</h1></div></div>
+      <div class="empty">
+        <h2>Untrusted books are inspected first</h2>
+        <p>Personal EPUB and PDF files are checked before they are stored. Unsafe archive paths, pathological EPUB expansion/compression, remote EPUB resources, unsupported encryption, active PDF JavaScript/actions, and structurally invalid inputs are rejected with bounded errors.</p>
+
+        <h2>EPUB scripting and remote subresources are disabled</h2>
+        <p>The EPUB reader removes publisher scripts, frames, plugins, inline event handlers, base-URL rewriting, meta refresh, and executable navigation URLs before a chapter is rendered. A reader-owned Content Security Policy disables publication scripting and network connections while allowing the local images, styles, media, and fonts needed to read the book.</p>
+
+        <h2>PDF execution is disabled</h2>
+        <p>Accepted PDFs render through the bundled PDF.js runtime with dynamic evaluation disabled. The application owns the canvas/text layer, bounds raster work, and tears down abandoned render/search tasks.</p>
+
+        <h2>Personal files stay local</h2>
+        <p>Imported personal EPUB/PDF bytes stay in browser IndexedDB. They are not placed in service-worker Cache Storage, uploaded by the public Library, or embedded in the default JSON backup.</p>
+
+        <h2>No absolute-safety claim</h2>
+        <p>The Library uses explicit hostile-file limits and browser isolation, but it does not claim that every malformed historical EPUB/PDF can be made safe or readable. Unsupported or suspicious inputs are rejected rather than guessed at.</p>
+
+        <p>For recovery and moving browser-local state, use <a href="../backup">Backup &amp; restore</a>. For data-handling details, see <a href="../privacy">Privacy</a>.</p>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
