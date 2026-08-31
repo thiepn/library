@@ -2,13 +2,13 @@
 
 ## Status
 
-Automated/code-level RR9 hardening is complete and production-certified on source `7b2a328c7923a56c7c8ff875d9d106bed13550bf` via production run `33366197854`.
+Automated/code-level RR9 hardening is complete and production-certified on the current RR10 Stage A baseline source `b4789ace73b0c3dd5cf6b435f0692f3ea9273ea2` via production run `33409963085`.
 
-The certified release-candidate pipeline passed source/build certification, exact R2 publication-media staging, staged Browser Acceptance, RR4 performance/memory, RR5 offline/PWA/storage, RR6 accessibility/inclusive reading against the staged canonical EPUB, RR7 ergonomics, RR8 data durability, RR9 security/privacy/dependency/provenance, GitHub Pages deployment, and live custom-domain verification.
+That production pipeline passed source/build certification, exact R2 publication-media staging, staged Browser Acceptance, RR4 performance/memory, RR5 offline/PWA/storage, RR6 accessibility/inclusive reading, RR7 ergonomics, RR8 data durability, RR9 security/privacy/dependency/provenance, GitHub Pages deployment, and live custom-domain/source-artifact verification.
 
-The final `v1.0.0` launch is intentionally **not** complete. Exact-SHA physical-device evidence remains **0/12**, `main` remains unprotected, and the package remains `1.0.0-rc.1`. Those release gates may not be bypassed or represented as complete.
+The final `v1.0.0` launch is intentionally **not** complete. Exact-SHA physical-device evidence remains **0/12** and `main` remains unprotected. The RR10 Stage C source-freeze branch carries package/changelog version `1.0.0` only as pre-tag release preparation; no final v1 claim or tag is permitted until protected-main and physical-evidence gates pass.
 
-RR9 implementation was integrated through PR #44. Production follow-up PR #56 corrected the WebKit RR5 outage qualification boundary, and PR #57 corrected RR6 hosted tap-zone evidence so publication-owned links/controls are never mistaken for reader gesture evidence. Run `33366197854` is the first production run after those follow-ups to pass the complete fail-closed RR4→RR9 chain and live verification.
+RR9 implementation was integrated through PR #44. Later production follow-ups corrected WebKit RR5 outage qualification, RR6 hosted tap-zone evidence, public-catalog qualification after hiding unfinished books, and RR10's immutable two-SHA physical-evidence architecture. The current Stage A production run `33409963085` is the authoritative pre-freeze automated baseline.
 
 ## Security boundary
 
@@ -104,6 +104,6 @@ Security-sensitive findings should be fixed before final v1 when they are P0/P1 
 
 ## Exit criteria
 
-The automated/code-level RR9 exit criteria are satisfied by source `7b2a328c7923a56c7c8ff875d9d106bed13550bf` and production run `33366197854`: source certification, cross-engine security acceptance, high/critical dependency audit, license inventory, SBOM generation, all preceding automated RR gates, Pages deployment, and live verification passed.
+The automated/code-level RR9 exit criteria are satisfied by current Stage A source `b4789ace73b0c3dd5cf6b435f0692f3ea9273ea2` and production run `33409963085`: source certification, cross-engine security acceptance, high/critical dependency audit, license inventory, SBOM generation, all preceding automated RR gates, Pages deployment, and live verification passed.
 
 The complete Phase 9 / v1.0 launch closes only after protected `main`, one frozen production-verified final source SHA, a separately pinned 12/12 physical evidence snapshot for that SHA, final package/changelog metadata, live verification, and the immutable `v1.0.0` tag all pass the two-SHA release gate.
