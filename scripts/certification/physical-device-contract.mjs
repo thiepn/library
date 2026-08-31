@@ -53,12 +53,14 @@ if (present) {
     'RR2_PHYSICAL_PROTOCOL',
     protocol.includes('## Target matrix')
       && protocol.includes('## Execution protocol')
+      && protocol.includes('## Evidence snapshot architecture')
       && protocol.includes('## Journey acceptance criteria')
       && protocol.includes('## Evidence rules')
       && protocol.includes('## Defect policy')
       && protocol.includes('## Exit criteria')
+      && protocol.includes('v1-physical-evidence')
       && protocol.includes('0/12'),
-    'The RR2 protocol defines targets, execution, evidence, defect handling, exit rules, and the honest pending baseline',
+    'The RR2 protocol defines targets, execution, immutable source/evidence separation, defect handling, exit rules, and the honest pending baseline',
   );
 
   pass(
@@ -117,23 +119,38 @@ if (present) {
     validator.includes("mode: 'structure'")
       && validator.includes("options.mode === 'release'")
       && validator.includes('--expected-sha')
+      && validator.includes('--records')
       && validator.includes('device.physical must be true')
       && validator.includes('maximumEvidenceAgeDays')
       && validator.includes("['P0', 'P1'].includes(defect.severity)")
       && validator.includes('RR2_PHYSICAL_DEVICE_RELEASE_PASS'),
-    'The executable validator separates structural CI from exact-SHA release certification and rejects virtual, stale, or critically defective evidence',
+    'The executable validator separates structural CI from exact-SHA release certification, accepts an explicitly pinned record snapshot, and rejects virtual, stale, or critically defective evidence',
   );
 
   pass(
     'RR2_PHYSICAL_WORKFLOW',
     workflow.includes('workflow_dispatch:')
       && workflow.includes('tested_build_sha:')
+      && workflow.includes("branches: [main, 'v1-physical-evidence']")
+      && workflow.includes("test \"$GITHUB_REF_NAME\" = 'v1-physical-evidence'")
+      && workflow.includes('PHYSICAL_EVIDENCE_SHA: ${{ github.sha }}')
       && workflow.includes('--mode structure')
       && workflow.includes('--mode release')
       && workflow.includes('--expected-sha')
+      && workflow.includes('physical-device-evidence-sha')
+      && workflow.includes('physical-device-tested-build-sha')
+      && workflow.includes('physical-device-evidence-${{ inputs.tested_build_sha }}-${{ github.sha }}')
       && workflow.includes('actions/upload-artifact@')
       && workflow.includes('Enforce physical-device result'),
-    'A permanent workflow validates every evidence change and provides an auditable manual exact-build release gate',
+    'A permanent workflow validates evidence changes and records both the tested source SHA and immutable v1-physical-evidence snapshot SHA for the manual release gate',
+  );
+
+  pass(
+    'RR2_PHYSICAL_EVIDENCE_BRANCH',
+    evidenceReadme.includes('v1-physical-evidence')
+      && evidenceReadme.includes('physical evidence commit SHA')
+      && evidenceReadme.includes('must not be merged back into the frozen source candidate'),
+    'Maintainer evidence instructions prevent the record commit from changing the source SHA being physically certified',
   );
 
   pass(
