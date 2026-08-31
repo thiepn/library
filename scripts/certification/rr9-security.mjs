@@ -154,22 +154,36 @@ if (present) {
     pkg.scripts?.['release:v1:gate'] === 'node scripts/release/v1-gate.mjs'
       && v1Gate.includes('protected !== true')
       && v1Gate.includes("pkg.version !== '1.0.0'")
+      && v1Gate.includes('--physical-evidence-sha')
+      && v1Gate.includes('selectedRecords.length !== 12')
+      && v1Workflow.includes('physical_evidence_sha:')
+      && v1Workflow.includes('PHYSICAL_EVIDENCE_SHA')
+      && v1Workflow.includes('path: .build/physical-evidence')
+      && v1Workflow.includes('git -C .build/physical-evidence rev-parse HEAD')
+      && v1Workflow.includes('--records "$GITHUB_WORKSPACE/.build/physical-evidence/evidence/physical-devices/records"')
+      && v1Workflow.includes('--physical-evidence-sha "$PHYSICAL_EVIDENCE_SHA"')
       && v1Workflow.includes('certify:physical:release')
       && v1Workflow.includes('release:v1:gate')
       && v1Workflow.includes('git tag -a v1.0.0'),
-    'v1 tagging is blocked on version, protected main, production identity, and exact-SHA physical evidence');
+    'v1 tagging is blocked on version, protected main, production identity, an exact source SHA, and a separately pinned immutable physical-evidence SHA proving 12/12 targets');
 
   const physicalPending = doc.includes('0/12') || ops.includes('0/12');
-  pass('RR9_VERSION_HONESTY', !physicalPending || pkg.version !== '1.0.0', 'The package is not labeled final v1 while the documented physical-device campaign is incomplete');
+  const preTagVersionHonest = doc.includes('A `1.0.0` package version is preparation, not release certification')
+    && ops.includes('The frozen source candidate may carry package version `1.0.0` before physical evidence is complete');
+  pass('RR9_VERSION_HONESTY',
+    !physicalPending || pkg.version !== '1.0.0' || preTagVersionHonest,
+    'A frozen pre-tag 1.0.0 source candidate is allowed only when documentation explicitly says version metadata is not physical/release certification');
 
   pass('RR9_DOCUMENTATION',
     doc.includes('## Security boundary')
       && doc.includes('## Dependency and CI provenance')
       && doc.includes('## v1.0 release gate')
+      && doc.includes('physical evidence commit SHA')
       && ops.includes('## Rollback')
+      && ops.includes('## Two immutable release inputs')
       && securityDoc.includes('## Supported versions')
       && changelog.includes('## Unreleased'),
-    'Security model, operations, vulnerability handling, changelog, release, and rollback boundaries are documented');
+    'Security model, two-SHA release operations, vulnerability handling, changelog, release, and rollback boundaries are documented');
 }
 
 for (const check of checks) console.log(`${check.ok ? 'PASS' : 'BLOCK'} ${check.id} — ${check.detail}`);
