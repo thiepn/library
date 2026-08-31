@@ -43,6 +43,7 @@ async function manifestFor(node, name) {
 async function collectFromGraph(root) {
   const records = new Map();
   const seenNodes = new Set();
+  const skippedUninstalled = new Set();
 
   async function visitDependencies(dependencies) {
     if (!dependencies || typeof dependencies !== 'object') return;
@@ -55,7 +56,15 @@ async function collectFromGraph(root) {
       seenNodes.add(nodeKey);
 
       const manifest = await manifestFor(node, name);
-      const license = normalizeLicense(manifest?.license ?? manifest?.licenses) ?? 'UNKNOWN';
+      if (!manifest) {
+        // `pnpm list --prod` includes cross-platform optional packages that are
+        // intentionally absent on the current runner. They are represented in
+        // the lockfile-based SBOM, but cannot be an installed license record.
+        skippedUninstalled.add(key);
+        continue;
+      }
+
+      const license = normalizeLicense(manifest.license ?? manifest.licenses) ?? 'UNKNOWN';
       records.set(key, {
         name,
         version,
@@ -69,10 +78,14 @@ async function collectFromGraph(root) {
 
   await visitDependencies(root?.dependencies);
   await visitDependencies(root?.optionalDependencies);
-  return [...records.values()].sort((a, b) => `${a.name}@${a.version}`.localeCompare(`${b.name}@${b.version}`));
+  return {
+    records: [...records.values()].sort((a, b) => `${a.name}@${a.version}`.localeCompare(`${b.name}@${b.version}`)),
+    skippedUninstalled: [...skippedUninstalled].sort(),
+  };
 }
 
 let records;
+let skippedUninstalled = [];
 if (input) {
   const parsed = JSON.parse(await readFile(input, 'utf8'));
   records = Array.isArray(parsed) ? parsed : parsed.records;
@@ -81,11 +94,11 @@ if (input) {
   const raw = execFileSync('pnpm', ['list', '--prod', '--json', '--depth', 'Infinity'], { encoding: 'utf8' });
   const graph = JSON.parse(raw);
   const root = Array.isArray(graph) ? graph[0] : graph;
-  records = await collectFromGraph(root);
+  ({ records, skippedUninstalled } = await collectFromGraph(root));
 }
 
 if (!records.length) {
-  console.error('RR9_LICENSE_BLOCK: production dependency graph contained no package records.');
+  console.error('RR9_LICENSE_BLOCK: installed production dependency graph contained no package records.');
   process.exit(1);
 }
 
@@ -93,17 +106,23 @@ const unresolved = records.filter((record) => !record.license || record.license 
 const forbidden = records.filter((record) => FORBIDDEN_LICENSE_PATTERNS.some((pattern) => pattern.test(record.license ?? 'UNKNOWN')));
 
 await mkdir(path.dirname(output), { recursive: true });
-await writeFile(output, `${JSON.stringify({ schemaVersion: 1, scope: 'production', records }, null, 2)}\n`, 'utf8');
+await writeFile(output, `${JSON.stringify({
+  schemaVersion: 1,
+  scope: 'installed-production',
+  records,
+  skippedUninstalled,
+}, null, 2)}\n`, 'utf8');
 
 if (unresolved.length) {
-  console.error(`RR9_LICENSE_BLOCK: unresolved production license metadata: ${unresolved.map((record) => `${record.name}@${record.version}`).join(', ')}`);
+  console.error(`RR9_LICENSE_BLOCK: unresolved installed production license metadata: ${unresolved.map((record) => `${record.name}@${record.version}`).join(', ')}`);
   process.exit(1);
 }
 if (forbidden.length) {
-  console.error(`RR9_LICENSE_BLOCK: forbidden production license(s): ${forbidden.map((record) => `${record.name}@${record.version} (${record.license})`).join(', ')}`);
+  console.error(`RR9_LICENSE_BLOCK: forbidden installed production license(s): ${forbidden.map((record) => `${record.name}@${record.version} (${record.license})`).join(', ')}`);
   process.exit(1);
 }
 
 const licenses = [...new Set(records.map((record) => record.license))].sort();
-console.log(`RR9_LICENSE_PASS ${licenses.length} license identifiers across ${records.length} production package records -> ${output}`);
+console.log(`RR9_LICENSE_PASS ${licenses.length} license identifiers across ${records.length} installed production package records -> ${output}`);
+if (skippedUninstalled.length) console.log(`RR9_LICENSE_INFO ${skippedUninstalled.length} cross-platform optional graph entries were not installed on this runner; they remain represented in the lockfile SBOM.`);
 console.log(licenses.join('\n'));
