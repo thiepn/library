@@ -1,0 +1,67 @@
+name: RR9 Certification Pin Sweep
+
+on:
+  push:
+    branches: [rr9-security-v1-launch]
+    paths:
+      - '.github/workflows/rr9-cert-pin-sweep.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rr9-cert-pin-sweep
+  cancel-in-progress: true
+
+jobs:
+  sweep:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout RR9 branch
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: rr9-security-v1-launch
+          fetch-depth: 0
+
+      - name: Normalize certification references to action identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          replacements = {
+              'actions/upload-pages-artifact@v4': 'actions/upload-pages-artifact@',
+              'actions/upload-artifact@v4': 'actions/upload-artifact@',
+              'actions/checkout@v5': 'actions/checkout@',
+              'actions/checkout@v4': 'actions/checkout@',
+              'actions/configure-pages@v5': 'actions/configure-pages@',
+              'actions/deploy-pages@v4': 'actions/deploy-pages@',
+              'actions/setup-node@v4': 'actions/setup-node@',
+              'pnpm/setup@v2': 'pnpm/setup@',
+          }
+          changed = []
+          for path in sorted(Path('scripts/certification').glob('*.mjs')):
+              text = path.read_text(encoding='utf-8')
+              updated = text
+              for old, new in replacements.items():
+                  updated = updated.replace(old, new)
+              if updated != text:
+                  path.write_text(updated, encoding='utf-8')
+                  changed.append(str(path))
+          print('Updated certification files:')
+          print('\n'.join(changed) if changed else '(none)')
+          PY
+
+      - name: Commit certification sweep
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add scripts/certification
+          if git diff --cached --quiet; then
+            echo 'Certification files already use action identity rather than mutable tags.'
+            exit 0
+          fi
+          git commit -m 'Make certification action references provenance-pin agnostic'
+          git push origin HEAD:rr9-security-v1-launch
