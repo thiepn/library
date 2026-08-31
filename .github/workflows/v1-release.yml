@@ -7,6 +7,10 @@ on:
         description: Exact 40-character production source SHA to certify and tag
         required: true
         type: string
+      physical_evidence_sha:
+        description: Exact 40-character commit SHA containing the physical-device evidence snapshot
+        required: true
+        type: string
 
 concurrency:
   group: v1-release
@@ -21,17 +25,42 @@ jobs:
       contents: read
     env:
       EXPECTED_SOURCE_SHA: ${{ inputs.expected_source_sha }}
+      PHYSICAL_EVIDENCE_SHA: ${{ inputs.physical_evidence_sha }}
+      PHYSICAL_RELEASE_REPORT: ${{ github.workspace }}/.build/release/physical-device-release.json
       GITHUB_TOKEN: ${{ github.token }}
     steps:
-      - name: Require exact SHA input
+      - name: Require exact immutable inputs
         shell: bash
-        run: '[[ "$EXPECTED_SOURCE_SHA" =~ ^[a-f0-9]{40}$ ]]'
+        run: |
+          set -euo pipefail
+          [[ "$EXPECTED_SOURCE_SHA" =~ ^[a-f0-9]{40}$ ]]
+          [[ "$PHYSICAL_EVIDENCE_SHA" =~ ^[a-f0-9]{40}$ ]]
 
       - name: Checkout exact candidate source
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
           ref: ${{ inputs.expected_source_sha }}
           fetch-depth: 0
+
+      - name: Checkout exact physical evidence snapshot
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          repository: ${{ github.repository }}
+          ref: ${{ inputs.physical_evidence_sha }}
+          path: .build/physical-evidence
+          fetch-depth: 1
+          sparse-checkout: |
+            evidence/physical-devices/records
+
+      - name: Verify immutable source and evidence identities
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE_SHA"
+          test "$(git -C .build/physical-evidence rev-parse HEAD)" = "$PHYSICAL_EVIDENCE_SHA"
+          mkdir -p .build/release
+          printf '%s\n' "$EXPECTED_SOURCE_SHA" > .build/release/source-sha.txt
+          printf '%s\n' "$PHYSICAL_EVIDENCE_SHA" > .build/release/physical-evidence-sha.txt
 
       - name: Setup pnpm and Node
         uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2
@@ -44,8 +73,12 @@ jobs:
       - name: Install frozen dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Certify exact physical-device release evidence
-        run: pnpm certify:physical:release -- --expected-sha "$EXPECTED_SOURCE_SHA"
+      - name: Certify exact physical-device release evidence snapshot
+        run: |
+          pnpm certify:physical:release -- \
+            --expected-sha "$EXPECTED_SOURCE_SHA" \
+            --records "$GITHUB_WORKSPACE/.build/physical-evidence/evidence/physical-devices/records" \
+            --report "$PHYSICAL_RELEASE_REPORT"
 
       - name: Certify RR9 source boundaries
         run: pnpm certify:security
@@ -65,16 +98,21 @@ jobs:
       - name: Verify exact production deployment
         run: pnpm verify:production
 
-      - name: Enforce v1 protected-main and production-identity gate
-        run: pnpm release:v1:gate -- --expected-sha "$EXPECTED_SOURCE_SHA"
+      - name: Enforce v1 protected-main, evidence, and production-identity gate
+        run: |
+          pnpm release:v1:gate -- \
+            --expected-sha "$EXPECTED_SOURCE_SHA" \
+            --physical-evidence-sha "$PHYSICAL_EVIDENCE_SHA" \
+            --physical-report "$PHYSICAL_RELEASE_REPORT"
 
-      - name: Upload final v1 dependency evidence
+      - name: Upload final v1 release evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: v1-release-evidence-${{ inputs.expected_source_sha }}
+          name: v1-release-evidence-${{ inputs.expected_source_sha }}-${{ inputs.physical_evidence_sha }}
           path: |
             .build/security
+            .build/release
           if-no-files-found: warn
           retention-days: 90
 
