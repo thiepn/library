@@ -48,16 +48,23 @@ jobs:
           repository: ${{ github.repository }}
           ref: ${{ inputs.physical_evidence_sha }}
           path: .build/physical-evidence
-          fetch-depth: 1
+          fetch-depth: 0
           sparse-checkout: |
             evidence/physical-devices/records
 
-      - name: Verify immutable source and evidence identities
+      - name: Verify immutable source and evidence provenance
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE_SHA"
           test "$(git -C .build/physical-evidence rev-parse HEAD)" = "$PHYSICAL_EVIDENCE_SHA"
+          git -C .build/physical-evidence merge-base --is-ancestor "$EXPECTED_SOURCE_SHA" "$PHYSICAL_EVIDENCE_SHA"
+          unexpected="$({ git -C .build/physical-evidence diff --name-only "$EXPECTED_SOURCE_SHA..$PHYSICAL_EVIDENCE_SHA" || true; } | grep -Ev '^evidence/physical-devices/records/[A-Za-z0-9._-]+\.json$' || true)"
+          if [ -n "$unexpected" ]; then
+            echo 'Physical evidence snapshot contains changes outside evidence/physical-devices/records/*.json:' >&2
+            printf '%s\n' "$unexpected" >&2
+            exit 1
+          fi
           mkdir -p .build/release
           printf '%s\n' "$EXPECTED_SOURCE_SHA" > .build/release/source-sha.txt
           printf '%s\n' "$PHYSICAL_EVIDENCE_SHA" > .build/release/physical-evidence-sha.txt
