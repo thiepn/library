@@ -45,7 +45,7 @@ const contentSecurityPolicy = [
   "worker-src 'self' blob:",
   "form-action 'self'",
   "manifest-src 'self'",
-  'upgrade-insecure-requests',
+  // Pages production is HTTPS already; WebKit upgrades localhost HTTP module loads and breaks acceptance if this directive is present.
 ].join('; ');
 ---
 <!doctype html>
