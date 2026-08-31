@@ -8,16 +8,18 @@ const navigationFiles = [
   'src/lib/reader/navigation.ts',
   'src/lib/reader/engines/epubjs.ts',
   'src/lib/reader/controller.ts',
+  'src/lib/reader/compatibility-harness.ts',
   'tests/e2e/reader-tap-zones.spec.ts',
   'tests/e2e/performance-fixtures.ts',
 ];
 const navigationExists = (await Promise.all(navigationFiles.map(exists))).every(Boolean);
-pass('EPUB_READER_NAVIGATION', navigationExists, 'Dedicated navigation controller, EPUB interaction bridge, and real multi-page navigation regression are present');
+pass('EPUB_READER_NAVIGATION', navigationExists, 'Dedicated navigation controller, EPUB interaction bridge, displayed-page diagnostics, and real multi-page navigation regression are present');
 
 if (navigationExists) {
   const navigation = await readFile('src/lib/reader/navigation.ts', 'utf8');
   const engine = await readFile('src/lib/reader/engines/epubjs.ts', 'utf8');
   const controller = await readFile('src/lib/reader/controller.ts', 'utf8');
+  const compatibilityHarness = await readFile('src/lib/reader/compatibility-harness.ts', 'utf8');
   const harness = await readFile('src/lib/reader/harness.ts', 'utf8');
   const shell = await readFile('src/components/reader/ReaderShell.astro', 'utf8');
   const publicApi = await readFile('src/lib/reader/index.ts', 'utf8');
@@ -42,19 +44,27 @@ if (navigationExists) {
     performanceFixtures.includes('export const LARGE_EPUB_CHAPTERS = 96')
       && tapTests.includes('largeEpubFixture')
       && tapTests.includes('multi-page EPUB visible taps preserve reading continuity on desktop and mobile')
-      && tapTests.includes('async function verifyDeepReadingContinuity(')
-      && tapTests.includes('advanceByButton(shell, next, initialAdvanceCount)')
+      && tapTests.includes("type ReverseRoundTrip = 'exact-cfi' | 'displayed-page'")
+      && tapTests.includes("reverseRoundTrip: ReverseRoundTrip = 'exact-cfi'")
       && tapTests.includes('verifyDeepReadingContinuity(page)')
-      && tapTests.includes('data-reader-location-cfi')
-      && tapTests.includes('expect(current).not.toBe(initialCfi)')
-      && tapTests.includes('expect(new Set(forwardLocations).size).toBe(forwardLocations.length)')
-      && tapTests.includes('expect(await currentCfi(shell)).toBe(deepCfi)'),
-    'A 96-section EPUB regression exercises visible-viewport taps several pages deep, repeated chrome toggles, forward turns, and exact-CFI reversal without cover reset');
+      && tapTests.includes('advanceByButton(shell, next, initialAdvanceCount)')
+      && tapTests.includes("if (reverseRoundTrip === 'exact-cfi') expect(current.cfi).toBe(deep.cfi)")
+      && tapTests.includes('expect(new Set(forwardLocations.map((location) => location.cfi)).size).toBe(forwardLocations.length)')
+      && tapTests.includes('expect(current.cfi).not.toBe(initial.cfi)'),
+    'A 96-section deterministic EPUB regression keeps the stronger exact-CFI forward/back round trip, repeated chrome toggles, and no reset to the initial/cover location');
   pass('EPUB_READER_NAV_HOSTED_CONTINUITY',
-    tapTests.includes("const HOSTED_READER_PATH = '/library/works/ai-for-the-kingdom/read'")
-      && tapTests.includes('hosted EPUB route preserves reading continuity and stable chrome')
-      && tapTests.includes('verifyDeepReadingContinuity(page, 4)'),
-    'The user-facing hosted reader route reuses the same sustained exact-CFI continuity journey instead of relying only on personal-import fixtures');
+    tapTests.includes("const HOSTED_EPUB_ROUTE = '**/library/media/works/**/editions/**/*.epub'")
+      && tapTests.includes("await page.goto('/library')")
+      && tapTests.includes("page.locator('article[data-catalog-work][data-web-readable=\"true\"]')")
+      && tapTests.includes("readableCard.locator('[data-catalog-reader-cta]')")
+      && !tapTests.includes('ai-for-the-kingdom')
+      && compatibilityHarness.includes('root.dataset.readerLocationIndex = String(location.index)')
+      && compatibilityHarness.includes('root.dataset.readerLocationPage = String(location.displayedPage)')
+      && compatibilityHarness.includes('root.dataset.readerLocationTotal = String(location.displayedTotal)')
+      && tapTests.includes("shell.getAttribute('data-reader-location-page')")
+      && tapTests.includes("verifyDeepReadingContinuity(page, 4, 'displayed-page')")
+      && tapTests.includes('await expectRoundTrip(shell, expected, reverseRoundTrip)'),
+    'A visible public Reader-capable hosted work uses the stable catalog data contract and requires true section/displayed-page reversal while allowing EPUB.js to choose an equivalent range CFI anchor');
   pass('EPUB_READER_NAV_VISIBLE_VIEWPORT_TEST_GEOMETRY',
     tapTests.includes("const viewport = page.locator('[data-reader-viewport]')")
       && tapTests.includes('viewportBox.width * xRatio')

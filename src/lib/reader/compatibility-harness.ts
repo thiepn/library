@@ -13,6 +13,13 @@ export interface ReaderCompatibilityHarnessHandle extends ReaderAccessibilityHar
   compatibility: ReaderPublicationCompatibilityController;
 }
 
+function clearLocationDiagnostics(root: HTMLElement): void {
+  delete root.dataset.readerLocationCfi;
+  delete root.dataset.readerLocationIndex;
+  delete root.dataset.readerLocationPage;
+  delete root.dataset.readerLocationTotal;
+}
+
 function attachCompatibility(
   root: HTMLElement,
   base: ReaderAccessibilityHarnessHandle,
@@ -21,12 +28,15 @@ function attachCompatibility(
   const unsubscribeLocationDiagnostic = base.controller.subscribe((state) => {
     const location = state.location;
     if (!location) {
-      delete root.dataset.readerLocationCfi;
-      delete root.dataset.readerLocationIndex;
+      clearLocationDiagnostics(root);
       return;
     }
     root.dataset.readerLocationCfi = location.cfi;
     root.dataset.readerLocationIndex = String(location.index);
+    if (location.displayedPage === undefined) delete root.dataset.readerLocationPage;
+    else root.dataset.readerLocationPage = String(location.displayedPage);
+    if (location.displayedTotal === undefined) delete root.dataset.readerLocationTotal;
+    else root.dataset.readerLocationTotal = String(location.displayedTotal);
   });
   let destroyed = false;
   compatibility.start();
@@ -38,8 +48,7 @@ function attachCompatibility(
       if (destroyed) return;
       destroyed = true;
       unsubscribeLocationDiagnostic();
-      delete root.dataset.readerLocationCfi;
-      delete root.dataset.readerLocationIndex;
+      clearLocationDiagnostics(root);
       compatibility.destroy();
       base.destroy();
     },

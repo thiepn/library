@@ -17,9 +17,21 @@ interface VisibleTapPoint {
   targetDescription: string;
 }
 
+interface VisualLocation {
+  index: number;
+  page: number;
+  total: number;
+}
+
+interface ReaderCheckpoint {
+  cfi: string;
+  visual: VisualLocation;
+}
+
+type ReverseRoundTrip = 'exact-cfi' | 'displayed-page';
+
 const USE_STAGED_HOSTED_MEDIA = process.env.RR6_STAGED_HOSTED_MEDIA === '1';
-const HOSTED_READER_PATH = '/library/works/ai-for-the-kingdom/read';
-const HOSTED_EPUB_ROUTE = '**/library/media/works/ai-for-the-kingdom/editions/1.0.0-rc4/AI_for_the_Kingdom.epub';
+const HOSTED_EPUB_ROUTE = '**/library/media/works/**/editions/**/*.epub';
 const PUBLICATION_INTERACTIVE_SELECTOR = [
   'a[href]',
   'button',
@@ -43,6 +55,9 @@ async function waitForReader(page: Page): Promise<Locator> {
   const shell = page.locator('[data-reader-shell]');
   await expect(shell).toHaveAttribute('data-reader-status', 'ready', { timeout: 30_000 });
   await expect(shell).toHaveAttribute('data-reader-location-cfi', /^epubcfi\(/, { timeout: 10_000 });
+  await expect(shell).toHaveAttribute('data-reader-location-index', /^\d+$/, { timeout: 10_000 });
+  await expect(shell).toHaveAttribute('data-reader-location-page', /^\d+$/, { timeout: 10_000 });
+  await expect(shell).toHaveAttribute('data-reader-location-total', /^\d+$/, { timeout: 10_000 });
   await expect(page.locator('[data-reader-viewport] iframe')).toBeVisible();
   return shell;
 }
@@ -75,11 +90,20 @@ async function openHostedReader(page: Page): Promise<void> {
     });
   }
 
-  await page.goto(HOSTED_READER_PATH);
+  // Enter through the public catalog instead of naming a publication. Private/draft works are not
+  // rendered here, so hosted qualification follows the same visibility contract as real readers.
+  // Use the explicit catalog data contract rather than presentation classes/copy so the acceptance
+  // journey remains stable if card styling or format labels change.
+  await page.goto('/library');
+  const readableCard = page.locator('article[data-catalog-work][data-web-readable="true"]').first();
+  await expect(readableCard, 'Catalog must expose at least one public work available in the Library reader').toBeVisible();
+  const readerCta = readableCard.locator('[data-catalog-reader-cta]');
+  await expect(readerCta, 'Public catalog work must expose its canonical reader CTA').toBeVisible();
+  await readerCta.click();
   await waitForReader(page);
 
   if (!USE_STAGED_HOSTED_MEDIA) {
-    expect(fixtureRequests, 'Hosted route must request the publication EPUB through its real media URL').toBeGreaterThan(0);
+    expect(fixtureRequests, 'Hosted reader must request its EPUB through the public work\'s real media URL').toBeGreaterThan(0);
   }
 }
 
@@ -229,19 +253,54 @@ async function currentCfi(shell: Locator): Promise<string> {
   return value ?? '';
 }
 
+async function currentVisualLocation(shell: Locator): Promise<VisualLocation> {
+  const [index, page, total] = await Promise.all([
+    shell.getAttribute('data-reader-location-index'),
+    shell.getAttribute('data-reader-location-page'),
+    shell.getAttribute('data-reader-location-total'),
+  ]);
+  expect(index).toMatch(/^\d+$/);
+  expect(page).toMatch(/^\d+$/);
+  expect(total).toMatch(/^\d+$/);
+  return { index: Number(index), page: Number(page), total: Number(total) };
+}
+
+async function currentCheckpoint(shell: Locator): Promise<ReaderCheckpoint> {
+  return { cfi: await currentCfi(shell), visual: await currentVisualLocation(shell) };
+}
+
+function visualKey(location: VisualLocation): string {
+  return `${location.index}:${location.page}:${location.total}`;
+}
+
 async function expectCfiChange(shell: Locator, before: string, settleControl?: Locator, timeout = 5_000): Promise<string> {
   await expect.poll(() => shell.getAttribute('data-reader-location-cfi'), { timeout }).not.toBe(before);
   if (settleControl) await expect(settleControl).toBeEnabled({ timeout });
   return currentCfi(shell);
 }
 
-async function advanceByButton(shell: Locator, next: Locator, count: number): Promise<string[]> {
-  const locations: string[] = [await currentCfi(shell)];
+async function expectRoundTrip(
+  shell: Locator,
+  expected: ReaderCheckpoint,
+  mode: ReverseRoundTrip,
+  timeout = 5_000,
+): Promise<void> {
+  if (mode === 'exact-cfi') {
+    await expect.poll(() => shell.getAttribute('data-reader-location-cfi'), { timeout }).toBe(expected.cfi);
+    return;
+  }
+
+  await expect.poll(async () => visualKey(await currentVisualLocation(shell)), { timeout }).toBe(visualKey(expected.visual));
+}
+
+async function advanceByButton(shell: Locator, next: Locator, count: number): Promise<ReaderCheckpoint[]> {
+  const locations: ReaderCheckpoint[] = [await currentCheckpoint(shell)];
   for (let index = 0; index < count; index += 1) {
     const before = locations[locations.length - 1]!;
     await expect(next).toBeEnabled();
     await next.click();
-    locations.push(await expectCfiChange(shell, before, next));
+    await expectCfiChange(shell, before.cfi, next);
+    locations.push(await currentCheckpoint(shell));
   }
   return locations;
 }
@@ -263,26 +322,33 @@ async function expectChromeStable(page: Page, shell: Locator, expected: 'visible
   await expect(shell).toHaveAttribute('data-reader-controls', expected);
 }
 
-async function verifyDeepReadingContinuity(page: Page, initialAdvanceCount = 5): Promise<void> {
+async function verifyDeepReadingContinuity(
+  page: Page,
+  initialAdvanceCount = 5,
+  reverseRoundTrip: ReverseRoundTrip = 'exact-cfi',
+): Promise<void> {
   const shell = page.locator('[data-reader-shell]');
   const previous = page.locator('[data-reader-command="previous"]');
   const next = page.locator('[data-reader-command="next"]');
-  const initialCfi = await currentCfi(shell);
+  const initial = await currentCheckpoint(shell);
 
   const checkpoints = await advanceByButton(shell, next, initialAdvanceCount);
-  const deepCfi = checkpoints.at(-1)!;
-  expect(deepCfi).not.toBe(initialCfi);
+  const originalDeep = checkpoints.at(-1)!;
+  expect(originalDeep.cfi).not.toBe(initial.cfi);
   await expect(previous).toBeEnabled();
 
   const rightTap = await tapVisibleBook(page, 0.84);
   expectCompatibilityTapHandled(rightTap);
-  const afterRight = await expectCfiChange(shell, deepCfi, next);
-  expect(afterRight).not.toBe(initialCfi);
+  const afterRightCfi = await expectCfiChange(shell, originalDeep.cfi, next);
+  expect(afterRightCfi).not.toBe(initial.cfi);
 
   const leftTap = await tapVisibleBook(page, 0.16);
   expectCompatibilityTapHandled(leftTap);
-  await expect.poll(() => shell.getAttribute('data-reader-location-cfi'), { timeout: 5_000 }).toBe(deepCfi);
-  await expect(next).toBeEnabled({ timeout: 5_000 });
+  await expectCfiChange(shell, afterRightCfi, next);
+  await expectRoundTrip(shell, originalDeep, reverseRoundTrip);
+  const deep = await currentCheckpoint(shell);
+  if (reverseRoundTrip === 'exact-cfi') expect(deep.cfi).toBe(originalDeep.cfi);
+  else expect(visualKey(deep.visual)).toBe(visualKey(originalDeep.visual));
 
   for (let toggle = 0; toggle < 4; toggle += 1) {
     const controlsBefore = await shell.getAttribute('data-reader-controls');
@@ -291,32 +357,36 @@ async function verifyDeepReadingContinuity(page: Page, initialAdvanceCount = 5):
     const centerTap = await tapVisibleBook(page, 0.5);
     expectCompatibilityTapHandled(centerTap);
     await expectChromeStable(page, shell, expectedAfter);
-    expect(await currentCfi(shell)).toBe(deepCfi);
+    expect(await currentCfi(shell)).toBe(deep.cfi);
+    expect(visualKey(await currentVisualLocation(shell))).toBe(visualKey(deep.visual));
   }
 
-  let current = deepCfi;
-  const forwardLocations: string[] = [];
+  let current = deep;
+  const forwardLocations: ReaderCheckpoint[] = [];
   for (let turn = 0; turn < 4; turn += 1) {
     const tap = await tapVisibleBook(page, 0.84);
     expectCompatibilityTapHandled(tap);
-    current = await expectCfiChange(shell, current, next);
-    expect(current).not.toBe(initialCfi);
+    await expectCfiChange(shell, current.cfi, next);
+    current = await currentCheckpoint(shell);
+    expect(current.cfi).not.toBe(initial.cfi);
     forwardLocations.push(current);
   }
-  expect(new Set(forwardLocations).size).toBe(forwardLocations.length);
+  expect(new Set(forwardLocations.map((location) => location.cfi)).size).toBe(forwardLocations.length);
+  expect(new Set(forwardLocations.map((location) => visualKey(location.visual))).size).toBe(forwardLocations.length);
 
   for (let turn = forwardLocations.length - 1; turn >= 0; turn -= 1) {
-    const expected = turn === 0 ? deepCfi : forwardLocations[turn - 1]!;
-    const before = await currentCfi(shell);
+    const expected = turn === 0 ? deep : forwardLocations[turn - 1]!;
+    const before = await currentCheckpoint(shell);
     const tap = await tapVisibleBook(page, 0.16);
     expectCompatibilityTapHandled(tap);
-    await expect.poll(() => shell.getAttribute('data-reader-location-cfi'), { timeout: 5_000 }).not.toBe(before);
-    await expect.poll(() => shell.getAttribute('data-reader-location-cfi'), { timeout: 5_000 }).toBe(expected);
-    await expect(next).toBeEnabled({ timeout: 5_000 });
+    await expectCfiChange(shell, before.cfi, next);
+    await expectRoundTrip(shell, expected, reverseRoundTrip);
+    current = await currentCheckpoint(shell);
   }
 
-  expect(await currentCfi(shell)).toBe(deepCfi);
-  expect(await currentCfi(shell)).not.toBe(initialCfi);
+  if (reverseRoundTrip === 'exact-cfi') expect(current.cfi).toBe(deep.cfi);
+  else expect(visualKey(current.visual)).toBe(visualKey(deep.visual));
+  expect(current.cfi).not.toBe(initial.cfi);
 }
 
 test('@rr6 short EPUB uses left previous, center chrome, and right next tap zones', async ({ page }) => {
@@ -359,5 +429,5 @@ test('@rr6 multi-page EPUB visible taps preserve reading continuity on desktop a
 test('@rr6 hosted EPUB route preserves reading continuity and stable chrome', async ({ page }) => {
   await openHostedReader(page);
   await expectReaderScriptBoundary(page);
-  await verifyDeepReadingContinuity(page, 4);
+  await verifyDeepReadingContinuity(page, 4, 'displayed-page');
 });
