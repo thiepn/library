@@ -51,10 +51,14 @@ if (navigationExists) {
       && tapTests.includes('expect(await currentCfi(shell)).toBe(deepCfi)'),
     'A 96-section EPUB regression exercises visible-viewport taps several pages deep, repeated chrome toggles, forward turns, and exact-CFI reversal without cover reset');
   pass('EPUB_READER_NAV_HOSTED_CONTINUITY',
-    tapTests.includes("const HOSTED_READER_PATH = '/library/works/ai-for-the-kingdom/read'")
+    tapTests.includes("const HOSTED_EPUB_ROUTE = '**/library/media/works/**/editions/**/*.epub'")
+      && tapTests.includes("await page.goto('/library')")
+      && tapTests.includes("page.locator('article.work-card')")
+      && tapTests.includes("page.locator('[data-reader-cta]')")
+      && !tapTests.includes('ai-for-the-kingdom')
       && tapTests.includes('hosted EPUB route preserves reading continuity and stable chrome')
       && tapTests.includes('verifyDeepReadingContinuity(page, 4)'),
-    'The user-facing hosted reader route reuses the same sustained exact-CFI continuity journey instead of relying only on personal-import fixtures');
+    'A visible public Reader-capable catalog work reuses the same sustained exact-CFI continuity journey instead of relying only on personal-import fixtures or a named publication');
   pass('EPUB_READER_NAV_VISIBLE_VIEWPORT_TEST_GEOMETRY',
     tapTests.includes("const viewport = page.locator('[data-reader-viewport]')")
       && tapTests.includes('viewportBox.width * xRatio')
