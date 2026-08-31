@@ -82,13 +82,17 @@ if (present) {
 
   pass('RR6_HOSTED_READER_CONTINUITY',
     tapTests.includes("const USE_STAGED_HOSTED_MEDIA = process.env.RR6_STAGED_HOSTED_MEDIA === '1'")
-      && tapTests.includes("const HOSTED_READER_PATH = '/library/works/ai-for-the-kingdom/read'")
-      && tapTests.includes('AI_for_the_Kingdom.epub')
+      && tapTests.includes("const HOSTED_EPUB_ROUTE = '**/library/media/works/**/editions/**/*.epub'")
+      && tapTests.includes("await page.goto('/library')")
+      && tapTests.includes("page.locator('article.work-card')")
+      && tapTests.includes("page.locator('.micro', { hasText: /(?:^| · )Reader(?: · |$)/ })")
+      && tapTests.includes("page.locator('[data-reader-cta]')")
+      && !tapTests.includes('ai-for-the-kingdom')
       && tapTests.includes('async function openHostedReader(')
       && tapTests.includes('hosted EPUB route preserves reading continuity and stable chrome')
       && tapTests.includes('verifyDeepReadingContinuity(page, 4)')
       && deployment.includes("RR6_STAGED_HOSTED_MEDIA: '1'"),
-    'RR6 exercises the real hosted reader/bootstrap path in PR CI with deterministic long EPUB bytes and switches to exact R2-staged canonical EPUB media in production before artifact upload');
+    'RR6 enters through the visible public catalog, selects a Reader-capable work without naming a publication, uses deterministic EPUB bytes in PR CI, and switches to exact staged canonical media in production');
 
   pass('RR6_CHROME_TOGGLE_STABILITY',
     shellController.includes('const POINTER_REVEAL_GUARD_MS = 450')
