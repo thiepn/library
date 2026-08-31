@@ -14,54 +14,96 @@ export const FORBIDDEN_LICENSE_PATTERNS = [
 
 const input = process.argv[2];
 const output = process.argv[3] ?? '.build/security/licenses.json';
-let raw;
-if (input) {
-  raw = await readFile(input, 'utf8');
-} else {
-  raw = execFileSync('pnpm', ['licenses', 'list', '--prod', '--json'], { encoding: 'utf8' });
-  await mkdir(path.dirname(output), { recursive: true });
-  await writeFile(output, raw.endsWith('\n') ? raw : `${raw}\n`, 'utf8');
-}
 
-const inventory = JSON.parse(raw);
-const licenses = new Set();
-let packageRecords = 0;
-
-function addLicense(value) {
-  if (typeof value === 'string' && value.trim()) licenses.add(value.trim());
-  else if (Array.isArray(value)) value.forEach(addLicense);
-}
-
-function walk(value, depth = 0) {
+function normalizeLicense(value) {
+  if (typeof value === 'string' && value.trim()) return value.trim();
+  if (value && typeof value === 'object' && typeof value.type === 'string' && value.type.trim()) return value.type.trim();
   if (Array.isArray(value)) {
-    value.forEach((item) => walk(item, depth + 1));
-    return;
+    const parts = value.map(normalizeLicense).filter(Boolean);
+    return parts.length ? parts.join(' OR ') : undefined;
   }
-  if (!value || typeof value !== 'object') return;
+  return undefined;
+}
 
-  if (typeof value.name === 'string' && typeof value.version === 'string') packageRecords += 1;
-  if ('license' in value) addLicense(value.license);
-  if ('licenses' in value) addLicense(value.licenses);
-
-  for (const [key, child] of Object.entries(value)) {
-    if (depth === 0 && Array.isArray(child) && child.length && child.every((item) => item && typeof item === 'object')) {
-      licenses.add(key);
+async function manifestFor(node, name) {
+  const candidates = [];
+  if (typeof node?.path === 'string' && node.path) candidates.push(path.join(node.path, 'package.json'));
+  if (typeof node?.resolved === 'string' && node.resolved.startsWith('file:')) candidates.push(path.resolve(node.resolved.slice(5), 'package.json'));
+  candidates.push(path.join('node_modules', name, 'package.json'));
+  for (const candidate of candidates) {
+    try {
+      return JSON.parse(await readFile(candidate, 'utf8'));
+    } catch {
+      // Try the next concrete installation path.
     }
-    walk(child, depth + 1);
   }
+  return undefined;
 }
-walk(inventory);
 
-if (!licenses.size) {
-  console.error('RR9_LICENSE_BLOCK: production license inventory contained no recognizable license identifiers.');
+async function collectFromGraph(root) {
+  const records = new Map();
+  const seenNodes = new Set();
+
+  async function visitDependencies(dependencies) {
+    if (!dependencies || typeof dependencies !== 'object') return;
+    for (const [name, node] of Object.entries(dependencies)) {
+      if (!node || typeof node !== 'object') continue;
+      const version = typeof node.version === 'string' ? node.version : 'unknown';
+      const key = `${name}@${version}`;
+      const nodeKey = `${key}:${node.path ?? ''}`;
+      if (seenNodes.has(nodeKey)) continue;
+      seenNodes.add(nodeKey);
+
+      const manifest = await manifestFor(node, name);
+      const license = normalizeLicense(manifest?.license ?? manifest?.licenses) ?? 'UNKNOWN';
+      records.set(key, {
+        name,
+        version,
+        license,
+        path: typeof node.path === 'string' ? node.path : undefined,
+      });
+      await visitDependencies(node.dependencies);
+      await visitDependencies(node.optionalDependencies);
+    }
+  }
+
+  await visitDependencies(root?.dependencies);
+  await visitDependencies(root?.optionalDependencies);
+  return [...records.values()].sort((a, b) => `${a.name}@${a.version}`.localeCompare(`${b.name}@${b.version}`));
+}
+
+let records;
+if (input) {
+  const parsed = JSON.parse(await readFile(input, 'utf8'));
+  records = Array.isArray(parsed) ? parsed : parsed.records;
+  if (!Array.isArray(records)) throw new Error('License inventory input must be an array or { records } object.');
+} else {
+  const raw = execFileSync('pnpm', ['list', '--prod', '--json', '--depth', 'Infinity'], { encoding: 'utf8' });
+  const graph = JSON.parse(raw);
+  const root = Array.isArray(graph) ? graph[0] : graph;
+  records = await collectFromGraph(root);
+}
+
+if (!records.length) {
+  console.error('RR9_LICENSE_BLOCK: production dependency graph contained no package records.');
   process.exit(1);
 }
 
-const forbidden = [...licenses].filter((license) => FORBIDDEN_LICENSE_PATTERNS.some((pattern) => pattern.test(license)));
+const unresolved = records.filter((record) => !record.license || record.license === 'UNKNOWN');
+const forbidden = records.filter((record) => FORBIDDEN_LICENSE_PATTERNS.some((pattern) => pattern.test(record.license ?? 'UNKNOWN')));
+
+await mkdir(path.dirname(output), { recursive: true });
+await writeFile(output, `${JSON.stringify({ schemaVersion: 1, scope: 'production', records }, null, 2)}\n`, 'utf8');
+
+if (unresolved.length) {
+  console.error(`RR9_LICENSE_BLOCK: unresolved production license metadata: ${unresolved.map((record) => `${record.name}@${record.version}`).join(', ')}`);
+  process.exit(1);
+}
 if (forbidden.length) {
-  console.error(`RR9_LICENSE_BLOCK: forbidden or unresolved production license(s): ${forbidden.sort().join(', ')}`);
+  console.error(`RR9_LICENSE_BLOCK: forbidden production license(s): ${forbidden.map((record) => `${record.name}@${record.version} (${record.license})`).join(', ')}`);
   process.exit(1);
 }
 
-console.log(`RR9_LICENSE_PASS ${licenses.size} license identifiers${packageRecords ? ` across ${packageRecords} package records` : ''}`);
-console.log([...licenses].sort().join('\n'));
+const licenses = [...new Set(records.map((record) => record.license))].sort();
+console.log(`RR9_LICENSE_PASS ${licenses.length} license identifiers across ${records.length} production package records -> ${output}`);
+console.log(licenses.join('\n'));
