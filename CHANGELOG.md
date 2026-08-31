@@ -4,6 +4,24 @@ All notable changes to Thiepn Library are recorded here.
 
 ## Unreleased
 
+No post-v1 changes are recorded yet.
+
+## 1.0.0 — 2026-08-31
+
+### Reader
+
+- Added the integrated EPUB reader with paginated and scrolling modes, single/double/auto spreads, typography controls, contents navigation, in-book search, bookmarks, highlights/notes, progress restoration, keyboard navigation, desktop page rails, touch/swipe navigation, and native-selection safeguards.
+- Added the integrated PDF reader with selectable text, previous/next/direct page navigation, page rails, fit-width/fit-page/custom zoom, search, bookmarks, progress restoration, mobile gestures, and recovery to the original PDF.
+- Added persistent reading state, migration/fallback handling, personal EPUB/PDF import and reopen flows, and cross-format reader entry routing.
+- Added regression coverage for mobile/desktop interaction ownership, tap zones, wheel/trackpad pagination, viewport adaptation, reading progress, search, bookmarks, annotations, and reader recovery.
+
+### Reliability, accessibility, and performance
+
+- Added offline/PWA reopening, storage reliability, update recovery, data durability, backup/portability, and conflict-handling acceptance gates.
+- Added cross-engine accessibility and inclusive-reading acceptance plus keyboard/focus/dialog ownership checks.
+- Added reading-ergonomics and performance/memory budgets for sustained reader use and production staging.
+- Added the 12-target RR10 physical-device evidence framework; physical hardware certification remains a separate release gate and is not implied by this metadata preparation.
+
 ### Security
 
 - Added deny-by-default EPUB frame CSP and render-time remote-resource stripping.
@@ -24,7 +42,5 @@ All notable changes to Thiepn Library are recorded here.
 - Added exact live `release-identity.json` source verification.
 - Replaced post-deploy commits to `main` with immutable deployment evidence so protected-main enforcement does not require a deployment-bot bypass.
 - Added a fail-closed v1 release workflow and gate.
-
-### Not yet released as v1.0.0
-
-The final v1.0.0 tag remains blocked until the required exact-SHA physical-device campaign is complete and `main` is protected with required release checks.
+- Added immutable two-SHA final certification: one frozen application source SHA plus a descendant record-only physical-evidence SHA.
+- Final `v1.0.0` tagging remains blocked until `main` is protected and the required exact-SHA physical-device campaign reaches 12/12. Package/changelog version metadata alone is not a release claim.
