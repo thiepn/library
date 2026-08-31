@@ -70,21 +70,35 @@ RR9 and later deployment outcomes are retained as immutable `production-deployme
 
 ## v1.0 release gate
 
-`v1.0.0` is fail-closed. The release workflow requires all of the following for one exact 40-character source SHA:
+`v1.0.0` is fail-closed and uses **two immutable Git inputs**:
 
-1. `package.json` is exactly `1.0.0` and the changelog has a 1.0.0 section.
+1. `expected_source_sha` — the exact production source that is built, live-verified, and eventually tagged.
+2. `physical_evidence_sha` — the exact commit containing the physical-device record snapshot that certifies `expected_source_sha`.
+
+The physical evidence commit SHA must descend from the frozen source SHA and may differ from it only under `evidence/physical-devices/records/*.json`. The evidence branch is never merged back into the source candidate. The final release workflow checks out both commits independently, validates the external record snapshot using the trusted source validator, and tags the source SHA only.
+
+This separation removes a self-reference that would exist if evidence records had to be committed inside the same source SHA they name. A physical record contains `release.buildSha`; adding that record necessarily creates another Git commit.
+
+The final workflow requires all of the following:
+
+1. `package.json` in `expected_source_sha` is exactly `1.0.0` and the changelog has a 1.0.0 section.
 2. the exact source passes complete release certification plus RR9 security/dependency acceptance;
-3. the exact source has complete RR2 physical-device release evidence;
-4. `main` reports `protected: true` through the GitHub API;
-5. production `/release-identity.json` equals the expected source SHA;
-6. live production verification passes for application routes, immutable media, offline/PWA assets, public privacy/security/support pages, CSP evidence, and release identity;
-7. only then may the workflow create and push annotated tag `v1.0.0`.
+3. the separately pinned evidence snapshot contains 12/12 current passing RR2 records for `expected_source_sha`;
+4. the evidence commit descends from `expected_source_sha` and has a record-only diff;
+5. `main` reports `protected: true` through the GitHub API;
+6. production `/release-identity.json` equals `expected_source_sha`;
+7. live production verification passes for application routes, immutable media, offline/PWA assets, public privacy/security/support pages, CSP evidence, and release identity;
+8. only then may the workflow create and push annotated tag `v1.0.0` on `expected_source_sha`.
 
-The current repository state does not satisfy steps 3 or 4: physical evidence is 0/12 and `main` is currently unprotected. RR9 automation is production-certified as a release candidate, but it must not manufacture a final v1 tag.
+A `1.0.0` package version is preparation, not release certification. The source candidate may carry final version/changelog metadata while the physical campaign is still pending, provided documentation continues to state that the tag and final release claim are blocked. This permits one source SHA to be frozen and physically tested without later changing that SHA solely to bump version metadata.
+
+The current repository state does not satisfy the physical or protected-main requirements: physical evidence is 0/12 and `main` is currently unprotected. RR9 automation is production-certified as a release candidate, but it must not manufacture a final v1 tag.
 
 ## Rollback and incident rule
 
 A failed security or production gate prevents Pages artifact upload. A failed v1 gate prevents tagging. If a deployed release candidate is found defective, redeploy the last known-good source SHA through the same certified deployment workflow; immutable publication releases remain content-addressed/versioned and reading-state migrations are additive/compensated rather than destructively reset.
+
+If a source defect is fixed after the physical campaign begins, the source SHA changes and prior physical evidence no longer certifies final v1. Create a new frozen source candidate and retest the required physical matrix. Evidence may be retained historically, but it cannot be relabeled for the new source.
 
 Security-sensitive findings should be fixed before final v1 when they are P0/P1 or create a high/critical shipped vulnerability. Claims in public documentation must match what the production host and reader actually enforce.
 
@@ -92,4 +106,4 @@ Security-sensitive findings should be fixed before final v1 when they are P0/P1 
 
 The automated/code-level RR9 exit criteria are satisfied by source `7b2a328c7923a56c7c8ff875d9d106bed13550bf` and production run `33366197854`: source certification, cross-engine security acceptance, high/critical dependency audit, license inventory, SBOM generation, all preceding automated RR gates, Pages deployment, and live verification passed.
 
-The complete Phase 9 / v1.0 launch closes only after the separately tracked protected-main configuration and exact-SHA physical-device campaign also pass, the package/changelog are finalized as `1.0.0`, the exact final SHA is production-verified, and tag `v1.0.0` is created from that verified source.
+The complete Phase 9 / v1.0 launch closes only after protected `main`, one frozen production-verified final source SHA, a separately pinned 12/12 physical evidence snapshot for that SHA, final package/changelog metadata, live verification, and the immutable `v1.0.0` tag all pass the two-SHA release gate.
