@@ -10,10 +10,10 @@ At the current release-candidate stage:
 
 - physical-device evidence is **0/12**;
 - `main` is not protected;
-- package version remains `1.0.0-rc.1`;
+- final package/changelog metadata is prepared as `1.0.0` on `rr10-v1-source-freeze`, but that branch must not be merged until `main` protection is enabled;
 - no `v1.0.0` tag should exist from this campaign.
 
-These are expected blockers, not reasons to weaken the gate.
+The latest production-verified automated baseline is source `b4789ace73b0c3dd5cf6b435f0692f3ea9273ea2`, Deploy Library run `33409963085`. These remaining blockers are expected and are not reasons to weaken the gate.
 
 ## Two immutable release inputs
 
@@ -79,7 +79,7 @@ Before v1.0 tagging, `main` must report `protected: true`. Recommended required 
 
 Also require pull requests for ordinary human changes and prevent force pushes/deletion. The production deployment no longer needs to commit status files back to `main`, so branch protection does not require a deployment-bot bypass.
 
-The connected automation available to ChatGPT may be able to read but not mutate repository protection. If protection cannot be changed through the available GitHub action surface, enable it in repository Settings before freezing the final v1 source. The v1 gate independently verifies the resulting GitHub API state and refuses to tag an unprotected branch.
+The connected automation available to ChatGPT can verify but cannot mutate repository protection. Enable it in repository Settings before merging the final source-freeze PR. The v1 gate independently verifies the resulting GitHub API state and refuses to tag an unprotected branch.
 
 ## Security/dependency release evidence
 
