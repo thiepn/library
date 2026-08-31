@@ -92,7 +92,7 @@ jobs:
 
       - name: Upload failed production browser evidence
         if: failure() && steps.browser.outcome == 'failure'
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: production-browser-acceptance-${{ github.run_id }}
           path: |
@@ -107,7 +107,7 @@ jobs:
 
       - name: Upload failed production performance evidence
         if: failure() && steps.performance.outcome == 'failure'
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: production-performance-budget-${{ github.run_id }}
           path: |
@@ -122,7 +122,7 @@ jobs:
 
       - name: Upload failed production offline evidence
         if: failure() && steps.offline.outcome == 'failure'
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: production-offline-reliability-${{ github.run_id }}
           path: |
@@ -139,7 +139,7 @@ jobs:
 
       - name: Upload failed production accessibility evidence
         if: failure() && steps.accessibility.outcome == 'failure'
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: production-accessibility-acceptance-${{ github.run_id }}
           path: |
@@ -156,7 +156,7 @@ jobs:
 
       - name: Upload failed production ergonomics evidence
         if: failure() && steps.ergonomics.outcome == 'failure'
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: production-reading-ergonomics-${{ github.run_id }}
           path: |
@@ -171,7 +171,7 @@ jobs:
 
       - name: Upload failed production durability evidence
         if: failure() && steps.durability.outcome == 'failure'
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: production-data-durability-${{ github.run_id }}
           path: |
@@ -192,7 +192,7 @@ jobs:
 
       - name: Upload failed production security evidence
         if: failure() && steps.security.outcome == 'failure'
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: production-security-hardening-${{ github.run_id }}
           path: |
@@ -299,7 +299,7 @@ jobs:
 
       - name: Upload production deployment evidence
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: production-deployment-${{ github.run_id }}
           path: |
