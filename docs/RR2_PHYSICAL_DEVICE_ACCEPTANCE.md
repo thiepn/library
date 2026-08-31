@@ -53,13 +53,30 @@ For each matrix target:
 6. Record every defect, including P2/P3 findings. A passing record may include closed defects or explicitly accepted P2/P3 defects, but never an open P0/P1.
 7. Run `pnpm certify:physical:structure` before committing the record.
 8. Repeat failed or blocked journeys after fixes in a new immutable record rather than rewriting historical evidence to look successful.
-9. When one exact build has a passing record for every target, run:
+9. When one exact build has a passing record for every target, run the manual **Physical Device Evidence** workflow from the dedicated evidence branch with that build SHA.
 
-```bash
-pnpm certify:physical:release -- --expected-sha <40-character-build-sha>
-```
+The exact-build validator is the only machine-generated RR2 release pass.
 
-The exact-build command is the only machine-generated RR2 release pass.
+## Evidence snapshot architecture
+
+Physical evidence and application source use **two immutable Git SHAs**.
+
+- The **frozen source SHA** is the exact application source already deployed and production-verified. This is the SHA every physical record names in `release.buildSha`, and it is the SHA that can eventually receive tag `v1.0.0`.
+- The **physical evidence commit SHA** is the exact commit containing the 12 physical records that certify the frozen source.
+
+These cannot be the same commit. A record must contain the source SHA; committing that record necessarily creates a different commit SHA. Requiring the evidence to live inside the same source commit would therefore make the release gate self-referential.
+
+The release procedure is:
+
+1. Finish all source changes, enable protected `main`, prepare final v1 metadata, deploy, and production-verify one exact source SHA.
+2. Freeze that SHA. Any subsequent source change invalidates the physical campaign for final release purposes.
+3. Create `v1-physical-evidence` **from the exact frozen source SHA**.
+4. On that branch, change only `evidence/physical-devices/records/*.json`. Do not modify product code, workflows, schemas, matrix definitions, package metadata, or documentation there.
+5. Every physical record keeps `release.buildSha` equal to the frozen source SHA.
+6. When 12/12 pass, run the manual Physical Device Evidence workflow from `v1-physical-evidence`. Retain both the tested source SHA and the exact evidence commit SHA from its artifact.
+7. The evidence branch **must not be merged back into the frozen source candidate**. Final v1 independently checks out both immutable commits, verifies the evidence commit descends from the source and contains record-only differences, validates the records using the source's trusted validator, and tags the source SHA only.
+
+This separation lets evidence be collected and corrected without silently changing the application build being certified.
 
 ## Journey acceptance criteria
 
@@ -204,13 +221,13 @@ Structural validation permits zero records while the test campaign is incomplete
 pnpm certify:physical:structure
 ```
 
-Exact-release validation is deliberately fail-closed:
+Exact-release validation is deliberately fail-closed. For local diagnosis against the current record directory:
 
 ```bash
 pnpm certify:physical:release -- --expected-sha <40-character-build-sha>
 ```
 
-The `Physical Device Evidence` GitHub Actions workflow runs structural checks on evidence changes and exposes a manual exact-build gate that retains a machine-readable summary artifact.
+For final certification, run the `Physical Device Evidence` GitHub Actions workflow from `v1-physical-evidence` with the tested source SHA. It validates evidence structure, checks evidence-branch ancestry and the record-only diff boundary, runs the exact-build gate, and retains a machine-readable artifact containing both immutable SHAs.
 
 ## Exit criteria
 
@@ -223,8 +240,8 @@ RR2 is complete for a release candidate only when:
 - iPad portrait, landscape, and split view pass;
 - every record includes evidence and a sustained session of at least 30 minutes;
 - no open P0/P1 defect remains;
-- `pnpm certify:physical:release -- --expected-sha <sha>` exits successfully;
-- the generated release report is retained with the release candidate evidence.
+- the manual exact-build workflow exits successfully for the frozen source SHA;
+- the generated release report records the exact physical evidence commit SHA and is retained with the release candidate evidence.
 
 ## Current evidence status
 
@@ -235,13 +252,17 @@ Implemented in RR2:
 - authoritative matrix;
 - evidence schema and non-counting template;
 - structural and exact-SHA validators;
+- immutable source/evidence snapshot architecture;
 - CI and manual release workflow;
 - defect intake form;
 - documentation and permanent source certification.
 
 Still required outside automation:
 
+- protect `main`;
+- freeze one exact production-verified final source SHA;
+- create `v1-physical-evidence` from that SHA;
 - operate the application on the named physical devices;
 - capture evidence;
 - fix or disposition discovered defects;
-- add passing exact-build records.
+- add passing exact-build records and retain the final evidence commit SHA.

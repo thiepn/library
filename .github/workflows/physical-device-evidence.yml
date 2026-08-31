@@ -13,7 +13,7 @@ on:
       - 'package.json'
       - 'README.md'
   push:
-    branches: [main]
+    branches: [main, 'v1-physical-evidence']
     paths:
       - 'docs/RR2_PHYSICAL_DEVICE_ACCEPTANCE.md'
       - 'docs/RELEASE_READINESS_ROADMAP.md'
@@ -27,7 +27,7 @@ on:
   workflow_dispatch:
     inputs:
       tested_build_sha:
-        description: Exact 40-character Git SHA operated on every physical target
+        description: Exact 40-character source SHA operated on every physical target
         required: true
         type: string
 
@@ -59,11 +59,32 @@ jobs:
     runs-on: ubuntu-latest
     env:
       TESTED_BUILD_SHA: ${{ inputs.tested_build_sha }}
+      PHYSICAL_EVIDENCE_SHA: ${{ github.sha }}
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22.12.0
+
+      - name: Require dedicated immutable evidence snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = 'v1-physical-evidence'
+          [[ "$TESTED_BUILD_SHA" =~ ^[a-f0-9]{40}$ ]]
+          [[ "$PHYSICAL_EVIDENCE_SHA" =~ ^[a-f0-9]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$PHYSICAL_EVIDENCE_SHA"
+          git merge-base --is-ancestor "$TESTED_BUILD_SHA" "$PHYSICAL_EVIDENCE_SHA"
+          unexpected="$({ git diff --name-only "$TESTED_BUILD_SHA..$PHYSICAL_EVIDENCE_SHA" || true; } | grep -Ev '^evidence/physical-devices/records/[A-Za-z0-9._-]+\.json$' || true)"
+          if [ -n "$unexpected" ]; then
+            echo 'v1-physical-evidence contains changes outside evidence/physical-devices/records/*.json:' >&2
+            printf '%s\n' "$unexpected" >&2
+            exit 1
+          fi
+          printf '%s\n' "$PHYSICAL_EVIDENCE_SHA" > physical-device-evidence-sha
+          printf '%s\n' "$TESTED_BUILD_SHA" > physical-device-tested-build-sha
 
       - name: Run exact-build physical-device gate
         id: physical
@@ -83,11 +104,13 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: physical-device-evidence-${{ inputs.tested_build_sha }}
+          name: physical-device-evidence-${{ inputs.tested_build_sha }}-${{ github.sha }}
           path: |
             physical-device-release.json
             physical-device-release.txt
             physical-device-exit-code
+            physical-device-evidence-sha
+            physical-device-tested-build-sha
           if-no-files-found: error
           retention-days: 90
 
