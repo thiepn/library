@@ -55,8 +55,8 @@ if (navigationExists) {
   pass('EPUB_READER_NAV_HOSTED_CONTINUITY',
     tapTests.includes("const HOSTED_EPUB_ROUTE = '**/library/media/works/**/editions/**/*.epub'")
       && tapTests.includes("await page.goto('/library')")
-      && tapTests.includes("page.locator('article.work-card')")
-      && tapTests.includes("page.locator('[data-reader-cta]')")
+      && tapTests.includes("page.locator('article[data-catalog-work][data-web-readable=\"true\"]')")
+      && tapTests.includes("readableCard.locator('[data-catalog-reader-cta]')")
       && !tapTests.includes('ai-for-the-kingdom')
       && compatibilityHarness.includes('root.dataset.readerLocationIndex = String(location.index)')
       && compatibilityHarness.includes('root.dataset.readerLocationPage = String(location.displayedPage)')
@@ -64,7 +64,7 @@ if (navigationExists) {
       && tapTests.includes("shell.getAttribute('data-reader-location-page')")
       && tapTests.includes("verifyDeepReadingContinuity(page, 4, 'displayed-page')")
       && tapTests.includes('await expectRoundTrip(shell, expected, reverseRoundTrip)'),
-    'A visible public Reader-capable hosted work requires true section/displayed-page reversal while allowing EPUB.js to choose an equivalent range CFI anchor');
+    'A visible public Reader-capable hosted work uses the stable catalog data contract and requires true section/displayed-page reversal while allowing EPUB.js to choose an equivalent range CFI anchor');
   pass('EPUB_READER_NAV_VISIBLE_VIEWPORT_TEST_GEOMETRY',
     tapTests.includes("const viewport = page.locator('[data-reader-viewport]')")
       && tapTests.includes('viewportBox.width * xRatio')
