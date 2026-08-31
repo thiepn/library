@@ -198,7 +198,7 @@ Exit criteria:
 
 ## Phase 9 — Security, privacy, and dependency hardening plus v1.0 launch
 
-**Status:** implementation campaign active on `rr9-security-v1-launch`. The automated/code-level hardening can be production-certified independently, but the final `v1.0.0` tag remains blocked until protected-main and exact-SHA physical-device requirements pass.
+**Status:** automated/code-level hardening and release infrastructure complete and production-certified on source `7b2a328c7923a56c7c8ff875d9d106bed13550bf` via production run `33366197854`. The final `v1.0.0` launch remains blocked until protected-main and exact-SHA physical-device requirements pass.
 
 **Purpose:** certify safe publication processing and produce an operable, reversible v1.0.
 
@@ -213,6 +213,12 @@ Implementation:
 - perform the **Physical-device release candidate re-run** on the exact final commit;
 - remove obsolete release infrastructure, enable protected gates, bump to `1.0.0`, write changelog, tag, deploy, verify production, and record rollback.
 
+Automated closeout evidence:
+
+- RR9 implementation and fail-closed v1 release controls are integrated;
+- production follow-ups corrected the WebKit RR5 outage qualification boundary and RR6 hosted tap-zone evidence without weakening the product contracts;
+- run `33366197854` passed exact R2 staging, staged Browser Acceptance, RR4, RR5, canonical-media RR6, RR7, RR8, RR9, Pages deployment, and live custom-domain verification.
+
 Exit criteria:
 
 - no known high/critical shipped vulnerability;
@@ -221,6 +227,10 @@ Exit criteria:
 - tagged source and production artifacts verify;
 - support, limitations, privacy, recovery, and rollback claims are public and accurate.
 
+The first two automated security/reliability criteria are satisfied on the certified release-candidate lineage. The remaining final-launch criteria are deliberately open until the physical campaign, protected-main configuration, final `1.0.0` metadata, and tag are complete.
+
 ## Current state
 
-RR1–RR8 automated/code-level release-readiness work is integrated. RR7 and RR8 are production-certified on the current release lineage, including the RR8 backup/restore/migration gate. RR9 is the active implementation campaign. RR2 physical-device evidence remains **0/12**, and `main` is currently unprotected; neither condition may be bypassed or represented as complete. The package therefore remains on the `1.0.0-rc.1` release-candidate line until the final exact-SHA physical and protected-main gates pass.
+RR1–RR9 automated/code-level release-readiness work is integrated. The complete automated production chain is certified through source `7b2a328c7923a56c7c8ff875d9d106bed13550bf` and production run `33366197854`, including exact R2 media staging, Browser Acceptance, RR4 performance/memory, RR5 offline/PWA/storage, RR6 accessibility against canonical hosted media, RR7 ergonomics, RR8 durability/backup/restore, RR9 security/privacy/dependency/provenance, Pages deployment, and live verification.
+
+Final **v1.0 is not complete**. RR2 physical-device evidence remains **0/12**, issue #36 remains the release-blocking physical-device tracker, and `main` is currently unprotected. The package therefore correctly remains on the `1.0.0-rc.1` release-candidate line. The next release work is the real exact-SHA physical-device/assistive-technology campaign plus protected-main configuration; only after those gates pass should the package/changelog be finalized as `1.0.0`, the exact final SHA be redeployed/verified, and tag `v1.0.0` be created.
