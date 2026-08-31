@@ -87,15 +87,14 @@ if (present) {
     tapTests.includes("const USE_STAGED_HOSTED_MEDIA = process.env.RR6_STAGED_HOSTED_MEDIA === '1'")
       && tapTests.includes("const HOSTED_EPUB_ROUTE = '**/library/media/works/**/editions/**/*.epub'")
       && tapTests.includes("await page.goto('/library')")
-      && tapTests.includes("page.locator('article.work-card')")
-      && tapTests.includes("page.locator('.micro', { hasText: /(?:^| · )Reader(?: · |$)/ })")
-      && tapTests.includes("page.locator('[data-reader-cta]')")
+      && tapTests.includes("page.locator('article[data-catalog-work][data-web-readable=\"true\"]')")
+      && tapTests.includes("readableCard.locator('[data-catalog-reader-cta]')")
       && !tapTests.includes('ai-for-the-kingdom')
       && tapTests.includes('async function openHostedReader(')
       && tapTests.includes('hosted EPUB route preserves reading continuity and stable chrome')
       && tapTests.includes("verifyDeepReadingContinuity(page, 4, 'displayed-page')")
       && deployment.includes("RR6_STAGED_HOSTED_MEDIA: '1'"),
-    'RR6 enters through the visible public catalog, selects a Reader-capable work without naming a publication, uses deterministic EPUB bytes in PR CI, and switches to exact staged canonical media in production');
+    'RR6 enters through the visible public catalog using the stable catalog data contract, selects a Reader-capable work without naming a publication, uses deterministic EPUB bytes in PR CI, and switches to exact staged canonical media in production');
 
   pass('RR6_HOSTED_PAGE_IDENTITY',
     compatibilityHarness.includes('root.dataset.readerLocationIndex = String(location.index)')
