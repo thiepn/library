@@ -63,7 +63,7 @@ jobs:
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
-          fetch-depth: 1
+          fetch-depth: 0
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22.12.0
@@ -76,6 +76,13 @@ jobs:
           [[ "$TESTED_BUILD_SHA" =~ ^[a-f0-9]{40}$ ]]
           [[ "$PHYSICAL_EVIDENCE_SHA" =~ ^[a-f0-9]{40}$ ]]
           test "$(git rev-parse HEAD)" = "$PHYSICAL_EVIDENCE_SHA"
+          git merge-base --is-ancestor "$TESTED_BUILD_SHA" "$PHYSICAL_EVIDENCE_SHA"
+          unexpected="$({ git diff --name-only "$TESTED_BUILD_SHA..$PHYSICAL_EVIDENCE_SHA" || true; } | grep -Ev '^evidence/physical-devices/records/[A-Za-z0-9._-]+\.json$' || true)"
+          if [ -n "$unexpected" ]; then
+            echo 'v1-physical-evidence contains changes outside evidence/physical-devices/records/*.json:' >&2
+            printf '%s\n' "$unexpected" >&2
+            exit 1
+          fi
           printf '%s\n' "$PHYSICAL_EVIDENCE_SHA" > physical-device-evidence-sha
           printf '%s\n' "$TESTED_BUILD_SHA" > physical-device-tested-build-sha
 
