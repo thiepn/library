@@ -47,7 +47,7 @@
     "deploy": "pnpm release:certify && pnpm stage:media"
   },
   "dependencies": {
-    "astro": "^6.0.0",
+    "astro": "^7.2.9",
     "epubjs": "0.3.93",
     "pdfjs-dist": "4.10.38",
     "yaml": "^2.8.1",
