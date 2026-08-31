@@ -11,6 +11,7 @@ const files = [
   'src/lib/reader/epub-security.ts',
   'src/lib/reader/navigation.ts',
   'src/lib/reader/harness.ts',
+  'src/lib/reader/compatibility-harness.ts',
   'src/lib/reader/shell.ts',
   'src/components/reader/ReaderShell.astro',
   'src/components/PdfReaderShell.astro',
@@ -24,16 +25,17 @@ const files = [
   'package.json',
 ];
 const present = (await Promise.all(files.map(exists))).every(Boolean);
-pass('RR6_FILES', present, 'RR6 docs, reader/PDF accessibility and EPUB security surfaces, multi-page interaction fixtures, cross-engine tests, workflow, package commands, and production gate are present');
+pass('RR6_FILES', present, 'RR6 docs, reader/PDF accessibility and EPUB security surfaces, displayed-page diagnostics, multi-page interaction fixtures, cross-engine tests, workflow, package commands, and production gate are present');
 
 if (present) {
-  const [doc, a11y, epub, epubSecurity, navigation, harness, shellController, shell, pdfShell, css, deviceCss, tests, tapTests, performanceFixtures, workflow, deployment, pkg] = await Promise.all([
+  const [doc, a11y, epub, epubSecurity, navigation, harness, compatibilityHarness, shellController, shell, pdfShell, css, deviceCss, tests, tapTests, performanceFixtures, workflow, deployment, pkg] = await Promise.all([
     readFile('docs/RR6_ACCESSIBILITY_INCLUSIVE_READING.md', 'utf8'),
     readFile('src/lib/reader/accessibility.ts', 'utf8'),
     readFile('src/lib/reader/engines/epubjs.ts', 'utf8'),
     readFile('src/lib/reader/epub-security.ts', 'utf8'),
     readFile('src/lib/reader/navigation.ts', 'utf8'),
     readFile('src/lib/reader/harness.ts', 'utf8'),
+    readFile('src/lib/reader/compatibility-harness.ts', 'utf8'),
     readFile('src/lib/reader/shell.ts', 'utf8'),
     readFile('src/components/reader/ReaderShell.astro', 'utf8'),
     readFile('src/components/PdfReaderShell.astro', 'utf8'),
@@ -72,13 +74,14 @@ if (present) {
     performanceFixtures.includes('export const LARGE_EPUB_CHAPTERS = 96')
       && tapTests.includes('largeEpubFixture')
       && tapTests.includes('multi-page EPUB visible taps preserve reading continuity on desktop and mobile')
+      && tapTests.includes("type ReverseRoundTrip = 'exact-cfi' | 'displayed-page'")
+      && tapTests.includes("reverseRoundTrip: ReverseRoundTrip = 'exact-cfi'")
       && tapTests.includes('verifyDeepReadingContinuity(page)')
       && tapTests.includes('advanceByButton(shell, next, initialAdvanceCount)')
-      && tapTests.includes('data-reader-location-cfi')
-      && tapTests.includes('expect(current).not.toBe(initialCfi)')
-      && tapTests.includes('expect(new Set(forwardLocations).size).toBe(forwardLocations.length)')
-      && tapTests.includes('expect(await currentCfi(shell)).toBe(deepCfi)'),
-    'RR6 includes a 96-section sustained desktop/phone journey that verifies exact-CFI forward/back continuity, repeated center chrome toggles, and no reset to the initial/cover location');
+      && tapTests.includes("if (reverseRoundTrip === 'exact-cfi') expect(current.cfi).toBe(deep.cfi)")
+      && tapTests.includes('expect(new Set(forwardLocations.map((location) => location.cfi)).size).toBe(forwardLocations.length)')
+      && tapTests.includes('expect(current.cfi).not.toBe(initial.cfi)'),
+    'RR6 keeps a 96-section deterministic journey with stronger exact-CFI forward/back continuity, repeated center chrome toggles, and no reset to the initial/cover location');
 
   pass('RR6_HOSTED_READER_CONTINUITY',
     tapTests.includes("const USE_STAGED_HOSTED_MEDIA = process.env.RR6_STAGED_HOSTED_MEDIA === '1'")
@@ -90,9 +93,21 @@ if (present) {
       && !tapTests.includes('ai-for-the-kingdom')
       && tapTests.includes('async function openHostedReader(')
       && tapTests.includes('hosted EPUB route preserves reading continuity and stable chrome')
-      && tapTests.includes('verifyDeepReadingContinuity(page, 4)')
+      && tapTests.includes("verifyDeepReadingContinuity(page, 4, 'displayed-page')")
       && deployment.includes("RR6_STAGED_HOSTED_MEDIA: '1'"),
     'RR6 enters through the visible public catalog, selects a Reader-capable work without naming a publication, uses deterministic EPUB bytes in PR CI, and switches to exact staged canonical media in production');
+
+  pass('RR6_HOSTED_PAGE_IDENTITY',
+    compatibilityHarness.includes('root.dataset.readerLocationIndex = String(location.index)')
+      && compatibilityHarness.includes('root.dataset.readerLocationPage = String(location.displayedPage)')
+      && compatibilityHarness.includes('root.dataset.readerLocationTotal = String(location.displayedTotal)')
+      && tapTests.includes("shell.getAttribute('data-reader-location-index')")
+      && tapTests.includes("shell.getAttribute('data-reader-location-page')")
+      && tapTests.includes("shell.getAttribute('data-reader-location-total')")
+      && tapTests.includes("mode === 'exact-cfi'")
+      && tapTests.includes('visualKey(await currentVisualLocation(shell))')
+      && tapTests.includes("verifyDeepReadingContinuity(page, 4, 'displayed-page')"),
+    'Hosted EPUB qualification distinguishes authoritative CFI persistence from semantic paginated round trips: production may return an equivalent range CFI, but must return to the same spine section and displayed page');
 
   pass('RR6_CHROME_TOGGLE_STABILITY',
     shellController.includes('const POINTER_REVEAL_GUARD_MS = 450')
