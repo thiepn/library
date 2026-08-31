@@ -259,7 +259,7 @@ if (present) {
   const performanceIndex = deployment.indexOf('id: performance');
   const offlineIndex = deployment.indexOf('id: offline');
   const accessibilityIndex = deployment.indexOf('id: accessibility');
-  const pagesIndex = deployment.indexOf('actions/upload-pages-artifact@v4');
+  const pagesIndex = deployment.indexOf('actions/upload-pages-artifact@');
   pass('RR6_PRODUCTION_GATE',
     deployment.includes('Run RR6 accessibility and inclusive-reading acceptance')
       && deployment.includes("RR6_STAGED_HOSTED_MEDIA: '1'")

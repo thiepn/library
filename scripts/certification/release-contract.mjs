@@ -129,7 +129,7 @@ if (present) {
 
   const mediaIndex = deployment.indexOf('pnpm stage:media');
   const browserIndex = deployment.indexOf('id: browser');
-  const pagesIndex = deployment.indexOf('actions/upload-pages-artifact@v4');
+  const pagesIndex = deployment.indexOf('actions/upload-pages-artifact@');
   pass(
     'RELEASE_PHASE1_PRODUCTION_GATE',
     deployment.includes('playwright install --with-deps chromium firefox webkit')

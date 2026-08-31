@@ -35,7 +35,7 @@ Current standards-compliant environments sharing a Tier 1 engine should generall
 - DRM-protected content requiring a vendor license service;
 - scripted EPUB content: publication JavaScript remains disabled;
 - automatic account-based cloud synchronization;
-- files above the documented import limit;
+- files above the documented import or publication-security limits;
 - environments disabling required IndexedDB, Blob URL, Web Crypto, Canvas, Worker, or storage APIs;
 - corrupt, hostile, unsupported, or encrypted files outside the documented EPUB/PDF scope.
 
@@ -100,8 +100,10 @@ A v1.0 release requires all of the following:
 - performance and memory budgets;
 - accessibility/manual assistive-technology evidence;
 - offline, update, storage, migration, and recovery evidence;
-- security, privacy, dependency, and license review;
-- exact-source production deployment and live-media verification;
+- RR8 migration/backup/restore/rollback evidence;
+- RR9 publication isolation, privacy, dependency vulnerability, license, SBOM, CI provenance, and release evidence;
+- protected `main` with required release checks;
+- exact-source production deployment and live-media/policy verification;
 - zero unresolved P0/P1 issues.
 
 ## Evidence language
@@ -112,10 +114,10 @@ Use these statements precisely:
 - **Browser-engine certified:** Playwright projects passed in Chromium, Firefox, and WebKit.
 - **Device-profile certified:** deterministic viewport, orientation, safe-area, touch, and keyboard-state profiles passed.
 - **Physical-device certified:** a named person operated a named physical device/OS/browser against an exact build and a passing evidence record exists.
-- **Production-verified:** the exact deployed source and live canonical artifacts passed production verification.
+- **Production-verified:** the exact deployed source identity and live canonical artifacts/policy surfaces passed production verification.
 
 Do not replace one category with another. “WebKit passed” must not be reported as “tested on iPhone,” and a responsive desktop viewport must not be reported as a physical mobile run.
 
 ## Current certification status
 
-RR1 browser-engine infrastructure exists on its release branch. RR2 physical evidence infrastructure is implemented, but the current physical matrix remains **0/12**. Therefore no broad physical-device certification is currently claimed.
+RR1–RR8 automated/code-level release-readiness work is integrated and has passed production deployment on the current release lineage. RR9 is the active security/privacy/dependency/v1-launch campaign. RR2 physical evidence infrastructure is implemented, but the current physical matrix remains **0/12**. `main` is also currently unprotected. Therefore final v1.0 and broad physical-device certification are not currently claimed.

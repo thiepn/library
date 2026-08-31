@@ -6,20 +6,26 @@ import YAML from 'yaml';
 const origin = 'https://thiepn.dev/library';
 const worksRoot = path.join(process.cwd(), 'src/content/works');
 const releasesRoot = path.join(process.cwd(), 'src/publications/releases');
+const expectedSourceSha = process.env.EXPECTED_SOURCE_SHA ?? process.env.GITHUB_SHA ?? '';
 
-async function fetchBytes(url) {
+async function fetchResponse(url) {
   let last;
   for (let attempt = 1; attempt <= 8; attempt++) {
     try {
-      const response = await fetch(url, { redirect: 'follow' });
+      const response = await fetch(url, { redirect: 'follow', cache: 'no-store' });
       if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
-      return Buffer.from(await response.arrayBuffer());
+      return response;
     } catch (error) {
       last = error;
       await new Promise((resolve) => setTimeout(resolve, 3000));
     }
   }
   throw last;
+}
+
+async function fetchBytes(url) {
+  const response = await fetchResponse(url);
+  return Buffer.from(await response.arrayBuffer());
 }
 
 async function requireRoute(url) {
@@ -48,14 +54,46 @@ for (const entry of await readdir(worksRoot, { withFileTypes: true })) {
   }
 }
 
-await requireRoute(`${origin}/`);
-await requireRoute(`${origin}/search`);
-await requireRoute(`${origin}/subjects`);
-await requireRoute(`${origin}/collections`);
+const rootResponse = await fetchResponse(`${origin}/`);
+const root = await rootResponse.text();
+if (!root.length) throw new Error('Empty production root response');
+console.log(`LIVE ${origin}/`);
+const headerCsp = rootResponse.headers.get('content-security-policy');
+const metaTag = root.match(/<meta\b[^>]*http-equiv=["']Content-Security-Policy["'][^>]*>/i)?.[0];
+const metaCsp = metaTag?.match(/\bcontent="([^"]*)"/i)?.[1]
+  ?? metaTag?.match(/\bcontent='([^']*)'/i)?.[1];
+const effectiveCspEvidence = headerCsp ?? metaCsp;
+if (!effectiveCspEvidence
+  || !effectiveCspEvidence.includes("default-src 'self'")
+  || !effectiveCspEvidence.includes("object-src 'none'")
+  || !effectiveCspEvidence.includes("script-src 'self'")
+  || !effectiveCspEvidence.includes("worker-src 'self' blob:")
+  || !effectiveCspEvidence.includes('https://media.library.thiepn.dev')) {
+  throw new Error('Production RR9 CSP evidence is missing or weaker than the release contract');
+}
+if (!/<meta\s+name=["']referrer["']\s+content=["']no-referrer["']/i.test(root)
+  && !/<meta\s+content=["']no-referrer["']\s+name=["']referrer["']/i.test(root)) {
+  throw new Error('Production RR9 no-referrer policy is missing');
+}
+console.log(headerCsp ? 'LIVE_SECURITY CSP_HEADER_PRESENT' : 'LIVE_SECURITY CSP_META_FALLBACK_PRESENT');
+
+for (const route of ['search', 'subjects', 'collections', 'privacy', 'security', 'support', 'backup']) {
+  await requireRoute(`${origin}/${route}/`);
+}
 const downloads = (await requireRoute(`${origin}/downloads/`)).toString('utf8');
 if (!downloads.includes('Offline downloads') || !downloads.includes('data-offline-library')) {
   throw new Error('Production RR5 offline-download manager mismatch');
 }
+
+const releaseIdentityBytes = await requireRoute(`${origin}/release-identity.json`);
+const releaseIdentity = JSON.parse(releaseIdentityBytes.toString('utf8'));
+if (releaseIdentity.schemaVersion !== 1 || typeof releaseIdentity.sourceSha !== 'string') {
+  throw new Error('Production release identity is invalid');
+}
+if (/^[a-f0-9]{40}$/i.test(expectedSourceSha) && releaseIdentity.sourceSha !== expectedSourceSha) {
+  throw new Error(`Production source identity mismatch: expected ${expectedSourceSha}, live ${releaseIdentity.sourceSha}`);
+}
+console.log(`LIVE_SOURCE ${releaseIdentity.sourceSha}`);
 
 const manifestBytes = await requireRoute(`${origin}/manifest.webmanifest`);
 const manifest = JSON.parse(manifestBytes.toString('utf8'));

@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
   group: publication-ingest
@@ -19,15 +20,16 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       GITHUB_TOKEN: ${{ github.token }}
+      GH_TOKEN: ${{ github.token }}
       R2_BUCKET: thiepn-library-publications
     steps:
       - name: Checkout ingest request
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
           fetch-depth: 0
 
       - name: Setup pnpm and Node
-        uses: pnpm/setup@v2
+        uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2
         with:
           version: 11.21.0
           runtime: node@22.12.0
@@ -211,7 +213,7 @@ jobs:
       - name: Certify complete Library with new publication
         run: pnpm release:certify
 
-      - name: Promote only verified publication source and registry to main
+      - name: Open verified publication promotion PR
         run: |
           set -euo pipefail
           work_id='${{ steps.package.outputs.work_id }}'
@@ -224,12 +226,21 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git fetch origin main
-          git checkout -B publication-promote origin/main
+          branch="publication-promote/${work_id}-${version}-${GITHUB_RUN_ID}"
+          git checkout -B "$branch" origin/main
           rm -rf "src/content/works/$work_id"
           mkdir -p "src/content/works/$work_id" "src/publications/releases/$work_id"
           cp -R "/tmp/library-promote/work/." "src/content/works/$work_id/"
           cp "/tmp/library-promote/release/$version.yaml" "src/publications/releases/$work_id/$version.yaml"
           git add "src/content/works/$work_id" "src/publications/releases/$work_id/$version.yaml"
-          git diff --cached --quiet && exit 0
+          if git diff --cached --quiet; then
+            echo 'Verified publication already matches main; no promotion PR is needed.'
+            exit 0
+          fi
           git commit -m "Publish $work_id $version to Library"
-          git push origin HEAD:main
+          git push origin "HEAD:$branch"
+          gh pr create \
+            --base main \
+            --head "$branch" \
+            --title "Publish $work_id $version to Library" \
+            --body "Verified generic publication ingest. Immutable R2 upload/readback and complete Library certification passed in workflow run ${GITHUB_RUN_ID}. Promotion is intentionally routed through a normal PR so protected-main checks remain authoritative."

@@ -139,7 +139,7 @@ if (present) {
 
   const ergonomicsIndex = deployment.indexOf('id: ergonomics');
   const durabilityIndex = deployment.indexOf('id: durability');
-  const pagesIndex = deployment.indexOf('actions/upload-pages-artifact@v4');
+  const pagesIndex = deployment.indexOf('actions/upload-pages-artifact@');
   pass('RR8_PRODUCTION_GATE',
     deployment.includes('Run RR8 data durability, migration, backup, and portability acceptance')
       && deployment.includes('run: pnpm test:durability')

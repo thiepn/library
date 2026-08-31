@@ -144,10 +144,11 @@ if (present) {
   );
   pass(
     'PERSONAL_IMPORT_ER2_PRIVACY_COPY',
-    privacy.includes('does not upload the personal book to a server')
-      && privacy.includes('local IndexedDB storage')
-      && privacy.includes('Clearing browser site data can remove locally imported books'),
-    'Privacy documentation explains local storage, no upload, and the browser-data-loss boundary',
+    privacy.includes('stored locally in this browser’s IndexedDB storage')
+      && privacy.includes('The personal book is not uploaded to Thiepn Library')
+      && privacy.includes('do not contain the bytes of your personal EPUB/PDF files')
+      && privacy.includes('Clearing browser site data, browser storage eviction, device loss, or browser-profile removal can delete local state and personal imports'),
+    'Privacy documentation explains local inspection/storage, no upload, backup byte exclusion, and browser/device data-loss boundaries',
   );
   pass(
     'PERSONAL_IMPORT_ER2_RESPONSIVE',
