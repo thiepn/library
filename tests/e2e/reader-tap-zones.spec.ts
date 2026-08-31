@@ -92,14 +92,13 @@ async function openHostedReader(page: Page): Promise<void> {
 
   // Enter through the public catalog instead of naming a publication. Private/draft works are not
   // rendered here, so hosted qualification follows the same visibility contract as real readers.
+  // Use the explicit catalog data contract rather than presentation classes/copy so the acceptance
+  // journey remains stable if card styling or format labels change.
   await page.goto('/library');
-  const readableCard = page.locator('article.work-card').filter({
-    has: page.locator('.micro', { hasText: /(?:^| · )Reader(?: · |$)/ }),
-  }).first();
+  const readableCard = page.locator('article[data-catalog-work][data-web-readable="true"]').first();
   await expect(readableCard, 'Catalog must expose at least one public work available in the Library reader').toBeVisible();
-  await readableCard.locator('h2 a').click();
-  const readerCta = page.locator('[data-reader-cta]');
-  await expect(readerCta, 'Public hosted work must expose its canonical reader CTA').toBeVisible();
+  const readerCta = readableCard.locator('[data-catalog-reader-cta]');
+  await expect(readerCta, 'Public catalog work must expose its canonical reader CTA').toBeVisible();
   await readerCta.click();
   await waitForReader(page);
 
