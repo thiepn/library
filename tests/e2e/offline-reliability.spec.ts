@@ -58,6 +58,13 @@ async function ensureControlled(page: Page) {
   await expect(page.getByRole('heading', { level: 1, name: 'Offline downloads' })).toBeVisible();
 }
 
+async function expectOfflineShellStyled(page: Page) {
+  await expect.poll(() => page.evaluate(() => {
+    const header = document.querySelector<HTMLElement>('.site-header');
+    return header ? getComputedStyle(header).display : '';
+  })).toBe('grid');
+}
+
 async function fixtureRow(page: Page, fixture: { urlPath: string; sizeBytes: number }) {
   const row = page.locator(`[data-offline-artifact][data-offline-url="${fixture.urlPath}"]`);
   await expect(row).toHaveCount(1);
@@ -86,8 +93,10 @@ test('@rr5 visited catalog and My Library reopen after restart-style offline nav
   try {
     await page.goto('/library/', { waitUntil: 'domcontentloaded' });
     await expect(page.getByRole('heading', { level: 1, name: 'Books' })).toBeVisible();
+    await expectOfflineShellStyled(page);
     await page.goto('/library/saved', { waitUntil: 'domcontentloaded' });
     await expect(page.getByRole('heading', { level: 1, name: 'My Library' })).toBeVisible();
+    await expectOfflineShellStyled(page);
   } finally {
     await setRr5Offline(context, false);
   }
