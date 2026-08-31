@@ -5,6 +5,11 @@ import YAML from 'yaml';
 
 interface ZipEntry { name: string; content: string | Buffer; method?: 0 | 8; }
 interface HostedFixture { urlPath: string; sizeBytes: number; format: 'epub' | 'pdf'; }
+interface PublicHostedWork {
+  id: string;
+  activeRelease: string;
+  formats: { epub: boolean; pdf: boolean };
+}
 
 const CRC_TABLE = Array.from({ length: 256 }, (_, value) => {
   let current = value;
@@ -109,23 +114,49 @@ export function buildOfflinePdf(label = 'RR5 Offline PDF', pages = 3): Buffer {
   return Buffer.from(chunks.join(''), 'latin1');
 }
 
-async function releaseFiles(dir: string): Promise<string[]> {
-  const out: string[] = [];
-  for (const entry of await readdir(dir, { withFileTypes: true })) {
-    const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) out.push(...await releaseFiles(full));
-    else if (entry.isFile() && /\.ya?ml$/i.test(entry.name)) out.push(full);
+async function publicHostedWorks(): Promise<PublicHostedWork[]> {
+  const worksRoot = path.join(process.cwd(), 'src/content/works');
+  const entries = (await readdir(worksRoot, { withFileTypes: true }))
+    .filter((entry) => entry.isDirectory())
+    .sort((a, b) => a.name.localeCompare(b.name));
+  const works: PublicHostedWork[] = [];
+
+  for (const entry of entries) {
+    const work = YAML.parse(await readFile(path.join(worksRoot, entry.name, 'work.yaml'), 'utf8'));
+    if (work?.status !== 'published' || work?.visibility !== 'public') continue;
+    const id = String(work?.id ?? entry.name).trim();
+    const activeRelease = String(work?.publication?.activeRelease ?? '').trim();
+    if (!id || !activeRelease) continue;
+    works.push({
+      id,
+      activeRelease,
+      formats: {
+        epub: work?.formats?.epub?.enabled === true,
+        pdf: work?.formats?.pdf?.enabled === true,
+      },
+    });
   }
-  return out;
+
+  return works;
 }
 
 async function firstArtifact(kind: 'epub' | 'pdf'): Promise<{ url: string }> {
-  for (const file of await releaseFiles(path.join(process.cwd(), 'src/publications/releases'))) {
-    const release = YAML.parse(await readFile(file, 'utf8'));
+  for (const work of await publicHostedWorks()) {
+    if (!work.formats[kind]) continue;
+    const releasePath = path.join(
+      process.cwd(),
+      'src/publications/releases',
+      work.id,
+      `${work.activeRelease}.yaml`,
+    );
+    const release = YAML.parse(await readFile(releasePath, 'utf8'));
+    if (String(release?.workId ?? '') !== work.id || String(release?.version ?? '') !== work.activeRelease) {
+      throw new Error(`Active release identity mismatch for ${work.id}@${work.activeRelease}.`);
+    }
     const artifact = release?.artifacts?.[kind];
     if (artifact?.url) return { url: String(artifact.url) };
   }
-  throw new Error(`No ${kind} release artifact exists for RR5 fixture staging.`);
+  throw new Error(`No public published ${kind} release artifact exists for RR5 fixture staging.`);
 }
 
 async function stageAtCanonicalPath(kind: 'epub' | 'pdf', synthetic: Buffer): Promise<HostedFixture> {
