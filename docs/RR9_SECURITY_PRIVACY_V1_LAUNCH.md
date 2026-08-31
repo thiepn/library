@@ -2,9 +2,13 @@
 
 ## Status
 
-Implementation campaign active on `rr9-security-v1-launch`.
+Automated/code-level RR9 hardening is complete and production-certified on source `7b2a328c7923a56c7c8ff875d9d106bed13550bf` via production run `33366197854`.
 
-RR1–RR8 automated/code-level gates are already integrated and production-certified. RR9 adds the final security, privacy, dependency-provenance, operational, and release controls. The final `v1.0.0` tag is intentionally **not** created while the exact-SHA physical-device evidence campaign remains **0/12** or while `main` is not protected.
+The certified release-candidate pipeline passed source/build certification, exact R2 publication-media staging, staged Browser Acceptance, RR4 performance/memory, RR5 offline/PWA/storage, RR6 accessibility/inclusive reading against the staged canonical EPUB, RR7 ergonomics, RR8 data durability, RR9 security/privacy/dependency/provenance, GitHub Pages deployment, and live custom-domain verification.
+
+The final `v1.0.0` launch is intentionally **not** complete. Exact-SHA physical-device evidence remains **0/12**, `main` remains unprotected, and the package remains `1.0.0-rc.1`. Those release gates may not be bypassed or represented as complete.
+
+RR9 implementation was integrated through PR #44. Production follow-up PR #56 corrected the WebKit RR5 outage qualification boundary, and PR #57 corrected RR6 hosted tap-zone evidence so publication-owned links/controls are never mistaken for reader gesture evidence. Run `33366197854` is the first production run after those follow-ups to pass the complete fail-closed RR4→RR9 chain and live verification.
 
 ## Security boundary
 
@@ -62,6 +66,8 @@ Normal public reading can request the static site, immutable public publication 
 
 Every production build writes `/library/release-identity.json` containing the exact source SHA and Actions run ID. Post-deploy verification requires the live identity to match the source being verified. This replaces the old pattern of mutating `main` with a post-deployment status commit and keeps the deployment pipeline compatible with protected-main enforcement.
 
+RR9 and later deployment outcomes are retained as immutable `production-deployment-<run-id>` GitHub Actions artifacts rather than written back to the repository after deployment.
+
 ## v1.0 release gate
 
 `v1.0.0` is fail-closed. The release workflow requires all of the following for one exact 40-character source SHA:
@@ -74,7 +80,7 @@ Every production build writes `/library/release-identity.json` containing the ex
 6. live production verification passes for application routes, immutable media, offline/PWA assets, public privacy/security/support pages, CSP evidence, and release identity;
 7. only then may the workflow create and push annotated tag `v1.0.0`.
 
-The current repository state does not satisfy steps 3 or 4: physical evidence is 0/12 and `main` is currently unprotected. RR9 automation is therefore allowed to merge and deploy as a release candidate, but it must not manufacture a final v1 tag.
+The current repository state does not satisfy steps 3 or 4: physical evidence is 0/12 and `main` is currently unprotected. RR9 automation is production-certified as a release candidate, but it must not manufacture a final v1 tag.
 
 ## Rollback and incident rule
 
@@ -84,6 +90,6 @@ Security-sensitive findings should be fixed before final v1 when they are P0/P1 
 
 ## Exit criteria
 
-The automated/code-level RR9 implementation can close after its PR and production deployment pass source certification, the cross-engine security suite, high/critical dependency audit, license inventory, SBOM generation, all preceding RR gates, Pages deployment, and live verification.
+The automated/code-level RR9 exit criteria are satisfied by source `7b2a328c7923a56c7c8ff875d9d106bed13550bf` and production run `33366197854`: source certification, cross-engine security acceptance, high/critical dependency audit, license inventory, SBOM generation, all preceding automated RR gates, Pages deployment, and live verification passed.
 
-The complete Phase 9 / v1.0 launch closes only after the separately tracked protected-main configuration and exact-SHA physical-device campaign also pass and the final tag is created from the verified production source.
+The complete Phase 9 / v1.0 launch closes only after the separately tracked protected-main configuration and exact-SHA physical-device campaign also pass, the package/changelog are finalized as `1.0.0`, the exact final SHA is production-verified, and tag `v1.0.0` is created from that verified source.
