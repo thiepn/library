@@ -29,9 +29,13 @@ The fullscreen paginated EPUB reader uses three horizontal tap zones:
 
 Pointer coordinates are normalized against the visible EPUB iframe viewport. They must never be divided by a paginated document/root width that may span multiple columns.
 
-Tap navigation is suppressed for interactive publication content and active text selection. Horizontal swipe navigation remains separate from taps.
+Tap navigation is suppressed for interactive publication content and active text selection. Horizontal swipe navigation remains separate from taps. Publication links, controls, forms, and other interactive elements own their interactions; activating them must never be reclassified as a reader tap-zone gesture.
 
-This defect is release-blocking because the previous behavior could make every visible mobile tap resolve to the previous-page action.
+RR6 acceptance therefore resolves tap-zone evidence only on a genuinely non-interactive visible publication surface. A browser `preventDefault()` caused by EPUB link handling is not evidence that the reader consumed a tap. The WebKit phone fallback records the target classification and must prove the chosen target is non-interactive before its pointer-plus-compatibility-click sequence can satisfy the tap-zone assertion.
+
+Sustained tap-zone journeys also wait for each asynchronous page turn to settle before issuing the next gesture. This keeps evidence tied to one stable rendered location instead of racing a previous EPUB.js relocation.
+
+This defect class is release-blocking because incorrect coordinate normalization can make visible taps resolve to the wrong reader action, while an incorrect acceptance target can create a false failure or false pass by exercising publication UI instead of the reader gesture boundary.
 
 ## Automated acceptance
 
@@ -44,7 +48,9 @@ The automated corpus proves:
 - 320 CSS px reflow without horizontal page overflow;
 - >=44 CSS px primary phone reader targets;
 - reduced-motion and forced-colors runtime states plus visible focus;
-- left/center/right mobile EPUB tap-zone behavior.
+- left/center/right mobile EPUB tap-zone behavior;
+- sustained exact-CFI continuity across repeated taps and chrome toggles;
+- hosted-reader continuity against exact staged canonical EPUB media in the production gate, while keeping publication links and controls outside reader gesture evidence.
 
 Browser automation is an executable accessibility regression gate, but it is not a physical assistive-technology certification.
 
@@ -66,6 +72,7 @@ The RR6 automated implementation is eligible to merge only when:
 - RR4 Performance Budget remains green;
 - RR5 Offline Reliability remains green;
 - production deployment runs Accessibility Acceptance after Browser/RR4/RR5 and before Pages artifact upload;
+- production RR6 uses the exact integrity-verified staged canonical hosted media rather than replacing it with a synthetic fixture;
 - live production verification passes.
 
 No P0/P1 accessibility defect may be knowingly accepted for release.

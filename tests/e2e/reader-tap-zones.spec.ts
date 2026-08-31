@@ -5,11 +5,39 @@ import { largeEpubFixture } from './performance-fixtures';
 interface CompatibilityTapResult {
   dispatched: boolean;
   defaultPrevented: boolean;
+  interactiveTarget: boolean;
+  targetDescription: string;
+}
+
+interface VisibleTapPoint {
+  pageX: number;
+  pageY: number;
+  frameX: number;
+  frameY: number;
+  targetDescription: string;
 }
 
 const USE_STAGED_HOSTED_MEDIA = process.env.RR6_STAGED_HOSTED_MEDIA === '1';
 const HOSTED_READER_PATH = '/library/works/ai-for-the-kingdom/read';
 const HOSTED_EPUB_ROUTE = '**/library/media/works/ai-for-the-kingdom/editions/1.0.0-rc4/AI_for_the_Kingdom.epub';
+const PUBLICATION_INTERACTIVE_SELECTOR = [
+  'a[href]',
+  'button',
+  'input',
+  'textarea',
+  'select',
+  'option',
+  'label',
+  'summary',
+  'details',
+  'audio',
+  'video',
+  '[contenteditable="true"]',
+  '[role="button"]',
+  '[role="link"]',
+  '[data-no-reader-nav]',
+].join(',');
+const SAFE_TAP_Y_RATIOS = [0.5, 0.42, 0.58, 0.34, 0.66, 0.26, 0.74, 0.18, 0.82, 0.12, 0.88];
 
 async function waitForReader(page: Page): Promise<Locator> {
   const shell = page.locator('[data-reader-shell]');
@@ -80,22 +108,56 @@ async function expectReaderScriptBoundary(page: Page): Promise<void> {
   expect(security.executed, 'EPUB CSP must block publisher-style inline script execution').toBe(false);
 }
 
-/**
- * Interact with the reader where the user actually sees it. The EPUB iframe can be many page
- * widths wider than the visible stage, so using iframe.boundingBox().width would reproduce the
- * old test bug rather than a physical tap/click.
- */
-async function tapVisibleBook(page: Page, xRatio: number, yRatio = 0.5): Promise<CompatibilityTapResult | null> {
+async function resolveVisibleTapPoint(page: Page, xRatio: number, preferredYRatio = 0.5): Promise<VisibleTapPoint> {
   const viewport = page.locator('[data-reader-viewport]');
   const iframe = page.locator('[data-reader-viewport] iframe');
   const viewportBox = await viewport.boundingBox();
   const iframeBox = await iframe.boundingBox();
   expect(viewportBox, 'Reader viewport must have a rendered box').not.toBeNull();
   expect(iframeBox, 'EPUB iframe must have a rendered box').not.toBeNull();
-  if (!viewportBox || !iframeBox) return null;
+  if (!viewportBox || !iframeBox) throw new Error('Reader viewport geometry is unavailable.');
 
   const pageX = viewportBox.x + viewportBox.width * xRatio;
-  const pageY = viewportBox.y + viewportBox.height * yRatio;
+  const candidates = [preferredYRatio, ...SAFE_TAP_Y_RATIOS.filter((ratio) => ratio !== preferredYRatio)];
+  const inspected: string[] = [];
+
+  for (const yRatio of candidates) {
+    const pageY = viewportBox.y + viewportBox.height * yRatio;
+    const frameX = pageX - iframeBox.x;
+    const frameY = pageY - iframeBox.y;
+    const target = await page.frameLocator('[data-reader-viewport] iframe').locator('html').evaluate(
+      (_html, input) => {
+        const element = document.elementFromPoint(input.x, input.y) ?? document.documentElement;
+        const interactive = Boolean(element.closest(input.interactiveSelector));
+        const id = element.id ? `#${element.id}` : '';
+        const className = typeof element.className === 'string' && element.className.trim()
+          ? `.${element.className.trim().split(/\s+/).join('.')}`
+          : '';
+        return {
+          interactive,
+          description: `${element.tagName.toLowerCase()}${id}${className}`,
+        };
+      },
+      { x: frameX, y: frameY, interactiveSelector: PUBLICATION_INTERACTIVE_SELECTOR },
+    );
+    inspected.push(`${Math.round(yRatio * 100)}%:${target.description}${target.interactive ? ':interactive' : ''}`);
+    if (!target.interactive) {
+      return { pageX, pageY, frameX, frameY, targetDescription: target.description };
+    }
+  }
+
+  throw new Error(`No non-interactive publication surface was available in the ${Math.round(xRatio * 100)}% tap zone. Inspected ${inspected.join(', ')}.`);
+}
+
+/**
+ * Interact with the reader where the user actually sees it. The EPUB iframe can be many page
+ * widths wider than the visible stage, so using iframe.boundingBox().width would reproduce the
+ * old test bug rather than a physical tap/click. Publication links and controls are never used as
+ * tap-zone targets: an interactive target belongs to the publication and must win over reader
+ * navigation/chrome gestures.
+ */
+async function tapVisibleBook(page: Page, xRatio: number, yRatio = 0.5): Promise<CompatibilityTapResult | null> {
+  const point = await resolveVisibleTapPoint(page, xRatio, yRatio);
 
   if (test.info().project.name === 'webkit-phone') {
     // Playwright WebKit does not reliably route page.touchscreen.tap() through EPUB iframes.
@@ -103,13 +165,14 @@ async function tapVisibleBook(page: Page, xRatio: number, yRatio = 0.5): Promise
     // browser compatibility click. This preserves production deduplication semantics without
     // firing unrelated click-only interactions back-to-back inside the same 800 ms gesture window.
     return page.frameLocator('[data-reader-viewport] iframe').locator('html').evaluate(
-      (_html, coordinates) => {
-        const target = document.elementFromPoint(coordinates.x, coordinates.y) ?? document.documentElement;
+      (_html, input) => {
+        const target = document.elementFromPoint(input.x, input.y) ?? document.documentElement;
+        const interactiveTarget = Boolean(target.closest(input.interactiveSelector));
         const pointerInit: PointerEventInit = {
           bubbles: true,
           cancelable: true,
-          clientX: coordinates.x,
-          clientY: coordinates.y,
+          clientX: input.x,
+          clientY: input.y,
           pointerId: 1,
           pointerType: 'touch',
           isPrimary: true,
@@ -123,24 +186,31 @@ async function tapVisibleBook(page: Page, xRatio: number, yRatio = 0.5): Promise
         const compatibilityClick = new MouseEvent('click', {
           bubbles: true,
           cancelable: true,
-          clientX: coordinates.x,
-          clientY: coordinates.y,
+          clientX: input.x,
+          clientY: input.y,
           button: 0,
         });
         const dispatched = target.dispatchEvent(compatibilityClick);
         return {
           dispatched,
           defaultPrevented: pointerUp.defaultPrevented || compatibilityClick.defaultPrevented,
+          interactiveTarget,
+          targetDescription: input.targetDescription,
         };
       },
-      { x: pageX - iframeBox.x, y: pageY - iframeBox.y },
+      {
+        x: point.frameX,
+        y: point.frameY,
+        interactiveSelector: PUBLICATION_INTERACTIVE_SELECTOR,
+        targetDescription: point.targetDescription,
+      },
     );
   }
 
   if (test.info().project.name.endsWith('-phone')) {
-    await page.touchscreen.tap(pageX, pageY);
+    await page.touchscreen.tap(point.pageX, point.pageY);
   } else {
-    await page.mouse.click(pageX, pageY);
+    await page.mouse.click(point.pageX, point.pageY);
   }
   return null;
 }
@@ -148,6 +218,7 @@ async function tapVisibleBook(page: Page, xRatio: number, yRatio = 0.5): Promise
 function expectCompatibilityTapHandled(result: CompatibilityTapResult | null): void {
   if (test.info().project.name !== 'webkit-phone') return;
   expect(result, 'WebKit physical-tap fallback must report its production event outcome').not.toBeNull();
+  expect(result?.interactiveTarget, `tap-zone probe unexpectedly targeted publication UI: ${result?.targetDescription ?? 'unknown'}`).toBe(false);
   expect(result?.defaultPrevented, 'EPUB production interaction path must consume the physical tap').toBe(true);
   expect(result?.dispatched, 'compatibility click must be consumed after the physical tap').toBe(false);
 }
@@ -158,8 +229,9 @@ async function currentCfi(shell: Locator): Promise<string> {
   return value ?? '';
 }
 
-async function expectCfiChange(shell: Locator, before: string, timeout = 5_000): Promise<string> {
+async function expectCfiChange(shell: Locator, before: string, settleControl?: Locator, timeout = 5_000): Promise<string> {
   await expect.poll(() => shell.getAttribute('data-reader-location-cfi'), { timeout }).not.toBe(before);
+  if (settleControl) await expect(settleControl).toBeEnabled({ timeout });
   return currentCfi(shell);
 }
 
@@ -169,7 +241,7 @@ async function advanceByButton(shell: Locator, next: Locator, count: number): Pr
     const before = locations[locations.length - 1]!;
     await expect(next).toBeEnabled();
     await next.click();
-    locations.push(await expectCfiChange(shell, before));
+    locations.push(await expectCfiChange(shell, before, next));
   }
   return locations;
 }
@@ -204,12 +276,13 @@ async function verifyDeepReadingContinuity(page: Page, initialAdvanceCount = 5):
 
   const rightTap = await tapVisibleBook(page, 0.84);
   expectCompatibilityTapHandled(rightTap);
-  const afterRight = await expectCfiChange(shell, deepCfi);
+  const afterRight = await expectCfiChange(shell, deepCfi, next);
   expect(afterRight).not.toBe(initialCfi);
 
   const leftTap = await tapVisibleBook(page, 0.16);
   expectCompatibilityTapHandled(leftTap);
   await expect.poll(() => shell.getAttribute('data-reader-location-cfi'), { timeout: 5_000 }).toBe(deepCfi);
+  await expect(next).toBeEnabled({ timeout: 5_000 });
 
   for (let toggle = 0; toggle < 4; toggle += 1) {
     const controlsBefore = await shell.getAttribute('data-reader-controls');
@@ -226,7 +299,7 @@ async function verifyDeepReadingContinuity(page: Page, initialAdvanceCount = 5):
   for (let turn = 0; turn < 4; turn += 1) {
     const tap = await tapVisibleBook(page, 0.84);
     expectCompatibilityTapHandled(tap);
-    current = await expectCfiChange(shell, current);
+    current = await expectCfiChange(shell, current, next);
     expect(current).not.toBe(initialCfi);
     forwardLocations.push(current);
   }
@@ -239,6 +312,7 @@ async function verifyDeepReadingContinuity(page: Page, initialAdvanceCount = 5):
     expectCompatibilityTapHandled(tap);
     await expect.poll(() => shell.getAttribute('data-reader-location-cfi'), { timeout: 5_000 }).not.toBe(before);
     await expect.poll(() => shell.getAttribute('data-reader-location-cfi'), { timeout: 5_000 }).toBe(expected);
+    await expect(next).toBeEnabled({ timeout: 5_000 });
   }
 
   expect(await currentCfi(shell)).toBe(deepCfi);
