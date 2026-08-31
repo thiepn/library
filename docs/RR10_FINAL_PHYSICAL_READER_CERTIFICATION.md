@@ -6,13 +6,20 @@ RR10 is the final reader release phase. No broad reader feature work belongs her
 
 ## Current baseline
 
-- Automated reader/release qualification is green on `main` source `236ff19c5a3011dbe18c6e675a681d2cc17e098f`.
-- Production deployment and live verification for that source passed.
+- RR10 Stage A is merged on `main` as source `b4789ace73b0c3dd5cf6b435f0692f3ea9273ea2`.
+- Deploy Library run `33409963085` production-certified that source through staged Browser Acceptance, RR4 performance, RR5 offline/PWA, RR6 accessibility, RR7 ergonomics, RR8 durability, RR9 security, GitHub Pages deployment, and live custom-domain/source-artifact verification.
 - Physical-device evidence remains **0/12**.
-- `main` remains unprotected and therefore cannot be a final v1 source yet.
-- Package version remains `1.0.0-rc.1`.
-- Issue #36 remains the physical-device release blocker.
+- `main` remains unprotected and therefore cannot yet receive the final source-freeze merge.
+- `rr10-v1-source-freeze` prepares package/changelog metadata as `1.0.0`; this is pre-tag release preparation, not a final release claim.
+- Issue #36 remains the physical-device release blocker and RR10 execution checklist.
 - The final release gate uses two immutable identities: the tested application source SHA and a descendant physical-evidence commit SHA containing record-only changes.
+
+## RR10 progress
+
+- **Stage A — complete:** release/evidence architecture merged and production-verified.
+- **Stage B — blocked:** enable GitHub protection on `main`.
+- **Stage C — prepared:** final `1.0.0` metadata branch exists; do not merge it until Stage B is satisfied.
+- **Stages D–K — pending:** exact source freeze, evidence branch, 12-device campaign, exact evidence certification, and final tag.
 
 ## RR10 invariants
 
@@ -39,6 +46,8 @@ Before freezing the source:
 
 Exit: one clean `main` commit exists with the final release-gate architecture and no known automated reader regression.
 
+**Status: complete.** Source `b4789ace73b0c3dd5cf6b435f0692f3ea9273ea2` passed the complete production pipeline in run `33409963085`.
+
 ## Stage B — Protect main
 
 Configure GitHub `main` protection before the final source candidate is prepared.
@@ -56,6 +65,8 @@ Recommended: also require stable Accessibility, Reading Ergonomics, Offline Reli
 
 Exit: GitHub API reports `main.protected === true`.
 
+**Status: blocked.** The connected GitHub tooling can verify protection but cannot enable repository rulesets; the repository owner must enable this in GitHub Settings before Stage C is merged.
+
 ## Stage C — Prepare and freeze final source
 
 On protected `main`:
@@ -67,6 +78,8 @@ On protected `main`:
 5. Deploy through the ordinary production workflow.
 6. Verify `/library/release-identity.json` equals the exact source SHA.
 7. Freeze that SHA as `expected_source_sha`.
+
+The metadata portion is prepared on `rr10-v1-source-freeze`. That branch may be tested before Stage B completes, but it must not be merged to `main` until branch protection is active. The exact merge commit—not the preparation branch head—becomes eligible for production verification and final source freeze.
 
 After freeze, do not modify application source unless a physical-device defect requires a fix. If a fix is required, produce a new source SHA, redeploy/reverify it, and restart final physical certification against the new SHA.
 
