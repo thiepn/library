@@ -65,7 +65,12 @@ const proxy = http.createServer((request, response) => {
   if (url.pathname.startsWith(controlPrefix) && respondControl(request, response, url.pathname)) return;
 
   if (originOffline) {
-    request.socket.destroy();
+    response.writeHead(503, {
+      'content-type': 'text/plain; charset=utf-8',
+      'cache-control': 'no-store',
+      'x-rr5-origin-offline': '1',
+    });
+    response.end('RR5 simulated origin outage');
     return;
   }
 

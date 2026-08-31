@@ -101,6 +101,7 @@ async function cacheFirst(request, cacheName) {
 async function networkFirstNavigation(request) {
   try {
     const response = await fetch(request);
+    if (response.status >= 500) throw new Error(`Library origin returned ${response.status}.`);
     await putIfCacheable(RUNTIME_CACHE, request, response);
     return response;
   } catch {

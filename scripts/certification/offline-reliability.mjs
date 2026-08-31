@@ -179,7 +179,10 @@ if (present) {
   pass('RR5_WEBKIT_ORIGIN_OUTAGE_HARNESS',
     config.includes("command: 'node tests/e2e/offline-preview-proxy.mjs'")
       && offlineProxy.includes("const controlPrefix = '/__rr5-network/'")
-      && offlineProxy.includes('request.socket.destroy()')
+      && offlineProxy.includes('response.writeHead(503')
+      && offlineProxy.includes("'x-rr5-origin-offline': '1'")
+      && !offlineProxy.includes('request.socket.destroy()')
+      && sw.includes('response.status >= 500')
       && offlineNetwork.includes("test.info().project.name === 'webkit-offline'")
       && offlineNetwork.includes('await setProxyOriginOffline(offline)')
       && offlineNetwork.includes('await context.setOffline(offline)')
@@ -187,9 +190,10 @@ if (present) {
       && storageTests.includes("import { setRr5Offline } from './offline-network'")
       && offlineTests.includes('setRr5Offline(context, true)')
       && storageTests.includes('setRr5Offline(context, true)')
+      && offlineTests.includes('expectOfflineShellStyled(page)')
       && doc.includes("Chromium and Firefox use Playwright's native browser-context offline mode")
       && doc.includes('qualification-only localhost origin proxy'),
-    'Chromium/Firefox retain native offline emulation while WebKit uses a qualification-only localhost origin proxy so the production service worker must satisfy cached requests without relying on WebKit’s broken document-offline toggle');
+    'Chromium/Firefox retain native offline emulation while WebKit uses a deterministic qualification-only localhost 503 origin outage; cached navigation must survive origin 5xx without hard-resetting WebKit transport');
 
   pass('RR5_BROWSER_CONFIG_ISOLATION',
     baselineConfig.includes("serviceWorkers: 'block'")
