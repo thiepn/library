@@ -18,8 +18,7 @@ interface VisibleTapPoint {
 }
 
 const USE_STAGED_HOSTED_MEDIA = process.env.RR6_STAGED_HOSTED_MEDIA === '1';
-const HOSTED_READER_PATH = '/library/works/ai-for-the-kingdom/read';
-const HOSTED_EPUB_ROUTE = '**/library/media/works/ai-for-the-kingdom/editions/1.0.0-rc4/AI_for_the_Kingdom.epub';
+const HOSTED_EPUB_ROUTE = '**/library/media/works/**/editions/**/*.epub';
 const PUBLICATION_INTERACTIVE_SELECTOR = [
   'a[href]',
   'button',
@@ -75,11 +74,21 @@ async function openHostedReader(page: Page): Promise<void> {
     });
   }
 
-  await page.goto(HOSTED_READER_PATH);
+  // Enter through the public catalog instead of naming a publication. Private/draft works are not
+  // rendered here, so hosted qualification follows the same visibility contract as real readers.
+  await page.goto('/library');
+  const readableCard = page.locator('article.work-card').filter({
+    has: page.locator('.micro', { hasText: /(?:^| · )Reader(?: · |$)/ }),
+  }).first();
+  await expect(readableCard, 'Catalog must expose at least one public work available in the Library reader').toBeVisible();
+  await readableCard.locator('h2 a').click();
+  const readerCta = page.locator('[data-reader-cta]');
+  await expect(readerCta, 'Public hosted work must expose its canonical reader CTA').toBeVisible();
+  await readerCta.click();
   await waitForReader(page);
 
   if (!USE_STAGED_HOSTED_MEDIA) {
-    expect(fixtureRequests, 'Hosted route must request the publication EPUB through its real media URL').toBeGreaterThan(0);
+    expect(fixtureRequests, 'Hosted reader must request its EPUB through the public work\'s real media URL').toBeGreaterThan(0);
   }
 }
 
