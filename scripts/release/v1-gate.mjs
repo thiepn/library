@@ -11,7 +11,10 @@ function block(message) {
 }
 
 const expectedSha = argument('--expected-sha') ?? process.env.EXPECTED_SOURCE_SHA ?? '';
+const physicalEvidenceSha = argument('--physical-evidence-sha') ?? process.env.PHYSICAL_EVIDENCE_SHA ?? '';
+const physicalReportPath = argument('--physical-report') ?? process.env.PHYSICAL_RELEASE_REPORT ?? '.build/release/physical-device-release.json';
 if (!/^[a-f0-9]{40}$/i.test(expectedSha)) block('an exact 40-character --expected-sha is required');
+if (!/^[a-f0-9]{40}$/i.test(physicalEvidenceSha)) block('an exact 40-character --physical-evidence-sha is required');
 
 const pkg = JSON.parse(await readFile('package.json', 'utf8'));
 if (pkg.version !== '1.0.0') block(`package.json must be version 1.0.0, found ${pkg.version}`);
@@ -19,9 +22,22 @@ if (pkg.version !== '1.0.0') block(`package.json must be version 1.0.0, found ${
 const changelog = await readFile('CHANGELOG.md', 'utf8');
 if (!/^## \[?1\.0\.0\]?\b/m.test(changelog)) block('CHANGELOG.md must contain a 1.0.0 release section');
 
-const roadmap = await readFile('docs/RELEASE_READINESS_ROADMAP.md', 'utf8');
-if (/physical-device evidence remains \*\*0\/12\*\*/i.test(roadmap) || /evidence count remains \*\*0\/12\*\*/i.test(roadmap)) {
-  block('the release-readiness roadmap still records physical-device evidence as 0/12');
+let physicalReport;
+try {
+  physicalReport = JSON.parse(await readFile(physicalReportPath, 'utf8'));
+} catch (error) {
+  block(`unable to read the physical-device release report at ${physicalReportPath}: ${error instanceof Error ? error.message : String(error)}`);
+}
+if (
+  physicalReport?.schemaVersion !== 1
+  || physicalReport?.mode !== 'release'
+  || String(physicalReport?.expectedSha ?? '').toLowerCase() !== expectedSha.toLowerCase()
+  || !Array.isArray(physicalReport?.selectedRecords)
+  || physicalReport.selectedRecords.length !== 12
+  || !Array.isArray(physicalReport?.errors)
+  || physicalReport.errors.length !== 0
+) {
+  block('physical-device release report does not prove 12/12 current passing targets for the expected source SHA');
 }
 
 const repository = process.env.GITHUB_REPOSITORY ?? 'thiepn/library';
@@ -44,4 +60,4 @@ for (const file of ['SECURITY.md', 'docs/RR9_SECURITY_PRIVACY_V1_LAUNCH.md', 'do
   if (!text.trim()) block(`${file} is missing release documentation`);
 }
 
-console.log(`V1_RELEASE_GATE_PASS ${expectedSha}`);
+console.log(`V1_RELEASE_GATE_PASS source=${expectedSha} physicalEvidence=${physicalEvidenceSha}`);
