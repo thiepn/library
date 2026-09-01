@@ -62,7 +62,7 @@
 }
 .reader-bookmarks-panel__close:hover { background: color-mix(in srgb, var(--reader-shell-ink) 7%, transparent); }
 
-.reader-bookmarks-current {
+.reader-shell .reader-bookmarks-current {
   min-height: 44px;
   width: 100%;
   border: 1px solid var(--reader-shell-ink);
@@ -74,7 +74,7 @@
   font-size: 0.78rem;
   font-weight: 700;
 }
-.reader-bookmarks-current[data-saved="true"] {
+.reader-shell .reader-bookmarks-current[data-saved="true"] {
   background: transparent;
   color: var(--reader-shell-ink);
 }
