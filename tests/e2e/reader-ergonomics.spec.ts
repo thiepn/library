@@ -23,6 +23,30 @@ async function currentCfi(shell: Locator): Promise<string> {
   return cfi ?? '';
 }
 
+function parseRgb(value: string): [number, number, number] {
+  const match = value.match(/rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)/i);
+  if (!match) throw new Error(`Unsupported computed color: ${value}`);
+  return [Number(match[1]), Number(match[2]), Number(match[3])];
+}
+
+function relativeLuminance(value: string): number {
+  const channels = parseRgb(value).map((channel) => {
+    const normalized = channel / 255;
+    return normalized <= 0.03928
+      ? normalized / 12.92
+      : ((normalized + 0.055) / 1.055) ** 2.4;
+  });
+  return (0.2126 * channels[0]!) + (0.7152 * channels[1]!) + (0.0722 * channels[2]!);
+}
+
+function contrastRatio(foreground: string, background: string): number {
+  const foregroundLuminance = relativeLuminance(foreground);
+  const backgroundLuminance = relativeLuminance(background);
+  const lighter = Math.max(foregroundLuminance, backgroundLuminance);
+  const darker = Math.min(foregroundLuminance, backgroundLuminance);
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
 test('@rr7 settings panels have discoverable close controls and own exposed reading-surface clicks', async ({ page }) => {
   const shell = await openFixtureReader(page);
   const backdrop = page.locator('[data-reader-panel-backdrop]');
@@ -85,4 +109,22 @@ test('@rr7 settings panels have discoverable close controls and own exposed read
   await expect(backdrop).toBeHidden();
   await expect(shell).toHaveAttribute('data-reader-panel', 'none');
   await expect.poll(() => shell.getAttribute('data-reader-location-cfi'), { timeout: 5_000 }).not.toBe(beforeNext);
+});
+
+test('@rr7 bookmark primary action keeps visible text contrast', async ({ page }) => {
+  await openFixtureReader(page);
+  const bookmarksTrigger = page.getByRole('button', { name: /^Bookmarks,/ });
+  await bookmarksTrigger.click();
+
+  const currentAction = page.locator('[data-reader-bookmarks-current]');
+  await expect(currentAction).toBeVisible();
+  await expect(currentAction).toHaveText('Bookmark this location');
+
+  const colors = await currentAction.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return { color: style.color, backgroundColor: style.backgroundColor };
+  });
+
+  expect(colors.color).not.toBe(colors.backgroundColor);
+  expect(contrastRatio(colors.color, colors.backgroundColor)).toBeGreaterThanOrEqual(4.5);
 });
