@@ -38,6 +38,36 @@ async function dispatchReaderWheel(page: Page, deltaY: number): Promise<boolean>
   }, deltaY);
 }
 
+async function dispatchReaderEdgeClick(page: Page, xRatio: number): Promise<void> {
+  const frame = page.locator('[data-reader-viewport] iframe').first();
+  await expect(frame).toBeVisible();
+  await frame.evaluate((element, ratio) => {
+    const iframe = element as HTMLIFrameElement;
+    const document = iframe.contentDocument;
+    const frameWindow = iframe.contentWindow;
+    if (!document || !frameWindow) throw new Error('Reader iframe is not available.');
+    const width = Math.max(1, frameWindow.innerWidth || document.documentElement.clientWidth || 1);
+    const height = Math.max(1, frameWindow.innerHeight || document.documentElement.clientHeight || 1);
+    const x = Math.max(1, Math.min(width - 1, Math.round(width * ratio)));
+    const y = Math.max(1, Math.min(height - 1, Math.round(height * 0.5)));
+    const target = document.elementFromPoint(x, y) ?? document.documentElement;
+    const MouseEventCtor = (frameWindow as unknown as { MouseEvent: typeof MouseEvent }).MouseEvent;
+    target.dispatchEvent(new MouseEventCtor('click', {
+      bubbles: true,
+      cancelable: true,
+      clientX: x,
+      clientY: y,
+      button: 0,
+    }));
+  }, xRatio);
+}
+
+async function expectChromeHiddenStable(page: Page, shell: Locator): Promise<void> {
+  await expect(shell).toHaveAttribute('data-reader-controls', 'hidden');
+  await page.waitForTimeout(600);
+  await expect(shell).toHaveAttribute('data-reader-controls', 'hidden');
+}
+
 test('desktop paginated reader exposes reliable edge controls and removes page arrows in scroll mode', async ({ page }) => {
   test.skip(test.info().project.name.endsWith('-phone'), 'Desktop page rails are intentionally hidden on touch-first phone profiles.');
 
@@ -93,4 +123,27 @@ test('desktop wheel and trackpad scrolling turns paginated EPUB pages but stays 
   await page.getByRole('button', { name: 'Scroll', exact: true }).click();
   await expect(shell).toHaveAttribute('data-reader-flow', 'scrolled');
   expect(await dispatchReaderWheel(page, 120)).toBe(false);
+});
+
+test('@rr7 hidden reader chrome stays hidden while paging forward and backward', async ({ page }) => {
+  test.skip(!test.info().project.name.endsWith('-phone'), 'Immersive chrome continuity is certified on touch-first phone projects.');
+
+  const shell = await openFixtureReader(page);
+  const start = await currentCfi(shell);
+
+  // Hide the same top/bottom chrome a physical center tap toggles away, then turn pages through
+  // the EPUB interaction surface. Page relocation/focus must never cancel that reader intent.
+  await shell.evaluate((element) => {
+    element.dispatchEvent(new CustomEvent('reader-shell:toggle-controls', { bubbles: true }));
+  });
+  await expectChromeHiddenStable(page, shell);
+
+  await dispatchReaderEdgeClick(page, 0.84);
+  await expect.poll(() => shell.getAttribute('data-reader-location-cfi'), { timeout: 5_000 }).not.toBe(start);
+  const advanced = await currentCfi(shell);
+  await expectChromeHiddenStable(page, shell);
+
+  await dispatchReaderEdgeClick(page, 0.16);
+  await expect.poll(() => shell.getAttribute('data-reader-location-cfi'), { timeout: 5_000 }).not.toBe(advanced);
+  await expectChromeHiddenStable(page, shell);
 });
