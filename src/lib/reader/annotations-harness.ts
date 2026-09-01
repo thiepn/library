@@ -26,6 +26,10 @@ function attachAnnotations(
       base.search.close(false);
       base.toc.close(false);
     }
+    if (state.open && state.message === 'Highlight and note saved.') {
+      annotations.close(false);
+      base.shell.viewport.focus({ preventScroll: true });
+    }
   }));
   cleanups.push(base.bookmarks.subscribe((state) => {
     if (state.open) {
