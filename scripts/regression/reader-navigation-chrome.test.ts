@@ -12,12 +12,16 @@ function makeNavigationHarness() {
       readerControls: 'hidden',
     },
   } as unknown as HTMLElement;
+  const viewport = {
+    querySelectorAll: () => [],
+  } as unknown as HTMLElement;
 
   let hideCalls = 0;
   let showCalls = 0;
 
   const shell = {
     root,
+    viewport,
     announce: () => undefined,
     setNavigationAvailability: () => undefined,
     hideControls: () => {
