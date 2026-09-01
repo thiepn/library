@@ -203,6 +203,14 @@ export class ReaderNavigationController {
     this.assertUsable();
     if (this.state.busy || !this.isInteractiveReady()) return;
 
+    // A reader who deliberately hid the chrome has expressed an immersive-reading preference.
+    // EPUB.js may replace/focus an iframe while turning a page, which can transiently trigger
+    // shell focus handling and reveal the bars. Preserve the pre-turn hidden state for every
+    // non-keyboard navigation path; keyboard navigation intentionally keeps its existing reveal
+    // behavior so keyboard users retain visible orientation and controls.
+    const preserveHiddenChrome = source !== 'keyboard'
+      && this.shell.root.dataset.readerControls === 'hidden';
+
     const location = this.controllerState.location;
     if (direction === 'previous' && location?.atStart) {
       this.shell.announce('Beginning of book');
@@ -228,6 +236,7 @@ export class ReaderNavigationController {
       // Re-scan only after the page turn settles so WebKit always gets a bridge on the current
       // document instead of retaining a listener on the previous section.
       this.scanReaderFrames();
+      if (preserveHiddenChrome) this.shell.hideControls();
     }
 
     if (source === 'keyboard') this.shell.showControls();
