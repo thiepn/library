@@ -19,12 +19,19 @@ function attachAnnotations(
   const annotations = new ReaderAnnotationsController(base.controller, base.shell, { identity });
   const cleanups: Unsubscribe[] = [];
   let destroyed = false;
+  let annotationCount = annotations.snapshot.items.length;
 
   cleanups.push(annotations.subscribe((state) => {
+    const annotationAdded = state.items.length > annotationCount;
+    annotationCount = state.items.length;
     if (state.open) {
       base.bookmarks.close(false);
       base.search.close(false);
       base.toc.close(false);
+    }
+    if (state.open && annotationAdded && state.message === 'Highlight and note saved.') {
+      annotations.close(false);
+      base.shell.viewport.focus({ preventScroll: true });
     }
   }));
   cleanups.push(base.bookmarks.subscribe((state) => {
