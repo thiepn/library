@@ -1,0 +1,95 @@
+name: Temporary Verified Publication Promotion
+
+on:
+  push:
+    branches:
+      - 'promote-run/choosing-a-mission-organization-1.1.0'
+    paths:
+      - '.publication-ingress/promote-trigger.txt'
+
+permissions:
+  contents: write
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout attested publication branch
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          fetch-depth: 0
+
+      - name: Verify prior attestation
+        run: |
+          set -euo pipefail
+          test -f .publication-ingress/SUCCESS.json
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          const a=JSON.parse(readFileSync('.publication-ingress/SUCCESS.json','utf8'));
+          const ok=a.workId==='choosing-a-mission-organization'
+            && a.version==='1.1.0'
+            && a.packageBytes===173613
+            && a.packageSha256==='e96d876f07cb0160579bf329995b7a578f4dc86f3a2a19611f4bc3b478ffb696'
+            && a.epubBytes===148724
+            && a.epubSha256==='2b86981c12af083826c0bd530fd09c56b8c896d347a342b7e3ffa6c89ad072cc'
+            && a.coverBytes===25020
+            && a.coverSha256==='8cb7f6c5734c2cf3f5f52acf993528b991d1c2c9b8f3fc3831718f35307e8fd2'
+            && a.r2ReadbackVerified===true
+            && a.libraryReleaseCertifyPassed===true;
+          if (!ok) throw new Error('Attestation mismatch');
+          console.log('ATTESTATION_PASS');
+          NODE
+
+      - name: Setup pnpm and Node
+        uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2
+        with:
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+          cache: true
+
+      - name: Download and verify package again
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/library-promote/package
+          curl --fail --location --silent --show-error --retry 3 --retry-all-errors 'https://drive.google.com/uc?export=download&id=1LYCsLFZqjKsJkBJ3OfndXnTcr9ikI-wc' -o /tmp/library-promote/package.zip
+          test "$(stat -c %s /tmp/library-promote/package.zip)" = '173613'
+          printf '%s  %s\n' 'e96d876f07cb0160579bf329995b7a578f4dc86f3a2a19611f4bc3b478ffb696' /tmp/library-promote/package.zip | sha256sum -c -
+          unzip -q /tmp/library-promote/package.zip -d /tmp/library-promote/package
+
+      - name: Prepare verified source and registry
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/library-promote/work /tmp/library-promote/release
+          cp /tmp/library-promote/package/work.yaml /tmp/library-promote/work/work.yaml
+          cp -R /tmp/library-promote/package/chapters /tmp/library-promote/work/chapters
+          cp -R /tmp/library-promote/package/recovery /tmp/library-promote/work/recovery
+          node --input-type=module <<'NODE'
+          import { readFile, writeFile } from 'node:fs/promises';
+          import YAML from 'yaml';
+          const meta=JSON.parse(await readFile('/tmp/library-promote/package/publication.json','utf8'));
+          const artifacts={};
+          for (const [kind,a] of Object.entries(meta.artifacts)) {
+            const key=`works/${meta.workId}/editions/${meta.version}/${a.filename}`;
+            artifacts[kind]={url:`https://thiepn.dev/library/media/${key}`,filename:a.filename,mimeType:a.mimeType,sizeBytes:a.sizeBytes,sha256:String(a.sha256).toLowerCase()};
+          }
+          const release={schemaVersion:1,workId:meta.workId,version:meta.version,edition:meta.edition,releasedAt:meta.releasedAt,...(meta.sourceHash?{sourceHash:String(meta.sourceHash).toLowerCase()}:{}),artifacts};
+          await writeFile('/tmp/library-promote/release/1.1.0.yaml',YAML.stringify(release),'utf8');
+          NODE
+
+      - name: Build clean verified branch from fresh main
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git fetch origin main
+          git checkout -B verified/choosing-a-mission-organization-1.1.0 origin/main
+          rm -rf src/content/works/choosing-a-mission-organization
+          mkdir -p src/content/works/choosing-a-mission-organization src/publications/releases/choosing-a-mission-organization
+          cp -R /tmp/library-promote/work/. src/content/works/choosing-a-mission-organization/
+          cp /tmp/library-promote/release/1.1.0.yaml src/publications/releases/choosing-a-mission-organization/1.1.0.yaml
+          pnpm install --frozen-lockfile
+          pnpm release:certify
+          git add src/content/works/choosing-a-mission-organization src/publications/releases/choosing-a-mission-organization/1.1.0.yaml
+          git commit -m 'Publish choosing-a-mission-organization 1.1.0 to Library'
+          git push --force-with-lease origin HEAD:verified/choosing-a-mission-organization-1.1.0
