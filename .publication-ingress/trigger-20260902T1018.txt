@@ -1,0 +1,1 @@
+Trigger verified publication ingest for choosing-a-mission-organization 1.1.0. Package bytes and SHA remain unchanged.
