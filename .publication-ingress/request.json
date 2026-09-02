@@ -1,0 +1,27 @@
+{
+  "packageBase64Parts": [
+    ".publication-ingress/package.part1000.b64",
+    ".publication-ingress/package.part1001.b64",
+    ".publication-ingress/package.part01.b64",
+    ".publication-ingress/package.part02.b64",
+    ".publication-ingress/package.part03.b64",
+    ".publication-ingress/package.part04.b64",
+    ".publication-ingress/package.part05.b64",
+    ".publication-ingress/package.part06.b64",
+    ".publication-ingress/package.part07.b64",
+    ".publication-ingress/package.part08.b64",
+    ".publication-ingress/package.part1090.b64",
+    ".publication-ingress/package.part1091.b64",
+    ".publication-ingress/package.part1100.b64",
+    ".publication-ingress/package.part1101.b64",
+    ".publication-ingress/package.part1110.b64",
+    ".publication-ingress/package.part1111.b64",
+    ".publication-ingress/package.part1120.b64",
+    ".publication-ingress/package.part1121.b64",
+    ".publication-ingress/package.part1130.b64",
+    ".publication-ingress/package.part1131.b64",
+    ".publication-ingress/package.part14.b64"
+  ],
+  "packageSha256": "e96d876f07cb0160579bf329995b7a578f4dc86f3a2a19611f4bc3b478ffb696",
+  "packageBytes": 173613
+}
