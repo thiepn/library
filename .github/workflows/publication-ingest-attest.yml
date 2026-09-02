@@ -1,0 +1,142 @@
+name: Temporary Publication Ingest Attestation
+
+on:
+  push:
+    branches:
+      - 'ingest2/choosing-a-mission-organization-1.1.0'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publication-ingest-attest
+  cancel-in-progress: false
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      R2_BUCKET: thiepn-library-publications
+    steps:
+      - name: Checkout ingest branch
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm and Node
+        uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2
+        with:
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+          cache: true
+
+      - name: Install frozen dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Download and verify frozen package
+        id: package
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/library-ingest
+          package_url='https://drive.google.com/uc?export=download&id=1LYCsLFZqjKsJkBJ3OfndXnTcr9ikI-wc'
+          expected_hash='e96d876f07cb0160579bf329995b7a578f4dc86f3a2a19611f4bc3b478ffb696'
+          expected_bytes='173613'
+          curl --fail --location --silent --show-error --retry 3 --retry-all-errors "$package_url" -o /tmp/library-ingest/package.zip
+          test "$(stat -c %s /tmp/library-ingest/package.zip)" = "$expected_bytes"
+          printf '%s  %s\n' "$expected_hash" /tmp/library-ingest/package.zip | sha256sum -c -
+          unzip -q /tmp/library-ingest/package.zip -d /tmp/library-ingest/package
+
+          node --input-type=module <<'NODE'
+          import { createHash } from 'node:crypto';
+          import { readFile, readdir, stat } from 'node:fs/promises';
+          import path from 'node:path';
+          import YAML from 'yaml';
+          const root='/tmp/library-ingest/package';
+          const meta=JSON.parse(await readFile(path.join(root,'publication.json'),'utf8'));
+          const work=YAML.parse(await readFile(path.join(root,'work.yaml'),'utf8'));
+          if (meta.schemaVersion !== 1 || meta.workId !== 'choosing-a-mission-organization' || meta.version !== '1.1.0' || meta.edition !== 1) throw new Error('Publication identity mismatch');
+          if (work.id !== meta.workId || work.slug !== meta.workId || work.publication?.activeRelease !== meta.version) throw new Error('work.yaml mismatch');
+          const expected=JSON.parse(await readFile(path.join(root,meta.reader.manifest),'utf8'));
+          const chapters=(await readdir(path.join(root,'chapters'))).filter((name)=>/\.(md|mdx)$/i.test(name));
+          if (chapters.length !== meta.reader.expectedFiles || expected.expectedReaderFiles !== chapters.length) throw new Error('Reader payload mismatch');
+          for (const [kind,a] of Object.entries(meta.artifacts ?? {})) {
+            const file=path.join(root,a.source);
+            if ((await stat(file)).size !== Number(a.sizeBytes)) throw new Error(`${kind} size mismatch`);
+            const digest=createHash('sha256').update(await readFile(file)).digest('hex');
+            if (digest !== String(a.sha256).toLowerCase()) throw new Error(`${kind} hash mismatch`);
+          }
+          console.log('PACKAGE_AND_ARTIFACTS_PASS');
+          NODE
+
+      - name: Materialize candidate Library source
+        run: |
+          set -euo pipefail
+          work_id='choosing-a-mission-organization'
+          version='1.1.0'
+          rm -rf "src/content/works/$work_id"
+          mkdir -p "src/content/works/$work_id"
+          cp /tmp/library-ingest/package/work.yaml "src/content/works/$work_id/work.yaml"
+          cp -R /tmp/library-ingest/package/chapters "src/content/works/$work_id/chapters"
+          cp -R /tmp/library-ingest/package/recovery "src/content/works/$work_id/recovery"
+
+          node --input-type=module <<'NODE'
+          import { mkdir, readFile, writeFile } from 'node:fs/promises';
+          import path from 'node:path';
+          import YAML from 'yaml';
+          const root='/tmp/library-ingest/package';
+          const meta=JSON.parse(await readFile(path.join(root,'publication.json'),'utf8'));
+          const artifacts={};
+          for (const [kind,a] of Object.entries(meta.artifacts)) {
+            const key=`works/${meta.workId}/editions/${meta.version}/${a.filename}`;
+            artifacts[kind]={url:`https://thiepn.dev/library/media/${key}`,filename:a.filename,mimeType:a.mimeType,sizeBytes:a.sizeBytes,sha256:String(a.sha256).toLowerCase()};
+          }
+          const release={schemaVersion:1,workId:meta.workId,version:meta.version,edition:meta.edition,releasedAt:meta.releasedAt,...(meta.sourceHash?{sourceHash:String(meta.sourceHash).toLowerCase()}:{}),artifacts};
+          const dir=path.join('src/publications/releases',meta.workId);
+          await mkdir(dir,{recursive:true});
+          await writeFile(path.join(dir,`${meta.version}.yaml`),YAML.stringify(release),'utf8');
+          NODE
+
+      - name: Upload artifacts and verify immutable R2 readback
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN:-}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID:-}"
+          mkdir -p /tmp/library-ingest/readback
+          node -e "const m=require('/tmp/library-ingest/package/publication.json'); for (const [k,a] of Object.entries(m.artifacts)) console.log([k,a.source,a.filename,a.sizeBytes,a.sha256].join('\t'))" > /tmp/library-ingest/artifacts.tsv
+          while IFS=$'\t' read -r kind source filename bytes hash; do
+            key="works/choosing-a-mission-organization/editions/1.1.0/$filename"
+            pnpm exec wrangler r2 object put "$R2_BUCKET/$key" --file="/tmp/library-ingest/package/$source" --remote
+            pnpm exec wrangler r2 object get "$R2_BUCKET/$key" --file="/tmp/library-ingest/readback/$filename" --remote
+            test "$(stat -c %s "/tmp/library-ingest/readback/$filename")" = "$bytes"
+            printf '%s  %s\n' "$hash" "/tmp/library-ingest/readback/$filename" | sha256sum -c -
+            echo "R2_VERIFIED $kind $key"
+          done < /tmp/library-ingest/artifacts.tsv
+
+      - name: Certify complete Library with candidate publication
+        run: pnpm release:certify
+
+      - name: Write success attestation
+        run: |
+          set -euo pipefail
+          cat > .publication-ingress/SUCCESS.json <<'JSON'
+          {
+            "workId": "choosing-a-mission-organization",
+            "version": "1.1.0",
+            "packageBytes": 173613,
+            "packageSha256": "e96d876f07cb0160579bf329995b7a578f4dc86f3a2a19611f4bc3b478ffb696",
+            "epubBytes": 148724,
+            "epubSha256": "2b86981c12af083826c0bd530fd09c56b8c896d347a342b7e3ffa6c89ad072cc",
+            "coverBytes": 25020,
+            "coverSha256": "8cb7f6c5734c2cf3f5f52acf993528b991d1c2c9b8f3fc3831718f35307e8fd2",
+            "r2ReadbackVerified": true,
+            "libraryReleaseCertifyPassed": true
+          }
+          JSON
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .publication-ingress/SUCCESS.json
+          git commit -m 'Attest Choosing a Mission Organization ingest'
+          git push origin HEAD:${GITHUB_REF_NAME}
