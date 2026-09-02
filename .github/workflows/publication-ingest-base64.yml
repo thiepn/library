@@ -1,0 +1,202 @@
+name: Temporary Base64 Publication Ingest
+
+on:
+  push:
+    branches:
+      - 'ingest/choosing-a-mission-organization-1.1.0'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: publication-ingest
+  cancel-in-progress: false
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      GITHUB_TOKEN: ${{ github.token }}
+      GH_TOKEN: ${{ github.token }}
+      R2_BUCKET: thiepn-library-publications
+    steps:
+      - name: Checkout ingest request
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm and Node
+        uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2
+        with:
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+          cache: true
+
+      - name: Install frozen dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Decode and verify frozen ingest package
+        id: package
+        run: |
+          set -euo pipefail
+          test -f .publication-ingress/request.json
+          test -n "${CLOUDFLARE_API_TOKEN:-}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID:-}"
+          mkdir -p /tmp/library-ingest
+          node --input-type=module <<'NODE'
+          import { readFile, writeFile } from 'node:fs/promises';
+          const request=JSON.parse(await readFile('.publication-ingress/request.json','utf8'));
+          if (!Array.isArray(request.packageBase64Parts) || request.packageBase64Parts.length < 1) {
+            throw new Error('packageBase64Parts missing');
+          }
+          let b64='';
+          for (const file of request.packageBase64Parts) {
+            if (!/^\.publication-ingress\/package\.part\d+\.b64$/.test(file)) throw new Error(`Unsafe transport part ${file}`);
+            b64 += (await readFile(file,'utf8')).trim();
+          }
+          await writeFile('/tmp/library-ingest/package.zip', Buffer.from(b64,'base64'));
+          NODE
+          expected_hash=$(node -e "const r=require('./.publication-ingress/request.json'); process.stdout.write(r.packageSha256)")
+          expected_bytes=$(node -e "const r=require('./.publication-ingress/request.json'); process.stdout.write(String(r.packageBytes))")
+          test "$(stat -c %s /tmp/library-ingest/package.zip)" = "$expected_bytes"
+          printf '%s  %s\n' "$expected_hash" /tmp/library-ingest/package.zip | sha256sum -c -
+          unzip -q /tmp/library-ingest/package.zip -d /tmp/library-ingest/package
+
+          node --input-type=module <<'NODE'
+          import { createHash } from 'node:crypto';
+          import { readFile, readdir, stat } from 'node:fs/promises';
+          import path from 'node:path';
+          import YAML from 'yaml';
+          const root='/tmp/library-ingest/package';
+          const meta=JSON.parse(await readFile(path.join(root,'publication.json'),'utf8'));
+          if (meta.schemaVersion !== 1 || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(meta.workId)) throw new Error('Invalid publication identity');
+          if (typeof meta.version !== 'string' || !meta.version || !Number.isInteger(meta.edition) || meta.edition < 1) throw new Error('Invalid publication version/edition');
+          const work=YAML.parse(await readFile(path.join(root,'work.yaml'),'utf8'));
+          if (work.id !== meta.workId || work.slug !== meta.workId || work.publication?.activeRelease !== meta.version || work.publication?.edition !== meta.edition) throw new Error('work.yaml mismatch');
+          const expected=JSON.parse(await readFile(path.join(root,meta.reader.manifest),'utf8'));
+          if (expected.workId !== meta.workId || expected.expectedReaderFiles !== meta.reader.expectedFiles) throw new Error('Reader manifest mismatch');
+          const chapterDir=path.join(root,'chapters');
+          const chapters=(await readdir(chapterDir)).filter((name)=>/\.(md|mdx)$/i.test(name));
+          if (chapters.length !== meta.reader.expectedFiles) throw new Error(`Reader count mismatch ${chapters.length}/${meta.reader.expectedFiles}`);
+          const expectedMap=new Map(expected.records.map((record)=>[record.file,record]));
+          for (const file of chapters) {
+            const record=expectedMap.get(file);
+            if (!record) throw new Error(`Unexpected reader file ${file}`);
+            if (record.sha256) {
+              const digest=createHash('sha256').update(await readFile(path.join(chapterDir,file))).digest('hex');
+              if (digest !== record.sha256.toLowerCase()) throw new Error(`Reader hash mismatch ${file}`);
+            }
+          }
+          for (const [kind,artifact] of Object.entries(meta.artifacts ?? {})) {
+            if (!artifact.source || artifact.source.startsWith('/') || artifact.source.includes('..')) throw new Error(`Unsafe ${kind} source`);
+            const file=path.join(root,artifact.source);
+            if ((await stat(file)).size !== Number(artifact.sizeBytes)) throw new Error(`${kind} size mismatch`);
+            const digest=createHash('sha256').update(await readFile(file)).digest('hex');
+            if (digest !== String(artifact.sha256).toLowerCase()) throw new Error(`${kind} hash mismatch`);
+          }
+          console.log(`INGEST_PACKAGE_PASS ${meta.workId}@${meta.version} ${chapters.length} reader files`);
+          NODE
+
+          work_id=$(node -e "const r=require('/tmp/library-ingest/package/publication.json'); process.stdout.write(r.workId)")
+          version=$(node -e "const r=require('/tmp/library-ingest/package/publication.json'); process.stdout.write(r.version)")
+          echo "work_id=$work_id" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Materialize verified reader source
+        run: |
+          set -euo pipefail
+          work_id='${{ steps.package.outputs.work_id }}'
+          rm -rf "src/content/works/$work_id"
+          mkdir -p "src/content/works/$work_id"
+          cp /tmp/library-ingest/package/work.yaml "src/content/works/$work_id/work.yaml"
+          cp -R /tmp/library-ingest/package/chapters "src/content/works/$work_id/chapters"
+          cp -R /tmp/library-ingest/package/recovery "src/content/works/$work_id/recovery"
+
+      - name: Upload artifacts and verify immutable R2 readback
+        run: |
+          set -euo pipefail
+          work_id='${{ steps.package.outputs.work_id }}'
+          version='${{ steps.package.outputs.version }}'
+          mkdir -p /tmp/library-ingest/readback
+          node -e "const m=require('/tmp/library-ingest/package/publication.json'); for (const [k,a] of Object.entries(m.artifacts)) console.log([k,a.source,a.filename,a.sizeBytes,a.sha256].join('\t'))" > /tmp/library-ingest/artifacts.tsv
+          while IFS=$'\t' read -r kind source filename bytes hash; do
+            key="works/$work_id/editions/$version/$filename"
+            pnpm exec wrangler r2 object put "$R2_BUCKET/$key" --file="/tmp/library-ingest/package/$source" --remote
+            pnpm exec wrangler r2 object get "$R2_BUCKET/$key" --file="/tmp/library-ingest/readback/$filename" --remote
+            test "$(stat -c %s "/tmp/library-ingest/readback/$filename")" = "$bytes"
+            printf '%s  %s\n' "$hash" "/tmp/library-ingest/readback/$filename" | sha256sum -c -
+            echo "R2_VERIFIED $kind $key"
+          done < /tmp/library-ingest/artifacts.tsv
+
+      - name: Write canonical release registry
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import { mkdir, readFile, writeFile } from 'node:fs/promises';
+          import path from 'node:path';
+          import YAML from 'yaml';
+          const root='/tmp/library-ingest/package';
+          const meta=JSON.parse(await readFile(path.join(root,'publication.json'),'utf8'));
+          const artifacts={};
+          for (const [kind,a] of Object.entries(meta.artifacts)) {
+            const key=`works/${meta.workId}/editions/${meta.version}/${a.filename}`;
+            artifacts[kind]={
+              url:`https://thiepn.dev/library/media/${key}`,
+              filename:a.filename,
+              mimeType:a.mimeType,
+              sizeBytes:a.sizeBytes,
+              sha256:String(a.sha256).toLowerCase(),
+            };
+          }
+          const release={
+            schemaVersion:1,
+            workId:meta.workId,
+            version:meta.version,
+            edition:meta.edition,
+            releasedAt:meta.releasedAt,
+            ...(meta.sourceHash ? {sourceHash:String(meta.sourceHash).toLowerCase()} : {}),
+            artifacts,
+          };
+          const dir=path.join('src/publications/releases',meta.workId);
+          await mkdir(dir,{recursive:true});
+          await writeFile(path.join(dir,`${meta.version}.yaml`),YAML.stringify(release),'utf8');
+          NODE
+
+      - name: Certify complete Library with new publication
+        run: pnpm release:certify
+
+      - name: Open verified publication promotion PR
+        run: |
+          set -euo pipefail
+          work_id='${{ steps.package.outputs.work_id }}'
+          version='${{ steps.package.outputs.version }}'
+          rm -rf /tmp/library-promote
+          mkdir -p "/tmp/library-promote/work" "/tmp/library-promote/release"
+          cp -R "src/content/works/$work_id/." "/tmp/library-promote/work/"
+          cp "src/publications/releases/$work_id/$version.yaml" "/tmp/library-promote/release/$version.yaml"
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git fetch origin main
+          branch="publication-promote/${work_id}-${version}-${GITHUB_RUN_ID}"
+          git checkout -B "$branch" origin/main
+          rm -rf "src/content/works/$work_id"
+          mkdir -p "src/content/works/$work_id" "src/publications/releases/$work_id"
+          cp -R "/tmp/library-promote/work/." "src/content/works/$work_id/"
+          cp "/tmp/library-promote/release/$version.yaml" "src/publications/releases/$work_id/$version.yaml"
+          git add "src/content/works/$work_id" "src/publications/releases/$work_id/$version.yaml"
+          if git diff --cached --quiet; then
+            echo 'Verified publication already matches main; no promotion PR is needed.'
+            exit 0
+          fi
+          git commit -m "Publish $work_id $version to Library"
+          git push origin "HEAD:$branch"
+          gh pr create \
+            --base main \
+            --head "$branch" \
+            --title "Publish $work_id $version to Library" \
+            --body "Verified publication ingest. Package/artifact hashes, immutable R2 upload/readback, and complete Library certification passed in workflow run ${GITHUB_RUN_ID}."
