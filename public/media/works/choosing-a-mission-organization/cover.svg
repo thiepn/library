@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1800" viewBox="0 0 1200 1800" role="img" aria-labelledby="title desc">
+  <title id="title">Choosing a Mission Organization</title>
+  <desc id="desc">Book cover with title, subtitle, and author Thiepn.</desc>
+  <rect width="1200" height="1800" fill="#132238"/>
+  <rect x="84" y="84" width="1032" height="1632" rx="10" fill="none" stroke="#d6c59a" stroke-width="3"/>
+  <path d="M600 235l24 24-24 24-24-24z" fill="#d6c59a"/>
+  <text x="600" y="650" text-anchor="middle" fill="#f5f1e8" font-family="Georgia, 'Times New Roman', serif" font-size="82" font-weight="700">
+    <tspan x="600" dy="0">Choosing a</tspan>
+    <tspan x="600" dy="105">Mission</tspan>
+    <tspan x="600" dy="105">Organization</tspan>
+  </text>
+  <line x1="365" y1="1015" x2="835" y2="1015" stroke="#d6c59a" stroke-width="2"/>
+  <text x="600" y="1120" text-anchor="middle" fill="#d9e0e8" font-family="Arial, Helvetica, sans-serif" font-size="34" letter-spacing="1">
+    <tspan x="600" dy="0">A CHRISTIAN GUIDE TO AGENCIES,</tspan>
+    <tspan x="600" dy="52">TEAMS, TRUST, AND FAITHFUL SENDING</tspan>
+  </text>
+  <text x="600" y="1510" text-anchor="middle" fill="#f5f1e8" font-family="Arial, Helvetica, sans-serif" font-size="38" letter-spacing="5">THIEPN</text>
+</svg>
