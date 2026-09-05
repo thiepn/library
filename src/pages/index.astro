@@ -109,7 +109,7 @@ const catalog = works.map((work) => {
 
       {catalog.length ? (
         <div class="catalog-grid">
-          {catalog.map(({ work, coverUrl, release, readHref, formats, primary }) => (
+          {catalog.map(({ work, coverUrl, release, readHref, epub, formats, primary }) => (
             <article
               class="catalog-book"
               data-pagefind-ignore="all"
@@ -163,7 +163,7 @@ const catalog = works.map((work) => {
                     <a
                       class="catalog-primary"
                       href={primary.href}
-                      data-catalog-reader-cta={primary.kind === 'web' ? '' : undefined}
+                      data-catalog-reader-cta={epub && primary.kind === 'web' ? '' : undefined}
                     >
                       {primary.label}
                     </a>
