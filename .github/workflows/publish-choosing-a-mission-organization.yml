@@ -45,7 +45,7 @@ jobs:
           set -euo pipefail
           python -m pip install --quiet gdown
           mkdir -p /tmp/cmo-package
-          gdown --fuzzy 'https://drive.google.com/file/d/1LYCsLFZqjKsJkBJ3OfndXnTcr9ikI-wc/view' -O /tmp/cmo-package/package.zip
+          gdown '1LYCsLFZqjKsJkBJ3OfndXnTcr9ikI-wc' -O /tmp/cmo-package/package.zip
           actual_bytes=$(stat -c %s /tmp/cmo-package/package.zip)
           actual_hash=$(sha256sum /tmp/cmo-package/package.zip | cut -d' ' -f1)
           echo "Downloaded bytes: $actual_bytes"
