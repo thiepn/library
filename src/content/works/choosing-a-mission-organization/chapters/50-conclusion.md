@@ -4,7 +4,7 @@ order: 5000
 title: Conclusion — Choose, Commit, Stay Teachable
 part: null
 status: published
-description: The final posture after responsible investigation: commit faithfully while remaining teachable.
+description: "The final posture after responsible investigation: commit faithfully while remaining teachable."
 estimatedMinutes: 5
 ---
 Choosing a mission organization is not the largest purpose of Christian mission. It is a supporting decision.
