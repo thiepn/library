@@ -1,0 +1,161 @@
+name: Publish Choosing a Mission Organization 1.1.0
+
+on:
+  push:
+    branches:
+      - publish/choosing-a-mission-organization-1.1.0
+    paths:
+      - .github/workflows/publish-choosing-a-mission-organization.yml
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+  CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+  GH_TOKEN: ${{ github.token }}
+  R2_BUCKET: thiepn-library-publications
+  WORK_ID: choosing-a-mission-organization
+  VERSION: 1.1.0
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout publication branch
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm and Node
+        uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2
+        with:
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+          cache: true
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install frozen dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Download and verify frozen publication package
+        run: |
+          set -euo pipefail
+          python -m pip install --quiet gdown
+          mkdir -p /tmp/cmo-package
+          gdown --fuzzy 'https://drive.google.com/file/d/1LYCsLFZqjKsJkBJ3OfndXnTcr9ikI-wc/view' -O /tmp/cmo-package/package.zip
+          actual_bytes=$(stat -c %s /tmp/cmo-package/package.zip)
+          actual_hash=$(sha256sum /tmp/cmo-package/package.zip | cut -d' ' -f1)
+          echo "Downloaded bytes: $actual_bytes"
+          echo "Downloaded SHA-256: $actual_hash"
+          test "$actual_bytes" = '1019736'
+          test "$actual_hash" = 'c016c894b803b64bd4d5034ddb97edc3f616178661fbaafdeed2e7bc92dc454d'
+          unzip -q /tmp/cmo-package/package.zip -d /tmp/cmo-package/unpacked
+          node --input-type=module <<'NODE'
+          import { createHash } from 'node:crypto';
+          import { readFile, stat } from 'node:fs/promises';
+          import path from 'node:path';
+          const root='/tmp/cmo-package/unpacked';
+          const meta=JSON.parse(await readFile(path.join(root,'publication.json'),'utf8'));
+          if (meta.schemaVersion !== 1 || meta.workId !== 'choosing-a-mission-organization' || meta.version !== '1.1.0' || meta.edition !== 1) {
+            throw new Error('Frozen publication identity mismatch');
+          }
+          for (const [kind, artifact] of Object.entries(meta.artifacts ?? {})) {
+            const file=path.join(root,artifact.source);
+            if ((await stat(file)).size !== Number(artifact.sizeBytes)) throw new Error(`${kind} size mismatch`);
+            const digest=createHash('sha256').update(await readFile(file)).digest('hex');
+            if (digest !== String(artifact.sha256).toLowerCase()) throw new Error(`${kind} hash mismatch`);
+            console.log(`PACKAGE_ARTIFACT_VERIFIED ${kind} ${digest}`);
+          }
+          NODE
+
+      - name: Upload EPUB and cover to R2 with immutable readback verification
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN:-}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID:-}"
+          test -n "$R2_BUCKET"
+          mkdir -p /tmp/cmo-package/readback
+          node -e "const m=require('/tmp/cmo-package/unpacked/publication.json'); for (const [k,a] of Object.entries(m.artifacts)) console.log([k,a.source,a.filename,a.sizeBytes,a.sha256].join('\t'))" > /tmp/cmo-package/artifacts.tsv
+          while IFS=$'\t' read -r kind source filename bytes hash; do
+            key="works/$WORK_ID/editions/$VERSION/$filename"
+            pnpm exec wrangler r2 object put "$R2_BUCKET/$key" --file="/tmp/cmo-package/unpacked/$source" --remote
+            pnpm exec wrangler r2 object get "$R2_BUCKET/$key" --file="/tmp/cmo-package/readback/$filename" --remote
+            test "$(stat -c %s "/tmp/cmo-package/readback/$filename")" = "$bytes"
+            printf '%s  %s\n' "$hash" "/tmp/cmo-package/readback/$filename" | sha256sum -c -
+            echo "R2_VERIFIED $kind $key"
+          done < /tmp/cmo-package/artifacts.tsv
+
+      - name: Register the release without replacing the existing web edition
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import { mkdir, readFile, writeFile } from 'node:fs/promises';
+          import path from 'node:path';
+          import YAML from 'yaml';
+          const root='/tmp/cmo-package/unpacked';
+          const meta=JSON.parse(await readFile(path.join(root,'publication.json'),'utf8'));
+          const artifacts={};
+          for (const [kind,a] of Object.entries(meta.artifacts)) {
+            const key=`works/${meta.workId}/editions/${meta.version}/${a.filename}`;
+            artifacts[kind]={
+              url:`https://thiepn.dev/library/media/${key}`,
+              filename:a.filename,
+              mimeType:a.mimeType,
+              sizeBytes:a.sizeBytes,
+              sha256:String(a.sha256).toLowerCase(),
+            };
+          }
+          const release={
+            schemaVersion:1,
+            workId:meta.workId,
+            version:meta.version,
+            edition:meta.edition,
+            releasedAt:meta.releasedAt,
+            ...(meta.sourceHash ? {sourceHash:String(meta.sourceHash).toLowerCase()} : {}),
+            artifacts,
+          };
+          const releaseDir=path.join('src/publications/releases',meta.workId);
+          await mkdir(releaseDir,{recursive:true});
+          await writeFile(path.join(releaseDir,`${meta.version}.yaml`),YAML.stringify(release),'utf8');
+
+          const workPath=path.join('src/content/works',meta.workId,'work.yaml');
+          const work=YAML.parse(await readFile(workPath,'utf8'));
+          if (work.id !== meta.workId || work.slug !== meta.workId) throw new Error('Existing web work identity mismatch');
+          if (work.publication?.activeRelease !== meta.version) throw new Error('Existing web release version mismatch');
+          if (!work.formats?.web?.enabled) throw new Error('Refusing to replace or disable existing native web edition');
+          work.cover ??= {};
+          work.cover.src=`/media/works/${meta.workId}/editions/${meta.version}/${meta.artifacts.cover.filename}`;
+          work.cover.alt=`Cover of ${work.title} by Thiepn`;
+          work.formats.epub ??= {};
+          work.formats.epub.enabled=true;
+          await writeFile(workPath,YAML.stringify(work),'utf8');
+          NODE
+
+      - name: Certify complete Library with release registered
+        run: pnpm release:certify
+
+      - name: Commit verified release and open promotion PR
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "src/content/works/$WORK_ID/work.yaml" "src/publications/releases/$WORK_ID/$VERSION.yaml"
+          if git diff --cached --quiet; then
+            echo 'Release metadata already matches this branch.'
+          else
+            git commit -m "Publish $WORK_ID $VERSION binaries"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
+          existing=$(gh pr list --base main --head "$GITHUB_REF_NAME" --state open --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then
+            echo "Promotion PR already open: #$existing"
+          else
+            gh pr create \
+              --base main \
+              --head "$GITHUB_REF_NAME" \
+              --title "Publish Choosing a Mission Organization 1.1.0 to Library" \
+              --body "Verified publication upload for Choosing a Mission Organization 1.1.0. The frozen package is SHA-256 checked, EPUB and cover are uploaded to R2 and read back byte-for-byte, the existing native web reader is preserved, and Library release certification passes before promotion."
+          fi
