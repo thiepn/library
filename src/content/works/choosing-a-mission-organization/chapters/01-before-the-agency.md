@@ -1,7 +1,7 @@
 ---
 id: before-the-agency
 order: 1010
-title: Chapter 1 — Before the Agency: What Are You Actually Being Sent to Do?
+title: "Chapter 1 — Before the Agency: What Are You Actually Being Sent to Do?"
 shortTitle: Before the Agency
 part: know-what-you-are-choosing
 status: published
