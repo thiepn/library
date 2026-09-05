@@ -1,0 +1,67 @@
+schemaVersion: 1
+id: choosing-a-mission-organization
+slug: choosing-a-mission-organization
+title: Choosing a Mission Organization
+subtitle: A Christian Guide to Agencies, Teams, Trust, and Faithful Sending
+type: book
+language: en-US
+contributors: []
+description: >
+  A research-informed Christian practical guide to evaluating mission organizations,
+  sending structures, governance, finances, safeguarding, training, field teams,
+  household realities, evidence, and long-term commitment before joining an agency.
+shortDescription: >
+  A Christian framework for choosing a mission organization through trust,
+  capability, fit, evidence, church counsel, and responsible commitment.
+status: published
+visibility: public
+publication:
+  firstPublished: '2026-09-02'
+  lastUpdated: '2026-09-05'
+  edition: 1
+  editionLabel: First Edition
+  version: 1.1.0
+  activeRelease: 1.1.0
+cover:
+  src: /media/works/choosing-a-mission-organization/cover.svg
+  alt: Cover of Choosing a Mission Organization by Thiepn
+classification:
+  subjects:
+    - missions
+    - discipleship
+  tags:
+    - mission-organizations
+    - missionary-discernment
+    - great-commission
+    - cross-cultural-mission
+    - organizational-trust
+  collections:
+    - mission
+parts:
+  - id: know-what-you-are-choosing
+    title: Know What You Are Choosing
+    order: 10
+  - id: test-the-organization
+    title: Test the Organization
+    order: 20
+  - id: test-the-life-you-will-actually-live
+    title: Test the Life You Will Actually Live
+    order: 30
+  - id: verify-and-commit
+    title: Verify and Commit
+    order: 40
+formats:
+  web:
+    enabled: true
+  pdf:
+    enabled: false
+  epub:
+    enabled: false
+relationships:
+  relatedWorks:
+    - the-unfinished-mission
+  prerequisites: []
+resources: []
+rights:
+  status: copyright
+  notice: Copyright © 2026 Thiepn. All rights reserved.
