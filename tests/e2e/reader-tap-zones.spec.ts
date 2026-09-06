@@ -95,7 +95,7 @@ async function openHostedReader(page: Page): Promise<void> {
   // Use the explicit catalog data contract rather than presentation classes/copy so the acceptance
   // journey remains stable if card styling or format labels change.
   await page.goto('/library');
-  const readableCard = page.locator('article[data-catalog-work][data-web-readable="true"]').first();
+  const readableCard = page.locator('article[data-catalog-work][data-web-readable="true"]').filter({ has: page.locator('[data-catalog-reader-cta]') }).first();
   await expect(readableCard, 'Catalog must expose at least one public work available in the Library reader').toBeVisible();
   const readerCta = readableCard.locator('[data-catalog-reader-cta]');
   await expect(readerCta, 'Public catalog work must expose its canonical reader CTA').toBeVisible();
