@@ -1,0 +1,40 @@
+name: Temporary Patch Hosted Reader Selection
+
+on:
+  push:
+    branches:
+      - fix/hosted-reader-selection
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - name: Patch hosted EPUB selector
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('tests/e2e/reader-tap-zones.spec.ts')
+          text = path.read_text(encoding='utf-8')
+          old = "  const readableCard = page.locator('article[data-catalog-work][data-web-readable=\"true\"]').first();"
+          new = "  const readableCard = page.locator('article[data-catalog-work][data-web-readable=\"true\"]').filter({ has: page.locator('[data-catalog-reader-cta]') }).first();"
+          if text.count(old) != 1:
+              raise SystemExit(f'Expected exactly one hosted-reader selector, found {text.count(old)}')
+          path.write_text(text.replace(old, new), encoding='utf-8')
+          PY
+
+      - name: Commit patch
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add tests/e2e/reader-tap-zones.spec.ts
+          git diff --cached --check
+          git commit -m 'Fix hosted reader acceptance selection'
+          git push
