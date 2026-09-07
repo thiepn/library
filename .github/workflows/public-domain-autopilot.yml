@@ -1,0 +1,209 @@
+name: Public Domain Autopilot
+
+on:
+  schedule:
+    - cron: '37 3 * * 0'
+  workflow_dispatch:
+    inputs:
+      max_books:
+        description: Maximum number of new books to ingest
+        required: false
+        default: '10'
+      discovery_pages:
+        description: Gutendex popularity pages to inspect
+        required: false
+        default: '30'
+
+permissions:
+  actions: write
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: public-domain-autopilot
+  cancel-in-progress: false
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      GH_TOKEN: ${{ github.token }}
+      R2_BUCKET: thiepn-library-publications
+    steps:
+      - name: Checkout Library
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm and Node
+        uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2
+        with:
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+          cache: true
+
+      - name: Install frozen dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Require publication storage credentials
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN:-}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID:-}"
+          test -n "${R2_BUCKET:-}"
+
+      - name: Ensure native EPUB releases are reader-first
+        run: python3 scripts/public-domain/prepare-library.py
+
+      - name: Discover, verify, and stage public-domain books
+        id: discover
+        env:
+          MAX_BOOKS: ${{ github.event.inputs.max_books || '10' }}
+          DISCOVERY_PAGES: ${{ github.event.inputs.discovery_pages || '30' }}
+        run: |
+          set -euo pipefail
+          python3 scripts/public-domain/sync.py \
+            --max-books "$MAX_BOOKS" \
+            --discovery-pages "$DISCOVERY_PAGES"
+
+      - name: Certify complete Library before upload
+        if: steps.discover.outputs.added_count != '0'
+        run: pnpm release:certify
+
+      - name: Upload immutable EPUBs to R2 and verify readback
+        if: steps.discover.outputs.added_count != '0'
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/public-domain-readback
+          python3 - <<'PY' > /tmp/public-domain-artifacts.tsv
+          import json
+          from pathlib import Path
+          items = json.loads(Path('.public-domain-staging/artifacts.json').read_text())
+          for item in items:
+              print('\t'.join([
+                  item['localPath'],
+                  item['r2Key'],
+                  str(item['sizeBytes']),
+                  item['sha256'],
+              ]))
+          PY
+
+          while IFS=$'\t' read -r local_path key bytes hash; do
+            test -f "$local_path"
+            filename="$(basename "$local_path")"
+            readback="/tmp/public-domain-readback/$filename"
+            pnpm exec wrangler r2 object put "$R2_BUCKET/$key" --file="$local_path" --remote
+            pnpm exec wrangler r2 object get "$R2_BUCKET/$key" --file="$readback" --remote
+            test "$(stat -c %s "$readback")" = "$bytes"
+            printf '%s  %s\n' "$hash" "$readback" | sha256sum -c -
+            echo "R2_VERIFIED $key"
+          done < /tmp/public-domain-artifacts.tsv
+
+      - name: Commit verified metadata and provenance
+        if: steps.discover.outputs.added_count != '0'
+        id: promote
+        run: |
+          set -euo pipefail
+          rm -rf .public-domain-staging
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+          branch="autopilot/public-domain-${GITHUB_RUN_ID}"
+          git switch -c "$branch"
+          git add \
+            src/content/works \
+            src/publications/releases \
+            src/publications/public-domain-ledger.json \
+            public/covers/public-domain \
+            'src/pages/works/[slug].astro' \
+            scripts/certification/work-detail.mjs
+
+          if git diff --cached --quiet; then
+            echo "No persistent changes after certification."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          git commit -m "Autopilot: add public-domain Library books"
+          git push origin "HEAD:$branch"
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+          echo "branch=$branch" >> "$GITHUB_OUTPUT"
+
+      - name: Open promotion PR
+        if: steps.promote.outputs.changed == 'true'
+        id: pr
+        env:
+          WORK_IDS: ${{ steps.discover.outputs.work_ids }}
+        run: |
+          set -euo pipefail
+          branch='${{ steps.promote.outputs.branch }}'
+          pr_url="$(gh pr create \
+            --base main \
+            --head "$branch" \
+            --title "Autopilot: add public-domain Library books" \
+            --body "Fully automated public-domain ingestion. Selected works: ${WORK_IDS}. Rights screening, EPUB validation, complete Library certification, immutable R2 upload, and SHA-256 readback all passed in workflow run ${GITHUB_RUN_ID}.")"
+          echo "url=$pr_url" >> "$GITHUB_OUTPUT"
+
+      - name: Dispatch and await protected-branch checks
+        if: steps.pr.outputs.url != ''
+        run: |
+          set -euo pipefail
+          branch='${{ steps.promote.outputs.branch }}'
+          head_sha="$(git rev-parse HEAD)"
+          run_ids=()
+
+          for workflow in \
+            quality.yml \
+            publication-compatibility.yml \
+            accessibility.yml \
+            browser-acceptance.yml \
+            data-durability.yml \
+            ergonomics.yml \
+            offline-reliability.yml \
+            performance-budget.yml \
+            security-hardening.yml
+          do
+            if ! gh workflow run "$workflow" --ref "$branch"; then
+              echo "SKIP_DISPATCH $workflow"
+              continue
+            fi
+
+            run_id=""
+            for attempt in $(seq 1 30); do
+              run_id="$(gh run list \
+                --workflow "$workflow" \
+                --branch "$branch" \
+                --event workflow_dispatch \
+                --limit 10 \
+                --json databaseId,headSha \
+                --jq ".[] | select(.headSha == \"$head_sha\") | .databaseId" \
+                | head -n 1)"
+              [ -n "$run_id" ] && break
+              sleep 2
+            done
+
+            if [ -z "$run_id" ]; then
+              echo "Unable to resolve dispatched run for $workflow" >&2
+              exit 1
+            fi
+            echo "DISPATCHED $workflow run=$run_id"
+            run_ids+=("$run_id")
+          done
+
+          if [ "${#run_ids[@]}" -eq 0 ]; then
+            echo "No protected-branch workflows were dispatchable." >&2
+            exit 1
+          fi
+
+          for run_id in "${run_ids[@]}"; do
+            gh run watch "$run_id" --exit-status
+          done
+
+      - name: Merge verified promotion PR
+        if: steps.pr.outputs.url != ''
+        run: |
+          set -euo pipefail
+          gh pr merge '${{ steps.pr.outputs.url }}' --squash --delete-branch
