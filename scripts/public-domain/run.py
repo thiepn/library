@@ -14,6 +14,9 @@ from typing import Any
 
 import sync as engine
 
+MIN_POPULARITY_PAGES = 5
+MAX_POPULARITY_PAGES = 8
+
 
 def bounded_request_bytes(url: str, *, timeout: int = 12, accept: str = "*/*") -> bytes:
     req = urllib.request.Request(
@@ -77,11 +80,9 @@ def existing_work_keys(ledger: dict[str, Any]) -> set[str]:
 def discover_official_catalog_ranked(limit: int = 2500) -> list[engine.Candidate]:
     """Rank the complete official Gutenberg catalog before truncating it.
 
-    The previous fallback stopped after the first ``limit`` matching rows and only
-    then sorted them. Because Gutenberg IDs roughly follow ingest order, that made
-    fallback quality depend on catalog position rather than literary value. This
-    scans the complete machine-readable catalog, scores every eligible curated-shelf
-    title, and only then keeps the strongest candidates.
+    This is the durable fallback when live popularity enrichment is unavailable.
+    The complete catalog is scanned before truncation so fallback ranking is never
+    biased toward low Gutenberg IDs.
     """
     raw = gzip.decompress(engine.request_bytes(engine.PG_CATALOG_URL, timeout=90))
     text = raw.decode("utf-8-sig", errors="replace")
@@ -147,24 +148,44 @@ def discover_official_catalog_ranked(limit: int = 2500) -> list[engine.Candidate
     return rows[: max(1, limit)]
 
 
-def discover_durable(popularity_pages: int) -> list[engine.Candidate]:
-    """Use Gutenberg's own catalog as the durable discovery base.
+def popularity_sort_key(candidate: engine.Candidate) -> tuple[int, int, float, int]:
+    """Prefer live download popularity before editorial/curation score.
 
-    Gutendex is optional enrichment only. A third-party outage must never prevent
-    autonomous publication from continuing from Project Gutenberg's own catalog.
+    Candidates carrying live Gutendex download counts always sort ahead of
+    catalog-only fallback candidates. Within that live set, higher downloads win;
+    quality score breaks ties. If live popularity is unavailable, the durable
+    official-catalog quality score remains the fallback.
     """
+    has_live_popularity = 0 if candidate.download_count > 0 else 1
+    return (
+        has_live_popularity,
+        -candidate.download_count,
+        -candidate.score,
+        candidate.gutenberg_id,
+    )
+
+
+def discover_durable(popularity_pages: int) -> list[engine.Candidate]:
+    """Use live popularity as the acquisition order and Gutenberg catalog as fallback."""
     engine.log("[discover] loading and ranking complete official Project Gutenberg catalog")
     official = discover_official_catalog_ranked(limit=2500)
 
     popular: list[engine.Candidate] = []
-    if popularity_pages > 0:
-        try:
-            # One small request window is enough to nudge globally popular classics
-            # upward without making the pipeline operationally dependent on Gutendex.
-            popular = engine.discover_gutendex(min(popularity_pages, 2))
-            engine.log(f"[discover] optional popularity enrichment: {len(popular)} candidate(s)")
-        except Exception as exc:
-            engine.log(f"[discover] popularity enrichment unavailable; continuing from official catalog: {exc}")
+    pages = min(MAX_POPULARITY_PAGES, max(MIN_POPULARITY_PAGES, popularity_pages))
+    try:
+        # Inspect a sufficiently deep live popularity window so legally ineligible,
+        # duplicate, or edition-specific entries do not prevent the next truly
+        # popular safe books from being reached.
+        popular = engine.discover_gutendex(pages)
+        engine.log(
+            f"[discover] live popularity primary: {len(popular)} candidate(s) "
+            f"across {pages} Gutendex page(s)"
+        )
+    except Exception as exc:
+        engine.log(
+            "[discover] live popularity unavailable; "
+            f"continuing from official curated catalog fallback: {exc}"
+        )
 
     merged: dict[int, engine.Candidate] = {candidate.gutenberg_id: candidate for candidate in official}
     for candidate in popular:
@@ -176,23 +197,16 @@ def discover_durable(popularity_pages: int) -> list[engine.Candidate]:
         existing.formats.update(candidate.formats)
         if candidate.summary and not existing.summary:
             existing.summary = candidate.summary
-        existing.score = max(existing.score, candidate.score + 35.0)
+        # Preserve the stronger editorial score only as a secondary signal.
+        existing.score = max(existing.score, candidate.score)
 
     candidates = list(merged.values())
-    candidates.sort(key=lambda candidate: (-candidate.score, -candidate.download_count, candidate.gutenberg_id))
+    candidates.sort(key=popularity_sort_key)
     return candidates
 
 
 def normalize_publication_metadata(candidate: engine.Candidate, meta: dict) -> None:
-    """Keep display metadata distinct from rights/provenance metadata.
-
-    Project Gutenberg's catalog may place translators or other contributors in its
-    Authors field. The Library byline/cover should show the work creator(s), while
-    the full contributor list and roles remain preserved in the rights ledger and
-    work manifest. Gutenberg also occasionally encodes an edition subtitle as a
-    second physical title line; the Library uses the first line as the canonical
-    browsing title while retaining the exact source URL and provenance metadata.
-    """
+    """Keep display metadata distinct from rights/provenance metadata."""
     creators = [
         contributor
         for contributor in (meta.get("contributors") or [])
@@ -219,8 +233,8 @@ def normalize_publication_metadata(candidate: engine.Candidate, meta: dict) -> N
 def main() -> int:
     parser = argparse.ArgumentParser(description="Bounded public-domain acquisition runner.")
     parser.add_argument("--max-books", type=int, default=10)
-    parser.add_argument("--discovery-pages", type=int, default=2)
-    parser.add_argument("--max-candidate-checks", type=int, default=40)
+    parser.add_argument("--discovery-pages", type=int, default=MIN_POPULARITY_PAGES)
+    parser.add_argument("--max-candidate-checks", type=int, default=80)
     args = parser.parse_args()
 
     max_books = max(0, min(args.max_books, 20))
@@ -261,7 +275,7 @@ def main() -> int:
         checked += 1
         engine.log(
             f"[candidate] PG#{gid} check={checked}/{max_candidate_checks} "
-            f"score={candidate.score:.1f} downloads={candidate.download_count} — {candidate.title}"
+            f"downloads={candidate.download_count} score={candidate.score:.1f} — {candidate.title}"
         )
 
         try:
@@ -308,6 +322,7 @@ def main() -> int:
 
     ledger["lastRun"] = {
         "at": engine.utc_now(),
+        "rankingMode": "live-download-popularity-first",
         "copyrightCutoffYear": engine.COPYRIGHT_CUTOFF_YEAR,
         "candidateCount": len(candidates),
         "checkedCount": checked,
