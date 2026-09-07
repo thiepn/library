@@ -8,4 +8,3 @@ test-results/
 .dev.vars
 .env
 .DS_Store
-public/media/unlisted/*.bin
