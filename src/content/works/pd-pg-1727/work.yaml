@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "pd-pg-1727",
   "slug": "pd-pg-1727",
-  "title": "The Odyssey\r\nRendered into English prose for the use of those who cannot read the original",
+  "title": "The Odyssey",
   "type": "book",
   "language": "en",
   "contributors": [
@@ -33,7 +33,7 @@
   },
   "cover": {
     "src": "/covers/public-domain/pd-pg-1727.svg",
-    "alt": "Cover for The Odyssey\r\nRendered into English prose for the use of those who cannot read the original by Homer, 751? BCE-651? BCE, Butler, Samuel, 1835-1902 [Translator]"
+    "alt": "Cover for The Odyssey by Homer"
   },
   "classification": {
     "subjects": [
