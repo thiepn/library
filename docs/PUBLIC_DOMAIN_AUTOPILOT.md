@@ -51,7 +51,7 @@ For every accepted title:
 4. Upload the EPUB to the existing Cloudflare R2 publication bucket.
 5. Read it back and verify byte length and SHA-256.
 6. Open a promotion PR.
-7. Dispatch protected-branch checks and enable auto-merge.
+7. Dispatch and await protected-branch checks, then squash-merge the promotion PR automatically.
 
 The autopilot never publishes a candidate whose rights gate, EPUB validation, Library certification, R2 upload, or readback verification fails.
 
