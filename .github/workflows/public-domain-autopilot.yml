@@ -14,9 +14,9 @@ on:
         required: false
         default: '10'
       discovery_pages:
-        description: Optional Gutendex popularity pages to inspect
+        description: Live Gutendex popularity pages to inspect
         required: false
-        default: '2'
+        default: '5'
 
 permissions:
   contents: write
@@ -64,8 +64,8 @@ jobs:
         id: discover
         env:
           MAX_BOOKS: ${{ github.event.inputs.max_books || '10' }}
-          DISCOVERY_PAGES: ${{ github.event.inputs.discovery_pages || '2' }}
-          MAX_CANDIDATE_CHECKS: '40'
+          DISCOVERY_PAGES: ${{ github.event.inputs.discovery_pages || '5' }}
+          MAX_CANDIDATE_CHECKS: '80'
         run: |
           set -euo pipefail
           timeout 8m python3 scripts/public-domain/run.py \
@@ -141,6 +141,7 @@ jobs:
             echo
             echo "- Branch: \`$branch\`"
             echo "- Works: \`${{ steps.discover.outputs.work_ids }}\`"
+            echo "- Ranking: live Gutenberg download popularity first"
             echo "- Rights screening: passed"
             echo "- Complete Library certification: passed"
             echo "- R2 immutable upload/readback: passed"
