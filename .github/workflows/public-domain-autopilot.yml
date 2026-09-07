@@ -14,9 +14,9 @@ on:
         required: false
         default: '10'
       discovery_pages:
-        description: Gutendex popularity pages to inspect
+        description: Optional Gutendex popularity pages to inspect
         required: false
-        default: '30'
+        default: '2'
 
 permissions:
   actions: write
@@ -67,11 +67,11 @@ jobs:
         id: discover
         env:
           MAX_BOOKS: ${{ github.event.inputs.max_books || '10' }}
-          DISCOVERY_PAGES: ${{ github.event.inputs.discovery_pages || '30' }}
-          MAX_CANDIDATE_CHECKS: '100'
+          DISCOVERY_PAGES: ${{ github.event.inputs.discovery_pages || '2' }}
+          MAX_CANDIDATE_CHECKS: '40'
         run: |
           set -euo pipefail
-          timeout 15m python3 scripts/public-domain/run.py \
+          timeout 8m python3 scripts/public-domain/run.py \
             --max-books "$MAX_BOOKS" \
             --discovery-pages "$DISCOVERY_PAGES" \
             --max-candidate-checks "$MAX_CANDIDATE_CHECKS"
