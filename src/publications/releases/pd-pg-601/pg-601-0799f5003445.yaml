@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-601",
+  "version": "pg-601-0799f5003445",
+  "edition": 1,
+  "releasedAt": "2026-09-07T21:56:19Z",
+  "sourceHash": "026f3ed9aff034c6815e99ec7421fab342a3d560481ce5a4a24eaab9c1d36393",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-601/editions/pg-601-0799f5003445/the-monk-a-romance-project-gutenberg.epub",
+      "filename": "the-monk-a-romance-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 396312,
+      "sha256": "0799f50034458000e785a59a90d12368fcb3759ccc19c583335d537eb2776456"
+    }
+  }
+}

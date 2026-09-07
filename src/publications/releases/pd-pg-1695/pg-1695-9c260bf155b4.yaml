@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-1695",
+  "version": "pg-1695-9c260bf155b4",
+  "edition": 1,
+  "releasedAt": "2026-09-07T21:56:22Z",
+  "sourceHash": "63c0710cc6b592a140f0fa4716ea2351e38650f14d51fdd90aab741ae3070904",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-1695/editions/pg-1695-9c260bf155b4/the-man-who-was-thursday-a-nightmare-project-gutenberg.epub",
+      "filename": "the-man-who-was-thursday-a-nightmare-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 196030,
+      "sha256": "9c260bf155b4ca97fd9bdd62ba95368cf3850ac52599503dae9014e37a2cfe24"
+    }
+  }
+}

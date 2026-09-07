@@ -39,10 +39,11 @@ if (present) {
   );
   pass(
     'BOOK_DETAIL_READER_ROUTE_SAFE',
-    page.includes('const readHref = work.webMaterialized')
+    page.includes('const canRead = readerCanOpen(work)')
+      && page.includes('const readHref = canRead')
       && page.includes('This book is not currently available in the Library reader.')
       && dom.includes("root.querySelector<HTMLAnchorElement>('[data-format=\"web\"] a')"),
-    'The public reader action remains gated by a materialized reader route before ER5 considers it for unified entry',
+    'The public reader action remains gated by readerCanOpen so native EPUB releases and materialized legacy Web payloads both enter the Library reader',
   );
   pass(
     'BOOK_DETAIL_INTELLIGENT_CTA',

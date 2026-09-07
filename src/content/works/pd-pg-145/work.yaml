@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-145",
+  "slug": "pd-pg-145",
+  "title": "Middlemarch",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "George Eliot",
+      "role": "creator",
+      "birthYear": 1819,
+      "deathYear": 1880
+    }
+  ],
+  "description": "\"Middlemarch\" by George Eliot is a novel published in 1871-1872. Set in a fictional English Midlands town from 1829 to 1832, it weaves together multiple intersecting stories exploring the status of women, marriage, idealism, and political reform. The narrative follows Dorothea Brooke's search for purpose, Dr. Lydgate's medical ambitions, and several other inhabitants navigating love, debt, scandal, and social change…",
+  "shortDescription": "\"Middlemarch\" by George Eliot is a novel published in 1871-1872. Set in a fictional English Midlands town from 1829 to 1832, it weaves together multiple intersecting stories exp…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "1994-07-01",
+    "lastUpdated": "2026-09-07",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-145-62fdc739ca64",
+    "activeRelease": "pg-145-62fdc739ca64"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-145.svg",
+    "alt": "Cover for Middlemarch by George Eliot"
+  },
+  "classification": {
+    "subjects": [
+      "didactic-fiction",
+      "city-and-town-life",
+      "england",
+      "young-women",
+      "love-stories"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "historical-fiction",
+      "best-books-ever-listings"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/145",
+      "gutenbergId": 145
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/145/pg145.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #145. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

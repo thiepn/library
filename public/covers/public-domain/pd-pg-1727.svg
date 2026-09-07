@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="1200" viewBox="0 0 800 1200" role="img" aria-labelledby="title desc">
+  <title id="title">The Odyssey
+Rendered into English prose for the use of those who cannot read the original — Homer, 751? BCE-651? BCE, Butler, Samuel, 1835-1902 [Translator]</title>
+  <desc id="desc">Library cover for the public-domain edition.</desc>
+  <rect width="800" height="1200" fill="#171714"/>
+  <rect x="44" y="44" width="712" height="1112" rx="8" fill="none" stroke="#e9e4d4" stroke-width="2"/>
+  <text x="80" y="120" class="kicker">THIEPN LIBRARY · PUBLIC DOMAIN</text>
+  <line x1="80" x2="720" y1="164" y2="164" stroke="#e9e4d4" stroke-width="2"/>
+  <text x="80" y="300" class="title">The Odyssey Rendered into</text>
+<text x="80" y="376" class="title">English prose for the use</text>
+<text x="80" y="452" class="title">of those who cannot read</text>
+<text x="80" y="528" class="title">the original</text>
+  <line x1="80" x2="220" y1="742" y2="742" stroke="#e9e4d4" stroke-width="2"/>
+  <text x="80" y="790" class="author">Homer, 751? BCE-651? BCE, Butler,</text>
+<text x="80" y="832" class="author">Samuel,…</text>
+  <text x="80" y="1090" class="source">PROJECT GUTENBERG SOURCE EDITION</text>
+  <style>
+    .kicker,.source{fill:#b9b3a1;font:600 20px system-ui,sans-serif;letter-spacing:3px}
+    .title{fill:#f5f0df;font:700 56px Georgia,serif}
+    .author{fill:#d8d1bc;font:400 30px Georgia,serif}
+  </style>
+</svg>

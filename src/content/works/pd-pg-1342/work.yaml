@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-1342",
+  "slug": "pd-pg-1342",
+  "title": "Pride and Prejudice",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Jane Austen",
+      "role": "creator",
+      "birthYear": 1775,
+      "deathYear": 1817
+    }
+  ],
+  "description": "\"Pride and Prejudice\" by Jane Austen is a novel published in 1813. It follows Elizabeth Bennet, who must learn to see past first impressions and hasty judgments. With five daughters and an estate that can only pass to male heirs, the Bennet family faces financial pressure to marry well. When wealthy Mr. Darcy arrives in their countryside neighborhood, his pride and Elizabeth's prejudice set the stage for misunderstan…",
+  "shortDescription": "\"Pride and Prejudice\" by Jane Austen is a novel published in 1813. It follows Elizabeth Bennet, who must learn to see past first impressions and hasty judgments. With five daugh…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "1998-06-01",
+    "lastUpdated": "2026-09-07",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-1342-c25cf3d9ad4d",
+    "activeRelease": "pg-1342-c25cf3d9ad4d"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-1342.svg",
+    "alt": "Cover for Pride and Prejudice by Jane Austen"
+  },
+  "classification": {
+    "subjects": [
+      "england",
+      "young-women",
+      "love-stories",
+      "sisters",
+      "domestic-fiction"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "best-books-ever-listings",
+      "harvard-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/1342",
+      "gutenbergId": 1342
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/1342/pg1342.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #1342. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

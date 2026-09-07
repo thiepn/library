@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-2680",
+  "slug": "pd-pg-2680",
+  "title": "Meditations",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Emperor of Rome Marcus Aurelius",
+      "role": "creator",
+      "birthYear": 121,
+      "deathYear": 180
+    }
+  ],
+  "description": "\"Meditations\" by Emperor of Rome Marcus Aurelius is a series of personal writings composed between 170-180 CE. Written in Greek as private notes to himself, this work captures the Roman Emperor's reflections on Stoic philosophy and self-improvement during military campaigns. Never intended for publication, these intimate musings explore finding one's place in the universe, maintaining ethical principles, and achievin…",
+  "shortDescription": "\"Meditations\" by Emperor of Rome Marcus Aurelius is a series of personal writings composed between 170-180 CE. Written in Greek as private notes to himself, this work captures t…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2001-06-01",
+    "lastUpdated": "2026-09-07",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-2680-05cb8ac0629d",
+    "activeRelease": "pg-2680-05cb8ac0629d"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-2680.svg",
+    "alt": "Cover for Meditations by Emperor of Rome Marcus Aurelius"
+  },
+  "classification": {
+    "subjects": [
+      "stoics",
+      "ethics",
+      "life",
+      "b"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "harvard-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/2680",
+      "gutenbergId": 2680
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/2680/pg2680.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #2680. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

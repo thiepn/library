@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getWorks, type ResolvedWork } from '../../lib/content/repository';
 import { taxonomyLabel } from '../../lib/content/taxonomy';
+import { readerCanOpen } from '../../lib/reader/migration';
 import '../../styles/work-detail.css';
 
 export async function getStaticPaths() {
@@ -18,11 +19,12 @@ const coverUrl = /^https?:\/\//i.test(work.cover.src)
 const release = work.release;
 const pdf = release?.artifacts.pdf;
 const epub = release?.artifacts.epub;
-const readHref = work.webMaterialized ? `${base}/works/${work.slug}/read` : undefined;
+const canRead = readerCanOpen(work);
+const readHref = canRead ? `${base}/works/${work.slug}/read` : undefined;
 const pdfHref = pdf ? `${base}/works/${work.slug}/pdf` : undefined;
-const availableFormats = [work.webMaterialized ? 'Reader' : null, epub ? 'EPUB' : null, pdf ? 'PDF' : null]
+const availableFormats = [canRead ? 'Reader' : null, epub ? 'EPUB' : null, pdf ? 'PDF' : null]
   .filter((value): value is string => Boolean(value));
-const editionLabel = work.publication.edition === 1 ? 'First edition' : `Edition ${work.publication.edition}`;
+const editionLabel = work.publication.editionLabel;
 
 function formatBytes(bytes: number): string {
   if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
@@ -127,10 +129,10 @@ const primaryAction = readHref
       </div>
 
       <div class="book-detail__format-grid">
-        <article class="book-detail__format-card" data-format="web" data-format-state={work.webMaterialized ? 'available' : 'unavailable'}>
+        <article class="book-detail__format-card" data-format="web" data-format-state={canRead ? 'available' : 'unavailable'}>
           <div class="book-detail__format-heading">
             <h3>Library reader</h3>
-            <span>{work.webMaterialized ? 'Available' : 'Unavailable'}</span>
+            <span>{canRead ? 'Available' : 'Unavailable'}</span>
           </div>
           <p>Read here with saved progress, reading controls, search, bookmarks, highlights, and notes.</p>
           {readHref ? <a href={readHref} data-reader-format-link>Open reader</a> : <span class="book-detail__format-muted">This book is not currently available in the Library reader.</span>}
