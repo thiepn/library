@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-31",
+  "slug": "pd-pg-31",
+  "title": "Plays of Sophocles: Oedipus the King; Oedipus at Colonus; Antigone",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Sophocles",
+      "role": "creator",
+      "birthYear": -496,
+      "deathYear": -406
+    },
+    {
+      "name": "Francis Storr",
+      "role": "trl",
+      "birthYear": 1839,
+      "deathYear": 1919
+    }
+  ],
+  "description": "A public-domain edition of Plays of Sophocles: Oedipus the King; Oedipus at Colonus; Antigone by Sophocles. Project Gutenberg classifies it under Tragedies (Drama), Antigone (Mythological character) -- Drama, Oedipus (Greek mythological figure) -- Drama.",
+  "shortDescription": "A public-domain edition of Plays of Sophocles: Oedipus the King; Oedipus at Colonus; Antigone by Sophocles. Project Gutenberg classifies it under Tragedies (Drama), Antigone (My…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2006-03-08",
+    "lastUpdated": "2026-09-07",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-31-2d1bb3261d1a",
+    "activeRelease": "pg-31-2d1bb3261d1a"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-31.svg",
+    "alt": "Cover for Plays of Sophocles: Oedipus the King; Oedipus at Colonus; Antigone by Sophocles"
+  },
+  "classification": {
+    "subjects": [
+      "tragedies-drama",
+      "antigone-mythological-character",
+      "oedipus-greek-mythological-figure",
+      "greek-drama-tragedy",
+      "pa"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "best-books-ever-listings",
+      "harvard-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/31",
+      "gutenbergId": 31
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/31/pg31.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #31. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

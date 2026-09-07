@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-6593",
+  "version": "pg-6593-676139d467a6",
+  "edition": 1,
+  "releasedAt": "2026-09-07T22:53:28Z",
+  "sourceHash": "1e3b4a3575347003bbb616b4045afad2e9d996c9f51709cd9e7b51dd747343d6",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-6593/editions/pg-6593-676139d467a6/history-of-tom-jones-a-foundling-project-gutenberg.epub",
+      "filename": "history-of-tom-jones-a-foundling-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 1000465,
+      "sha256": "676139d467a65209a864323261b278815f941cc34dde6b07c6b0776dbb020d6e"
+    }
+  }
+}

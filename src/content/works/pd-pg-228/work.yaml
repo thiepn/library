@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-228",
+  "slug": "pd-pg-228",
+  "title": "The Aeneid",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Virgil",
+      "role": "creator",
+      "birthYear": -70,
+      "deathYear": -19
+    },
+    {
+      "name": "John Dryden",
+      "role": "trl",
+      "birthYear": 1631,
+      "deathYear": 1700
+    }
+  ],
+  "description": "A public-domain edition of The Aeneid by Virgil. Project Gutenberg classifies it under Aeneas (Legendary character) -- Poetry, Legends -- Rome -- Poetry, Epic poetry, Latin -- Translations into English.",
+  "shortDescription": "A public-domain edition of The Aeneid by Virgil. Project Gutenberg classifies it under Aeneas (Legendary character) -- Poetry, Legends -- Rome -- Poetry, Epic poetry, Latin -- T…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "1995-03-01",
+    "lastUpdated": "2026-09-07",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-228-67afcda4b8cd",
+    "activeRelease": "pg-228-67afcda4b8cd"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-228.svg",
+    "alt": "Cover for The Aeneid by Virgil"
+  },
+  "classification": {
+    "subjects": [
+      "aeneas-legendary-character",
+      "legends",
+      "epic-poetry-latin",
+      "pa"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "best-books-ever-listings",
+      "harvard-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/228",
+      "gutenbergId": 228
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/228/pg228.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #228. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

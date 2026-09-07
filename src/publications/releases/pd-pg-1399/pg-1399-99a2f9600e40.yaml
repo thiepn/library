@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-1399",
+  "version": "pg-1399-99a2f9600e40",
+  "edition": 1,
+  "releasedAt": "2026-09-07T22:53:27Z",
+  "sourceHash": "456ca3cf1165bbf504c0ebb1b8ec5144fe2a585f04a06f81bde7a265424ad43b",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-1399/editions/pg-1399-99a2f9600e40/anna-karenina-project-gutenberg.epub",
+      "filename": "anna-karenina-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 870453,
+      "sha256": "99a2f9600e408454070c46a155da9389aec85c872ab186caddad3375a9699aaa"
+    }
+  }
+}

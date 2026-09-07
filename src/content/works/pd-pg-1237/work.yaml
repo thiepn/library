@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-1237",
+  "slug": "pd-pg-1237",
+  "title": "Father Goriot",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Honoré de Balzac",
+      "role": "creator",
+      "birthYear": 1799,
+      "deathYear": 1850
+    },
+    {
+      "name": "Ellen Marriage",
+      "role": "trl",
+      "birthYear": 1865,
+      "deathYear": 1946
+    }
+  ],
+  "description": "A public-domain edition of Father Goriot by Honoré de Balzac. Project Gutenberg classifies it under Fathers and daughters -- Fiction, Paris (France) -- Fiction, French fiction -- Translations into English.",
+  "shortDescription": "A public-domain edition of Father Goriot by Honoré de Balzac. Project Gutenberg classifies it under Fathers and daughters -- Fiction, Paris (France) -- Fiction, French fiction -…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2004-10-06",
+    "lastUpdated": "2026-09-07",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-1237-05029c38cea2",
+    "activeRelease": "pg-1237-05029c38cea2"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-1237.svg",
+    "alt": "Cover for Father Goriot by Honoré de Balzac"
+  },
+  "classification": {
+    "subjects": [
+      "fathers-and-daughters",
+      "paris-france",
+      "french-fiction",
+      "older-men",
+      "france"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "best-books-ever-listings",
+      "harvard-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/1237",
+      "gutenbergId": 1237
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/1237/pg1237.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #1237. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

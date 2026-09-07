@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-3023",
+  "slug": "pd-pg-3023",
+  "title": "Faust — Part 1",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Johann Wolfgang von Goethe",
+      "role": "creator",
+      "birthYear": 1749,
+      "deathYear": 1832
+    }
+  ],
+  "description": "A public-domain edition of Faust — Part 1 by Johann Wolfgang von Goethe. Project Gutenberg classifies it under German poetry -- Translations into English, Legends -- Germany -- Drama, Faust, -approximately 1540 -- Drama.",
+  "shortDescription": "A public-domain edition of Faust — Part 1 by Johann Wolfgang von Goethe. Project Gutenberg classifies it under German poetry -- Translations into English, Legends -- Germany --…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2002-01-01",
+    "lastUpdated": "2026-09-07",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-3023-e1ddb49ca144",
+    "activeRelease": "pg-3023-e1ddb49ca144"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-3023.svg",
+    "alt": "Cover for Faust — Part 1 by Johann Wolfgang von Goethe"
+  },
+  "classification": {
+    "subjects": [
+      "german-poetry",
+      "legends",
+      "faust-approximately-1540",
+      "magicians",
+      "pt"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "best-books-ever-listings",
+      "harvard-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/3023",
+      "gutenbergId": 3023
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/3023/pg3023.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #3023. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

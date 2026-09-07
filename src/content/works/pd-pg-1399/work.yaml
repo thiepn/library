@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-1399",
+  "slug": "pd-pg-1399",
+  "title": "Anna Karenina",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Leo, graf Tolstoy",
+      "role": "creator",
+      "birthYear": 1828,
+      "deathYear": 1910
+    },
+    {
+      "name": "Constance Garnett",
+      "role": "trl",
+      "birthYear": 1861,
+      "deathYear": 1946
+    }
+  ],
+  "description": "A public-domain edition of Anna Karenina by graf Tolstoy Leo. Project Gutenberg classifies it under Adultery -- Fiction, Didactic fiction, Love stories.",
+  "shortDescription": "A public-domain edition of Anna Karenina by graf Tolstoy Leo. Project Gutenberg classifies it under Adultery -- Fiction, Didactic fiction, Love stories.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "1998-07-01",
+    "lastUpdated": "2026-09-07",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-1399-99a2f9600e40",
+    "activeRelease": "pg-1399-99a2f9600e40"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-1399.svg",
+    "alt": "Cover for Anna Karenina by graf Tolstoy Leo"
+  },
+  "classification": {
+    "subjects": [
+      "adultery",
+      "didactic-fiction",
+      "love-stories",
+      "married-women",
+      "russia"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "best-books-ever-listings",
+      "harvard-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/1399",
+      "gutenbergId": 1399
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/1399/pg1399.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #1399. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

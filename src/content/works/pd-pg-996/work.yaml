@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-996",
+  "slug": "pd-pg-996",
+  "title": "Don Quixote",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Miguel de Cervantes Saavedra",
+      "role": "creator",
+      "birthYear": 1547,
+      "deathYear": 1616
+    },
+    {
+      "name": "John Ormsby",
+      "role": "trl",
+      "birthYear": 1829,
+      "deathYear": 1895
+    }
+  ],
+  "description": "A public-domain edition of Don Quixote by Miguel de Cervantes Saavedra. Project Gutenberg classifies it under Spain -- Social life and customs -- 16th century -- Fiction, Knights and knighthood -- Spain -- Fiction, Picaresque literature.",
+  "shortDescription": "A public-domain edition of Don Quixote by Miguel de Cervantes Saavedra. Project Gutenberg classifies it under Spain -- Social life and customs -- 16th century -- Fiction, Knight…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2004-07-27",
+    "lastUpdated": "2026-09-07",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-996-dba65db312e5",
+    "activeRelease": "pg-996-dba65db312e5"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-996.svg",
+    "alt": "Cover for Don Quixote by Miguel de Cervantes Saavedra"
+  },
+  "classification": {
+    "subjects": [
+      "spain",
+      "knights-and-knighthood",
+      "picaresque-literature",
+      "romances",
+      "pq"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "best-books-ever-listings",
+      "harvard-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/996",
+      "gutenbergId": 996
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/996/pg996.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #996. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

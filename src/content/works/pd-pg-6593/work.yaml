@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-6593",
+  "slug": "pd-pg-6593",
+  "title": "History of Tom Jones, a Foundling",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Henry Fielding",
+      "role": "creator",
+      "birthYear": 1707,
+      "deathYear": 1754
+    }
+  ],
+  "description": "A public-domain edition of History of Tom Jones, a Foundling by Henry Fielding. Project Gutenberg classifies it under Humorous stories, England -- Fiction, Bildungsromans.",
+  "shortDescription": "A public-domain edition of History of Tom Jones, a Foundling by Henry Fielding. Project Gutenberg classifies it under Humorous stories, England -- Fiction, Bildungsromans.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2004-09-01",
+    "lastUpdated": "2026-09-07",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-6593-676139d467a6",
+    "activeRelease": "pg-6593-676139d467a6"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-6593.svg",
+    "alt": "Cover for History of Tom Jones, a Foundling by Henry Fielding"
+  },
+  "classification": {
+    "subjects": [
+      "humorous-stories",
+      "england",
+      "bildungsromans",
+      "young-men",
+      "foundlings"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "best-books-ever-listings",
+      "harvard-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/6593",
+      "gutenbergId": 6593
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/6593/pg6593.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #6593. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}
