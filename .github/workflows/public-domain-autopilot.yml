@@ -147,12 +147,14 @@ jobs:
             --body "Fully automated public-domain ingestion. Selected works: ${WORK_IDS}. Rights screening, EPUB validation, complete Library certification, immutable R2 upload, and SHA-256 readback all passed in workflow run ${GITHUB_RUN_ID}.")"
           echo "url=$pr_url" >> "$GITHUB_OUTPUT"
 
-      - name: Dispatch protected-branch checks
+      - name: Dispatch and await protected-branch checks
         if: steps.pr.outputs.url != ''
-        continue-on-error: true
         run: |
-          set -u
+          set -euo pipefail
           branch='${{ steps.promote.outputs.branch }}'
+          head_sha="$(git rev-parse HEAD)"
+          run_ids=()
+
           for workflow in \
             quality.yml \
             publication-compatibility.yml \
@@ -164,11 +166,44 @@ jobs:
             performance-budget.yml \
             security-hardening.yml
           do
-            gh workflow run "$workflow" --ref "$branch" || true
+            if ! gh workflow run "$workflow" --ref "$branch"; then
+              echo "SKIP_DISPATCH $workflow"
+              continue
+            fi
+
+            run_id=""
+            for attempt in $(seq 1 30); do
+              run_id="$(gh run list \
+                --workflow "$workflow" \
+                --branch "$branch" \
+                --event workflow_dispatch \
+                --limit 10 \
+                --json databaseId,headSha \
+                --jq ".[] | select(.headSha == \"$head_sha\") | .databaseId" \
+                | head -n 1)"
+              [ -n "$run_id" ] && break
+              sleep 2
+            done
+
+            if [ -z "$run_id" ]; then
+              echo "Unable to resolve dispatched run for $workflow" >&2
+              exit 1
+            fi
+            echo "DISPATCHED $workflow run=$run_id"
+            run_ids+=("$run_id")
           done
 
-      - name: Enable automatic merge
+          if [ "${#run_ids[@]}" -eq 0 ]; then
+            echo "No protected-branch workflows were dispatchable." >&2
+            exit 1
+          fi
+
+          for run_id in "${run_ids[@]}"; do
+            gh run watch "$run_id" --exit-status
+          done
+
+      - name: Merge verified promotion PR
         if: steps.pr.outputs.url != ''
         run: |
           set -euo pipefail
-          gh pr merge '${{ steps.pr.outputs.url }}' --auto --squash --delete-branch
+          gh pr merge '${{ steps.pr.outputs.url }}' --squash --delete-branch
