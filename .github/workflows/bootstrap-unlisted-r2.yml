@@ -23,7 +23,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          curl --fail --location --silent --show-error 'https://ucb49b1b8a4b659ce48cd1f9c023.dl.dropboxusercontent.com/cd/0/get/DHviBxp4lIyo5-wbnQTH8M8ZPOs1ZaxvFHZss0lXk7TvN_KAXSXfr9lQ2f74SJ_0efSh22cgyXIcH29wGFH0iu9NB7vKpEDlc52ONlKh-Ilz-1XwMgUlxO1H25JXFhxiWX3SKqbeCNTGWBq4D-WZ4oakADJFW2zK9XsrC6mzMIpqhw/file?c_luid=39011dda' --output /tmp/unlisted.bin
+          curl --fail --location --silent --show-error 'https://uc8d510aec6172c5e26f20eddd65.dl.dropboxusercontent.com/cd/0/get/DHs6yhXJBoksZsdOpkjrV2cRYvUH1ytktKd7FIG2CPtxMiCKFFUmgu6-mf6HjCNTuyDUXYuGD473QRhvcshcQdDHUHwMY-Towh6VEn5zFfA6wAABW-mv-72eUg4yIloBoUs7cVC15jzCb17b2DgNP-7zmk1g_8V9sJdHn3rpx60DgA/file?c_luid=39011dda' --output /tmp/unlisted.bin
           test "$(stat -c %s /tmp/unlisted.bin)" -eq "$EXPECTED_SIZE"
           printf '%s  %s\n' "$EXPECTED_SHA256" /tmp/unlisted.bin | sha256sum --check --strict
 
@@ -35,7 +35,7 @@ jobs:
             --file=/tmp/unlisted.bin \
             --content-type=application/octet-stream \
             --cache-control='private, max-age=0, no-store' \
-            --remote --force
+            --remote
 
       - name: Verify encrypted R2 object
         shell: bash
