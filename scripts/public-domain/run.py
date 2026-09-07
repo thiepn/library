@@ -84,7 +84,9 @@ def normalize_publication_metadata(candidate: engine.Candidate, meta: dict) -> N
     Project Gutenberg's catalog may place translators or other contributors in its
     Authors field. The Library byline/cover should show the work creator(s), while
     the full contributor list and roles remain preserved in the rights ledger and
-    work manifest.
+    work manifest. Gutenberg also occasionally encodes an edition subtitle as a
+    second physical title line; the Library uses the first line as the canonical
+    browsing title while retaining the exact source URL and provenance metadata.
     """
     creators = [
         contributor
@@ -102,7 +104,8 @@ def normalize_publication_metadata(candidate: engine.Candidate, meta: dict) -> N
         ]
 
     raw_title = str(meta.get("title") or candidate.title or "").strip()
-    normalized_title = re.sub(r"\s+", " ", raw_title)
+    physical_lines = [re.sub(r"\s+", " ", line).strip() for line in raw_title.splitlines() if line.strip()]
+    normalized_title = physical_lines[0] if physical_lines else re.sub(r"\s+", " ", raw_title)
     if normalized_title:
         meta["title"] = normalized_title
 
