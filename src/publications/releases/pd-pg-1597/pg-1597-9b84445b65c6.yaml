@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-1597",
+  "version": "pg-1597-9b84445b65c6",
+  "edition": 1,
+  "releasedAt": "2026-09-07T22:53:29Z",
+  "sourceHash": "8c9f93d3c23cab2b96103da653d74000cf0f765dffa1449ec0075f8f49f8646a",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-1597/editions/pg-1597-9b84445b65c6/andersens-fairy-tales-project-gutenberg.epub",
+      "filename": "andersens-fairy-tales-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 217369,
+      "sha256": "9b84445b65c6a9df117c69bcab11c5e3ec961c55010b3a5b5337760d6979b709"
+    }
+  }
+}

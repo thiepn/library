@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-3023",
+  "version": "pg-3023-e1ddb49ca144",
+  "edition": 1,
+  "releasedAt": "2026-09-07T22:53:29Z",
+  "sourceHash": "54e5fea565c7df40888c680c3fee7d9b48add01ef7b2a29b613e3be1eb66b0f2",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-3023/editions/pg-3023-e1ddb49ca144/faust-part-1-project-gutenberg.epub",
+      "filename": "faust-part-1-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 174756,
+      "sha256": "e1ddb49ca14461b1cfc8e3348aa770a439b12a78067c2dd2131b37ec5725c0ec"
+    }
+  }
+}

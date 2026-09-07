@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-3300",
+  "slug": "pd-pg-3300",
+  "title": "An Inquiry into the Nature and Causes of the Wealth of Nations",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Adam Smith",
+      "role": "creator",
+      "birthYear": 1723,
+      "deathYear": 1790
+    }
+  ],
+  "description": "A public-domain edition of An Inquiry into the Nature and Causes of the Wealth of Nations by Adam Smith. Project Gutenberg classifies it under Economics, HB.",
+  "shortDescription": "A public-domain edition of An Inquiry into the Nature and Causes of the Wealth of Nations by Adam Smith. Project Gutenberg classifies it under Economics, HB.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2002-06-01",
+    "lastUpdated": "2026-09-07",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-3300-2db4a352fd89",
+    "activeRelease": "pg-3300-2db4a352fd89"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-3300.svg",
+    "alt": "Cover for An Inquiry into the Nature and Causes of the Wealth of Nations by Adam Smith"
+  },
+  "classification": {
+    "subjects": [
+      "economics",
+      "hb"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "best-books-ever-listings",
+      "harvard-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/3300",
+      "gutenbergId": 3300
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/3300/pg3300.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #3300. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

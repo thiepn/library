@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-228",
+  "version": "pg-228-67afcda4b8cd",
+  "edition": 1,
+  "releasedAt": "2026-09-07T22:53:28Z",
+  "sourceHash": "20b5734ad91f889fa4ed8d51f602bb315267acae4bc03e60b004a6064dc6cfe0",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-228/editions/pg-228-67afcda4b8cd/the-aeneid-project-gutenberg.epub",
+      "filename": "the-aeneid-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 342734,
+      "sha256": "67afcda4b8cddf7fb7671742696e1950d443e5b4b3a9ed005a22e974dbe73ebc"
+    }
+  }
+}

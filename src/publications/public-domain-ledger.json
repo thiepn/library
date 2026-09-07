@@ -332,6 +332,352 @@
       ],
       "selectedAt": "2026-09-07T21:56:26Z",
       "releaseVersion": "pg-19476-7853b6c1abf4"
+    },
+    {
+      "gutenbergId": 1237,
+      "workId": "pd-pg-1237",
+      "title": "Father Goriot",
+      "author": "Honoré de Balzac",
+      "score": 258.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Best Books Ever Listings",
+        "Harvard Classics",
+        "Category: Novels",
+        "Category: Classics of Literature",
+        "Category: French Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/1237",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/1237/pg1237.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/1237/pg1237.epub",
+      "sourceRdfSha256": "4e5e1985eef46eafe67ddc6e87123b8abe28205f4249539663e0f14f7fb7bb8a",
+      "sourceEpubSha256": "05029c38cea2be7e6dabe7fda17e42f17bd2cca6d0be844569a4e14c5f39878d",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Honoré de Balzac",
+          "role": "creator",
+          "birthYear": 1799,
+          "deathYear": 1850
+        },
+        {
+          "name": "Ellen Marriage",
+          "role": "trl",
+          "birthYear": 1865,
+          "deathYear": 1946
+        }
+      ],
+      "selectedAt": "2026-09-07T22:53:26Z",
+      "releaseVersion": "pg-1237-05029c38cea2"
+    },
+    {
+      "gutenbergId": 804,
+      "workId": "pd-pg-804",
+      "title": "A Sentimental Journey Through France and Italy",
+      "author": "Laurence Sterne",
+      "score": 248.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Best Books Ever Listings",
+        "Harvard Classics",
+        "Banned Books from Anne Haight's list",
+        "Category: Travel Writing",
+        "Category: Classics of Literature",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/804",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/804/pg804.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/804/pg804.epub",
+      "sourceRdfSha256": "79eda66aa4310a47d2a75faf925da63ddbea6ec0491291c2e093c7751662c7e5",
+      "sourceEpubSha256": "7d78988000005e85be23c7bfd0ddb3e088f3aedc5daafeaef57cba84aa249a56",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Laurence Sterne",
+          "role": "creator",
+          "birthYear": 1713,
+          "deathYear": 1768
+        }
+      ],
+      "selectedAt": "2026-09-07T22:53:26Z",
+      "releaseVersion": "pg-804-7d7898800000"
+    },
+    {
+      "gutenbergId": 996,
+      "workId": "pd-pg-996",
+      "title": "Don Quixote",
+      "author": "Miguel de Cervantes Saavedra",
+      "score": 248.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Best Books Ever Listings",
+        "Harvard Classics",
+        "Category: Novels",
+        "Category: Classics of Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/996",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/996/pg996.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/996/pg996.epub",
+      "sourceRdfSha256": "5650a779674db1b70808b4f5fa41c6808f16dda69251191763e112151bd93d96",
+      "sourceEpubSha256": "dba65db312e53aebb10c911cb7dc801c2d856d0f75558de2f0093c4d09b3233a",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Miguel de Cervantes Saavedra",
+          "role": "creator",
+          "birthYear": 1547,
+          "deathYear": 1616
+        },
+        {
+          "name": "John Ormsby",
+          "role": "trl",
+          "birthYear": 1829,
+          "deathYear": 1895
+        }
+      ],
+      "selectedAt": "2026-09-07T22:53:27Z",
+      "releaseVersion": "pg-996-dba65db312e5"
+    },
+    {
+      "gutenbergId": 1399,
+      "workId": "pd-pg-1399",
+      "title": "Anna Karenina",
+      "author": "graf Tolstoy Leo",
+      "score": 248.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Best Books Ever Listings",
+        "Harvard Classics",
+        "Movie Books",
+        "Category: Novels",
+        "Category: Classics of Literature",
+        "Category: Russian Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/1399",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/1399/pg1399.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/1399/pg1399.epub",
+      "sourceRdfSha256": "456ca3cf1165bbf504c0ebb1b8ec5144fe2a585f04a06f81bde7a265424ad43b",
+      "sourceEpubSha256": "99a2f9600e408454070c46a155da9389aec85c872ab186caddad3375a9699aaa",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Leo, graf Tolstoy",
+          "role": "creator",
+          "birthYear": 1828,
+          "deathYear": 1910
+        },
+        {
+          "name": "Constance Garnett",
+          "role": "trl",
+          "birthYear": 1861,
+          "deathYear": 1946
+        }
+      ],
+      "selectedAt": "2026-09-07T22:53:27Z",
+      "releaseVersion": "pg-1399-99a2f9600e40"
+    },
+    {
+      "gutenbergId": 6593,
+      "workId": "pd-pg-6593",
+      "title": "History of Tom Jones, a Foundling",
+      "author": "Henry Fielding",
+      "score": 248.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Best Books Ever Listings",
+        "Harvard Classics",
+        "Movie Books",
+        "Banned Books from Anne Haight's list",
+        "Category: Novels",
+        "Category: Classics of Literature",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/6593",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/6593/pg6593.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/6593/pg6593.epub",
+      "sourceRdfSha256": "1e3b4a3575347003bbb616b4045afad2e9d996c9f51709cd9e7b51dd747343d6",
+      "sourceEpubSha256": "676139d467a65209a864323261b278815f941cc34dde6b07c6b0776dbb020d6e",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Henry Fielding",
+          "role": "creator",
+          "birthYear": 1707,
+          "deathYear": 1754
+        }
+      ],
+      "selectedAt": "2026-09-07T22:53:28Z",
+      "releaseVersion": "pg-6593-676139d467a6"
+    },
+    {
+      "gutenbergId": 31,
+      "workId": "pd-pg-31",
+      "title": "Plays of Sophocles: Oedipus the King; Oedipus at Colonus; Antigone",
+      "author": "Sophocles",
+      "score": 240.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Plays",
+        "Best Books Ever Listings",
+        "Harvard Classics",
+        "Category: Plays/Films/Dramas",
+        "Category: Classics of Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/31",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/31/pg31.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/31/pg31.epub",
+      "sourceRdfSha256": "2cb39729af537117d8f9be0206054e592771303f80d090a62749f1473d1bb785",
+      "sourceEpubSha256": "2d1bb3261d1ab21e6153cc8702b4c7d195b8c1fa74ac812da9b63fe14dcb725b",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Sophocles",
+          "role": "creator",
+          "birthYear": -496,
+          "deathYear": -406
+        },
+        {
+          "name": "Francis Storr",
+          "role": "trl",
+          "birthYear": 1839,
+          "deathYear": 1919
+        }
+      ],
+      "selectedAt": "2026-09-07T22:53:28Z",
+      "releaseVersion": "pg-31-2d1bb3261d1a"
+    },
+    {
+      "gutenbergId": 228,
+      "workId": "pd-pg-228",
+      "title": "The Aeneid",
+      "author": "Virgil",
+      "score": 240.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Classical Antiquity",
+        "Best Books Ever Listings",
+        "Poetry",
+        "Harvard Classics",
+        "Category: Poetry",
+        "Category: Mythology, Legends & Folklore",
+        "Category: Classics of Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/228",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/228/pg228.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/228/pg228.epub",
+      "sourceRdfSha256": "20b5734ad91f889fa4ed8d51f602bb315267acae4bc03e60b004a6064dc6cfe0",
+      "sourceEpubSha256": "67afcda4b8cddf7fb7671742696e1950d443e5b4b3a9ed005a22e974dbe73ebc",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Virgil",
+          "role": "creator",
+          "birthYear": -70,
+          "deathYear": -19
+        },
+        {
+          "name": "John Dryden",
+          "role": "trl",
+          "birthYear": 1631,
+          "deathYear": 1700
+        }
+      ],
+      "selectedAt": "2026-09-07T22:53:28Z",
+      "releaseVersion": "pg-228-67afcda4b8cd"
+    },
+    {
+      "gutenbergId": 1597,
+      "workId": "pd-pg-1597",
+      "title": "Andersen's Fairy Tales",
+      "author": "H. C. (Hans Christian) Andersen",
+      "score": 240.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Best Books Ever Listings",
+        "Harvard Classics",
+        "Children's Myths, Fairy Tales, etc.",
+        "Category: Short Stories",
+        "Category: Children & Young Adult Reading",
+        "Category: Mythology, Legends & Folklore",
+        "Category: Classics of Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/1597",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/1597/pg1597.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/1597/pg1597.epub",
+      "sourceRdfSha256": "8c9f93d3c23cab2b96103da653d74000cf0f765dffa1449ec0075f8f49f8646a",
+      "sourceEpubSha256": "9b84445b65c6a9df117c69bcab11c5e3ec961c55010b3a5b5337760d6979b709",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "H. C. (Hans Christian) Andersen",
+          "role": "creator",
+          "birthYear": 1805,
+          "deathYear": 1875
+        }
+      ],
+      "selectedAt": "2026-09-07T22:53:29Z",
+      "releaseVersion": "pg-1597-9b84445b65c6"
+    },
+    {
+      "gutenbergId": 3023,
+      "workId": "pd-pg-3023",
+      "title": "Faust — Part 1",
+      "author": "Johann Wolfgang von Goethe",
+      "score": 240.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Best Books Ever Listings",
+        "Harvard Classics",
+        "Category: Plays/Films/Dramas",
+        "Category: Classics of Literature",
+        "Category: German Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/3023",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/3023/pg3023.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/3023/pg3023.epub",
+      "sourceRdfSha256": "54e5fea565c7df40888c680c3fee7d9b48add01ef7b2a29b613e3be1eb66b0f2",
+      "sourceEpubSha256": "e1ddb49ca14461b1cfc8e3348aa770a439b12a78067c2dd2131b37ec5725c0ec",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Johann Wolfgang von Goethe",
+          "role": "creator",
+          "birthYear": 1749,
+          "deathYear": 1832
+        }
+      ],
+      "selectedAt": "2026-09-07T22:53:29Z",
+      "releaseVersion": "pg-3023-e1ddb49ca144"
+    },
+    {
+      "gutenbergId": 3300,
+      "workId": "pd-pg-3300",
+      "title": "An Inquiry into the Nature and Causes of the Wealth of Nations",
+      "author": "Adam Smith",
+      "score": 240.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Best Books Ever Listings",
+        "Harvard Classics",
+        "Category: History - Early Modern (c. 1450-1750)",
+        "Category: Economics"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/3300",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/3300/pg3300.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/3300/pg3300.epub",
+      "sourceRdfSha256": "8c9332537cf731ee0f73f186754ebdc4afbdc03f7f2eeda441299d20021c612f",
+      "sourceEpubSha256": "2db4a352fd89e297c76fce82e75f1ad8f3b7ea7e9e43db4337f81fa61807572c",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Adam Smith",
+          "role": "creator",
+          "birthYear": 1723,
+          "deathYear": 1790
+        }
+      ],
+      "selectedAt": "2026-09-07T22:53:30Z",
+      "releaseVersion": "pg-3300-2db4a352fd89"
     }
   ],
   "rejections": {
@@ -351,28 +697,13 @@
     }
   },
   "lastRun": {
-    "at": "2026-09-07T21:56:26Z",
+    "at": "2026-09-07T22:53:30Z",
     "copyrightCutoffYear": 1955,
     "candidateCount": 2220,
-    "checkedCount": 12,
+    "checkedCount": 10,
     "candidateCheckLimit": 40,
     "addedCount": 10,
-    "skippedCount": 2,
-    "recentSkips": [
-      {
-        "gutenbergId": 42671,
-        "title": "Pride and Prejudice",
-        "reason": "edt R. W. (Robert William) Chapman died 1960, after automatic German cutoff 1955",
-        "checkedAt": "2026-09-07T21:56:22Z",
-        "copyrightCutoffYear": 1955
-      },
-      {
-        "gutenbergId": 20203,
-        "title": "Autobiography of Benjamin Franklin",
-        "reason": "unknown death year for edt Frank Woodworth Pine",
-        "checkedAt": "2026-09-07T21:56:25Z",
-        "copyrightCutoffYear": 1955
-      }
-    ]
+    "skippedCount": 0,
+    "recentSkips": []
   }
 }

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-3300",
+  "version": "pg-3300-2db4a352fd89",
+  "edition": 1,
+  "releasedAt": "2026-09-07T22:53:30Z",
+  "sourceHash": "8c9332537cf731ee0f73f186754ebdc4afbdc03f7f2eeda441299d20021c612f",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-3300/editions/pg-3300-2db4a352fd89/an-inquiry-into-the-nature-and-causes-of-the-wealth-of-nations-project-gutenberg.epub",
+      "filename": "an-inquiry-into-the-nature-and-causes-of-the-wealth-of-nations-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 969647,
+      "sha256": "2db4a352fd89e297c76fce82e75f1ad8f3b7ea7e9e43db4337f81fa61807572c"
+    }
+  }
+}
