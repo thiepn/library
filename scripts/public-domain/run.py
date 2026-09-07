@@ -9,7 +9,7 @@ import urllib.request
 import sync as engine
 
 
-def bounded_request_bytes(url: str, *, timeout: int = 20, accept: str = "*/*") -> bytes:
+def bounded_request_bytes(url: str, *, timeout: int = 12, accept: str = "*/*") -> bytes:
     req = urllib.request.Request(
         url,
         headers={
@@ -19,7 +19,7 @@ def bounded_request_bytes(url: str, *, timeout: int = 20, accept: str = "*/*") -
         },
     )
     last_error: Exception | None = None
-    for attempt in range(3):
+    for attempt in range(2):
         try:
             with urllib.request.urlopen(req, timeout=timeout) as response:
                 return response.read()
@@ -27,29 +27,65 @@ def bounded_request_bytes(url: str, *, timeout: int = 20, accept: str = "*/*") -
             last_error = exc
             if exc.code != 429 and exc.code < 500:
                 raise
-            if attempt == 2:
+            if attempt == 1:
                 raise
-            time.sleep(1.5 * (attempt + 1))
+            time.sleep(1.0)
         except (urllib.error.URLError, TimeoutError) as exc:
             last_error = exc
-            if attempt == 2:
+            if attempt == 1:
                 raise
-            time.sleep(1.5 * (attempt + 1))
+            time.sleep(1.0)
     raise RuntimeError(f"Failed to fetch {url}: {last_error}")
 
 
 engine.request_bytes = bounded_request_bytes
 
 
+def discover_durable(popularity_pages: int) -> list[engine.Candidate]:
+    """Use Gutenberg's own catalog as the durable discovery base.
+
+    Gutendex is optional enrichment only. A third-party outage must never prevent
+    autonomous publication from continuing from Project Gutenberg's own catalog.
+    """
+    engine.log("[discover] loading official Project Gutenberg catalog")
+    official = engine.discover_official_catalog(limit=2500)
+
+    popular: list[engine.Candidate] = []
+    if popularity_pages > 0:
+        try:
+            # One small request window is enough to nudge globally popular classics
+            # upward without making the pipeline operationally dependent on Gutendex.
+            popular = engine.discover_gutendex(min(popularity_pages, 2))
+            engine.log(f"[discover] optional popularity enrichment: {len(popular)} candidate(s)")
+        except Exception as exc:
+            engine.log(f"[discover] popularity enrichment unavailable; continuing from official catalog: {exc}")
+
+    merged: dict[int, engine.Candidate] = {candidate.gutenberg_id: candidate for candidate in official}
+    for candidate in popular:
+        existing = merged.get(candidate.gutenberg_id)
+        if existing is None:
+            merged[candidate.gutenberg_id] = candidate
+            continue
+        existing.download_count = max(existing.download_count, candidate.download_count)
+        existing.formats.update(candidate.formats)
+        if candidate.summary and not existing.summary:
+            existing.summary = candidate.summary
+        existing.score = max(existing.score, candidate.score + 35.0)
+
+    candidates = list(merged.values())
+    candidates.sort(key=lambda c: (-c.score, -c.download_count, c.gutenberg_id))
+    return candidates
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Bounded public-domain acquisition runner.")
     parser.add_argument("--max-books", type=int, default=10)
-    parser.add_argument("--discovery-pages", type=int, default=30)
-    parser.add_argument("--max-candidate-checks", type=int, default=100)
+    parser.add_argument("--discovery-pages", type=int, default=2)
+    parser.add_argument("--max-candidate-checks", type=int, default=40)
     args = parser.parse_args()
 
     max_books = max(0, min(args.max_books, 20))
-    max_candidate_checks = max(max_books, min(args.max_candidate_checks, 500))
+    max_candidate_checks = max(max_books, min(args.max_candidate_checks, 200))
     if max_books == 0:
         engine.set_github_output("added_count", "0")
         return 0
@@ -60,7 +96,7 @@ def main() -> int:
 
     ledger = engine.load_ledger()
     known = engine.existing_pg_ids(ledger)
-    candidates = engine.discover_candidates(max(1, args.discovery_pages))
+    candidates = discover_durable(max(0, args.discovery_pages))
     engine.log(f"[discover] {len(candidates)} ranked candidates; {len(known)} already known")
 
     added: list[dict] = []
@@ -99,7 +135,7 @@ def main() -> int:
                 engine.log(f"[skip:rights] PG#{gid}: {reason}")
                 skips.append(rejection)
                 ledger.setdefault("rejections", {})[str(gid)] = rejection
-                time.sleep(0.2)
+                time.sleep(0.1)
                 continue
 
             epub_raw, epub_url = engine.download_epub(candidate)
@@ -107,12 +143,12 @@ def main() -> int:
             added.append(artifact)
             known.add(gid)
             engine.log(f"[add] {artifact['workId']} — {artifact['title']} ({artifact['sizeBytes']} bytes)")
-            time.sleep(0.35)
+            time.sleep(0.15)
         except Exception as exc:
             reason = f"{type(exc).__name__}: {exc}"
             engine.log(f"[skip:error] PG#{gid}: {reason}")
             skips.append({"gutenbergId": gid, "reason": reason})
-            time.sleep(0.2)
+            time.sleep(0.1)
 
     ledger["lastRun"] = {
         "at": engine.utc_now(),
