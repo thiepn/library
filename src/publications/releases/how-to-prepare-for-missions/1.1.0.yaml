@@ -1,0 +1,25 @@
+schemaVersion: 1
+workId: how-to-prepare-for-missions
+version: 1.1.0
+edition: 1
+releasedAt: 2026-09-07
+sourceHash: 64f8e64782e9912886b15888d17b2121955b2a997632d8ba833e3c6ac8fe6100
+artifacts:
+  pdf:
+    url: https://thiepn.dev/library/media/works/how-to-prepare-for-missions/editions/1.1.0/How_to_Prepare_for_Missions_v1.1.0.pdf
+    filename: How_to_Prepare_for_Missions_v1.1.0.pdf
+    mimeType: application/pdf
+    sizeBytes: 7845577
+    sha256: da5ac4185e53de7863ec205075db6e17e9688d6906eb9fd463ab40d11b942214
+  epub:
+    url: https://thiepn.dev/library/media/works/how-to-prepare-for-missions/editions/1.1.0/How_to_Prepare_for_Missions_v1.1.0.epub
+    filename: How_to_Prepare_for_Missions_v1.1.0.epub
+    mimeType: application/epub+zip
+    sizeBytes: 2765021
+    sha256: d3171ba68ec811036a63942e01a43dcae360320c2a701745cd6b26cfe67b45e3
+  cover:
+    url: https://thiepn.dev/library/media/works/how-to-prepare-for-missions/editions/1.1.0/how-to-prepare-for-missions-cover.png
+    filename: how-to-prepare-for-missions-cover.png
+    mimeType: image/png
+    sizeBytes: 2218382
+    sha256: 4a9efc3882c3e2d6d0f9d418076433a71281b83bd92081e8d69ae0d5b5e1f4ff
