@@ -1,0 +1,74 @@
+schemaVersion: 1
+id: how-to-prepare-for-missions
+slug: how-to-prepare-for-missions
+title: How to Prepare for Missions
+subtitle: A Staged Path to Faithful Preparation, Clear Responsibility, and Lifelong
+  Learning in the Field
+type: book
+language: en-US
+contributors:
+- name: Thiepn
+  role: author
+description: 'A research-informed Christian guide to preparing wisely for long-term
+  cross-cultural mission: building transferable foundations while the future is unclear,
+  specializing as a real assignment becomes concrete, resolving genuine blockers before
+  deployment, and continuing to learn in the field.'
+shortDescription: 'A staged Christian framework for missionary preparation: build
+  broad foundations, specialize as the assignment becomes clear, address true blockers,
+  and keep learning in the field.'
+status: published
+visibility: public
+publication:
+  firstPublished: '2026-09-02'
+  lastUpdated: '2026-09-07'
+  edition: 1
+  editionLabel: First Edition
+  version: 1.1.0
+  activeRelease: 1.1.0
+cover:
+  src: /media/works/how-to-prepare-for-missions/editions/1.1.0/how-to-prepare-for-missions-cover.png
+  alt: Cover of How to Prepare for Missions by Thiepn
+classification:
+  subjects:
+  - missions
+  - discipleship
+  tags:
+  - missionary-preparation
+  - missionary-discernment
+  - cross-cultural-mission
+  - great-commission
+  - mission-training
+  collections:
+  - mission
+parts:
+- id: before-you-build-a-missionary-plan
+  title: Before You Build a Missionary Plan
+  order: 1000
+- id: build-the-foundations-that-travel
+  title: Build the Foundations That Travel
+  order: 2000
+- id: define-the-responsibility
+  title: Define the Responsibility
+  order: 3000
+- id: prepare-for-the-real-place-people-and-system
+  title: Prepare for the Real Place, People, and System
+  order: 4000
+- id: ready-enough-to-go-ready-to-keep-learning
+  title: Ready Enough to Go, Ready to Keep Learning
+  order: 5000
+formats:
+  web:
+    enabled: true
+  pdf:
+    enabled: true
+  epub:
+    enabled: true
+relationships:
+  relatedWorks:
+  - choosing-a-mission-organization
+  - the-unfinished-mission
+  prerequisites: []
+resources: []
+rights:
+  status: copyright
+  notice: Copyright © 2026 Thiepn. All rights reserved.
