@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import re
 import time
 import urllib.error
 import urllib.request
@@ -77,6 +78,35 @@ def discover_durable(popularity_pages: int) -> list[engine.Candidate]:
     return candidates
 
 
+def normalize_publication_metadata(candidate: engine.Candidate, meta: dict) -> None:
+    """Keep display metadata distinct from rights/provenance metadata.
+
+    Project Gutenberg's catalog may place translators or other contributors in its
+    Authors field. The Library byline/cover should show the work creator(s), while
+    the full contributor list and roles remain preserved in the rights ledger and
+    work manifest.
+    """
+    creators = [
+        contributor
+        for contributor in (meta.get("contributors") or [])
+        if contributor.role in {"creator", "aut", "author"}
+    ]
+    if creators:
+        candidate.authors = [
+            {
+                "name": contributor.name,
+                "birth_year": contributor.birth_year,
+                "death_year": contributor.death_year,
+            }
+            for contributor in creators[:3]
+        ]
+
+    raw_title = str(meta.get("title") or candidate.title or "").strip()
+    normalized_title = re.sub(r"\s+", " ", raw_title)
+    if normalized_title:
+        meta["title"] = normalized_title
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Bounded public-domain acquisition runner.")
     parser.add_argument("--max-books", type=int, default=10)
@@ -123,6 +153,7 @@ def main() -> int:
 
         try:
             meta, rdf_raw = engine.rdf_metadata(gid)
+            normalize_publication_metadata(candidate, meta)
             allowed, reason = engine.legal_gate(candidate, meta)
             if not allowed:
                 rejection = {
