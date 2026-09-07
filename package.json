@@ -10,7 +10,7 @@
     "check": "astro check",
     "validate:content": "tsx scripts/validate-content.ts",
     "validate": "pnpm check && pnpm validate:content",
-    "build:astro": "node scripts/materialize-unlisted-assets.mjs && astro build",
+    "build:astro": "astro build",
     "index": "pagefind --site dist/library",
     "prepare:deploy": "node scripts/prepare-deploy.mjs",
     "build": "pnpm validate && pnpm build:astro && pnpm index && pnpm prepare:deploy",
