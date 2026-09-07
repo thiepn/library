@@ -2,10 +2,15 @@
 from __future__ import annotations
 
 import argparse
+import csv
+import gzip
+import io
 import re
 import time
+import unicodedata
 import urllib.error
 import urllib.request
+from typing import Any
 
 import sync as engine
 
@@ -42,14 +47,114 @@ def bounded_request_bytes(url: str, *, timeout: int = 12, accept: str = "*/*") -
 engine.request_bytes = bounded_request_bytes
 
 
+def normalize_identity_text(value: str) -> str:
+    """Normalize catalog/display variants without changing the published title."""
+    text = unicodedata.normalize("NFKD", value.casefold())
+    text = "".join(char for char in text if not unicodedata.combining(char))
+    text = text.replace("&", " and ")
+    return re.sub(r"[^a-z0-9]+", " ", text).strip()
+
+
+def canonical_work_key(title: str, creator: str) -> str:
+    normalized_title = normalize_identity_text(title)
+    normalized_creator = normalize_identity_text(creator)
+    if not normalized_title or not normalized_creator:
+        return ""
+    return f"{normalized_title}::{normalized_creator}"
+
+
+def existing_work_keys(ledger: dict[str, Any]) -> set[str]:
+    keys: set[str] = set()
+    for entry in ledger.get("entries") or []:
+        if not isinstance(entry, dict):
+            continue
+        key = canonical_work_key(str(entry.get("title") or ""), str(entry.get("author") or ""))
+        if key:
+            keys.add(key)
+    return keys
+
+
+def discover_official_catalog_ranked(limit: int = 2500) -> list[engine.Candidate]:
+    """Rank the complete official Gutenberg catalog before truncating it.
+
+    The previous fallback stopped after the first ``limit`` matching rows and only
+    then sorted them. Because Gutenberg IDs roughly follow ingest order, that made
+    fallback quality depend on catalog position rather than literary value. This
+    scans the complete machine-readable catalog, scores every eligible curated-shelf
+    title, and only then keeps the strongest candidates.
+    """
+    raw = gzip.decompress(engine.request_bytes(engine.PG_CATALOG_URL, timeout=90))
+    text = raw.decode("utf-8-sig", errors="replace")
+    reader = csv.DictReader(io.StringIO(text))
+    rows: list[engine.Candidate] = []
+
+    recognized_shelves = {name.casefold() for name in engine.QUALITY_BOOKSHELVES}
+    for record in reader:
+        if (record.get("Type") or "").casefold() != "text":
+            continue
+
+        languages = [item.strip().casefold() for item in (record.get("Language") or "").split(";")]
+        if "en" not in languages:
+            continue
+
+        title = (record.get("Title") or "").strip()
+        if not title or engine.is_low_value_title(title):
+            continue
+
+        shelves = [item.strip() for item in (record.get("Bookshelves") or "").split(";") if item.strip()]
+        if not any(shelf.casefold() in recognized_shelves for shelf in shelves):
+            continue
+
+        try:
+            gutenberg_id = int(record.get("Text#") or 0)
+        except (TypeError, ValueError):
+            continue
+        if gutenberg_id <= 0:
+            continue
+
+        subjects = [item.strip() for item in (record.get("Subjects") or "").split(";") if item.strip()]
+        authors = [
+            engine.parse_lifespan_author(item)
+            for item in (record.get("Authors") or "").split(";")
+            if item.strip()
+        ]
+        score = engine.quality_score(
+            {
+                "title": title,
+                "download_count": 0,
+                "bookshelves": shelves,
+                "subjects": subjects,
+                "authors": authors,
+            }
+        )
+        rows.append(
+            engine.Candidate(
+                gutenberg_id=gutenberg_id,
+                title=title,
+                language="en",
+                authors=authors,
+                subjects=subjects,
+                bookshelves=shelves,
+                download_count=0,
+                copyright=None,
+                formats={},
+                summary="",
+                score=score,
+            )
+        )
+
+    rows.sort(key=lambda candidate: (-candidate.score, candidate.gutenberg_id))
+    return rows[: max(1, limit)]
+
+
 def discover_durable(popularity_pages: int) -> list[engine.Candidate]:
     """Use Gutenberg's own catalog as the durable discovery base.
 
     Gutendex is optional enrichment only. A third-party outage must never prevent
     autonomous publication from continuing from Project Gutenberg's own catalog.
     """
-    engine.log("[discover] loading official Project Gutenberg catalog")
-    official = engine.discover_official_catalog(limit=2500)
+    engine.log("[discover] loading and ranking complete official Project Gutenberg catalog")
+    official = discover_official_catalog_ranked(limit=2500)
 
     popular: list[engine.Candidate] = []
     if popularity_pages > 0:
@@ -74,7 +179,7 @@ def discover_durable(popularity_pages: int) -> list[engine.Candidate]:
         existing.score = max(existing.score, candidate.score + 35.0)
 
     candidates = list(merged.values())
-    candidates.sort(key=lambda c: (-c.score, -c.download_count, c.gutenberg_id))
+    candidates.sort(key=lambda candidate: (-candidate.score, -candidate.download_count, candidate.gutenberg_id))
     return candidates
 
 
@@ -108,6 +213,7 @@ def normalize_publication_metadata(candidate: engine.Candidate, meta: dict) -> N
     normalized_title = physical_lines[0] if physical_lines else re.sub(r"\s+", " ", raw_title)
     if normalized_title:
         meta["title"] = normalized_title
+        candidate.title = normalized_title
 
 
 def main() -> int:
@@ -128,9 +234,13 @@ def main() -> int:
     engine.STAGING_ROOT.mkdir(parents=True, exist_ok=True)
 
     ledger = engine.load_ledger()
-    known = engine.existing_pg_ids(ledger)
+    known_ids = engine.existing_pg_ids(ledger)
+    known_work_keys = existing_work_keys(ledger)
     candidates = discover_durable(max(0, args.discovery_pages))
-    engine.log(f"[discover] {len(candidates)} ranked candidates; {len(known)} already known")
+    engine.log(
+        f"[discover] {len(candidates)} ranked candidates; "
+        f"{len(known_ids)} Gutenberg IDs and {len(known_work_keys)} logical works already known"
+    )
 
     added: list[dict] = []
     skips: list[dict] = []
@@ -141,7 +251,7 @@ def main() -> int:
             break
 
         gid = candidate.gutenberg_id
-        if gid in known:
+        if gid in known_ids:
             continue
 
         prior_rejection = (ledger.get("rejections") or {}).get(str(gid))
@@ -157,6 +267,16 @@ def main() -> int:
         try:
             meta, rdf_raw = engine.rdf_metadata(gid)
             normalize_publication_metadata(candidate, meta)
+
+            creator = engine.author_display(candidate.authors)
+            logical_key = canonical_work_key(str(meta.get("title") or candidate.title), creator)
+            if logical_key and logical_key in known_work_keys:
+                reason = f"logical work already represented in Library: {candidate.title} — {creator}"
+                engine.log(f"[skip:duplicate] PG#{gid}: {reason}")
+                skips.append({"gutenbergId": gid, "title": candidate.title, "reason": reason})
+                time.sleep(0.05)
+                continue
+
             allowed, reason = engine.legal_gate(candidate, meta)
             if not allowed:
                 rejection = {
@@ -175,7 +295,9 @@ def main() -> int:
             epub_raw, epub_url = engine.download_epub(candidate)
             artifact = engine.materialize(candidate, meta, rdf_raw, epub_raw, epub_url, ledger)
             added.append(artifact)
-            known.add(gid)
+            known_ids.add(gid)
+            if logical_key:
+                known_work_keys.add(logical_key)
             engine.log(f"[add] {artifact['workId']} — {artifact['title']} ({artifact['sizeBytes']} bytes)")
             time.sleep(0.15)
         except Exception as exc:
