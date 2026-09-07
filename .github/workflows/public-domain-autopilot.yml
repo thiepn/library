@@ -25,11 +25,12 @@ permissions:
 
 concurrency:
   group: public-domain-autopilot
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   ingest:
     runs-on: ubuntu-latest
+    timeout-minutes: 90
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -67,11 +68,13 @@ jobs:
         env:
           MAX_BOOKS: ${{ github.event.inputs.max_books || '10' }}
           DISCOVERY_PAGES: ${{ github.event.inputs.discovery_pages || '30' }}
+          MAX_CANDIDATE_CHECKS: '100'
         run: |
           set -euo pipefail
-          python3 scripts/public-domain/sync.py \
+          timeout 15m python3 scripts/public-domain/run.py \
             --max-books "$MAX_BOOKS" \
-            --discovery-pages "$DISCOVERY_PAGES"
+            --discovery-pages "$DISCOVERY_PAGES" \
+            --max-candidate-checks "$MAX_CANDIDATE_CHECKS"
 
       - name: Certify complete Library before upload
         if: steps.discover.outputs.added_count != '0'
