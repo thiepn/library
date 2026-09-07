@@ -3,6 +3,10 @@ name: Public Domain Autopilot
 on:
   schedule:
     - cron: '37 3 * * 0'
+  push:
+    branches: [main]
+    paths:
+      - '.github/public-domain-autopilot-trigger'
   workflow_dispatch:
     inputs:
       max_books:
