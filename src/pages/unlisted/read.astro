@@ -1,0 +1,178 @@
+---
+import EpubReaderLayout from '../../layouts/EpubReaderLayout.astro';
+import ReaderShell from '../../components/reader/ReaderShell.astro';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+<EpubReaderLayout
+  title="Private reader"
+  description="Private encrypted EPUB reader."
+  noindex
+>
+  <div data-pagefind-ignore="all">
+    <ReaderShell
+      title="Private book"
+      subtitle=""
+      backHref={`${base}/`}
+      backLabel="Back to Library"
+      loadingMessage="Opening private book…"
+    />
+  </div>
+
+  <script>
+    import { setReaderFailureState } from '../../lib/reader/fallback';
+    import type { ReaderSourceFallbackHarnessHandle } from '../../lib/reader/fallback-harness';
+    import { ReaderPerformanceController } from '../../lib/reader/performance';
+    import { mountReaderShell } from '../../lib/reader/shell';
+
+    const root = document.querySelector<HTMLElement>('[data-reader-shell]');
+    const readerPerformance = root ? new ReaderPerformanceController(root) : undefined;
+    let mounted: ReaderSourceFallbackHarnessHandle | undefined;
+    let bootstrapRetry: ((event: MouseEvent) => void) | undefined;
+    let closing = false;
+
+    readerPerformance?.start();
+
+    function decodeBase64Url(value: string): Uint8Array {
+      if (!value || !/^[A-Za-z0-9_-]+$/.test(value)) throw new Error('Invalid private link.');
+      const base64 = value.replace(/-/g, '+').replace(/_/g, '/');
+      const padded = base64 + '='.repeat((4 - (base64.length % 4)) % 4);
+      let raw: string;
+      try {
+        raw = atob(padded);
+      } catch {
+        throw new Error('Invalid private link.');
+      }
+      const bytes = new Uint8Array(raw.length);
+      for (let index = 0; index < raw.length; index += 1) bytes[index] = raw.charCodeAt(index);
+      return bytes;
+    }
+
+    function parsePrivateLink() {
+      const fragment = location.hash.slice(1);
+      const [version, assetId, keyEncoded, titleEncoded, ...extra] = fragment.split('.');
+      if (version !== 'v1' || extra.length > 0 || !assetId || !/^[a-f0-9]{32}$/.test(assetId)) {
+        throw new Error('This private reading link is invalid.');
+      }
+
+      const key = decodeBase64Url(keyEncoded ?? '');
+      if (key.byteLength !== 32) throw new Error('This private reading link is invalid.');
+
+      const titleBytes = decodeBase64Url(titleEncoded ?? '');
+      const title = new TextDecoder().decode(titleBytes).trim();
+      if (!title || title.length > 160) throw new Error('This private reading link is invalid.');
+
+      return { assetId, key, title };
+    }
+
+    function setIdentity(title: string) {
+      const titleNode = root?.querySelector<HTMLElement>('[data-reader-title]');
+      const subtitle = root?.querySelector<HTMLElement>('.reader-shell__identity span');
+      if (titleNode) titleNode.textContent = title;
+      if (subtitle) {
+        subtitle.textContent = '';
+        subtitle.hidden = true;
+      }
+      document.title = title;
+    }
+
+    function fail(error: unknown) {
+      if (!root) return;
+      const shell = mountReaderShell(root);
+      const failure = setReaderFailureState(shell, error);
+      const retry = root.querySelector<HTMLButtonElement>('[data-reader-command="retry"]');
+      if (!failure.retryable || !retry) return;
+      retry.textContent = 'Reload page';
+      bootstrapRetry = (event: MouseEvent) => {
+        const origin = event.target instanceof Element ? event.target : null;
+        const button = origin?.closest<HTMLElement>('[data-reader-command="retry"]');
+        if (!button || !root.contains(button)) return;
+        event.preventDefault();
+        location.reload();
+      };
+      root.addEventListener('click', bootstrapRetry);
+    }
+
+    async function decryptBook(assetId: string, keyBytes: Uint8Array): Promise<ArrayBuffer> {
+      const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+      const response = await fetch(`${base}/media/unlisted/${assetId}.bin`, {
+        cache: 'no-store',
+        credentials: 'same-origin',
+      });
+      if (!response.ok) throw new Error('This private reading link is unavailable.');
+
+      const encrypted = new Uint8Array(await response.arrayBuffer());
+      if (encrypted.byteLength < 29) throw new Error('The encrypted book file is invalid.');
+
+      const iv = encrypted.slice(0, 12);
+      const ciphertext = encrypted.slice(12);
+      const keyMaterial = keyBytes.buffer.slice(keyBytes.byteOffset, keyBytes.byteOffset + keyBytes.byteLength) as ArrayBuffer;
+      const key = await crypto.subtle.importKey(
+        'raw',
+        keyMaterial,
+        { name: 'AES-GCM' },
+        false,
+        ['decrypt'],
+      );
+      const additionalData = new TextEncoder().encode(`thiepn-library-unlisted-v1:${assetId}`);
+
+      try {
+        return await crypto.subtle.decrypt(
+          {
+            name: 'AES-GCM',
+            iv: iv.buffer as ArrayBuffer,
+            additionalData: additionalData.buffer as ArrayBuffer,
+            tagLength: 128,
+          },
+          key,
+          ciphertext.buffer as ArrayBuffer,
+        );
+      } catch {
+        throw new Error('This private reading link is invalid.');
+      }
+    }
+
+    async function boot() {
+      if (!root || closing) return;
+      try {
+        const { assetId, key, title } = parsePrivateLink();
+        setIdentity(title);
+
+        const source = await decryptBook(assetId, key);
+        if (closing) return;
+
+        readerPerformance?.markModuleLoading();
+        const { mountReaderSourceWithFallbackHarness } = await import('../../lib/reader/fallback-harness');
+        if (closing) return;
+        readerPerformance?.markOpening();
+
+        const handle = await mountReaderSourceWithFallbackHarness(root, {
+          source,
+          identity: {
+            workId: `unlisted-${assetId}`,
+            edition: 1,
+            releaseVersion: 'encrypted-v1',
+          },
+        });
+        if (closing) handle.destroy();
+        else mounted = handle;
+      } catch (error) {
+        fail(error);
+      }
+    }
+
+    requestAnimationFrame(() => {
+      readerPerformance?.markShellPainted();
+      void boot();
+    });
+
+    window.addEventListener('hashchange', () => location.reload());
+    window.addEventListener('pagehide', () => {
+      closing = true;
+      if (root && bootstrapRetry) root.removeEventListener('click', bootstrapRetry);
+      bootstrapRetry = undefined;
+      mounted?.destroy();
+      mounted = undefined;
+      readerPerformance?.destroy();
+    }, { once: true });
+  </script>
+</EpubReaderLayout>
