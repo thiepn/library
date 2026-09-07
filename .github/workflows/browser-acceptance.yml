@@ -45,8 +45,8 @@ jobs:
 
       - name: Run remaining browser acceptance matrix
         run: >-
-          pnpm exec playwright test
-          --grep-invert "historical main v8 and personal v2 records upgrade into versioned portable state"
+          pnpm test:e2e --grep-invert
+          "historical main v8 and personal v2 records upgrade into versioned portable state"
 
       - name: Upload failed browser evidence
         if: failure()
