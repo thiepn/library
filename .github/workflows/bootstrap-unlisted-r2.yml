@@ -1,0 +1,46 @@
+name: Bootstrap opaque unlisted R2 asset
+
+on:
+  push:
+    branches: [secure-unlisted-reader-v1]
+
+permissions:
+  contents: read
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      R2_BUCKET: thiepn-library-publications
+      ASSET_ID: 333a064ac9ce5bf22e2f2e3f308ff8bc
+      EXPECTED_SHA256: dd319a0e6a4dd33fce4dac275da30dfed1ade34ce859d32658fe2e75151064fd
+      EXPECTED_SIZE: '954234'
+    steps:
+      - name: Fetch encrypted transfer exactly once
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error 'https://ucb49b1b8a4b659ce48cd1f9c023.dl.dropboxusercontent.com/cd/0/get/DHviBxp4lIyo5-wbnQTH8M8ZPOs1ZaxvFHZss0lXk7TvN_KAXSXfr9lQ2f74SJ_0efSh22cgyXIcH29wGFH0iu9NB7vKpEDlc52ONlKh-Ilz-1XwMgUlxO1H25JXFhxiWX3SKqbeCNTGWBq4D-WZ4oakADJFW2zK9XsrC6mzMIpqhw/file?c_luid=39011dda' --output /tmp/unlisted.bin
+          test "$(stat -c %s /tmp/unlisted.bin)" -eq "$EXPECTED_SIZE"
+          printf '%s  %s\n' "$EXPECTED_SHA256" /tmp/unlisted.bin | sha256sum --check --strict
+
+      - name: Upload encrypted object to R2
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4.32.0 r2 object put "$R2_BUCKET/unlisted/$ASSET_ID.bin" \
+            --file=/tmp/unlisted.bin \
+            --content-type=application/octet-stream \
+            --cache-control='private, max-age=0, no-store' \
+            --remote --force
+
+      - name: Verify encrypted R2 object
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4.32.0 r2 object get "$R2_BUCKET/unlisted/$ASSET_ID.bin" --file=/tmp/verify.bin --remote
+          test "$(stat -c %s /tmp/verify.bin)" -eq "$EXPECTED_SIZE"
+          printf '%s  %s\n' "$EXPECTED_SHA256" /tmp/verify.bin | sha256sum --check --strict
