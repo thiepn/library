@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-601",
+  "slug": "pd-pg-601",
+  "title": "The Monk: A Romance",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "M. G. (Matthew Gregory) Lewis",
+      "role": "creator",
+      "birthYear": 1775,
+      "deathYear": 1818
+    }
+  ],
+  "description": "\"The Monk: A Romance\" by M. G. Lewis is a Gothic novel published in 1796. It follows Ambrosio, a virtuous monk who succumbs to forbidden desires when a mysterious figure infiltrates his monastery. His fall from grace spirals into a dark tale of lust, murder, and demonic pacts. Scandalous for its sexually explicit content and themes of rape and incest, it became the most controversial Gothic novel of the 18th century,…",
+  "shortDescription": "\"The Monk: A Romance\" by M. G. Lewis is a Gothic novel published in 1796. It follows Ambrosio, a virtuous monk who succumbs to forbidden desires when a mysterious figure infiltr…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "1996-07-01",
+    "lastUpdated": "2026-09-07",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-601-0799f5003445",
+    "activeRelease": "pg-601-0799f5003445"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-601.svg",
+    "alt": "Cover for The Monk: A Romance by M. G. (Matthew Gregory) Lewis"
+  },
+  "classification": {
+    "subjects": [
+      "horror-tales",
+      "gothic-fiction",
+      "monks",
+      "madrid-spain",
+      "pr"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "best-books-ever-listings",
+      "gothic-fiction"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/601",
+      "gutenbergId": 601
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/601/pg601.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #601. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

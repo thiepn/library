@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-1695",
+  "slug": "pd-pg-1695",
+  "title": "The Man Who Was Thursday: A Nightmare",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "G. K. (Gilbert Keith) Chesterton",
+      "role": "creator",
+      "birthYear": 1874,
+      "deathYear": 1936
+    }
+  ],
+  "description": "\"The Man Who Was Thursday: A Nightmare\" by G. K. Chesterton is a philosophical novel with elements of adventure and satire, written in the late 19th century. The story revolves around the enigmatic character Gabriel Syme, a police detective who infiltrates a group of anarchists in London to uncover their plans and identities. As the narrative unfolds, it explores complex themes of order, chaos, and the nature of evil…",
+  "shortDescription": "\"The Man Who Was Thursday: A Nightmare\" by G. K. Chesterton is a philosophical novel with elements of adventure and satire, written in the late 19th century. The story revolves…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "1999-04-01",
+    "lastUpdated": "2026-09-07",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-1695-9c260bf155b4",
+    "activeRelease": "pg-1695-9c260bf155b4"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-1695.svg",
+    "alt": "Cover for The Man Who Was Thursday: A Nightmare by G. K. (Gilbert Keith) Chesterton"
+  },
+  "classification": {
+    "subjects": [
+      "fantasy-fiction",
+      "detective-and-mystery-stories",
+      "london-england",
+      "anarchists",
+      "allegories"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "best-books-ever-listings"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/1695",
+      "gutenbergId": 1695
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/1695/pg1695.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #1695. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-19476",
+  "slug": "pd-pg-19476",
+  "title": "A Honeymoon in Space",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "George Chetwynd Griffith",
+      "role": "creator",
+      "birthYear": 1857,
+      "deathYear": 1906
+    }
+  ],
+  "description": "\"A Honeymoon in Space\" by George Chetwynd Griffith is a novel published in 1901. When British aristocrat Lord Redgrave kidnaps the woman he loves aboard his anti-gravity spaceship, their marriage becomes the strangest honeymoon imaginable—a grand tour of the Solar System. From the Moon's desolate ruins to Mars's intellectual giants, Venus's sinless angels, and Saturn's bizarre creatures, the newlyweds encounter civil…",
+  "shortDescription": "\"A Honeymoon in Space\" by George Chetwynd Griffith is a novel published in 1901. When British aristocrat Lord Redgrave kidnaps the woman he loves aboard his anti-gravity spacesh…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2006-10-05",
+    "lastUpdated": "2026-09-07",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-19476-7853b6c1abf4",
+    "activeRelease": "pg-19476-7853b6c1abf4"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-19476.svg",
+    "alt": "Cover for A Honeymoon in Space by George Chetwynd Griffith"
+  },
+  "classification": {
+    "subjects": [
+      "science-fiction",
+      "pr"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "science-fiction"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/19476",
+      "gutenbergId": 19476
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/19476/pg19476.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #19476. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

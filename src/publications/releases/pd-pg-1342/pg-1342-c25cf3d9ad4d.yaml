@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-1342",
+  "version": "pg-1342-c25cf3d9ad4d",
+  "edition": 1,
+  "releasedAt": "2026-09-07T21:56:17Z",
+  "sourceHash": "8f7694e9a8c879e98f905476333161ba786bf6d30eae7d905d8d4df5a3677452",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-1342/editions/pg-1342-c25cf3d9ad4d/pride-and-prejudice-project-gutenberg.epub",
+      "filename": "pride-and-prejudice-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 558381,
+      "sha256": "c25cf3d9ad4d41147ecc6947debcf981a961fd6b69a4219d9892af50b934c8bb"
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-11",
+  "version": "pg-11-d6524a6b578d",
+  "edition": 1,
+  "releasedAt": "2026-09-07T21:56:25Z",
+  "sourceHash": "d85e1f0ba186d2438767015ec7d56b5c6d22b63e9a21beb803c73e1d18bf3686",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-11/editions/pg-11-d6524a6b578d/alices-adventures-in-wonderland-project-gutenberg.epub",
+      "filename": "alices-adventures-in-wonderland-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 136519,
+      "sha256": "d6524a6b578de2fe63f9cf6e8be010158560ca32f05157e4fa58e6f210707d08"
+    }
+  }
+}

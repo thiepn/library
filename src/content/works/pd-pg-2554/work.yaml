@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-2554",
+  "slug": "pd-pg-2554",
+  "title": "Crime and Punishment",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Fyodor Dostoyevsky",
+      "role": "creator",
+      "birthYear": 1821,
+      "deathYear": 1881
+    },
+    {
+      "name": "Constance Garnett",
+      "role": "trl",
+      "birthYear": 1861,
+      "deathYear": 1946
+    }
+  ],
+  "description": "\"Crime and Punishment\" by Fyodor Dostoevsky is a novel published in 1866. It follows Rodion Raskolnikov, an impoverished former law student in Saint Petersburg who plans to murder an unscrupulous pawnbroker. He convinces himself that certain crimes are justifiable if committed by \"extraordinary\" men pursuing higher goals. Once the deed is done, however, he is consumed by confusion, paranoia, and guilt as his theoreti…",
+  "shortDescription": "\"Crime and Punishment\" by Fyodor Dostoevsky is a novel published in 1866. It follows Rodion Raskolnikov, an impoverished former law student in Saint Petersburg who plans to murd…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2006-03-28",
+    "lastUpdated": "2026-09-07",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-2554-73e7cee75e9a",
+    "activeRelease": "pg-2554-73e7cee75e9a"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-2554.svg",
+    "alt": "Cover for Crime and Punishment by Fyodor Dostoyevsky"
+  },
+  "classification": {
+    "subjects": [
+      "detective-and-mystery-stories",
+      "psychological-fiction",
+      "saint-petersburg-russia",
+      "murder",
+      "crime"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "best-books-ever-listings",
+      "harvard-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/2554",
+      "gutenbergId": 2554
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/2554/pg2554.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #2554. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-2701",
+  "slug": "pd-pg-2701",
+  "title": "Moby Dick; Or, The Whale",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Herman Melville",
+      "role": "creator",
+      "birthYear": 1819,
+      "deathYear": 1891
+    }
+  ],
+  "description": "\"Moby Dick; Or, The Whale\" by Herman Melville is an epic novel published in 1851. Sailor Ishmael narrates the obsessive quest of Captain Ahab, who commands the whaling ship Pequod in pursuit of Moby Dick, a giant white sperm whale that destroyed his leg. Ahab's monomaniacal hunt for vengeance drives the ship and its diverse crew across the world's oceans, blending realistic whaling details with profound explorations…",
+  "shortDescription": "\"Moby Dick; Or, The Whale\" by Herman Melville is an epic novel published in 1851. Sailor Ishmael narrates the obsessive quest of Captain Ahab, who commands the whaling ship Pequ…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2001-07-01",
+    "lastUpdated": "2026-09-07",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-2701-81d6fa4e4168",
+    "activeRelease": "pg-2701-81d6fa4e4168"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-2701.svg",
+    "alt": "Cover for Moby Dick; Or, The Whale by Herman Melville"
+  },
+  "classification": {
+    "subjects": [
+      "whaling",
+      "sea-stories",
+      "psychological-fiction",
+      "ship-captains",
+      "adventure-stories"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "best-books-ever-listings"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/2701",
+      "gutenbergId": 2701
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/2701/pg2701.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #2701. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

@@ -1,0 +1,378 @@
+{
+  "schemaVersion": 1,
+  "policy": {
+    "jurisdiction": "Germany",
+    "ordinaryTerm": "70 years after death, calculated to the end of the calendar year",
+    "uncertaintyPolicy": "fail-closed",
+    "sourcePolicy": "Project Gutenberg machine-readable metadata and source EPUBs; text-only EPUB preferred"
+  },
+  "entries": [
+    {
+      "gutenbergId": 1342,
+      "workId": "pd-pg-1342",
+      "title": "Pride and Prejudice",
+      "author": "Jane Austen",
+      "score": 408.426,
+      "downloadCountAtSelection": 198164,
+      "bookshelves": [
+        "Best Books Ever Listings",
+        "Harvard Classics",
+        "Category: Romance",
+        "Category: Novels",
+        "Category: Classics of Literature",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/1342",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/1342/pg1342.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/1342/pg1342.epub",
+      "sourceRdfSha256": "8f7694e9a8c879e98f905476333161ba786bf6d30eae7d905d8d4df5a3677452",
+      "sourceEpubSha256": "c25cf3d9ad4d41147ecc6947debcf981a961fd6b69a4219d9892af50b934c8bb",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Jane Austen",
+          "role": "creator",
+          "birthYear": 1775,
+          "deathYear": 1817
+        }
+      ],
+      "selectedAt": "2026-09-07T21:56:17Z",
+      "releaseVersion": "pg-1342-c25cf3d9ad4d"
+    },
+    {
+      "gutenbergId": 2554,
+      "workId": "pd-pg-2554",
+      "title": "Crime and Punishment",
+      "author": "Fyodor Dostoyevsky, Garnett, Constance, 1861-1946 [Translator]",
+      "score": 404.603,
+      "downloadCountAtSelection": 139348,
+      "bookshelves": [
+        "Best Books Ever Listings",
+        "Crime Fiction",
+        "Harvard Classics",
+        "Category: Crime, Thrillers and Mystery",
+        "Category: Novels",
+        "Category: Classics of Literature",
+        "Category: Russian Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/2554",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/2554/pg2554.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/2554/pg2554.epub",
+      "sourceRdfSha256": "aa73886faede282f402e5ffc0914baa90f2b19a4978e38dc330812b0c43917b0",
+      "sourceEpubSha256": "73e7cee75e9ab0530546e947a9fa9cee28dbc852bc64ad9d8ffe5fc5f3a6374b",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Fyodor Dostoyevsky",
+          "role": "creator",
+          "birthYear": 1821,
+          "deathYear": 1881
+        },
+        {
+          "name": "Constance Garnett",
+          "role": "trl",
+          "birthYear": 1861,
+          "deathYear": 1946
+        }
+      ],
+      "selectedAt": "2026-09-07T21:56:18Z",
+      "releaseVersion": "pg-2554-73e7cee75e9a"
+    },
+    {
+      "gutenbergId": 601,
+      "workId": "pd-pg-601",
+      "title": "The Monk: A Romance",
+      "author": "M. G. (Matthew Gregory) Lewis",
+      "score": 318.72,
+      "downloadCountAtSelection": 81058,
+      "bookshelves": [
+        "Best Books Ever Listings",
+        "Gothic Fiction",
+        "Category: Romance",
+        "Category: Novels",
+        "Category: Classics of Literature",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/601",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/601/pg601.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/601/pg601.epub",
+      "sourceRdfSha256": "026f3ed9aff034c6815e99ec7421fab342a3d560481ce5a4a24eaab9c1d36393",
+      "sourceEpubSha256": "0799f50034458000e785a59a90d12368fcb3759ccc19c583335d537eb2776456",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "M. G. (Matthew Gregory) Lewis",
+          "role": "creator",
+          "birthYear": 1775,
+          "deathYear": 1818
+        }
+      ],
+      "selectedAt": "2026-09-07T21:56:19Z",
+      "releaseVersion": "pg-601-0799f5003445"
+    },
+    {
+      "gutenbergId": 145,
+      "workId": "pd-pg-145",
+      "title": "Middlemarch",
+      "author": "George Eliot",
+      "score": 314.334,
+      "downloadCountAtSelection": 85772,
+      "bookshelves": [
+        "Historical Fiction",
+        "Best Books Ever Listings",
+        "Category: Novels",
+        "Category: Classics of Literature",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/145",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/145/pg145.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/145/pg145.epub",
+      "sourceRdfSha256": "01a886541289ad42cfe3665884014e6b54bc46633ee5e8e5c4c52a83eb6ec919",
+      "sourceEpubSha256": "62fdc739ca6425c56ed081a71e32ab6395d6fee06c19a5345018edf124f8b04f",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "George Eliot",
+          "role": "creator",
+          "birthYear": 1819,
+          "deathYear": 1880
+        }
+      ],
+      "selectedAt": "2026-09-07T21:56:20Z",
+      "releaseVersion": "pg-145-62fdc739ca64"
+    },
+    {
+      "gutenbergId": 2701,
+      "workId": "pd-pg-2701",
+      "title": "Moby Dick; Or, The Whale",
+      "author": "Herman Melville",
+      "score": 302.422,
+      "downloadCountAtSelection": 180665,
+      "bookshelves": [
+        "Best Books Ever Listings",
+        "Category: Adventure",
+        "Category: Novels",
+        "Category: Classics of Literature",
+        "Category: American Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/2701",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/2701/pg2701.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/2701/pg2701.epub",
+      "sourceRdfSha256": "b5829002c9bf001a4d39dccb76daae403767fbe6d02747639803cf428a42a7e2",
+      "sourceEpubSha256": "81d6fa4e416843c2a5c1a85a21d2d437419db4d16b0db032e026f61410bd9aca",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Herman Melville",
+          "role": "creator",
+          "birthYear": 1819,
+          "deathYear": 1891
+        }
+      ],
+      "selectedAt": "2026-09-07T21:56:21Z",
+      "releaseVersion": "pg-2701-81d6fa4e4168"
+    },
+    {
+      "gutenbergId": 1695,
+      "workId": "pd-pg-1695",
+      "title": "The Man Who Was Thursday: A Nightmare",
+      "author": "G. K. (Gilbert Keith) Chesterton",
+      "score": 294.261,
+      "downloadCountAtSelection": 85198,
+      "bookshelves": [
+        "Best Books Ever Listings",
+        "Category: Crime, Thrillers and Mystery",
+        "Category: Adventure",
+        "Category: Novels",
+        "Category: British Literature",
+        "Category: Philosophy & Ethics"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/1695",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/1695/pg1695.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/1695/pg1695.epub",
+      "sourceRdfSha256": "63c0710cc6b592a140f0fa4716ea2351e38650f14d51fdd90aab741ae3070904",
+      "sourceEpubSha256": "9c260bf155b4ca97fd9bdd62ba95368cf3850ac52599503dae9014e37a2cfe24",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "G. K. (Gilbert Keith) Chesterton",
+          "role": "creator",
+          "birthYear": 1874,
+          "deathYear": 1936
+        }
+      ],
+      "selectedAt": "2026-09-07T21:56:22Z",
+      "releaseVersion": "pg-1695-9c260bf155b4"
+    },
+    {
+      "gutenbergId": 2680,
+      "workId": "pd-pg-2680",
+      "title": "Meditations",
+      "author": "Emperor of Rome Marcus Aurelius",
+      "score": 280.019,
+      "downloadCountAtSelection": 75988,
+      "bookshelves": [
+        "Harvard Classics",
+        "Category: Biographies",
+        "Category: Classics of Literature",
+        "Category: Philosophy & Ethics"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/2680",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/2680/pg2680.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/2680/pg2680.epub",
+      "sourceRdfSha256": "71e04d3816c8e745d19a37f49f2269ffea9e371fead3f187275ae5c95e4833b9",
+      "sourceEpubSha256": "05cb8ac0629d2f72e1a4b594b069cf3776e53c4ca6948d8f7c8c92825f19832f",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Emperor of Rome Marcus Aurelius",
+          "role": "creator",
+          "birthYear": 121,
+          "deathYear": 180
+        }
+      ],
+      "selectedAt": "2026-09-07T21:56:23Z",
+      "releaseVersion": "pg-2680-05cb8ac0629d"
+    },
+    {
+      "gutenbergId": 1727,
+      "workId": "pd-pg-1727",
+      "title": "The Odyssey\r\nRendered into English prose for the use of those who cannot read the original",
+      "author": "Homer, 751? BCE-651? BCE, Butler, Samuel, 1835-1902 [Translator]",
+      "score": 275.064,
+      "downloadCountAtSelection": 120932,
+      "bookshelves": [
+        "Classical Antiquity",
+        "Harvard Classics",
+        "Category: Poetry",
+        "Category: Mythology, Legends & Folklore",
+        "Category: Classics of Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/1727",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/1727/pg1727.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/1727/pg1727.epub",
+      "sourceRdfSha256": "9f2762dfddd73fdb49de7cd9ff55e760fce31c99d5d2dbb1480c9cfa49ba1e06",
+      "sourceEpubSha256": "af9b1e35583d455b9ab81b379bdc150ae22f25c004c8c95b978d946b0dfd6fc8",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Homer",
+          "role": "creator",
+          "birthYear": -750,
+          "deathYear": -650
+        },
+        {
+          "name": "Samuel Butler",
+          "role": "trl",
+          "birthYear": 1835,
+          "deathYear": 1902
+        }
+      ],
+      "selectedAt": "2026-09-07T21:56:24Z",
+      "releaseVersion": "pg-1727-af9b1e35583d"
+    },
+    {
+      "gutenbergId": 11,
+      "workId": "pd-pg-11",
+      "title": "Alice's Adventures in Wonderland",
+      "author": "Lewis Carroll",
+      "score": 211.52,
+      "downloadCountAtSelection": 104902,
+      "bookshelves": [
+        "Children's Literature",
+        "Category: Children & Young Adult Reading",
+        "Category: Novels",
+        "Category: Classics of Literature",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/11",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/11/pg11.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/11/pg11.epub",
+      "sourceRdfSha256": "d85e1f0ba186d2438767015ec7d56b5c6d22b63e9a21beb803c73e1d18bf3686",
+      "sourceEpubSha256": "d6524a6b578de2fe63f9cf6e8be010158560ca32f05157e4fa58e6f210707d08",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Lewis Carroll",
+          "role": "creator",
+          "birthYear": 1832,
+          "deathYear": 1898
+        }
+      ],
+      "selectedAt": "2026-09-07T21:56:25Z",
+      "releaseVersion": "pg-11-d6524a6b578d"
+    },
+    {
+      "gutenbergId": 19476,
+      "workId": "pd-pg-19476",
+      "title": "A Honeymoon in Space",
+      "author": "George Chetwynd Griffith",
+      "score": 211.059,
+      "downloadCountAtSelection": 100540,
+      "bookshelves": [
+        "Science Fiction",
+        "Category: Science-Fiction & Fantasy",
+        "Category: Romance",
+        "Category: Adventure",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/19476",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/19476/pg19476.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/19476/pg19476.epub",
+      "sourceRdfSha256": "c9870e43d64718c8ab264dd58f4f7a90fb9552caea938423ab295d40e46b9286",
+      "sourceEpubSha256": "7853b6c1abf4154e754805c971814598245b0008dd4b0c24b2d11803139ae855",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "George Chetwynd Griffith",
+          "role": "creator",
+          "birthYear": 1857,
+          "deathYear": 1906
+        }
+      ],
+      "selectedAt": "2026-09-07T21:56:26Z",
+      "releaseVersion": "pg-19476-7853b6c1abf4"
+    }
+  ],
+  "rejections": {
+    "42671": {
+      "gutenbergId": 42671,
+      "title": "Pride and Prejudice",
+      "reason": "edt R. W. (Robert William) Chapman died 1960, after automatic German cutoff 1955",
+      "checkedAt": "2026-09-07T21:56:22Z",
+      "copyrightCutoffYear": 1955
+    },
+    "20203": {
+      "gutenbergId": 20203,
+      "title": "Autobiography of Benjamin Franklin",
+      "reason": "unknown death year for edt Frank Woodworth Pine",
+      "checkedAt": "2026-09-07T21:56:25Z",
+      "copyrightCutoffYear": 1955
+    }
+  },
+  "lastRun": {
+    "at": "2026-09-07T21:56:26Z",
+    "copyrightCutoffYear": 1955,
+    "candidateCount": 2220,
+    "checkedCount": 12,
+    "candidateCheckLimit": 40,
+    "addedCount": 10,
+    "skippedCount": 2,
+    "recentSkips": [
+      {
+        "gutenbergId": 42671,
+        "title": "Pride and Prejudice",
+        "reason": "edt R. W. (Robert William) Chapman died 1960, after automatic German cutoff 1955",
+        "checkedAt": "2026-09-07T21:56:22Z",
+        "copyrightCutoffYear": 1955
+      },
+      {
+        "gutenbergId": 20203,
+        "title": "Autobiography of Benjamin Franklin",
+        "reason": "unknown death year for edt Frank Woodworth Pine",
+        "checkedAt": "2026-09-07T21:56:25Z",
+        "copyrightCutoffYear": 1955
+      }
+    ]
+  }
+}

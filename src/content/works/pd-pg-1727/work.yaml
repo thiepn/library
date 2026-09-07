@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-1727",
+  "slug": "pd-pg-1727",
+  "title": "The Odyssey",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Homer",
+      "role": "creator",
+      "birthYear": -750,
+      "deathYear": -650
+    },
+    {
+      "name": "Samuel Butler",
+      "role": "trl",
+      "birthYear": 1835,
+      "deathYear": 1902
+    }
+  ],
+  "description": "\"The Odyssey\" by Homer is an ancient Greek epic composed around the 8th or 7th century BC. It follows Odysseus, king of Ithaca, on his perilous ten-year journey home after the Trojan War. While he battles monsters and loses all his crewmates, his wife Penelope and son Telemachus face aggressive suitors at home who presume him dead. This foundational work of Western literature explores themes of homecoming, wandering,…",
+  "shortDescription": "\"The Odyssey\" by Homer is an ancient Greek epic composed around the 8th or 7th century BC. It follows Odysseus, king of Ithaca, on his perilous ten-year journey home after the T…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "1999-04-01",
+    "lastUpdated": "2026-09-07",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-1727-af9b1e35583d",
+    "activeRelease": "pg-1727-af9b1e35583d"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-1727.svg",
+    "alt": "Cover for The Odyssey by Homer"
+  },
+  "classification": {
+    "subjects": [
+      "homer",
+      "epic-poetry-greek",
+      "odysseus-king-of-ithaca-mythological-character",
+      "pa"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "harvard-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/1727",
+      "gutenbergId": 1727
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/1727/pg1727.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #1727. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}
