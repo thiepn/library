@@ -2,6 +2,7 @@ initial-run: 2026-09-08
 post-hardening-run: 2026-09-08
 popularity-first-run: 2026-09-08
 official-top100-run: 2026-09-08
+continuation-run: 2026-09-08T20:08+02:00
 mode: curated-christian-classics
 curated-ids: 3296,131,1653,16769,45304,45305,57121,22400,52958,45001,64392,26744,65066,70894,15251,654,395,30241,66112,27288,29296,12854,30449,61883,58135,13871,65115
-purpose: add the user-requested Christian public-domain classics batch
+purpose: continue adding the user-requested Christian public-domain classics after the first 20-book batch
