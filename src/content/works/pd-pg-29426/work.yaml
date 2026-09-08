@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-29426",
+  "slug": "pd-pg-29426",
+  "title": "Things as they are : $b Mission work in Southern India",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Amy Carmichael",
+      "role": "creator",
+      "birthYear": 1867,
+      "deathYear": 1951
+    }
+  ],
+  "description": "A public-domain edition of Things as they are : $b Mission work in Southern India by Amy Carmichael. Project Gutenberg classifies it under Missions -- India, India -- Social life and customs, BV.",
+  "shortDescription": "A public-domain edition of Things as they are : $b Mission work in Southern India by Amy Carmichael. Project Gutenberg classifies it under Missions -- India, India -- Social lif…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2009-07-16",
+    "lastUpdated": "2026-09-08",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-29426-cb1e530b8b6a-cover-bed6681a6a32",
+    "activeRelease": "pg-29426-cb1e530b8b6a-cover-bed6681a6a32"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-29426.webp",
+    "alt": "Cover for Things as they are : $b Mission work in Southern India by Amy Carmichael"
+  },
+  "classification": {
+    "subjects": [
+      "missions",
+      "india",
+      "bv"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic",
+      "christian",
+      "christian-classic"
+    ],
+    "collections": [
+      "public-domain",
+      "christian-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/29426",
+      "gutenbergId": 29426
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/29426/pg29426.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #29426. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

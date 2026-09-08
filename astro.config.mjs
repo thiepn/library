@@ -1,3 +1,4 @@
+import { unified } from '@astrojs/markdown-remark';
 import { defineConfig } from 'astro/config';
 import remarkExplicitHeadingIds from './src/lib/markdown/remark-explicit-heading-ids.mjs';
 
@@ -7,8 +8,11 @@ export default defineConfig({
   outDir: './dist/library',
   output: 'static',
   trailingSlash: 'never',
+  compressHTML: true,
   markdown: {
-    remarkPlugins: [remarkExplicitHeadingIds],
+    processor: unified({
+      remarkPlugins: [remarkExplicitHeadingIds],
+    }),
   },
   build: {
     inlineStylesheets: 'never',

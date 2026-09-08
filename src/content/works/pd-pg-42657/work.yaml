@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-42657",
+  "slug": "pd-pg-42657",
+  "title": "Gleanings among the Sheaves",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "C. H. (Charles Haddon) Spurgeon",
+      "role": "creator",
+      "birthYear": 1834,
+      "deathYear": 1892
+    }
+  ],
+  "description": "A public-domain edition of Gleanings among the Sheaves by C. H. (Charles Haddon) Spurgeon. Project Gutenberg classifies it under Devotional literature, BV.",
+  "shortDescription": "A public-domain edition of Gleanings among the Sheaves by C. H. (Charles Haddon) Spurgeon. Project Gutenberg classifies it under Devotional literature, BV.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2013-05-07",
+    "lastUpdated": "2026-09-08",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-42657-43b611adbf35-cover-c7bbcb276a71",
+    "activeRelease": "pg-42657-43b611adbf35-cover-c7bbcb276a71"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-42657.webp",
+    "alt": "Cover for Gleanings among the Sheaves by C. H. (Charles Haddon) Spurgeon"
+  },
+  "classification": {
+    "subjects": [
+      "devotional-literature",
+      "bv"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic",
+      "christian",
+      "christian-classic"
+    ],
+    "collections": [
+      "public-domain",
+      "christian-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/42657",
+      "gutenbergId": 42657
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/42657/pg42657.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #42657. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

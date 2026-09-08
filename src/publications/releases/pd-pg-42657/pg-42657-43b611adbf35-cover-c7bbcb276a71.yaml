@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-42657",
+  "version": "pg-42657-43b611adbf35-cover-c7bbcb276a71",
+  "edition": 1,
+  "releasedAt": "2026-09-08T22:17:12Z",
+  "sourceHash": "f73ca3cc6934ba21adac69f1a40bc0e1c5afeaddaa95da028a995f8510007943",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-42657/editions/pg-42657-43b611adbf35-cover-c7bbcb276a71/gleanings-among-the-sheaves-project-gutenberg.epub",
+      "filename": "gleanings-among-the-sheaves-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 466475,
+      "sha256": "c7bbcb276a7144f9011be94699404602ad6595bc29d387caf456376544477172"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "43b611adbf35dead4d5e2362b240793832c203ffcbd9636db503e19733007433",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-42657-43b611adbf35",
+    "finalArtifactSha256": "c7bbcb276a7144f9011be94699404602ad6595bc29d387caf456376544477172",
+    "releaseVersioning": "content-addressed"
+  }
+}
