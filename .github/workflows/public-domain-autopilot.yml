@@ -58,6 +58,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 -m py_compile \
+            scripts/public-domain/run-curated.py \
             scripts/public-domain/cover_pipeline.py \
             scripts/public-domain/cover_job.py \
             scripts/public-domain/finalize-cover-release.py \
@@ -75,18 +76,42 @@ jobs:
       - name: Ensure native EPUB releases are reader-first
         run: python3 scripts/public-domain/prepare-library.py
 
+      - name: Resolve acquisition mode
+        id: acquisition
+        shell: bash
+        run: |
+          set -euo pipefail
+          curated_ids=''
+          mode='official-project-gutenberg-top100-30d'
+          if [ "${GITHUB_EVENT_NAME}" = 'push' ] && grep -Fxq 'mode: curated-christian-classics' .github/public-domain-autopilot-trigger; then
+            curated_ids="$(sed -n 's/^curated-ids:[[:space:]]*//p' .github/public-domain-autopilot-trigger | head -n 1 | tr -d '[:space:]')"
+            test -n "$curated_ids"
+            mode='curated-christian-classics'
+          fi
+          echo "mode=$mode" >> "$GITHUB_OUTPUT"
+          echo "curated_ids=$curated_ids" >> "$GITHUB_OUTPUT"
+          echo "ACQUISITION_MODE $mode"
+
       - name: Discover, verify, and stage public-domain books
         id: discover
         env:
           MAX_BOOKS: ${{ github.event.inputs.max_books || '20' }}
           DISCOVERY_PAGES: ${{ github.event.inputs.discovery_pages || '5' }}
           MAX_CANDIDATE_CHECKS: '100'
+          CURATED_IDS: ${{ steps.acquisition.outputs.curated_ids }}
         run: |
           set -euo pipefail
-          timeout 12m python3 scripts/public-domain/run.py \
-            --max-books "$MAX_BOOKS" \
-            --discovery-pages "$DISCOVERY_PAGES" \
-            --max-candidate-checks "$MAX_CANDIDATE_CHECKS"
+          if [ -n "${CURATED_IDS:-}" ]; then
+            timeout 20m python3 scripts/public-domain/run-curated.py \
+              --ids "$CURATED_IDS" \
+              --max-books "$MAX_BOOKS" \
+              --max-candidate-checks "$MAX_CANDIDATE_CHECKS"
+          else
+            timeout 12m python3 scripts/public-domain/run.py \
+              --max-books "$MAX_BOOKS" \
+              --discovery-pages "$DISCOVERY_PAGES" \
+              --max-candidate-checks "$MAX_CANDIDATE_CHECKS"
+          fi
 
       - name: Generate book-specific covers and embed them into staged EPUBs
         if: steps.discover.outputs.added_count != '0'
@@ -165,8 +190,7 @@ jobs:
             echo
             echo "- Branch: \`$branch\`"
             echo "- Works: \`${{ steps.discover.outputs.work_ids }}\`"
-            echo "- Ranking: Project Gutenberg official Top 100, last 30 days"
-            echo "- Ranking mode: \`${{ steps.discover.outputs.ranking_mode }}\`"
+            echo "- Selection mode: \`${{ steps.discover.outputs.ranking_mode }}\`"
             echo "- Rights screening: passed"
             echo "- Illustrated covers: generated and embedded"
             echo "- Cover release keys: content-addressed"
