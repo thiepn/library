@@ -12,9 +12,9 @@ on:
       max_books:
         description: Maximum number of new books to ingest
         required: false
-        default: '10'
+        default: '20'
       discovery_pages:
-        description: Live Gutendex popularity pages to inspect
+        description: Compatibility input; official Gutenberg Top 100 is authoritative
         required: false
         default: '5'
 
@@ -63,12 +63,12 @@ jobs:
       - name: Discover, verify, and stage public-domain books
         id: discover
         env:
-          MAX_BOOKS: ${{ github.event.inputs.max_books || '10' }}
+          MAX_BOOKS: ${{ github.event.inputs.max_books || '20' }}
           DISCOVERY_PAGES: ${{ github.event.inputs.discovery_pages || '5' }}
-          MAX_CANDIDATE_CHECKS: '80'
+          MAX_CANDIDATE_CHECKS: '100'
         run: |
           set -euo pipefail
-          timeout 8m python3 scripts/public-domain/run.py \
+          timeout 12m python3 scripts/public-domain/run.py \
             --max-books "$MAX_BOOKS" \
             --discovery-pages "$DISCOVERY_PAGES" \
             --max-candidate-checks "$MAX_CANDIDATE_CHECKS"
@@ -141,7 +141,8 @@ jobs:
             echo
             echo "- Branch: \`$branch\`"
             echo "- Works: \`${{ steps.discover.outputs.work_ids }}\`"
-            echo "- Ranking: live Gutenberg download popularity first"
+            echo "- Ranking: Project Gutenberg official Top 100, last 30 days"
+            echo "- Ranking mode: \`${{ steps.discover.outputs.ranking_mode }}\`"
             echo "- Rights screening: passed"
             echo "- Complete Library certification: passed"
             echo "- R2 immutable upload/readback: passed"
