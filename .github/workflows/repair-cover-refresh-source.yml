@@ -22,48 +22,28 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Patch recoverable cover refreshes to use original source EPUB
+      - name: Patch cover refreshes to use the original verified EPUB
         shell: bash
         run: |
           set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
+          import textwrap
 
           path = Path('scripts/public-domain/cover_pipeline.py')
           text = path.read_text(encoding='utf-8')
-          old = '''        base_version = str(entry.get("releaseVersion") or work.get("publication", {}).get("activeRelease") or "")
-          if not base_version:
-              raise ValueError(f"{work_id} has no base release version")
-          base_release = load_json(release_path(work_id, base_version))
-          source_epub, source_artifact = download_release_artifact(base_release)
+          start_marker = '        base_version = str(entry.get("releaseVersion") or work.get("publication", {}).get("activeRelease") or "")\n'
+          end_marker = '        dump_json(release_path(work_id, new_version), new_release)\n'
+          start = text.find(start_marker)
+          if start < 0:
+              raise SystemExit('Cover backfill start marker not found; refusing blind patch')
+          end_start = text.find(end_marker, start)
+          if end_start < 0:
+              raise SystemExit('Cover backfill end marker not found; refusing blind patch')
+          end = end_start + len(end_marker)
 
-          jpeg, _ = update_cover_assets(work_id, entry, work, force=True)
-          enhanced = embed_cover(source_epub, jpeg)
-          digest = sha256_bytes(enhanced)
-          new_version = f"{base_version}-cover-v1"
-          filename = str(source_artifact["filename"])
-          r2_key = f"works/{work_id}/editions/{new_version}/{filename}"
-
-          new_release = copy.deepcopy(base_release)
-          new_release["version"] = new_version
-          new_release["releasedAt"] = utc_now()
-          new_release["artifacts"]["epub"] = {
-              "url": MEDIA_ORIGIN + r2_key,
-              "filename": filename,
-              "mimeType": "application/epub+zip",
-              "sizeBytes": len(enhanced),
-              "sha256": digest,
-          }
-          new_release["coverPipeline"] = {
-              "promptVersion": COVER_PROMPT_VERSION,
-              "model": COVER_MODEL,
-              "sourceReleaseVersion": base_version,
-              "sourceArtifactSha256": str(source_artifact["sha256"]),
-              "embeddedCover": True,
-          }
-          dump_json(release_path(work_id, new_version), new_release)
-          '''
-          new = '''        base_version = str(entry.get("releaseVersion") or work.get("publication", {}).get("activeRelease") or "")
+          replacement = textwrap.indent(textwrap.dedent('''
+          base_version = str(entry.get("releaseVersion") or work.get("publication", {}).get("activeRelease") or "")
           if not base_version:
               raise ValueError(f"{work_id} has no base release version")
           base_release = load_json(release_path(work_id, base_version))
@@ -115,14 +95,14 @@ jobs:
               "embeddedCover": True,
           }
           dump_json(release_path(work_id, new_version), new_release)
-          '''
-          if old not in text:
-              raise SystemExit('Expected cover backfill block not found; refusing blind patch')
-          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          ''').strip('\n'), '        ') + '\n'
+
+          path.write_text(text[:start] + replacement + text[end:], encoding='utf-8')
           PY
 
           python3 -m py_compile scripts/public-domain/cover_pipeline.py scripts/public-domain/cover_job.py
           python3 scripts/public-domain/verify-cover-pipeline.py
+          grep -q 'source_release_version = str(cover_pipeline.get("sourceReleaseVersion") or base_version).strip()' scripts/public-domain/cover_pipeline.py
 
       - name: Commit repair and trigger corrected backfill
         shell: bash
@@ -132,7 +112,7 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git rm .github/workflows/repair-cover-refresh-source.yml
           cat > .github/public-domain-cover-backfill-trigger <<EOF
-          triggered_by: repair-cover-refresh-source
+          triggered_by: repair-cover-refresh-source-v2
           reason: rebuild corrected Amy Carmichael cover from original verified source EPUB and process any uncovered books
           EOF
           git add scripts/public-domain/cover_pipeline.py .github/public-domain-cover-backfill-trigger
