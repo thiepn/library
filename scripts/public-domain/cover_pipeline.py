@@ -531,13 +531,34 @@ def process_backfill(*, limit: int, force: bool) -> int:
         if not base_version:
             raise ValueError(f"{work_id} has no base release version")
         base_release = load_json(release_path(work_id, base_version))
-        source_epub, source_artifact = download_release_artifact(base_release)
+
+        cover_pipeline = base_release.get("coverPipeline") if isinstance(base_release.get("coverPipeline"), dict) else {}
+        source_release_version = str(cover_pipeline.get("sourceReleaseVersion") or base_version).strip()
+        if cover_pipeline.get("embeddedCover") and source_release_version != base_version:
+            source_url = str(entry.get("sourceEpub") or "").strip()
+            expected_source_hash = str(entry.get("sourceEpubSha256") or "").strip()
+            if not source_url.startswith("https://www.gutenberg.org/"):
+                raise ValueError(f"{work_id} has no trusted original Gutenberg EPUB URL for cover refresh")
+            if not re.fullmatch(r"[a-f0-9]{64}", expected_source_hash, re.I):
+                raise ValueError(f"{work_id} has no trusted original EPUB hash for cover refresh")
+            source_epub = request_bytes(source_url, timeout=180)
+            actual_source_hash = sha256_bytes(source_epub)
+            if actual_source_hash.casefold() != expected_source_hash.casefold():
+                raise ValueError(
+                    f"Original EPUB hash mismatch for {work_id}: expected {expected_source_hash}, got {actual_source_hash}"
+                )
+            current_artifact = ((base_release.get("artifacts") or {}).get("epub") or {})
+            filename = str(current_artifact.get("filename") or f"{work_id}.epub")
+            source_artifact = {"filename": filename, "sha256": expected_source_hash}
+            print(f"[cover] refresh {work_id} from original source release {source_release_version}", flush=True)
+        else:
+            source_epub, source_artifact = download_release_artifact(base_release)
+            filename = str(source_artifact["filename"])
 
         jpeg, _ = update_cover_assets(work_id, entry, work, force=True)
         enhanced = embed_cover(source_epub, jpeg)
         digest = sha256_bytes(enhanced)
-        new_version = f"{base_version}-cover-v1"
-        filename = str(source_artifact["filename"])
+        new_version = f"{source_release_version}-cover-v1"
         r2_key = f"works/{work_id}/editions/{new_version}/{filename}"
 
         new_release = copy.deepcopy(base_release)
@@ -553,7 +574,7 @@ def process_backfill(*, limit: int, force: bool) -> int:
         new_release["coverPipeline"] = {
             "promptVersion": COVER_PROMPT_VERSION,
             "model": COVER_MODEL,
-            "sourceReleaseVersion": base_version,
+            "sourceReleaseVersion": source_release_version,
             "sourceArtifactSha256": str(source_artifact["sha256"]),
             "embeddedCover": True,
         }
