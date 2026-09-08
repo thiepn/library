@@ -124,6 +124,15 @@ jobs:
             echo "R2_VERIFIED $key"
           done < /tmp/cover-artifacts.tsv
 
+      - name: Upload catalog cover contact sheet
+        if: steps.covers.outputs.processed_count != '0'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: public-domain-cover-review-${{ github.run_id }}
+          path: .cover-staging/contact-sheet.jpg
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Create review branch
         if: steps.covers.outputs.processed_count != '0'
         id: promote
@@ -172,6 +181,7 @@ jobs:
             echo '- Library cards switch from the generic SVG template to optimized WebP covers.'
             echo '- EPUB hashes and sizes were recalculated and R2 readback-verified.'
             echo '- Full Library release certification passed before promotion.'
+            echo '- A catalog-wide contact sheet is retained as a workflow artifact for visual QA.'
             echo
             echo "Works: \`$WORK_IDS\`"
           } > "$body_file"
