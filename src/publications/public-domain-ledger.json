@@ -257,7 +257,18 @@
         }
       ],
       "selectedAt": "2026-09-07T21:56:22Z",
-      "releaseVersion": "pg-1695-9c260bf155b4"
+      "releaseVersion": "pg-1695-9c260bf155b4",
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T16:46:57Z",
+        "webCoverSha256": "97441c4d61f2dd1719fedd5beca552538a3e0be86e5b606a8ec86cb4969fb5a3",
+        "epubCoverSha256": "456dfd155d92199a0cf8594b1bfdeab659a2e3cc60617d7badbf16cdce874d6d",
+        "releaseVersion": "pg-1695-9c260bf155b4-cover-013a6d30f36b",
+        "artifactSha256": "013a6d30f36b5c11ee86b398d571f83afeba0abc957defe8442cb3b6896740c5"
+      }
     },
     {
       "gutenbergId": 2680,
@@ -287,7 +298,18 @@
         }
       ],
       "selectedAt": "2026-09-07T21:56:23Z",
-      "releaseVersion": "pg-2680-05cb8ac0629d"
+      "releaseVersion": "pg-2680-05cb8ac0629d",
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T16:48:50Z",
+        "webCoverSha256": "c1a89c5d54e885184556ba9c0ffce1bc239c8ad28bde90433a9f7900d9543cd8",
+        "epubCoverSha256": "af03029965ecdfb6ab2aecbc0dacda7d43ef81200bcaa1d588a65ca84f4a6fbf",
+        "releaseVersion": "pg-2680-05cb8ac0629d-cover-c1dc5263237b",
+        "artifactSha256": "c1dc5263237bcf119e29ba133142f0e40724543127244d838d82e8475c7f11ff"
+      }
     },
     {
       "gutenbergId": 1727,
@@ -324,7 +346,18 @@
         }
       ],
       "selectedAt": "2026-09-07T21:56:24Z",
-      "releaseVersion": "pg-1727-af9b1e35583d"
+      "releaseVersion": "pg-1727-af9b1e35583d",
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T16:50:48Z",
+        "webCoverSha256": "a3f225be8192280ce6d9402968b6ceb25121f4c7a06862d59f63b9c6028a3ef6",
+        "epubCoverSha256": "2ca3efdf07e0f3c47d81094a32e9ec0aefafbe435834b13a98d778e91762deb1",
+        "releaseVersion": "pg-1727-af9b1e35583d-cover-635c7b54e2db",
+        "artifactSha256": "635c7b54e2db981ed0bf5964018f474e1e6160d258a9dc79c04aa425dbb57044"
+      }
     },
     {
       "gutenbergId": 11,
@@ -355,7 +388,18 @@
         }
       ],
       "selectedAt": "2026-09-07T21:56:25Z",
-      "releaseVersion": "pg-11-d6524a6b578d"
+      "releaseVersion": "pg-11-d6524a6b578d",
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T16:51:56Z",
+        "webCoverSha256": "6cbb1c46feab500f223f413bb72b28badd0a5c366155edc7ba94734ac206b619",
+        "epubCoverSha256": "26efdbbb89b1a2039eed871fb27903dc6a1fffbe52307fdb5d2411c84c56f019",
+        "releaseVersion": "pg-11-d6524a6b578d-cover-06e7d88871fe",
+        "artifactSha256": "06e7d88871fefc59182e545153ce0e5ef88f4b95be2ebeee5a571a1645423951"
+      }
     },
     {
       "gutenbergId": 19476,
@@ -386,7 +430,18 @@
         }
       ],
       "selectedAt": "2026-09-07T21:56:26Z",
-      "releaseVersion": "pg-19476-7853b6c1abf4"
+      "releaseVersion": "pg-19476-7853b6c1abf4",
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T16:55:24Z",
+        "webCoverSha256": "f14f7a25ccf54bd60f318e6a5e5cdb56eb8b5f0fbe72a40475603e117595da7d",
+        "epubCoverSha256": "f52d9a7d552724919567f9c2383924d31b0d12fed926e5117c42313e3cd10e66",
+        "releaseVersion": "pg-19476-7853b6c1abf4-cover-e4bbf522d4c2",
+        "artifactSha256": "e4bbf522d4c27625faa5fc953a339bb66b7297ed3db5307e832208038438cd1f"
+      }
     },
     {
       "gutenbergId": 1237,
@@ -423,7 +478,18 @@
         }
       ],
       "selectedAt": "2026-09-07T22:53:26Z",
-      "releaseVersion": "pg-1237-05029c38cea2"
+      "releaseVersion": "pg-1237-05029c38cea2",
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T16:56:14Z",
+        "webCoverSha256": "7b4b715e724d074fea082f8235db759a18d586f221ce2f0dca82dc411e74b862",
+        "epubCoverSha256": "41df9d52f3d8a73cb6b785fbb609deb29166654536f8c1e805bca48a7d8016f2",
+        "releaseVersion": "pg-1237-05029c38cea2-cover-11e882ed64d8",
+        "artifactSha256": "11e882ed64d8b2a3e14113d880187d08fdca89f592463ab255ec2c7aa9e9af6f"
+      }
     },
     {
       "gutenbergId": 804,
@@ -455,7 +521,18 @@
         }
       ],
       "selectedAt": "2026-09-07T22:53:26Z",
-      "releaseVersion": "pg-804-7d7898800000"
+      "releaseVersion": "pg-804-7d7898800000",
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T16:57:19Z",
+        "webCoverSha256": "befd8b3e40c1353ef18f9cd7a2226fbc11adea12ff619bb46839d3cb2266eab3",
+        "epubCoverSha256": "531987c027aaf25260166ac5ba50e184581b04a484df5f3bc475589c6a625066",
+        "releaseVersion": "pg-804-7d7898800000-cover-ee3c5c267837",
+        "artifactSha256": "ee3c5c26783733b9c0b37d702f1c5bcf253652d62f11e0f30d0f35432a3b2269"
+      }
     },
     {
       "gutenbergId": 996,
@@ -491,7 +568,18 @@
         }
       ],
       "selectedAt": "2026-09-07T22:53:27Z",
-      "releaseVersion": "pg-996-dba65db312e5"
+      "releaseVersion": "pg-996-dba65db312e5",
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T16:58:08Z",
+        "webCoverSha256": "342f8c8ab62402efa5c630cd7389743c7076e9d44cd3c7070deb07155197789a",
+        "epubCoverSha256": "d1d3113dbec38a02df067855c71b93c1c3c2d203d7f9502dc4689311d5c68861",
+        "releaseVersion": "pg-996-dba65db312e5-cover-3b498af7e503",
+        "artifactSha256": "3b498af7e503ed18d738d2a2a52017d9136c463cd9f1a39025514ffdc328d4d7"
+      }
     },
     {
       "gutenbergId": 1399,
@@ -529,7 +617,18 @@
         }
       ],
       "selectedAt": "2026-09-07T22:53:27Z",
-      "releaseVersion": "pg-1399-99a2f9600e40"
+      "releaseVersion": "pg-1399-99a2f9600e40",
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T16:58:56Z",
+        "webCoverSha256": "550f3de68ce2bf55dd6d3cd4a48d7c8fd87ead295f52d56e73ac0b82eb6d249d",
+        "epubCoverSha256": "7624f2463c3776995cd6550ae2c3139d3bb87a0c189dfa45dd80672861f470b4",
+        "releaseVersion": "pg-1399-99a2f9600e40-cover-25a3aefba671",
+        "artifactSha256": "25a3aefba671e72c951a3c4892b7d89fc41d5253838c4cd69291c0b156330876"
+      }
     },
     {
       "gutenbergId": 6593,
@@ -562,7 +661,18 @@
         }
       ],
       "selectedAt": "2026-09-07T22:53:28Z",
-      "releaseVersion": "pg-6593-676139d467a6"
+      "releaseVersion": "pg-6593-676139d467a6",
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T16:59:39Z",
+        "webCoverSha256": "3a8f171adbe5142e097eec8cfed64e69d7fd6ec4ff2f21b965a9ef6ef13d707e",
+        "epubCoverSha256": "3e079f4c3a9a76c15e04562598f69a419c8b3fc82e28289411dbe837a9f4882f",
+        "releaseVersion": "pg-6593-676139d467a6-cover-2a133cd9129e",
+        "artifactSha256": "2a133cd9129e9180a0721535847974dcdefb3cd8d45c2678d82ad7897c034cf2"
+      }
     },
     {
       "gutenbergId": 31,
@@ -599,7 +709,18 @@
         }
       ],
       "selectedAt": "2026-09-07T22:53:28Z",
-      "releaseVersion": "pg-31-2d1bb3261d1a"
+      "releaseVersion": "pg-31-2d1bb3261d1a",
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T17:00:24Z",
+        "webCoverSha256": "4a64ea4ec34e6906627a0d663858768a6a503dbf33f8433b958a74a476356059",
+        "epubCoverSha256": "afa0630c82387d9e8adc02427446a647c85fbea769cf8d911dd4f5fe0f2d1bbc",
+        "releaseVersion": "pg-31-2d1bb3261d1a-cover-702815b4b2ba",
+        "artifactSha256": "702815b4b2ba773dead9c444400982b3bb8ef8cd08df9aa9e6ba1e68556e9cb0"
+      }
     },
     {
       "gutenbergId": 228,
@@ -638,7 +759,18 @@
         }
       ],
       "selectedAt": "2026-09-07T22:53:28Z",
-      "releaseVersion": "pg-228-67afcda4b8cd"
+      "releaseVersion": "pg-228-67afcda4b8cd",
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T17:01:29Z",
+        "webCoverSha256": "11a1a0de47b7e106b3917a5e8b8c987e7c18a0c221b225bdc276246a3155ce91",
+        "epubCoverSha256": "110643b42c751b771a5677cf6feee860419be787fb343e7a53f7493c6f4771be",
+        "releaseVersion": "pg-228-67afcda4b8cd-cover-f7e4cb9b6739",
+        "artifactSha256": "f7e4cb9b67391c8160fbc08ef0e773d8c95e54e476fc53aefb6ec2c2ebc335a1"
+      }
     },
     {
       "gutenbergId": 1597,
@@ -671,7 +803,18 @@
         }
       ],
       "selectedAt": "2026-09-07T22:53:29Z",
-      "releaseVersion": "pg-1597-9b84445b65c6"
+      "releaseVersion": "pg-1597-9b84445b65c6",
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T17:02:16Z",
+        "webCoverSha256": "bee23a1712e4cbab99a8a0702a08299dad5fee7f3a4388886842f510d3755a43",
+        "epubCoverSha256": "6e379ad7e84bef89e20d57bdda7a540221458b784cb688199cc5c19a5f49d145",
+        "releaseVersion": "pg-1597-9b84445b65c6-cover-ca4caea8a732",
+        "artifactSha256": "ca4caea8a73231f79f9244a38e398a7cf867743d1fcd79945538858b29780933"
+      }
     },
     {
       "gutenbergId": 3023,
@@ -702,7 +845,18 @@
         }
       ],
       "selectedAt": "2026-09-07T22:53:29Z",
-      "releaseVersion": "pg-3023-e1ddb49ca144"
+      "releaseVersion": "pg-3023-e1ddb49ca144",
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T17:02:57Z",
+        "webCoverSha256": "3d4e84640b2a511f495f1476565ed0aa7b4d50e15be9463ad352bedd3824c5a5",
+        "epubCoverSha256": "9f8ba90fefa1f9b8b2f56100ba99a20b3238761ebd361d351b28323bbf9fb4ea",
+        "releaseVersion": "pg-3023-e1ddb49ca144-cover-67d265dddf97",
+        "artifactSha256": "67d265dddf972fb20d277e00b04f136a9009bef4537f4a199ea64c1e38fb5943"
+      }
     },
     {
       "gutenbergId": 3300,
@@ -732,7 +886,18 @@
         }
       ],
       "selectedAt": "2026-09-07T22:53:30Z",
-      "releaseVersion": "pg-3300-2db4a352fd89"
+      "releaseVersion": "pg-3300-2db4a352fd89",
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T17:03:44Z",
+        "webCoverSha256": "8d38699dc3d3e717166a18605ca02e68c001fbb2ab23ab154d7a80cb9e4adb78",
+        "epubCoverSha256": "f11d778f4bf571e54738c00fda5a27da0f93f5f7c5213a66ec15d43490ec3ac1",
+        "releaseVersion": "pg-3300-2db4a352fd89-cover-7920d7eebb0f",
+        "artifactSha256": "7920d7eebb0f6dfb21808f99e10a268b47968792d736a926150846769dc83cb0"
+      }
     },
     {
       "gutenbergId": 1661,
@@ -770,6 +935,17 @@
         "window": "last 30 days",
         "rank": 4,
         "downloadCount": 108432
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T17:04:24Z",
+        "webCoverSha256": "b2f47c60d867abb91f74a61b1085593b0bf22dafe362c941f0d5a02da08f0e9b",
+        "epubCoverSha256": "0e0e8ed9976b7ddaa1eaadba73b6bf8c7d4ff5b3dfc5fc90a64de3e174e1041d",
+        "releaseVersion": "pg-1661-209a8fd827fa-cover-b41bb91a2f03",
+        "artifactSha256": "b41bb91a2f0321097256454f6ae55be5a40c80d8b635742e995c6adeade92638"
       }
     },
     {
@@ -806,6 +982,17 @@
         "window": "last 30 days",
         "rank": 7,
         "downloadCount": 98499
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T17:05:11Z",
+        "webCoverSha256": "5b8caaa629868cd4a183d22e1e2f62c397ef7b542acadbff8b695de6cb5a94e8",
+        "epubCoverSha256": "2d3fc7bc2e522605fa5f8a03e237af483c4997a301c145fca5c8d8f7b0f5acf8",
+        "releaseVersion": "pg-1513-d8e2deda0fe5-cover-c3b61bdfb20b",
+        "artifactSha256": "c3b61bdfb20b11f09a2c822a59e21aef391e9ce3d7ea95d592831a349707e741"
       }
     },
     {
@@ -846,6 +1033,17 @@
         "window": "last 30 days",
         "rank": 8,
         "downloadCount": 95374
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T17:05:59Z",
+        "webCoverSha256": "eaa03f8476294efba524b363f89f14e175bc368ba5be1ef7277e3fb66be96fd7",
+        "epubCoverSha256": "398b72961ffc27daf57cb1375bc9afed6a92e541a1e6f9030f17b29c0105c575",
+        "releaseVersion": "pg-84-f717864263e3-cover-a99bd009d2ab",
+        "artifactSha256": "a99bd009d2ab5e2fe7976b802c355542a55212da7e8daec1d1ddf16f112751f9"
       }
     },
     {
@@ -887,6 +1085,17 @@
         "window": "last 30 days",
         "rank": 9,
         "downloadCount": 93918
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T17:06:36Z",
+        "webCoverSha256": "d8a5f647d8b8d47a1a569cfeb6f5c840fe89b9287adea51ec0908a97f5c83863",
+        "epubCoverSha256": "f3520e9c78eeb6b5609766e182bf1917dc3c15dcdaee65d964529ecc2f0ca94b",
+        "releaseVersion": "pg-345-52106950124a-cover-10c466054efb",
+        "artifactSha256": "10c466054efb9202964126df6f8331e1407161daaccc0f58a5c359565fc137a7"
       }
     },
     {
@@ -924,6 +1133,17 @@
         "window": "last 30 days",
         "rank": 11,
         "downloadCount": 90432
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T17:07:19Z",
+        "webCoverSha256": "ae26a59b39f62d2b42ad378fa606952d7bec1cd395ed9afcd187862482bfe56c",
+        "epubCoverSha256": "04f4a41972fa06cca847baeede435b3f6a7ef60df82eae768acb92f6cc2aba35",
+        "releaseVersion": "pg-100-13201b7761bd-cover-b7f387ff898b",
+        "artifactSha256": "b7f387ff898b8dab3e776c2b944a0569fc8156890e25d752de367dd77d6b4a76"
       }
     },
     {
@@ -963,6 +1183,17 @@
         "window": "last 30 days",
         "rank": 12,
         "downloadCount": 90059
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T17:08:05Z",
+        "webCoverSha256": "2055372e7358c1b06a924328ca6aa1190d930dbf6321a206fe60d044399ffdc9",
+        "epubCoverSha256": "b73e34f54de9b3fcadbb6cd7707513fd347bd52b7a8993114907bba7a3938634",
+        "releaseVersion": "pg-43-fd748fa858f1-cover-18ebad16564f",
+        "artifactSha256": "18ebad16564fbfb1aa7f4fbf9b91d6a52660d21c1f524fe673b30d6c6d022cfc"
       }
     },
     {
@@ -1002,6 +1233,17 @@
         "window": "last 30 days",
         "rank": 14,
         "downloadCount": 89253
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T17:08:46Z",
+        "webCoverSha256": "ed4a5bd26b204032e5474cb2d7135cda9575ae777ddd71c45c7ff698d5e2b987",
+        "epubCoverSha256": "f75be19c831025ebaf29741e8e0a675389f044e976c712b1980bddddb45253b5",
+        "releaseVersion": "pg-3268-e341b76dea2b-cover-60d7f1161ed5",
+        "artifactSha256": "60d7f1161ed511e183b8ac528cbc0990845d4794fbe88d5e47423385096c56e7"
       }
     },
     {
@@ -1039,6 +1281,17 @@
         "window": "last 30 days",
         "rank": 15,
         "downloadCount": 83805
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T17:09:28Z",
+        "webCoverSha256": "51255b1bed98b50a85709b2b4146c3cc5eb7b9d8bc9d4e486120c8261ea1617b",
+        "epubCoverSha256": "78e8093daee38a92a4a126a5d8d08da6685c3bc55d05d96871f7f42d324542fa",
+        "releaseVersion": "pg-8492-ba44692a2632-cover-c1c8f9d3e0a7",
+        "artifactSha256": "c1c8f9d3e0a7e79fe6cca6179f3c02af15bd057bb61540a802194c80396d9d7d"
       }
     },
     {
@@ -1082,6 +1335,17 @@
         "window": "last 30 days",
         "rank": 16,
         "downloadCount": 81968
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T17:10:12Z",
+        "webCoverSha256": "456e0e214dcb6150d57e528cc8b44226a282ea29af7a62b665423ced50700198",
+        "epubCoverSha256": "ad75e4f595f0fd478d132ffa781cebdde3ada08838768b67f333754c76dcf7b1",
+        "releaseVersion": "pg-2465-ae6d356392e7-cover-51532c8a9ffe",
+        "artifactSha256": "51532c8a9ffefd2da7168ad2b61eeae4baed063a36380e7fac2f77af8467ccb2"
       }
     },
     {
@@ -1124,6 +1388,17 @@
         "window": "last 30 days",
         "rank": 18,
         "downloadCount": 74543
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T17:10:58Z",
+        "webCoverSha256": "f25e0225fa2a18dda8e0ded0267f70ac0c33f6166a18041faff60b15aef7ac46",
+        "epubCoverSha256": "04b48524f463bcee4133ceba06287f7f2ada79db28da2349de29717d11c71cbc",
+        "releaseVersion": "pg-1260-afced5466c9c-cover-7169ed8e1072",
+        "artifactSha256": "7169ed8e10723d977d13764502537c63cf48487b24b77cf5b17950a3985e248e"
       }
     },
     {
@@ -1158,6 +1433,17 @@
         "window": "last 30 days",
         "rank": 19,
         "downloadCount": 74502
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T17:11:46Z",
+        "webCoverSha256": "6f1b96d9d5f1d0d54febdcc331c6f06176013e0fe2bc96d45e0442f760092c33",
+        "epubCoverSha256": "4f4a00b1273d37466973ba3d5d721d24c879847359d0ba835c727438c809c365",
+        "releaseVersion": "pg-67979-e0de89f3fbe9-cover-d6b8ba27200e",
+        "artifactSha256": "d6b8ba27200e2e96f1731cfc99da81721503a795f8e1a9278860fef428a61964"
       }
     },
     {
@@ -1193,6 +1479,17 @@
         "window": "last 30 days",
         "rank": 21,
         "downloadCount": 72092
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T17:12:29Z",
+        "webCoverSha256": "98e43e1f3f446b3d8d01e7c269448e1bbdfa6270e3e597628b12fecd790a9446",
+        "epubCoverSha256": "f443adb82dfafec200fdd33419002d8b3b6f71a82e616dcadada6a8c5c7b4f41",
+        "releaseVersion": "pg-2868-d3e35eb1f701-cover-88e9cd786da5",
+        "artifactSha256": "88e9cd786da57cfcab5c262a1858eb677a41224d671b295de64cc6f8b9dad497"
       }
     },
     {
@@ -1235,6 +1532,17 @@
         "window": "last 30 days",
         "rank": 22,
         "downloadCount": 71188
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T17:13:13Z",
+        "webCoverSha256": "98fde080e7f36d0e945bf15923f4723c1ac5ebae14b4322470b8a634a9d4aa23",
+        "epubCoverSha256": "31cf57c0694ec15e96ca101c24fdff3c22a060371ea2185c83feed4c7745bcbe",
+        "releaseVersion": "pg-37106-9d0b11a8ef90-cover-071ee0cad529",
+        "artifactSha256": "071ee0cad529f1a6ecd0875f4f8e470d582e53d7b314a5d2b68e2701b6f6a09e"
       }
     },
     {
@@ -1277,6 +1585,17 @@
         "window": "last 30 days",
         "rank": 23,
         "downloadCount": 70439
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T17:13:52Z",
+        "webCoverSha256": "e8cadc51da178c85da4b207227b81e61b4d559ab8c7db1c619f404bda1255f32",
+        "epubCoverSha256": "7dc27bf0973dba3fe766bbb7501c46f31b92e62ec501d6d88fd7030869f46c56",
+        "releaseVersion": "pg-59828-ac0a2006a2ee-cover-64872d553c55",
+        "artifactSha256": "64872d553c551869c68d9542c6c14e9a9915b2b85567b0f686c0872eede48a33"
       }
     },
     {
@@ -1311,6 +1630,17 @@
         "window": "last 30 days",
         "rank": 27,
         "downloadCount": 65234
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T17:14:34Z",
+        "webCoverSha256": "10edbfc155f7e53eaaf48e2b1cf2dce410f1acc06ee88d297e758dde575a54ab",
+        "epubCoverSha256": "98d3d792b987cec106899e3e85c40effcba50d39d6cf60e4695b2ca408231b10",
+        "releaseVersion": "pg-5197-fd52b138cad6-cover-9b234431a161",
+        "artifactSha256": "9b234431a1611450f9f5412213b4d0ec10911c617e38e800f967d734556a40c6"
       }
     },
     {
@@ -1348,6 +1678,17 @@
         "window": "last 30 days",
         "rank": 28,
         "downloadCount": 64443
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T17:15:16Z",
+        "webCoverSha256": "93ae11786d270188a46726e0913fa187b01cca8e9762df62e8a22ebc5d41bdd4",
+        "epubCoverSha256": "9cec8553d9536f107fc292927c86da90ff9b6249cb5e4455efdef5f42ac2dbd6",
+        "releaseVersion": "pg-564-d27a061b8fcb-cover-1fc19ade954c",
+        "artifactSha256": "1fc19ade954c650492c5f4d8abe095fab63d9330675b8d0a8827f41f0ceab6df"
       }
     },
     {
@@ -1384,6 +1725,17 @@
         "window": "last 30 days",
         "rank": 29,
         "downloadCount": 64402
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T17:16:00Z",
+        "webCoverSha256": "a58fa0e68b465433c47c5b697b0e4f17835c65f7379a7fae37b89b53f5c8354c",
+        "epubCoverSha256": "28d19af78dfe514e8d90eb99080655e4974078d64721b4a2b97b0d37f3f2a2a4",
+        "releaseVersion": "pg-244-76df519d3ce0-cover-5287fa8a5386",
+        "artifactSha256": "5287fa8a53866ec48b6180a4b69fffe9dbb4e07701c24669a230b269ce4db48e"
       }
     },
     {
@@ -1422,6 +1774,17 @@
         "window": "last 30 days",
         "rank": 31,
         "downloadCount": 62815
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T17:16:46Z",
+        "webCoverSha256": "8fcdc2ae5ce9a072c1474b519f997dcdac3b830ad6eaadb06fa3c5ba645ed351",
+        "epubCoverSha256": "dcbde1a6a6ab6d45e7d2aef5e33ba339514099cfbbb765daa9ee70a2a5686296",
+        "releaseVersion": "pg-2852-b8ab4fbaf420-cover-705777b1c8cf",
+        "artifactSha256": "705777b1c8cf24f4b2c041cdae524bf4cd7352d02738502c99ed98d5121911ef"
       }
     },
     {
@@ -1464,6 +1827,17 @@
         "window": "last 30 days",
         "rank": 32,
         "downloadCount": 62687
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T17:17:27Z",
+        "webCoverSha256": "ee212ed1daaeccad185cae5e2c35b8f8724d9fee8b36027282b69853e20d3308",
+        "epubCoverSha256": "7a6d3fb7052f541073930b5bd8bcd66c7bdce94e662a87705b575319ed3790a3",
+        "releaseVersion": "pg-47530-77d2e12f0251-cover-b471c1a37478",
+        "artifactSha256": "b471c1a37478685495fb569937d8643d7c1b2366e45496b6fad0ae857bd6a0de"
       }
     },
     {
@@ -1503,6 +1877,17 @@
         "window": "last 30 days",
         "rank": 34,
         "downloadCount": 60944
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T17:18:06Z",
+        "webCoverSha256": "40d7fbbf97b0fd962ab34d0ce87b19c53f645d3c26c646d86a337033cdfba3a8",
+        "epubCoverSha256": "8371e9701ede20825278e592b6e276804abe1da586645cb388504e4b4d77c3a5",
+        "releaseVersion": "pg-2148-db2d99693d94-cover-eb2f3d26a8f3",
+        "artifactSha256": "eb2f3d26a8f3e9636f429b1d4bfe18f4db2ad0acd11c6e673562d9adff742f59"
       }
     },
     {

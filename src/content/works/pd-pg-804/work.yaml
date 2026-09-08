@@ -19,14 +19,14 @@
   "visibility": "public",
   "publication": {
     "firstPublished": "1997-02-01",
-    "lastUpdated": "2026-09-07",
+    "lastUpdated": "2026-09-08",
     "edition": 1,
-    "editionLabel": "Project Gutenberg public-domain edition",
-    "version": "pg-804-7d7898800000",
-    "activeRelease": "pg-804-7d7898800000"
+    "editionLabel": "THIEPN Library public-domain edition (Project Gutenberg source)",
+    "version": "pg-804-7d7898800000-cover-ee3c5c267837",
+    "activeRelease": "pg-804-7d7898800000-cover-ee3c5c267837"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-804.svg",
+    "src": "/covers/public-domain/pd-pg-804.webp",
     "alt": "Cover for A Sentimental Journey Through France and Italy by Laurence Sterne"
   },
   "classification": {

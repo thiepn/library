@@ -27,12 +27,12 @@
     "firstPublished": "1998-03-01",
     "lastUpdated": "2026-09-08",
     "edition": 1,
-    "editionLabel": "Project Gutenberg public-domain edition",
-    "version": "pg-1260-afced5466c9c",
-    "activeRelease": "pg-1260-afced5466c9c"
+    "editionLabel": "THIEPN Library public-domain edition (Project Gutenberg source)",
+    "version": "pg-1260-afced5466c9c-cover-7169ed8e1072",
+    "activeRelease": "pg-1260-afced5466c9c-cover-7169ed8e1072"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-1260.svg",
+    "src": "/covers/public-domain/pd-pg-1260.webp",
     "alt": "Cover for Jane Eyre: An Autobiography by Charlotte Brontë"
   },
   "classification": {

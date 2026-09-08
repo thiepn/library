@@ -25,14 +25,14 @@
   "visibility": "public",
   "publication": {
     "firstPublished": "2004-10-06",
-    "lastUpdated": "2026-09-07",
+    "lastUpdated": "2026-09-08",
     "edition": 1,
-    "editionLabel": "Project Gutenberg public-domain edition",
-    "version": "pg-1237-05029c38cea2",
-    "activeRelease": "pg-1237-05029c38cea2"
+    "editionLabel": "THIEPN Library public-domain edition (Project Gutenberg source)",
+    "version": "pg-1237-05029c38cea2-cover-11e882ed64d8",
+    "activeRelease": "pg-1237-05029c38cea2-cover-11e882ed64d8"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-1237.svg",
+    "src": "/covers/public-domain/pd-pg-1237.webp",
     "alt": "Cover for Father Goriot by Honoré de Balzac"
   },
   "classification": {

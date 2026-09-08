@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-996",
+  "version": "pg-996-dba65db312e5-cover-3b498af7e503",
+  "edition": 1,
+  "releasedAt": "2026-09-08T16:58:08Z",
+  "sourceHash": "5650a779674db1b70808b4f5fa41c6808f16dda69251191763e112151bd93d96",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-996/editions/pg-996-dba65db312e5-cover-3b498af7e503/don-quixote-project-gutenberg.epub",
+      "filename": "don-quixote-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 1586305,
+      "sha256": "3b498af7e503ed18d738d2a2a52017d9136c463cd9f1a39025514ffdc328d4d7"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceReleaseVersion": "pg-996-dba65db312e5",
+    "sourceArtifactSha256": "dba65db312e53aebb10c911cb7dc801c2d856d0f75558de2f0093c4d09b3233a",
+    "embeddedCover": true,
+    "finalArtifactSha256": "3b498af7e503ed18d738d2a2a52017d9136c463cd9f1a39025514ffdc328d4d7",
+    "releaseVersioning": "content-addressed"
+  }
+}

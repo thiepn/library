@@ -27,12 +27,12 @@
     "firstPublished": "2006-03-28",
     "lastUpdated": "2026-09-08",
     "edition": 1,
-    "editionLabel": "Project Gutenberg public-domain edition",
-    "version": "pg-2465-ae6d356392e7",
-    "activeRelease": "pg-2465-ae6d356392e7"
+    "editionLabel": "THIEPN Library public-domain edition (Project Gutenberg source)",
+    "version": "pg-2465-ae6d356392e7-cover-51532c8a9ffe",
+    "activeRelease": "pg-2465-ae6d356392e7-cover-51532c8a9ffe"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-2465.svg",
+    "src": "/covers/public-domain/pd-pg-2465.webp",
     "alt": "Cover for Carmen by Prosper Mérimée"
   },
   "classification": {

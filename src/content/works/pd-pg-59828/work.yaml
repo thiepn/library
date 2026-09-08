@@ -26,13 +26,13 @@
     "firstPublished": "2019-06-28",
     "lastUpdated": "2026-09-08",
     "edition": 1,
-    "editionLabel": "Project Gutenberg public-domain edition",
-    "version": "pg-59828-ac0a2006a2ee",
-    "activeRelease": "pg-59828-ac0a2006a2ee"
+    "editionLabel": "THIEPN Library public-domain edition (Project Gutenberg source)",
+    "version": "pg-59828-ac0a2006a2ee-cover-64872d553c55",
+    "activeRelease": "pg-59828-ac0a2006a2ee-cover-64872d553c55"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-59828.svg",
-    "alt": "Cover for The String of Pearls; Or, The Barber of Fleet Street. A Domestic Romance. by James Malcolm Rymer, Thomas Peckett Prest"
+    "src": "/covers/public-domain/pd-pg-59828.webp",
+    "alt": "Cover for The String of Pearls by James Malcolm Rymer, Thomas Peckett Prest"
   },
   "classification": {
     "subjects": [

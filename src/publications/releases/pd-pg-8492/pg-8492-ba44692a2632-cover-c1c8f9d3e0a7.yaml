@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-8492",
+  "version": "pg-8492-ba44692a2632-cover-c1c8f9d3e0a7",
+  "edition": 1,
+  "releasedAt": "2026-09-08T17:09:28Z",
+  "sourceHash": "92aa3f43599f75f1019448511974571ab25c7de794a9596977d54d91b1201e70",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-8492/editions/pg-8492-ba44692a2632-cover-c1c8f9d3e0a7/the-king-in-yellow-project-gutenberg.epub",
+      "filename": "the-king-in-yellow-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 687329,
+      "sha256": "c1c8f9d3e0a7e79fe6cca6179f3c02af15bd057bb61540a802194c80396d9d7d"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceReleaseVersion": "pg-8492-ba44692a2632",
+    "sourceArtifactSha256": "ba44692a2632e7b91bc34ad4ddd3f1aa241df22d75372d2e04229caadd7abcd5",
+    "embeddedCover": true,
+    "finalArtifactSha256": "c1c8f9d3e0a7e79fe6cca6179f3c02af15bd057bb61540a802194c80396d9d7d",
+    "releaseVersioning": "content-addressed"
+  }
+}

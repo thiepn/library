@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-37106",
+  "version": "pg-37106-9d0b11a8ef90-cover-071ee0cad529",
+  "edition": 1,
+  "releasedAt": "2026-09-08T17:13:13Z",
+  "sourceHash": "3dc4a760538168bffcaac13dccbc601eb19f84346211d641bd987708f42ee9d3",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-37106/editions/pg-37106-9d0b11a8ef90-cover-071ee0cad529/little-women-or-meg-jo-beth-and-amy-project-gutenberg.epub",
+      "filename": "little-women-or-meg-jo-beth-and-amy-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 899436,
+      "sha256": "071ee0cad529f1a6ecd0875f4f8e470d582e53d7b314a5d2b68e2701b6f6a09e"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceReleaseVersion": "pg-37106-9d0b11a8ef90",
+    "sourceArtifactSha256": "9d0b11a8ef908b8375693b3f145d74e6b68c566ba10277a3144b64267a06770e",
+    "embeddedCover": true,
+    "finalArtifactSha256": "071ee0cad529f1a6ecd0875f4f8e470d582e53d7b314a5d2b68e2701b6f6a09e",
+    "releaseVersioning": "content-addressed"
+  }
+}

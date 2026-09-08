@@ -21,12 +21,12 @@
     "firstPublished": "1995-10-01",
     "lastUpdated": "2026-09-08",
     "edition": 1,
-    "editionLabel": "Project Gutenberg public-domain edition",
-    "version": "pg-345-52106950124a",
-    "activeRelease": "pg-345-52106950124a"
+    "editionLabel": "THIEPN Library public-domain edition (Project Gutenberg source)",
+    "version": "pg-345-52106950124a-cover-10c466054efb",
+    "activeRelease": "pg-345-52106950124a-cover-10c466054efb"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-345.svg",
+    "src": "/covers/public-domain/pd-pg-345.webp",
     "alt": "Cover for Dracula by Bram Stoker"
   },
   "classification": {

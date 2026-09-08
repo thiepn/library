@@ -21,12 +21,12 @@
     "firstPublished": "2002-06-01",
     "lastUpdated": "2026-09-08",
     "edition": 1,
-    "editionLabel": "Project Gutenberg public-domain edition",
-    "version": "pg-3268-e341b76dea2b",
-    "activeRelease": "pg-3268-e341b76dea2b"
+    "editionLabel": "THIEPN Library public-domain edition (Project Gutenberg source)",
+    "version": "pg-3268-e341b76dea2b-cover-60d7f1161ed5",
+    "activeRelease": "pg-3268-e341b76dea2b-cover-60d7f1161ed5"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-3268.svg",
+    "src": "/covers/public-domain/pd-pg-3268.webp",
     "alt": "Cover for The Mysteries of Udolpho by Ann Ward Radcliffe"
   },
   "classification": {

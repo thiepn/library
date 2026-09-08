@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-564",
+  "version": "pg-564-d27a061b8fcb-cover-1fc19ade954c",
+  "edition": 1,
+  "releasedAt": "2026-09-08T17:15:16Z",
+  "sourceHash": "1ec9515406febd486535df29c959b399927e78113bdab72756c8c3ff6203cc1c",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-564/editions/pg-564-d27a061b8fcb-cover-1fc19ade954c/the-mystery-of-edwin-drood-project-gutenberg.epub",
+      "filename": "the-mystery-of-edwin-drood-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 647280,
+      "sha256": "1fc19ade954c650492c5f4d8abe095fab63d9330675b8d0a8827f41f0ceab6df"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceReleaseVersion": "pg-564-d27a061b8fcb",
+    "sourceArtifactSha256": "d27a061b8fcb26a3f467dc337c1d7bcd8e09dc22528b903e423ff7dfb72f4cb3",
+    "embeddedCover": true,
+    "finalArtifactSha256": "1fc19ade954c650492c5f4d8abe095fab63d9330675b8d0a8827f41f0ceab6df",
+    "releaseVersioning": "content-addressed"
+  }
+}

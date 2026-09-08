@@ -21,12 +21,12 @@
     "firstPublished": "2001-10-01",
     "lastUpdated": "2026-09-08",
     "edition": 1,
-    "editionLabel": "Project Gutenberg public-domain edition",
-    "version": "pg-2852-b8ab4fbaf420",
-    "activeRelease": "pg-2852-b8ab4fbaf420"
+    "editionLabel": "THIEPN Library public-domain edition (Project Gutenberg source)",
+    "version": "pg-2852-b8ab4fbaf420-cover-705777b1c8cf",
+    "activeRelease": "pg-2852-b8ab4fbaf420-cover-705777b1c8cf"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-2852.svg",
+    "src": "/covers/public-domain/pd-pg-2852.webp",
     "alt": "Cover for The Hound of the Baskervilles by Arthur Conan Doyle"
   },
   "classification": {

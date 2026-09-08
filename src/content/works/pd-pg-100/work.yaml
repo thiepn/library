@@ -21,12 +21,12 @@
     "firstPublished": "1994-01-01",
     "lastUpdated": "2026-09-08",
     "edition": 1,
-    "editionLabel": "Project Gutenberg public-domain edition",
-    "version": "pg-100-13201b7761bd",
-    "activeRelease": "pg-100-13201b7761bd"
+    "editionLabel": "THIEPN Library public-domain edition (Project Gutenberg source)",
+    "version": "pg-100-13201b7761bd-cover-b7f387ff898b",
+    "activeRelease": "pg-100-13201b7761bd-cover-b7f387ff898b"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-100.svg",
+    "src": "/covers/public-domain/pd-pg-100.webp",
     "alt": "Cover for The Complete Works of William Shakespeare by William Shakespeare"
   },
   "classification": {

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-3268",
+  "version": "pg-3268-e341b76dea2b-cover-60d7f1161ed5",
+  "edition": 1,
+  "releasedAt": "2026-09-08T17:08:46Z",
+  "sourceHash": "ed7741edb8c7f73b88604a3fba44c9f128b1559af88a9e72c7f9bafa78461fbc",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-3268/editions/pg-3268-e341b76dea2b-cover-60d7f1161ed5/the-mysteries-of-udolpho-project-gutenberg.epub",
+      "filename": "the-mysteries-of-udolpho-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 1161351,
+      "sha256": "60d7f1161ed511e183b8ac528cbc0990845d4794fbe88d5e47423385096c56e7"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceReleaseVersion": "pg-3268-e341b76dea2b",
+    "sourceArtifactSha256": "e341b76dea2b64536a13aadc2ecdae357007fcbeaf8d8d5d04d5dd32ee2800b7",
+    "embeddedCover": true,
+    "finalArtifactSha256": "60d7f1161ed511e183b8ac528cbc0990845d4794fbe88d5e47423385096c56e7",
+    "releaseVersioning": "content-addressed"
+  }
+}

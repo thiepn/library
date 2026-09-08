@@ -19,14 +19,14 @@
   "visibility": "public",
   "publication": {
     "firstPublished": "2006-10-05",
-    "lastUpdated": "2026-09-07",
+    "lastUpdated": "2026-09-08",
     "edition": 1,
-    "editionLabel": "Project Gutenberg public-domain edition",
-    "version": "pg-19476-7853b6c1abf4",
-    "activeRelease": "pg-19476-7853b6c1abf4"
+    "editionLabel": "THIEPN Library public-domain edition (Project Gutenberg source)",
+    "version": "pg-19476-7853b6c1abf4-cover-e4bbf522d4c2",
+    "activeRelease": "pg-19476-7853b6c1abf4-cover-e4bbf522d4c2"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-19476.svg",
+    "src": "/covers/public-domain/pd-pg-19476.webp",
     "alt": "Cover for A Honeymoon in Space by George Chetwynd Griffith"
   },
   "classification": {

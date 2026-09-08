@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-2680",
+  "version": "pg-2680-05cb8ac0629d-cover-c1dc5263237b",
+  "edition": 1,
+  "releasedAt": "2026-09-08T16:48:50Z",
+  "sourceHash": "71e04d3816c8e745d19a37f49f2269ffea9e371fead3f187275ae5c95e4833b9",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-2680/editions/pg-2680-05cb8ac0629d-cover-c1dc5263237b/meditations-project-gutenberg.epub",
+      "filename": "meditations-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 668847,
+      "sha256": "c1dc5263237bcf119e29ba133142f0e40724543127244d838d82e8475c7f11ff"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceReleaseVersion": "pg-2680-05cb8ac0629d",
+    "sourceArtifactSha256": "05cb8ac0629d2f72e1a4b594b069cf3776e53c4ca6948d8f7c8c92825f19832f",
+    "embeddedCover": true,
+    "finalArtifactSha256": "c1dc5263237bcf119e29ba133142f0e40724543127244d838d82e8475c7f11ff",
+    "releaseVersioning": "content-addressed"
+  }
+}

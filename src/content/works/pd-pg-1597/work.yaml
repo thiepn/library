@@ -19,15 +19,15 @@
   "visibility": "public",
   "publication": {
     "firstPublished": "1999-01-01",
-    "lastUpdated": "2026-09-07",
+    "lastUpdated": "2026-09-08",
     "edition": 1,
-    "editionLabel": "Project Gutenberg public-domain edition",
-    "version": "pg-1597-9b84445b65c6",
-    "activeRelease": "pg-1597-9b84445b65c6"
+    "editionLabel": "THIEPN Library public-domain edition (Project Gutenberg source)",
+    "version": "pg-1597-9b84445b65c6-cover-ca4caea8a732",
+    "activeRelease": "pg-1597-9b84445b65c6-cover-ca4caea8a732"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-1597.svg",
-    "alt": "Cover for Andersen's Fairy Tales by H. C. (Hans Christian) Andersen"
+    "src": "/covers/public-domain/pd-pg-1597.webp",
+    "alt": "Cover for Andersen's Fairy Tales by Hans Christian Andersen"
   },
   "classification": {
     "subjects": [

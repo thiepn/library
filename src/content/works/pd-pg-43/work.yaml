@@ -21,13 +21,13 @@
     "firstPublished": "2008-06-27",
     "lastUpdated": "2026-09-08",
     "edition": 1,
-    "editionLabel": "Project Gutenberg public-domain edition",
-    "version": "pg-43-fd748fa858f1",
-    "activeRelease": "pg-43-fd748fa858f1"
+    "editionLabel": "THIEPN Library public-domain edition (Project Gutenberg source)",
+    "version": "pg-43-fd748fa858f1-cover-18ebad16564f",
+    "activeRelease": "pg-43-fd748fa858f1-cover-18ebad16564f"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-43.svg",
-    "alt": "Cover for The strange case of Dr. Jekyll and Mr. Hyde by Robert Louis Stevenson"
+    "src": "/covers/public-domain/pd-pg-43.webp",
+    "alt": "Cover for The Strange Case of Dr. Jekyll and Mr. Hyde by Robert Louis Stevenson"
   },
   "classification": {
     "subjects": [

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-1727",
+  "version": "pg-1727-af9b1e35583d-cover-635c7b54e2db",
+  "edition": 1,
+  "releasedAt": "2026-09-08T16:50:48Z",
+  "sourceHash": "9f2762dfddd73fdb49de7cd9ff55e760fce31c99d5d2dbb1480c9cfa49ba1e06",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-1727/editions/pg-1727-af9b1e35583d-cover-635c7b54e2db/the-odyssey-rendered-into-english-prose-for-the-use-of-those-who-cannot-read-the-project-gutenberg.epub",
+      "filename": "the-odyssey-rendered-into-english-prose-for-the-use-of-those-who-cannot-read-the-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 811748,
+      "sha256": "635c7b54e2db981ed0bf5964018f474e1e6160d258a9dc79c04aa425dbb57044"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceReleaseVersion": "pg-1727-af9b1e35583d",
+    "sourceArtifactSha256": "af9b1e35583d455b9ab81b379bdc150ae22f25c004c8c95b978d946b0dfd6fc8",
+    "embeddedCover": true,
+    "finalArtifactSha256": "635c7b54e2db981ed0bf5964018f474e1e6160d258a9dc79c04aa425dbb57044",
+    "releaseVersioning": "content-addressed"
+  }
+}

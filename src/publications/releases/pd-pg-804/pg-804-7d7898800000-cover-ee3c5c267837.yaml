@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-804",
+  "version": "pg-804-7d7898800000-cover-ee3c5c267837",
+  "edition": 1,
+  "releasedAt": "2026-09-08T16:57:19Z",
+  "sourceHash": "79eda66aa4310a47d2a75faf925da63ddbea6ec0491291c2e093c7751662c7e5",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-804/editions/pg-804-7d7898800000-cover-ee3c5c267837/a-sentimental-journey-through-france-and-italy-project-gutenberg.epub",
+      "filename": "a-sentimental-journey-through-france-and-italy-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 601383,
+      "sha256": "ee3c5c26783733b9c0b37d702f1c5bcf253652d62f11e0f30d0f35432a3b2269"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceReleaseVersion": "pg-804-7d7898800000",
+    "sourceArtifactSha256": "7d78988000005e85be23c7bfd0ddb3e088f3aedc5daafeaef57cba84aa249a56",
+    "embeddedCover": true,
+    "finalArtifactSha256": "ee3c5c26783733b9c0b37d702f1c5bcf253652d62f11e0f30d0f35432a3b2269",
+    "releaseVersioning": "content-addressed"
+  }
+}

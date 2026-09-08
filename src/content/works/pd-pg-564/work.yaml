@@ -21,12 +21,12 @@
     "firstPublished": "1996-06-01",
     "lastUpdated": "2026-09-08",
     "edition": 1,
-    "editionLabel": "Project Gutenberg public-domain edition",
-    "version": "pg-564-d27a061b8fcb",
-    "activeRelease": "pg-564-d27a061b8fcb"
+    "editionLabel": "THIEPN Library public-domain edition (Project Gutenberg source)",
+    "version": "pg-564-d27a061b8fcb-cover-1fc19ade954c",
+    "activeRelease": "pg-564-d27a061b8fcb-cover-1fc19ade954c"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-564.svg",
+    "src": "/covers/public-domain/pd-pg-564.webp",
     "alt": "Cover for The Mystery of Edwin Drood by Charles Dickens"
   },
   "classification": {
