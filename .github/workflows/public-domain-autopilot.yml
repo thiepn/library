@@ -83,6 +83,10 @@ jobs:
         id: covers
         run: python3 scripts/public-domain/cover_pipeline.py --new-staging
 
+      - name: Give cover-enhanced releases content-addressed immutable keys
+        if: steps.discover.outputs.added_count != '0'
+        run: python3 scripts/public-domain/finalize-cover-release.py --mode new
+
       - name: Certify complete Library before upload
         if: steps.discover.outputs.added_count != '0'
         run: pnpm release:certify
@@ -155,6 +159,7 @@ jobs:
             echo "- Ranking mode: \`${{ steps.discover.outputs.ranking_mode }}\`"
             echo "- Rights screening: passed"
             echo "- Illustrated covers: generated and embedded"
+            echo "- Cover release keys: content-addressed"
             echo "- Complete Library certification: passed"
             echo "- R2 immutable upload/readback: passed"
             echo "- Promotion is handed to the authorized Library Autopilot Supervisor."
