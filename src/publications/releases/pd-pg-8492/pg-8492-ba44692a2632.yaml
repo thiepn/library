@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-8492",
+  "version": "pg-8492-ba44692a2632",
+  "edition": 1,
+  "releasedAt": "2026-09-08T00:18:34Z",
+  "sourceHash": "92aa3f43599f75f1019448511974571ab25c7de794a9596977d54d91b1201e70",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-8492/editions/pg-8492-ba44692a2632/the-king-in-yellow-project-gutenberg.epub",
+      "filename": "the-king-in-yellow-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 286834,
+      "sha256": "ba44692a2632e7b91bc34ad4ddd3f1aa241df22d75372d2e04229caadd7abcd5"
+    }
+  }
+}

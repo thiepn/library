@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-345",
+  "slug": "pd-pg-345",
+  "title": "Dracula",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Bram Stoker",
+      "role": "creator",
+      "birthYear": 1847,
+      "deathYear": 1912
+    }
+  ],
+  "description": "A public-domain edition of Dracula by Bram Stoker. Project Gutenberg classifies it under Horror tales, Epistolary fiction, Gothic fiction.",
+  "shortDescription": "A public-domain edition of Dracula by Bram Stoker. Project Gutenberg classifies it under Horror tales, Epistolary fiction, Gothic fiction.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "1995-10-01",
+    "lastUpdated": "2026-09-08",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-345-52106950124a",
+    "activeRelease": "pg-345-52106950124a"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-345.svg",
+    "alt": "Cover for Dracula by Bram Stoker"
+  },
+  "classification": {
+    "subjects": [
+      "horror-tales",
+      "epistolary-fiction",
+      "gothic-fiction",
+      "vampires",
+      "dracula-count-fictitious-character"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "gothic-fiction"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/345",
+      "gutenbergId": 345
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/345/pg345.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #345. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-84",
+  "version": "pg-84-f717864263e3",
+  "edition": 1,
+  "releasedAt": "2026-09-08T00:18:30Z",
+  "sourceHash": "1f6b34f62538a3e882340e0e64c6b5ad08a7be79f0c74d5a1331e2fd445bd9b5",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-84/editions/pg-84-f717864263e3/frankenstein-or-the-modern-prometheus-project-gutenberg.epub",
+      "filename": "frankenstein-or-the-modern-prometheus-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 356059,
+      "sha256": "f717864263e32de0228d50bc8425b9b11fa675b995ab5ec45fc11eaecb8a2325"
+    }
+  }
+}

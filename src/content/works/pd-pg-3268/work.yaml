@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-3268",
+  "slug": "pd-pg-3268",
+  "title": "The Mysteries of Udolpho",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Ann Ward Radcliffe",
+      "role": "creator",
+      "birthYear": 1764,
+      "deathYear": 1823
+    }
+  ],
+  "description": "A public-domain edition of The Mysteries of Udolpho by Ann Ward Radcliffe. Project Gutenberg classifies it under Orphans -- Fiction, Horror tales, Inheritance and succession -- Fiction.",
+  "shortDescription": "A public-domain edition of The Mysteries of Udolpho by Ann Ward Radcliffe. Project Gutenberg classifies it under Orphans -- Fiction, Horror tales, Inheritance and succession --…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2002-06-01",
+    "lastUpdated": "2026-09-08",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-3268-e341b76dea2b",
+    "activeRelease": "pg-3268-e341b76dea2b"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-3268.svg",
+    "alt": "Cover for The Mysteries of Udolpho by Ann Ward Radcliffe"
+  },
+  "classification": {
+    "subjects": [
+      "orphans",
+      "horror-tales",
+      "inheritance-and-succession",
+      "young-women",
+      "gothic-fiction"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "gothic-fiction"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/3268",
+      "gutenbergId": 3268
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/3268/pg3268.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #3268. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

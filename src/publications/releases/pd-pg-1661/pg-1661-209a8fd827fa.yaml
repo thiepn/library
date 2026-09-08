@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-1661",
+  "version": "pg-1661-209a8fd827fa",
+  "edition": 1,
+  "releasedAt": "2026-09-08T00:18:29Z",
+  "sourceHash": "f62727d131fb976eca43c00abdb88f3af6a22352955228a3288d16fb5ea09983",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-1661/editions/pg-1661-209a8fd827fa/the-adventures-of-sherlock-holmes-project-gutenberg.epub",
+      "filename": "the-adventures-of-sherlock-holmes-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 311344,
+      "sha256": "209a8fd827fa88a11f04253d5af10d47967eaa1df3a5c74120ba9aa5e855bba6"
+    }
+  }
+}

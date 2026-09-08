@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-345",
+  "version": "pg-345-52106950124a",
+  "edition": 1,
+  "releasedAt": "2026-09-08T00:18:31Z",
+  "sourceHash": "3d314866ac0087ce21cb6b6fc2cb523f3801cc5f31fc1021c9e89d0558fbd8ed",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-345/editions/pg-345-52106950124a/dracula-project-gutenberg.epub",
+      "filename": "dracula-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 433062,
+      "sha256": "52106950124a9b75a26308a73855e717f4546c95f331528449a49417a77d18f2"
+    }
+  }
+}

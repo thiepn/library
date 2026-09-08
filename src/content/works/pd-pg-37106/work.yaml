@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-37106",
+  "slug": "pd-pg-37106",
+  "title": "Little Women; Or, Meg, Jo, Beth, and Amy",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Louisa May Alcott",
+      "role": "creator",
+      "birthYear": 1832,
+      "deathYear": 1888
+    },
+    {
+      "name": "Frank T. Merrill",
+      "role": "ill",
+      "birthYear": 1848,
+      "deathYear": 1923
+    }
+  ],
+  "description": "A public-domain edition of Little Women; Or, Meg, Jo, Beth, and Amy by Louisa May Alcott. Project Gutenberg classifies it under Autobiographical fiction, Young women -- Fiction, Sisters -- Fiction.",
+  "shortDescription": "A public-domain edition of Little Women; Or, Meg, Jo, Beth, and Amy by Louisa May Alcott. Project Gutenberg classifies it under Autobiographical fiction, Young women -- Fiction,…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2011-08-16",
+    "lastUpdated": "2026-09-08",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-37106-9d0b11a8ef90",
+    "activeRelease": "pg-37106-9d0b11a8ef90"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-37106.svg",
+    "alt": "Cover for Little Women; Or, Meg, Jo, Beth, and Amy by Louisa May Alcott"
+  },
+  "classification": {
+    "subjects": [
+      "autobiographical-fiction",
+      "young-women",
+      "sisters",
+      "domestic-fiction",
+      "family-life"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/37106",
+      "gutenbergId": 37106
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/37106/pg37106.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #37106. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

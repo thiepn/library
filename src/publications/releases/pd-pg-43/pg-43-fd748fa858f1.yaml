@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-43",
+  "version": "pg-43-fd748fa858f1",
+  "edition": 1,
+  "releasedAt": "2026-09-08T00:18:32Z",
+  "sourceHash": "22f87c62b22471897163ce73f57c8c7a1e1e35d3fd69c0efc8e59ca19e6436ff",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-43/editions/pg-43-fd748fa858f1/the-strange-case-of-dr-jekyll-and-mr-hyde-project-gutenberg.epub",
+      "filename": "the-strange-case-of-dr-jekyll-and-mr-hyde-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 142187,
+      "sha256": "fd748fa858f128838e19c68df3694e10e1327abd9e80a569393c86cef48bb21a"
+    }
+  }
+}

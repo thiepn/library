@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-100",
+  "slug": "pd-pg-100",
+  "title": "The Complete Works of William Shakespeare",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "William Shakespeare",
+      "role": "creator",
+      "birthYear": 1564,
+      "deathYear": 1616
+    }
+  ],
+  "description": "A public-domain edition of The Complete Works of William Shakespeare by William Shakespeare. Project Gutenberg classifies it under English drama -- Early modern and Elizabethan, 1500-1600, PR.",
+  "shortDescription": "A public-domain edition of The Complete Works of William Shakespeare by William Shakespeare. Project Gutenberg classifies it under English drama -- Early modern and Elizabethan,…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "1994-01-01",
+    "lastUpdated": "2026-09-08",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-100-13201b7761bd",
+    "activeRelease": "pg-100-13201b7761bd"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-100.svg",
+    "alt": "Cover for The Complete Works of William Shakespeare by William Shakespeare"
+  },
+  "classification": {
+    "subjects": [
+      "english-drama",
+      "pr"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/100",
+      "gutenbergId": 100
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/100/pg100.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #100. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

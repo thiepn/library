@@ -678,6 +678,777 @@
       ],
       "selectedAt": "2026-09-07T22:53:30Z",
       "releaseVersion": "pg-3300-2db4a352fd89"
+    },
+    {
+      "gutenbergId": 1661,
+      "workId": "pd-pg-1661",
+      "title": "The Adventures of Sherlock Holmes",
+      "author": "Arthur Conan Doyle",
+      "score": 141.879,
+      "downloadCountAtSelection": 108432,
+      "bookshelves": [
+        "Detective Fiction",
+        "Contemporary Reviews",
+        "Banned Books from Anne Haight's list",
+        "Category: Short Stories",
+        "Category: Crime, Thrillers and Mystery",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/1661",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/1661/pg1661.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/1661/pg1661.epub",
+      "sourceRdfSha256": "f62727d131fb976eca43c00abdb88f3af6a22352955228a3288d16fb5ea09983",
+      "sourceEpubSha256": "209a8fd827fa88a11f04253d5af10d47967eaa1df3a5c74120ba9aa5e855bba6",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Arthur Conan Doyle",
+          "role": "creator",
+          "birthYear": 1859,
+          "deathYear": 1930
+        }
+      ],
+      "selectedAt": "2026-09-08T00:18:29Z",
+      "releaseVersion": "pg-1661-209a8fd827fa",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 4,
+        "downloadCount": 108432
+      }
+    },
+    {
+      "gutenbergId": 1513,
+      "workId": "pd-pg-1513",
+      "title": "Romeo and Juliet",
+      "author": "William Shakespeare",
+      "score": 132.836,
+      "downloadCountAtSelection": 98499,
+      "bookshelves": [
+        "Category: Romance",
+        "Category: Plays/Films/Dramas",
+        "Category: Classics of Literature",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/1513",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/1513/pg1513.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/1513/pg1513.epub",
+      "sourceRdfSha256": "e7b4401621c012aae9e9104e3bb338664161e676aa410092194f2f025b162ab0",
+      "sourceEpubSha256": "d8e2deda0fe5ed56e191680918a52b0b27dbb19c4d492800c6638cd97badf7c5",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "William Shakespeare",
+          "role": "creator",
+          "birthYear": 1564,
+          "deathYear": 1616
+        }
+      ],
+      "selectedAt": "2026-09-08T00:18:30Z",
+      "releaseVersion": "pg-1513-d8e2deda0fe5",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 7,
+        "downloadCount": 98499
+      }
+    },
+    {
+      "gutenbergId": 84,
+      "workId": "pd-pg-84",
+      "title": "Frankenstein; or, the modern prometheus",
+      "author": "Mary Wollstonecraft Shelley",
+      "score": 175.486,
+      "downloadCountAtSelection": 95374,
+      "bookshelves": [
+        "Precursors of Science Fiction",
+        "Gothic Fiction",
+        "Movie Books",
+        "Science Fiction by Women",
+        "Category: Science-Fiction & Fantasy",
+        "Category: Novels",
+        "Category: Classics of Literature",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/84",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/84/pg84.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/84/pg84.epub",
+      "sourceRdfSha256": "1f6b34f62538a3e882340e0e64c6b5ad08a7be79f0c74d5a1331e2fd445bd9b5",
+      "sourceEpubSha256": "f717864263e32de0228d50bc8425b9b11fa675b995ab5ec45fc11eaecb8a2325",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Mary Wollstonecraft Shelley",
+          "role": "creator",
+          "birthYear": 1797,
+          "deathYear": 1851
+        }
+      ],
+      "selectedAt": "2026-09-08T00:18:30Z",
+      "releaseVersion": "pg-84-f717864263e3",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 8,
+        "downloadCount": 95374
+      }
+    },
+    {
+      "gutenbergId": 345,
+      "workId": "pd-pg-345",
+      "title": "Dracula",
+      "author": "Bram Stoker",
+      "score": 165.319,
+      "downloadCountAtSelection": 93918,
+      "bookshelves": [
+        "Horror",
+        "Gothic Fiction",
+        "Mystery Fiction",
+        "Movie Books",
+        "Category: Science-Fiction & Fantasy",
+        "Category: Crime, Thrillers and Mystery",
+        "Category: Novels",
+        "Category: Classics of Literature",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/345",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/345/pg345.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/345/pg345.epub",
+      "sourceRdfSha256": "3d314866ac0087ce21cb6b6fc2cb523f3801cc5f31fc1021c9e89d0558fbd8ed",
+      "sourceEpubSha256": "52106950124a9b75a26308a73855e717f4546c95f331528449a49417a77d18f2",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Bram Stoker",
+          "role": "creator",
+          "birthYear": 1847,
+          "deathYear": 1912
+        }
+      ],
+      "selectedAt": "2026-09-08T00:18:31Z",
+      "releaseVersion": "pg-345-52106950124a",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 9,
+        "downloadCount": 93918
+      }
+    },
+    {
+      "gutenbergId": 100,
+      "workId": "pd-pg-100",
+      "title": "The Complete Works of William Shakespeare",
+      "author": "William Shakespeare",
+      "score": 131.908,
+      "downloadCountAtSelection": 90432,
+      "bookshelves": [
+        "Plays",
+        "Category: Poetry",
+        "Category: Plays/Films/Dramas",
+        "Category: Classics of Literature",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/100",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/100/pg100.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/100/pg100.epub",
+      "sourceRdfSha256": "a573e2b82db00c89b7d1a0e6ebb718e7b48dd422a01dc3e39bec7cab2e4e05f2",
+      "sourceEpubSha256": "13201b7761bd4b7bf1cb57db26c0846ead2975df71a5d111f6d39e200dd56d31",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "William Shakespeare",
+          "role": "creator",
+          "birthYear": 1564,
+          "deathYear": 1616
+        }
+      ],
+      "selectedAt": "2026-09-08T00:18:32Z",
+      "releaseVersion": "pg-100-13201b7761bd",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 11,
+        "downloadCount": 90432
+      }
+    },
+    {
+      "gutenbergId": 43,
+      "workId": "pd-pg-43",
+      "title": "The strange case of Dr. Jekyll and Mr. Hyde",
+      "author": "Robert Louis Stevenson",
+      "score": 149.863,
+      "downloadCountAtSelection": 90059,
+      "bookshelves": [
+        "Precursors of Science Fiction",
+        "Horror",
+        "Movie Books",
+        "Category: Crime, Thrillers and Mystery",
+        "Category: Novels",
+        "Category: Classics of Literature",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/43",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/43/pg43.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/43/pg43.epub",
+      "sourceRdfSha256": "22f87c62b22471897163ce73f57c8c7a1e1e35d3fd69c0efc8e59ca19e6436ff",
+      "sourceEpubSha256": "fd748fa858f128838e19c68df3694e10e1327abd9e80a569393c86cef48bb21a",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Robert Louis Stevenson",
+          "role": "creator",
+          "birthYear": 1850,
+          "deathYear": 1894
+        }
+      ],
+      "selectedAt": "2026-09-08T00:18:32Z",
+      "releaseVersion": "pg-43-fd748fa858f1",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 12,
+        "downloadCount": 90059
+      }
+    },
+    {
+      "gutenbergId": 3268,
+      "workId": "pd-pg-3268",
+      "title": "The Mysteries of Udolpho",
+      "author": "Ann Ward Radcliffe",
+      "score": 164.766,
+      "downloadCountAtSelection": 89253,
+      "bookshelves": [
+        "Italy",
+        "Gothic Fiction",
+        "Category: Romance",
+        "Category: Crime, Thrillers and Mystery",
+        "Category: Novels",
+        "Category: Classics of Literature",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/3268",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/3268/pg3268.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/3268/pg3268.epub",
+      "sourceRdfSha256": "ed7741edb8c7f73b88604a3fba44c9f128b1559af88a9e72c7f9bafa78461fbc",
+      "sourceEpubSha256": "e341b76dea2b64536a13aadc2ecdae357007fcbeaf8d8d5d04d5dd32ee2800b7",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Ann Ward Radcliffe",
+          "role": "creator",
+          "birthYear": 1764,
+          "deathYear": 1823
+        }
+      ],
+      "selectedAt": "2026-09-08T00:18:33Z",
+      "releaseVersion": "pg-3268-e341b76dea2b",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 14,
+        "downloadCount": 89253
+      }
+    },
+    {
+      "gutenbergId": 8492,
+      "workId": "pd-pg-8492",
+      "title": "The King in Yellow",
+      "author": "Robert W. (Robert William) Chambers",
+      "score": 139.082,
+      "downloadCountAtSelection": 83805,
+      "bookshelves": [
+        "Horror",
+        "Category: Short Stories",
+        "Category: Science-Fiction & Fantasy",
+        "Category: Crime, Thrillers and Mystery",
+        "Category: American Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/8492",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/8492/pg8492.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/8492/pg8492.epub",
+      "sourceRdfSha256": "92aa3f43599f75f1019448511974571ab25c7de794a9596977d54d91b1201e70",
+      "sourceEpubSha256": "ba44692a2632e7b91bc34ad4ddd3f1aa241df22d75372d2e04229caadd7abcd5",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Robert W. (Robert William) Chambers",
+          "role": "creator",
+          "birthYear": 1865,
+          "deathYear": 1933
+        }
+      ],
+      "selectedAt": "2026-09-08T00:18:34Z",
+      "releaseVersion": "pg-8492-ba44692a2632",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 15,
+        "downloadCount": 83805
+      }
+    },
+    {
+      "gutenbergId": 2465,
+      "workId": "pd-pg-2465",
+      "title": "Carmen",
+      "author": "Prosper Mérimée",
+      "score": 138.841,
+      "downloadCountAtSelection": 81968,
+      "bookshelves": [
+        "Opera",
+        "Category: Romance",
+        "Category: Crime, Thrillers and Mystery",
+        "Category: Novels",
+        "Category: French Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/2465",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/2465/pg2465.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/2465/pg2465.epub",
+      "sourceRdfSha256": "aaaedfbf93d352778143cf1faaab5e297cbbc9e7a837e527b842fa0347c91fd6",
+      "sourceEpubSha256": "ae6d356392e7e7294b8864c81274cf4c86ff72cc4a9e9ef2dafb042d370560a7",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Prosper Mérimée",
+          "role": "creator",
+          "birthYear": 1803,
+          "deathYear": 1870
+        },
+        {
+          "name": "Mary, Lady Loyd",
+          "role": "trl",
+          "birthYear": 1853,
+          "deathYear": 1936
+        }
+      ],
+      "selectedAt": "2026-09-08T00:18:34Z",
+      "releaseVersion": "pg-2465-ae6d356392e7",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 16,
+        "downloadCount": 81968
+      }
+    },
+    {
+      "gutenbergId": 1260,
+      "workId": "pd-pg-1260",
+      "title": "Jane Eyre: An Autobiography",
+      "author": "Charlotte Brontë",
+      "score": 137.81,
+      "downloadCountAtSelection": 74543,
+      "bookshelves": [
+        "Category: Romance",
+        "Category: Novels",
+        "Category: Classics of Literature",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/1260",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/1260/pg1260.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/1260/pg1260.epub",
+      "sourceRdfSha256": "588a3461f0628e4e6ae279871a10b8e298f1e05d4115e2b80373331d6af982fc",
+      "sourceEpubSha256": "afced5466c9c6eda02752dd38816fc212d2531e48981f6d00d69f261b475a1eb",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Charlotte Brontë",
+          "role": "creator",
+          "birthYear": 1816,
+          "deathYear": 1855
+        },
+        {
+          "name": "F. H. (Frederick Henry) Townsend",
+          "role": "ill",
+          "birthYear": 1868,
+          "deathYear": 1920
+        }
+      ],
+      "selectedAt": "2026-09-08T00:18:35Z",
+      "releaseVersion": "pg-1260-afced5466c9c",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 18,
+        "downloadCount": 74543
+      }
+    },
+    {
+      "gutenbergId": 67979,
+      "workId": "pd-pg-67979",
+      "title": "The Blue Castle: a novel",
+      "author": "L. M. (Lucy Maud) Montgomery",
+      "score": 147.804,
+      "downloadCountAtSelection": 74502,
+      "bookshelves": [
+        "Category: Romance",
+        "Category: Novels"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/67979",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/67979/pg67979.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/67979/pg67979.epub",
+      "sourceRdfSha256": "c988eab9a9d25a892590b33aeea2544a16e3500a48a55bc2cb321d5125045a48",
+      "sourceEpubSha256": "e0de89f3fbe9c05b3239ae5b03a48d577f8db4f271908bea7625f064985e36cd",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "L. M. (Lucy Maud) Montgomery",
+          "role": "creator",
+          "birthYear": 1874,
+          "deathYear": 1942
+        }
+      ],
+      "selectedAt": "2026-09-08T00:18:35Z",
+      "releaseVersion": "pg-67979-e0de89f3fbe9",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 19,
+        "downloadCount": 74502
+      }
+    },
+    {
+      "gutenbergId": 2868,
+      "workId": "pd-pg-2868",
+      "title": "The Green Mummy",
+      "author": "Fergus Hume",
+      "score": 137.447,
+      "downloadCountAtSelection": 72092,
+      "bookshelves": [
+        "Category: Romance",
+        "Category: Crime, Thrillers and Mystery",
+        "Category: Novels"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/2868",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/2868/pg2868.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/2868/pg2868.epub",
+      "sourceRdfSha256": "18a2fd7fcdbe2f190c32c746def56aa9f68d03a956f859dd03515d8490276857",
+      "sourceEpubSha256": "d3e35eb1f7016888d30e3af00b6dd5b69a0da9cf2e3d403472904342660be959",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Fergus Hume",
+          "role": "creator",
+          "birthYear": 1859,
+          "deathYear": 1932
+        }
+      ],
+      "selectedAt": "2026-09-08T00:18:36Z",
+      "releaseVersion": "pg-2868-d3e35eb1f701",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 21,
+        "downloadCount": 72092
+      }
+    },
+    {
+      "gutenbergId": 37106,
+      "workId": "pd-pg-37106",
+      "title": "Little Women; Or, Meg, Jo, Beth, and Amy",
+      "author": "Louisa May Alcott",
+      "score": 137.31,
+      "downloadCountAtSelection": 71188,
+      "bookshelves": [
+        "Category: Children & Young Adult Reading",
+        "Category: Novels",
+        "Category: Classics of Literature",
+        "Category: American Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/37106",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/37106/pg37106.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/37106/pg37106.epub",
+      "sourceRdfSha256": "3dc4a760538168bffcaac13dccbc601eb19f84346211d641bd987708f42ee9d3",
+      "sourceEpubSha256": "9d0b11a8ef908b8375693b3f145d74e6b68c566ba10277a3144b64267a06770e",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Louisa May Alcott",
+          "role": "creator",
+          "birthYear": 1832,
+          "deathYear": 1888
+        },
+        {
+          "name": "Frank T. Merrill",
+          "role": "ill",
+          "birthYear": 1848,
+          "deathYear": 1923
+        }
+      ],
+      "selectedAt": "2026-09-08T00:18:37Z",
+      "releaseVersion": "pg-37106-9d0b11a8ef90",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 22,
+        "downloadCount": 71188
+      }
+    },
+    {
+      "gutenbergId": 59828,
+      "workId": "pd-pg-59828",
+      "title": "The String of Pearls; Or, The Barber of Fleet Street. A Domestic Romance.",
+      "author": "James Malcolm Rymer, Thomas Peckett Prest",
+      "score": 137.195,
+      "downloadCountAtSelection": 70439,
+      "bookshelves": [
+        "Category: Romance",
+        "Category: Crime, Thrillers and Mystery",
+        "Category: Novels",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/59828",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/59828/pg59828.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/59828/pg59828.epub",
+      "sourceRdfSha256": "8573dce3f02d8ea0453336a80303f73949c170f90837f28081a4881701e17b8c",
+      "sourceEpubSha256": "ac0a2006a2ee4751057a6917f77248b9a82ae64ddbb19b8937c9a579b8b89ff7",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "James Malcolm Rymer",
+          "role": "creator",
+          "birthYear": null,
+          "deathYear": 1884
+        },
+        {
+          "name": "Thomas Peckett Prest",
+          "role": "creator",
+          "birthYear": 1810,
+          "deathYear": 1859
+        }
+      ],
+      "selectedAt": "2026-09-08T00:18:37Z",
+      "releaseVersion": "pg-59828-ac0a2006a2ee",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 23,
+        "downloadCount": 70439
+      }
+    },
+    {
+      "gutenbergId": 5197,
+      "workId": "pd-pg-5197",
+      "title": "My Life — Volume 1",
+      "author": "Richard Wagner",
+      "score": 128.362,
+      "downloadCountAtSelection": 65234,
+      "bookshelves": [
+        "Category: Biographies",
+        "Category: Music"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/5197",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/5197/pg5197.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/5197/pg5197.epub",
+      "sourceRdfSha256": "969d392967600e19c99bbdbc95b5e417261b14fbb003831e07ba55670ac2b6b6",
+      "sourceEpubSha256": "fd52b138cad6cc2703be2edb617c7985f1e8de33b33bcce55e248762b13f1077",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Richard Wagner",
+          "role": "creator",
+          "birthYear": 1813,
+          "deathYear": 1883
+        }
+      ],
+      "selectedAt": "2026-09-08T00:18:38Z",
+      "releaseVersion": "pg-5197-fd52b138cad6",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 27,
+        "downloadCount": 65234
+      }
+    },
+    {
+      "gutenbergId": 564,
+      "workId": "pd-pg-564",
+      "title": "The Mystery of Edwin Drood",
+      "author": "Charles Dickens",
+      "score": 136.23,
+      "downloadCountAtSelection": 64443,
+      "bookshelves": [
+        "Mystery Fiction",
+        "Category: Crime, Thrillers and Mystery",
+        "Category: Novels",
+        "Category: Classics of Literature",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/564",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/564/pg564.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/564/pg564.epub",
+      "sourceRdfSha256": "1ec9515406febd486535df29c959b399927e78113bdab72756c8c3ff6203cc1c",
+      "sourceEpubSha256": "d27a061b8fcb26a3f467dc337c1d7bcd8e09dc22528b903e423ff7dfb72f4cb3",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Charles Dickens",
+          "role": "creator",
+          "birthYear": 1812,
+          "deathYear": 1870
+        }
+      ],
+      "selectedAt": "2026-09-08T00:18:39Z",
+      "releaseVersion": "pg-564-d27a061b8fcb",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 28,
+        "downloadCount": 64443
+      }
+    },
+    {
+      "gutenbergId": 244,
+      "workId": "pd-pg-244",
+      "title": "A Study in Scarlet",
+      "author": "Arthur Conan Doyle",
+      "score": 136.223,
+      "downloadCountAtSelection": 64402,
+      "bookshelves": [
+        "Detective Fiction",
+        "Category: Crime, Thrillers and Mystery",
+        "Category: Novels",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/244",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/244/pg244.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/244/pg244.epub",
+      "sourceRdfSha256": "4b424d653780988efb8f46340fb607c451bc1ae5c43b58b9295fe629308aa5b7",
+      "sourceEpubSha256": "76df519d3ce04fb50e2d2502328c62decb945e7c20a99d8cbd69e97fe707b252",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Arthur Conan Doyle",
+          "role": "creator",
+          "birthYear": 1859,
+          "deathYear": 1930
+        }
+      ],
+      "selectedAt": "2026-09-08T00:18:39Z",
+      "releaseVersion": "pg-244-76df519d3ce0",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 29,
+        "downloadCount": 64402
+      }
+    },
+    {
+      "gutenbergId": 2852,
+      "workId": "pd-pg-2852",
+      "title": "The Hound of the Baskervilles",
+      "author": "Arthur Conan Doyle",
+      "score": 135.952,
+      "downloadCountAtSelection": 62815,
+      "bookshelves": [
+        "Detective Fiction",
+        "Bestsellers, American, 1895-1923",
+        "Category: Crime, Thrillers and Mystery",
+        "Category: Novels",
+        "Category: Classics of Literature",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/2852",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/2852/pg2852.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/2852/pg2852.epub",
+      "sourceRdfSha256": "288c5cd529e1a141993367d0503de31a3125165831b331711caf855b9c21e94e",
+      "sourceEpubSha256": "b8ab4fbaf420d428f4f73928a007efb8cc7b2ee7a3f7851ddaa80712863a851b",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Arthur Conan Doyle",
+          "role": "creator",
+          "birthYear": 1859,
+          "deathYear": 1930
+        }
+      ],
+      "selectedAt": "2026-09-08T00:18:40Z",
+      "releaseVersion": "pg-2852-b8ab4fbaf420",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 31,
+        "downloadCount": 62815
+      }
+    },
+    {
+      "gutenbergId": 47530,
+      "workId": "pd-pg-47530",
+      "title": "Oliver Twist, Vol. 2 (of 3)",
+      "author": "Charles Dickens",
+      "score": 135.93,
+      "downloadCountAtSelection": 62687,
+      "bookshelves": [
+        "Category: Crime, Thrillers and Mystery",
+        "Category: Novels",
+        "Category: Classics of Literature",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/47530",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/47530/pg47530.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/47530/pg47530.epub",
+      "sourceRdfSha256": "274d28b6836bc92ce72fda1e21ebc5c2406da16ae24f7637e16bbee33eaabf27",
+      "sourceEpubSha256": "77d2e12f0251131d201126592470d6afb69e494062ea58175bb83ddfa00762f8",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Charles Dickens",
+          "role": "creator",
+          "birthYear": 1812,
+          "deathYear": 1870
+        },
+        {
+          "name": "George Cruikshank",
+          "role": "ill",
+          "birthYear": 1792,
+          "deathYear": 1878
+        }
+      ],
+      "selectedAt": "2026-09-08T00:18:40Z",
+      "releaseVersion": "pg-47530-77d2e12f0251",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 32,
+        "downloadCount": 62687
+      }
+    },
+    {
+      "gutenbergId": 2148,
+      "workId": "pd-pg-2148",
+      "title": "The Works of Edgar Allan Poe — Volume 2",
+      "author": "Edgar Allan Poe",
+      "score": 160.623,
+      "downloadCountAtSelection": 60944,
+      "bookshelves": [
+        "Detective Fiction",
+        "Horror",
+        "Gothic Fiction",
+        "Mystery Fiction",
+        "Category: Short Stories",
+        "Category: Crime, Thrillers and Mystery",
+        "Category: American Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/2148",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/2148/pg2148.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/2148/pg2148.epub",
+      "sourceRdfSha256": "749a604a8fec92aa55415435062cf4429a71b2395f386f2610aff72ef4f09a72",
+      "sourceEpubSha256": "db2d99693d940e4a1423d3803cf2ac199f42bb194a16619faad69efda59ec5a7",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Edgar Allan Poe",
+          "role": "creator",
+          "birthYear": 1809,
+          "deathYear": 1849
+        }
+      ],
+      "selectedAt": "2026-09-08T00:18:41Z",
+      "releaseVersion": "pg-2148-db2d99693d94",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 34,
+        "downloadCount": 60944
+      }
     }
   ],
   "rejections": {
@@ -694,16 +1465,105 @@
       "reason": "unknown death year for edt Frank Woodworth Pine",
       "checkedAt": "2026-09-07T21:56:25Z",
       "copyrightCutoffYear": 1955
+    },
+    "65238": {
+      "gutenbergId": 65238,
+      "title": "The Secret of Chimneys",
+      "popularityRank": 10,
+      "downloadCount30d": 91423,
+      "reason": "creator Agatha Christie died 1976, after automatic German cutoff 1955",
+      "checkedAt": "2026-09-08T00:18:31Z",
+      "copyrightCutoffYear": 1955
+    },
+    "2641": {
+      "gutenbergId": 2641,
+      "title": "A Room with a View",
+      "popularityRank": 13,
+      "downloadCount30d": 89649,
+      "reason": "creator E. M. (Edward Morgan) Forster died 1970, after automatic German cutoff 1955",
+      "checkedAt": "2026-09-08T00:18:33Z",
+      "copyrightCutoffYear": 1955
+    },
+    "37683": {
+      "gutenbergId": 37683,
+      "title": "Chambers's Twentieth Century Dictionary (part 1 of 4: A-D)",
+      "popularityRank": 20,
+      "downloadCount30d": 72591,
+      "reason": "no identifiable creator in official RDF",
+      "checkedAt": "2026-09-08T00:18:36Z",
+      "copyrightCutoffYear": 1955
+    },
+    "24739": {
+      "gutenbergId": 24739,
+      "title": "Bidwell's Travels, from Wall Street to London Prison: Fifteen Years in Solitude",
+      "popularityRank": 26,
+      "downloadCount30d": 65865,
+      "reason": "unknown death year for creator Austin Bidwell",
+      "checkedAt": "2026-09-08T00:18:38Z",
+      "copyrightCutoffYear": 1955
     }
   },
   "lastRun": {
-    "at": "2026-09-07T22:53:30Z",
+    "at": "2026-09-08T00:18:41Z",
+    "rankingMode": "official-project-gutenberg-top100-30d",
+    "rankingSource": "https://www.gutenberg.org/browse/scores/top",
+    "rankingWindow": "last 30 days",
+    "rankingRowsVerified": 100,
     "copyrightCutoffYear": 1955,
-    "candidateCount": 2220,
-    "checkedCount": 10,
-    "candidateCheckLimit": 40,
-    "addedCount": 10,
-    "skippedCount": 0,
-    "recentSkips": []
+    "candidateCount": 94,
+    "checkedCount": 26,
+    "candidateCheckLimit": 100,
+    "addedCount": 20,
+    "skippedCount": 6,
+    "recentSkips": [
+      {
+        "gutenbergId": 65238,
+        "title": "The Secret of Chimneys",
+        "popularityRank": 10,
+        "downloadCount30d": 91423,
+        "reason": "creator Agatha Christie died 1976, after automatic German cutoff 1955",
+        "checkedAt": "2026-09-08T00:18:31Z",
+        "copyrightCutoffYear": 1955
+      },
+      {
+        "gutenbergId": 2641,
+        "title": "A Room with a View",
+        "popularityRank": 13,
+        "downloadCount30d": 89649,
+        "reason": "creator E. M. (Edward Morgan) Forster died 1970, after automatic German cutoff 1955",
+        "checkedAt": "2026-09-08T00:18:33Z",
+        "copyrightCutoffYear": 1955
+      },
+      {
+        "gutenbergId": 37683,
+        "title": "Chambers's Twentieth Century Dictionary (part 1 of 4: A-D)",
+        "popularityRank": 20,
+        "downloadCount30d": 72591,
+        "reason": "no identifiable creator in official RDF",
+        "checkedAt": "2026-09-08T00:18:36Z",
+        "copyrightCutoffYear": 1955
+      },
+      {
+        "gutenbergId": 45839,
+        "title": "Dracula",
+        "popularityRank": 25,
+        "reason": "logical work already represented in Library: Dracula — Bram Stoker"
+      },
+      {
+        "gutenbergId": 24739,
+        "title": "Bidwell's Travels, from Wall Street to London Prison: Fifteen Years in Solitude",
+        "popularityRank": 26,
+        "downloadCount30d": 65865,
+        "reason": "unknown death year for creator Austin Bidwell",
+        "checkedAt": "2026-09-08T00:18:38Z",
+        "copyrightCutoffYear": 1955
+      },
+      {
+        "gutenbergId": 42,
+        "title": "The strange case of Dr. Jekyll and Mr. Hyde",
+        "popularityRank": 30,
+        "reason": "logical work already represented in Library: The strange case of Dr. Jekyll and Mr. Hyde — Robert Louis Stevenson"
+      }
+    ]
   }
 }

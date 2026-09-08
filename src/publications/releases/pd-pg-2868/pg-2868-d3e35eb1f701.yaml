@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-2868",
+  "version": "pg-2868-d3e35eb1f701",
+  "edition": 1,
+  "releasedAt": "2026-09-08T00:18:36Z",
+  "sourceHash": "18a2fd7fcdbe2f190c32c746def56aa9f68d03a956f859dd03515d8490276857",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-2868/editions/pg-2868-d3e35eb1f701/the-green-mummy-project-gutenberg.epub",
+      "filename": "the-green-mummy-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 271736,
+      "sha256": "d3e35eb1f7016888d30e3af00b6dd5b69a0da9cf2e3d403472904342660be959"
+    }
+  }
+}

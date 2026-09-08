@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-47530",
+  "slug": "pd-pg-47530",
+  "title": "Oliver Twist, Vol. 2 (of 3)",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Charles Dickens",
+      "role": "creator",
+      "birthYear": 1812,
+      "deathYear": 1870
+    },
+    {
+      "name": "George Cruikshank",
+      "role": "ill",
+      "birthYear": 1792,
+      "deathYear": 1878
+    }
+  ],
+  "description": "A public-domain edition of Oliver Twist, Vol. 2 (of 3) by Charles Dickens. Project Gutenberg classifies it under Orphans -- Fiction, London (England) -- Fiction, Bildungsromans.",
+  "shortDescription": "A public-domain edition of Oliver Twist, Vol. 2 (of 3) by Charles Dickens. Project Gutenberg classifies it under Orphans -- Fiction, London (England) -- Fiction, Bildungsromans.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2014-12-04",
+    "lastUpdated": "2026-09-08",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-47530-77d2e12f0251",
+    "activeRelease": "pg-47530-77d2e12f0251"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-47530.svg",
+    "alt": "Cover for Oliver Twist, Vol. 2 (of 3) by Charles Dickens"
+  },
+  "classification": {
+    "subjects": [
+      "orphans",
+      "london-england",
+      "bildungsromans",
+      "boys",
+      "criminals"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/47530",
+      "gutenbergId": 47530
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/47530/pg47530.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #47530. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

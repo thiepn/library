@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-47530",
+  "version": "pg-47530-77d2e12f0251",
+  "edition": 1,
+  "releasedAt": "2026-09-08T00:18:40Z",
+  "sourceHash": "274d28b6836bc92ce72fda1e21ebc5c2406da16ae24f7637e16bbee33eaabf27",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-47530/editions/pg-47530-77d2e12f0251/oliver-twist-vol-2-of-3-project-gutenberg.epub",
+      "filename": "oliver-twist-vol-2-of-3-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 200367,
+      "sha256": "77d2e12f0251131d201126592470d6afb69e494062ea58175bb83ddfa00762f8"
+    }
+  }
+}
