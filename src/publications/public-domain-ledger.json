@@ -3094,6 +3094,95 @@
         "releaseVersion": "pg-13871-eb5a54b6ffb1-cover-3d4586b1c9de",
         "artifactSha256": "3d4586b1c9de3bf445b51b67faa85081813cf9efd470e82779d9d7132d29a272"
       }
+    },
+    {
+      "gutenbergId": 42657,
+      "workId": "pd-pg-42657",
+      "title": "Gleanings among the Sheaves",
+      "author": "C. H. (Charles Haddon) Spurgeon",
+      "score": 15.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Category: Religion/Spirituality"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/42657",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/42657/pg42657.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/42657/pg42657.epub",
+      "sourceRdfSha256": "f73ca3cc6934ba21adac69f1a40bc0e1c5afeaddaa95da028a995f8510007943",
+      "sourceEpubSha256": "43b611adbf35dead4d5e2362b240793832c203ffcbd9636db503e19733007433",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "C. H. (Charles Haddon) Spurgeon",
+          "role": "creator",
+          "birthYear": 1834,
+          "deathYear": 1892
+        }
+      ],
+      "selectedAt": "2026-09-08T22:17:12Z",
+      "releaseVersion": "pg-42657-43b611adbf35-cover-c7bbcb276a71",
+      "curation": {
+        "mode": "curated-christian-classics",
+        "source": "user-requested-christian-classics",
+        "requestedPosition": 1,
+        "collection": "christian-classics"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T22:17:53Z",
+        "webCoverSha256": "182553c832052eaa6fa83304a96ee64f2b4a9af8e935bec1adb3201ba75e23b8",
+        "epubCoverSha256": "4644122165f1a14901fe317a7116f19fae5c8311fba5338990770f0074b8b533",
+        "releaseVersion": "pg-42657-43b611adbf35-cover-c7bbcb276a71",
+        "artifactSha256": "c7bbcb276a7144f9011be94699404602ad6595bc29d387caf456376544477172"
+      }
+    },
+    {
+      "gutenbergId": 29426,
+      "workId": "pd-pg-29426",
+      "title": "Things as they are : $b Mission work in Southern India",
+      "author": "Amy Carmichael",
+      "score": 15.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Category: History - Other",
+        "Category: Religion/Spirituality"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/29426",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/29426/pg29426.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/29426/pg29426.epub",
+      "sourceRdfSha256": "64275b2ab301ec472ece74ccdb7412ec331154e07592065fe306209361da333f",
+      "sourceEpubSha256": "cb1e530b8b6a5671e210a3426e21497d603a6ac984140cf9f14d07b092ed634b",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Amy Carmichael",
+          "role": "creator",
+          "birthYear": 1867,
+          "deathYear": 1951
+        }
+      ],
+      "selectedAt": "2026-09-08T22:17:12Z",
+      "releaseVersion": "pg-29426-cb1e530b8b6a-cover-bed6681a6a32",
+      "curation": {
+        "mode": "curated-christian-classics",
+        "source": "user-requested-christian-classics",
+        "requestedPosition": 2,
+        "collection": "christian-classics"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T22:18:36Z",
+        "webCoverSha256": "7057e3a55fce060e9fdc84018add600013a207b156e0d96d6f6c0e7439308aba",
+        "epubCoverSha256": "3556b626614ddbbd8c0258a1f6a2aac89a38376cbf2051cc4dc8b7a2c1244d36",
+        "releaseVersion": "pg-29426-cb1e530b8b6a-cover-bed6681a6a32",
+        "artifactSha256": "bed6681a6a32449d885211002b7e1eb8bc75369749ce1722d150da268a030dc6"
+      }
     }
   ],
   "rejections": {
@@ -3167,54 +3256,26 @@
     }
   },
   "lastRun": {
-    "at": "2026-09-08T18:30:33Z",
+    "at": "2026-09-08T22:17:12Z",
     "rankingMode": "curated-christian-classics",
     "curationSource": "user-requested-christian-classics",
     "collection": "christian-classics",
     "requestedIds": [
-      3296,
-      131,
-      1653,
-      16769,
-      45304,
-      45305,
-      57121,
-      22400,
-      52958,
-      45001,
-      64392,
-      26744,
-      65066,
-      70894,
-      15251,
-      654,
-      395,
-      30241,
-      66112,
-      27288,
-      29296,
-      12854,
-      30449,
-      61883,
-      58135,
-      13871,
-      65115
+      42657,
+      29426,
+      19572
     ],
     "copyrightCutoffYear": 1955,
-    "candidateCount": 27,
-    "checkedCount": 6,
+    "candidateCount": 2,
+    "checkedCount": 2,
     "candidateCheckLimit": 100,
-    "addedCount": 5,
+    "addedCount": 2,
     "skippedCount": 1,
     "recentSkips": [
       {
-        "gutenbergId": 65115,
-        "title": "Power Through Prayer",
-        "requestedPosition": 27,
-        "curationMode": "curated-christian-classics",
-        "reason": "unknown death year for aui Albert A. Head",
-        "checkedAt": "2026-09-08T18:30:33Z",
-        "copyrightCutoffYear": 1955
+        "gutenbergId": 19572,
+        "requestedPosition": 3,
+        "reason": "not found as an English text in official Project Gutenberg catalog"
       }
     ]
   }
