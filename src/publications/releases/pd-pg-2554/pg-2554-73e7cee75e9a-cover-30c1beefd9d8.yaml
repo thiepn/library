@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-2554",
+  "version": "pg-2554-73e7cee75e9a-cover-30c1beefd9d8",
+  "edition": 1,
+  "releasedAt": "2026-09-08T14:43:18Z",
+  "sourceHash": "aa73886faede282f402e5ffc0914baa90f2b19a4978e38dc330812b0c43917b0",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-2554/editions/pg-2554-73e7cee75e9a-cover-30c1beefd9d8/crime-and-punishment-project-gutenberg.epub",
+      "filename": "crime-and-punishment-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 943190,
+      "sha256": "30c1beefd9d8f6b4c9d817d36c9a3acb9efad9b6ba3197f232920f48176740ec"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceReleaseVersion": "pg-2554-73e7cee75e9a",
+    "sourceArtifactSha256": "73e7cee75e9ab0530546e947a9fa9cee28dbc852bc64ad9d8ffe5fc5f3a6374b",
+    "embeddedCover": true,
+    "finalArtifactSha256": "30c1beefd9d8f6b4c9d817d36c9a3acb9efad9b6ba3197f232920f48176740ec",
+    "releaseVersioning": "content-addressed"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-1342",
+  "version": "pg-1342-c25cf3d9ad4d-cover-92c08e0ed32d",
+  "edition": 1,
+  "releasedAt": "2026-09-08T14:42:34Z",
+  "sourceHash": "8f7694e9a8c879e98f905476333161ba786bf6d30eae7d905d8d4df5a3677452",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-1342/editions/pg-1342-c25cf3d9ad4d-cover-92c08e0ed32d/pride-and-prejudice-project-gutenberg.epub",
+      "filename": "pride-and-prejudice-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 885520,
+      "sha256": "92c08e0ed32d5cfc2c901968af3bae2b0e5b0b47a15c8394b24f9077c0f9a65f"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceReleaseVersion": "pg-1342-c25cf3d9ad4d",
+    "sourceArtifactSha256": "c25cf3d9ad4d41147ecc6947debcf981a961fd6b69a4219d9892af50b934c8bb",
+    "embeddedCover": true,
+    "finalArtifactSha256": "92c08e0ed32d5cfc2c901968af3bae2b0e5b0b47a15c8394b24f9077c0f9a65f",
+    "releaseVersioning": "content-addressed"
+  }
+}

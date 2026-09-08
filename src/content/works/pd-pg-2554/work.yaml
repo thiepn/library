@@ -25,14 +25,14 @@
   "visibility": "public",
   "publication": {
     "firstPublished": "2006-03-28",
-    "lastUpdated": "2026-09-07",
+    "lastUpdated": "2026-09-08",
     "edition": 1,
-    "editionLabel": "Project Gutenberg public-domain edition",
-    "version": "pg-2554-73e7cee75e9a",
-    "activeRelease": "pg-2554-73e7cee75e9a"
+    "editionLabel": "THIEPN Library public-domain edition (Project Gutenberg source)",
+    "version": "pg-2554-73e7cee75e9a-cover-30c1beefd9d8",
+    "activeRelease": "pg-2554-73e7cee75e9a-cover-30c1beefd9d8"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-2554.svg",
+    "src": "/covers/public-domain/pd-pg-2554.webp",
     "alt": "Cover for Crime and Punishment by Fyodor Dostoyevsky"
   },
   "classification": {

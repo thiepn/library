@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-2701",
+  "version": "pg-2701-81d6fa4e4168-cover-6a1f3f637b22",
+  "edition": 1,
+  "releasedAt": "2026-09-08T14:45:52Z",
+  "sourceHash": "b5829002c9bf001a4d39dccb76daae403767fbe6d02747639803cf428a42a7e2",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-2701/editions/pg-2701-81d6fa4e4168-cover-6a1f3f637b22/moby-dick-or-the-whale-project-gutenberg.epub",
+      "filename": "moby-dick-or-the-whale-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 1216242,
+      "sha256": "6a1f3f637b2254f24ae0b58799546e73bf3a25d2055cb15683bc6d0a8b87e00e"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceReleaseVersion": "pg-2701-81d6fa4e4168",
+    "sourceArtifactSha256": "81d6fa4e416843c2a5c1a85a21d2d437419db4d16b0db032e026f61410bd9aca",
+    "embeddedCover": true,
+    "finalArtifactSha256": "6a1f3f637b2254f24ae0b58799546e73bf3a25d2055cb15683bc6d0a8b87e00e",
+    "releaseVersioning": "content-addressed"
+  }
+}
