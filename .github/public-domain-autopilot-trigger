@@ -1,3 +1,4 @@
 initial-run: 2026-09-08
 post-hardening-run: 2026-09-08
-purpose: start a clean verified acquisition after selection-quality and logical-work deduplication hardening
+popularity-first-run: 2026-09-08
+purpose: start a clean verified acquisition after live-download-popularity-first ranking hardening
