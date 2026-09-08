@@ -81,7 +81,7 @@ jobs:
       - name: Generate book-specific covers and embed them into staged EPUBs
         if: steps.discover.outputs.added_count != '0'
         id: covers
-        run: python3 scripts/public-domain/cover_pipeline.py --new-staging
+        run: python3 scripts/public-domain/cover_job.py --new-staging
 
       - name: Give cover-enhanced releases content-addressed immutable keys
         if: steps.discover.outputs.added_count != '0'
