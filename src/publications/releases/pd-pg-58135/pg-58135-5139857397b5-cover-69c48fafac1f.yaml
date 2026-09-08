@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-58135",
+  "version": "pg-58135-5139857397b5-cover-69c48fafac1f",
+  "edition": 1,
+  "releasedAt": "2026-09-08T18:30:32Z",
+  "sourceHash": "c15420fe3039beca82abc94f09430f455f3507f3152d16fc2cafe3bbf9ad286b",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-58135/editions/pg-58135-5139857397b5-cover-69c48fafac1f/the-saints-everlasting-rest-project-gutenberg.epub",
+      "filename": "the-saints-everlasting-rest-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 705601,
+      "sha256": "69c48fafac1f1fd1ec5e79156889c0803bc37bc6f755bc1979bc7ccfdd4e8486"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "5139857397b51e10572d87888b8061e5694efe009fcd6dcb73f76b5c22db9510",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-58135-5139857397b5",
+    "finalArtifactSha256": "69c48fafac1f1fd1ec5e79156889c0803bc37bc6f755bc1979bc7ccfdd4e8486",
+    "releaseVersioning": "content-addressed"
+  }
+}

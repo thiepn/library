@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-61883",
+  "version": "pg-61883-e713da00ba78-cover-fcd6efe07663",
+  "edition": 1,
+  "releasedAt": "2026-09-08T18:30:32Z",
+  "sourceHash": "c298f24b2d1822c063e4c2486ef5ca5852806a881eb23c7e324565d55a90ed8f",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-61883/editions/pg-61883-e713da00ba78-cover-fcd6efe07663/prevailing-prayer-what-hinders-it-project-gutenberg.epub",
+      "filename": "prevailing-prayer-what-hinders-it-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 512594,
+      "sha256": "fcd6efe076631c25ec3ee54195ea7eb6aecda5836901320534a865373ff73005"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "e713da00ba7800f251959d96c0dcd10f83c9e9588ab87ce05f218be66ab0a213",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-61883-e713da00ba78",
+    "finalArtifactSha256": "fcd6efe076631c25ec3ee54195ea7eb6aecda5836901320534a865373ff73005",
+    "releaseVersioning": "content-addressed"
+  }
+}

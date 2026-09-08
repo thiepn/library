@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-12854",
+  "version": "pg-12854-aaa903169384-cover-46b4e65370af",
+  "edition": 1,
+  "releasedAt": "2026-09-08T18:30:31Z",
+  "sourceHash": "18b8c32cf39a351037c4ef8d44543ad183bf6cd9fe1cef4c01385119d27f50d7",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-12854/editions/pg-12854-aaa903169384-cover-46b4e65370af/the-masters-indwelling-project-gutenberg.epub",
+      "filename": "the-masters-indwelling-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 541827,
+      "sha256": "46b4e65370af3c01b31b7d326e091d20645346b8580f377db9ce589431661e87"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "aaa903169384926de4d347410b88c15e9917d01bfe4cf8615c23865aa910f619",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-12854-aaa903169384",
+    "finalArtifactSha256": "46b4e65370af3c01b31b7d326e091d20645346b8580f377db9ce589431661e87",
+    "releaseVersioning": "content-addressed"
+  }
+}

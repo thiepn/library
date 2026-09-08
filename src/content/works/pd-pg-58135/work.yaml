@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-58135",
+  "slug": "pd-pg-58135",
+  "title": "The Saint's Everlasting Rest",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Richard Baxter",
+      "role": "creator",
+      "birthYear": 1615,
+      "deathYear": 1691
+    },
+    {
+      "name": "Benjamin Fawcett",
+      "role": "edt",
+      "birthYear": 1715,
+      "deathYear": 1780
+    }
+  ],
+  "description": "A public-domain edition of The Saint's Everlasting Rest by Richard Baxter. Project Gutenberg classifies it under Devotional literature, BV.",
+  "shortDescription": "A public-domain edition of The Saint's Everlasting Rest by Richard Baxter. Project Gutenberg classifies it under Devotional literature, BV.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2018-10-19",
+    "lastUpdated": "2026-09-08",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-58135-5139857397b5-cover-69c48fafac1f",
+    "activeRelease": "pg-58135-5139857397b5-cover-69c48fafac1f"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-58135.webp",
+    "alt": "Cover for The Saint's Everlasting Rest by Richard Baxter"
+  },
+  "classification": {
+    "subjects": [
+      "devotional-literature",
+      "bv"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic",
+      "christian",
+      "christian-classic"
+    ],
+    "collections": [
+      "public-domain",
+      "christian-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/58135",
+      "gutenbergId": 58135
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/58135/pg58135.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #58135. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

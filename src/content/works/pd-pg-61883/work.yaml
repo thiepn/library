@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-61883",
+  "slug": "pd-pg-61883",
+  "title": "Prevailing Prayer: What Hinders It?",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Dwight Lyman Moody",
+      "role": "creator",
+      "birthYear": 1837,
+      "deathYear": 1899
+    }
+  ],
+  "description": "A public-domain edition of Prevailing Prayer: What Hinders It? by Dwight Lyman Moody. Project Gutenberg classifies it under Christian life, Prayer -- Christianity, BV.",
+  "shortDescription": "A public-domain edition of Prevailing Prayer: What Hinders It? by Dwight Lyman Moody. Project Gutenberg classifies it under Christian life, Prayer -- Christianity, BV.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2020-04-21",
+    "lastUpdated": "2026-09-08",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-61883-e713da00ba78-cover-fcd6efe07663",
+    "activeRelease": "pg-61883-e713da00ba78-cover-fcd6efe07663"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-61883.webp",
+    "alt": "Cover for Prevailing Prayer: What Hinders It? by Dwight Lyman Moody"
+  },
+  "classification": {
+    "subjects": [
+      "christian-life",
+      "prayer",
+      "bv"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic",
+      "christian",
+      "christian-classic"
+    ],
+    "collections": [
+      "public-domain",
+      "christian-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/61883",
+      "gutenbergId": 61883
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/61883/pg61883.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #61883. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}
