@@ -61,6 +61,52 @@ def display_metadata(work_id: str, entry: dict, work: dict) -> tuple[str, str]:
     return override.get("title", title), override.get("author", author)
 
 
+_original_style_direction = pipeline.style_direction
+
+
+def _expanded_style_direction(bookshelves: list[str]) -> str:
+    blob = " ".join(bookshelves).casefold()
+    if "science fiction" in blob or "science-fiction" in blob:
+        return (
+            "Literary science-fiction illustration: imaginative retrofuturist or speculative imagery, "
+            "period-aware where relevant, graphic silhouette, restrained luminous accents, and tactile print texture."
+        )
+    if "horror" in blob and "gothic" not in blob:
+        return (
+            "Literary horror illustration: uncanny atmosphere, symbolic menace rather than gore, deep shadow, "
+            "restrained detail, and sophisticated printmaking texture."
+        )
+    if "biograph" in blob:
+        return (
+            "Editorial biographical illustration: one defining object, place, gesture, or restrained portrait motif, "
+            "historically grounded and dignified rather than photographic."
+        )
+    if "economics" in blob:
+        return (
+            "Conceptual historical-economics illustration: trade, labor, markets, industry, or exchange expressed "
+            "through elegant symbolic geometry and period printmaking texture."
+        )
+    return _original_style_direction(bookshelves)
+
+
+pipeline.style_direction = _expanded_style_direction
+_original_build_prompt = pipeline.build_prompt
+
+
+def _build_prompt_with_library_context(entry: dict) -> str:
+    prompt = _original_build_prompt(entry)
+    summary = str(entry.get("_coverSummary") or "").strip()
+    if not summary:
+        return prompt
+    return (
+        prompt
+        + "\nLibrary synopsis/context for this exact edition:\n"
+        + summary[:900]
+        + "\nUse this context to avoid generic or title-literal imagery.\n"
+    )
+
+
+pipeline.build_prompt = _build_prompt_with_library_context
 _original_update_cover_assets = pipeline.update_cover_assets
 
 
@@ -75,6 +121,9 @@ def _update_cover_assets_with_polished_metadata(
     display_entry = copy.copy(entry)
     display_entry["title"] = title
     display_entry["author"] = author
+    display_entry["_coverSummary"] = str(
+        work.get("shortDescription") or work.get("description") or ""
+    ).strip()
 
     result = _original_update_cover_assets(work_id, display_entry, work, force=force)
     if isinstance(display_entry.get("cover"), dict):
