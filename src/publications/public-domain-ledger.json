@@ -3177,11 +3177,11 @@
         "model": "gpt-image-2",
         "size": "1024x1536",
         "quality": "medium",
-        "generatedAt": "2026-09-08T22:18:36Z",
-        "webCoverSha256": "7057e3a55fce060e9fdc84018add600013a207b156e0d96d6f6c0e7439308aba",
-        "epubCoverSha256": "3556b626614ddbbd8c0258a1f6a2aac89a38376cbf2051cc4dc8b7a2c1244d36",
-        "releaseVersion": "pg-29426-cb1e530b8b6a-cover-bed6681a6a32",
-        "artifactSha256": "bed6681a6a32449d885211002b7e1eb8bc75369749ce1722d150da268a030dc6"
+        "generatedAt": "2026-09-08T23:06:38Z",
+        "webCoverSha256": "876d29471dd66bf52f7256910233e69bdeb9ade1309ec86cd2a45323f6f101d6",
+        "epubCoverSha256": "b94f98200556e0a219ac16416aa57c57a90f9b2f5d3fb0dc4d69ba63855967c0",
+        "releaseVersion": "pg-29426-cb1e530b8b6a-cover-948f8cb066ec",
+        "artifactSha256": "948f8cb066ecc30287d920fba49eab573182a119a2060290c98fd47dbd5d67f5"
       }
     }
   ],

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-29426",
+  "version": "pg-29426-cb1e530b8b6a-cover-948f8cb066ec",
+  "edition": 1,
+  "releasedAt": "2026-09-08T23:06:38Z",
+  "sourceHash": "64275b2ab301ec472ece74ccdb7412ec331154e07592065fe306209361da333f",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-29426/editions/pg-29426-cb1e530b8b6a-cover-948f8cb066ec/things-as-they-are-b-mission-work-in-southern-india-project-gutenberg.epub",
+      "filename": "things-as-they-are-b-mission-work-in-southern-india-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 661020,
+      "sha256": "948f8cb066ecc30287d920fba49eab573182a119a2060290c98fd47dbd5d67f5"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceReleaseVersion": "pg-29426-cb1e530b8b6a",
+    "sourceArtifactSha256": "cb1e530b8b6a5671e210a3426e21497d603a6ac984140cf9f14d07b092ed634b",
+    "embeddedCover": true,
+    "finalArtifactSha256": "948f8cb066ecc30287d920fba49eab573182a119a2060290c98fd47dbd5d67f5",
+    "releaseVersioning": "content-addressed"
+  }
+}
