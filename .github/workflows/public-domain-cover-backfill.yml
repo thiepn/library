@@ -69,7 +69,7 @@ jobs:
           if [ "$FORCE" = 'true' ]; then
             force_flag='--force'
           fi
-          python3 scripts/public-domain/cover_pipeline.py \
+          python3 scripts/public-domain/cover_job.py \
             --backfill \
             --limit "$LIMIT" \
             $force_flag
