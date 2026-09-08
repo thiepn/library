@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-145",
+  "version": "pg-145-62fdc739ca64-cover-47ef1bb92bd6",
+  "edition": 1,
+  "releasedAt": "2026-09-08T14:44:58Z",
+  "sourceHash": "01a886541289ad42cfe3665884014e6b54bc46633ee5e8e5c4c52a83eb6ec919",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-145/editions/pg-145-62fdc739ca64-cover-47ef1bb92bd6/middlemarch-project-gutenberg.epub",
+      "filename": "middlemarch-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 1262489,
+      "sha256": "47ef1bb92bd638d730cba6cb81c786ff29290a8622c6d5be72059b505d9059f0"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceReleaseVersion": "pg-145-62fdc739ca64",
+    "sourceArtifactSha256": "62fdc739ca6425c56ed081a71e32ab6395d6fee06c19a5345018edf124f8b04f",
+    "embeddedCover": true,
+    "finalArtifactSha256": "47ef1bb92bd638d730cba6cb81c786ff29290a8622c6d5be72059b505d9059f0",
+    "releaseVersioning": "content-addressed"
+  }
+}

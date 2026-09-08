@@ -19,14 +19,14 @@
   "visibility": "public",
   "publication": {
     "firstPublished": "1994-07-01",
-    "lastUpdated": "2026-09-07",
+    "lastUpdated": "2026-09-08",
     "edition": 1,
-    "editionLabel": "Project Gutenberg public-domain edition",
-    "version": "pg-145-62fdc739ca64",
-    "activeRelease": "pg-145-62fdc739ca64"
+    "editionLabel": "THIEPN Library public-domain edition (Project Gutenberg source)",
+    "version": "pg-145-62fdc739ca64-cover-47ef1bb92bd6",
+    "activeRelease": "pg-145-62fdc739ca64-cover-47ef1bb92bd6"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-145.svg",
+    "src": "/covers/public-domain/pd-pg-145.webp",
     "alt": "Cover for Middlemarch by George Eliot"
   },
   "classification": {

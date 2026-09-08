@@ -19,14 +19,14 @@
   "visibility": "public",
   "publication": {
     "firstPublished": "2001-07-01",
-    "lastUpdated": "2026-09-07",
+    "lastUpdated": "2026-09-08",
     "edition": 1,
-    "editionLabel": "Project Gutenberg public-domain edition",
-    "version": "pg-2701-81d6fa4e4168",
-    "activeRelease": "pg-2701-81d6fa4e4168"
+    "editionLabel": "THIEPN Library public-domain edition (Project Gutenberg source)",
+    "version": "pg-2701-81d6fa4e4168-cover-6a1f3f637b22",
+    "activeRelease": "pg-2701-81d6fa4e4168-cover-6a1f3f637b22"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-2701.svg",
+    "src": "/covers/public-domain/pd-pg-2701.webp",
     "alt": "Cover for Moby Dick; Or, The Whale by Herman Melville"
   },
   "classification": {

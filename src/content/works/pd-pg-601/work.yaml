@@ -19,14 +19,14 @@
   "visibility": "public",
   "publication": {
     "firstPublished": "1996-07-01",
-    "lastUpdated": "2026-09-07",
+    "lastUpdated": "2026-09-08",
     "edition": 1,
-    "editionLabel": "Project Gutenberg public-domain edition",
-    "version": "pg-601-0799f5003445",
-    "activeRelease": "pg-601-0799f5003445"
+    "editionLabel": "THIEPN Library public-domain edition (Project Gutenberg source)",
+    "version": "pg-601-0799f5003445-cover-be5229825e64",
+    "activeRelease": "pg-601-0799f5003445-cover-be5229825e64"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-601.svg",
+    "src": "/covers/public-domain/pd-pg-601.webp",
     "alt": "Cover for The Monk: A Romance by M. G. (Matthew Gregory) Lewis"
   },
   "classification": {

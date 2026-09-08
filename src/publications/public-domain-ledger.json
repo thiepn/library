@@ -37,7 +37,18 @@
         }
       ],
       "selectedAt": "2026-09-07T21:56:17Z",
-      "releaseVersion": "pg-1342-c25cf3d9ad4d"
+      "releaseVersion": "pg-1342-c25cf3d9ad4d",
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T14:42:34Z",
+        "webCoverSha256": "210824aa5eda7b70d2bda7dc4c130b1972eec9ed76fa92ee777469416414c2d2",
+        "epubCoverSha256": "e7640465d0464114a5acfdeba1de5a4cfd8b7a41592711b5a0c1129a49077282",
+        "releaseVersion": "pg-1342-c25cf3d9ad4d-cover-92c08e0ed32d",
+        "artifactSha256": "92c08e0ed32d5cfc2c901968af3bae2b0e5b0b47a15c8394b24f9077c0f9a65f"
+      }
     },
     {
       "gutenbergId": 2554,
@@ -76,7 +87,18 @@
         }
       ],
       "selectedAt": "2026-09-07T21:56:18Z",
-      "releaseVersion": "pg-2554-73e7cee75e9a"
+      "releaseVersion": "pg-2554-73e7cee75e9a",
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T14:43:18Z",
+        "webCoverSha256": "89ed13cd16c23eaea9a125231082d2fe131389b93a45232ece7de273b72d1823",
+        "epubCoverSha256": "1c53d0a728897aa1cc055f12811789ea469b48be054083f898204c0777f4813c",
+        "releaseVersion": "pg-2554-73e7cee75e9a-cover-30c1beefd9d8",
+        "artifactSha256": "30c1beefd9d8f6b4c9d817d36c9a3acb9efad9b6ba3197f232920f48176740ec"
+      }
     },
     {
       "gutenbergId": 601,
@@ -108,7 +130,18 @@
         }
       ],
       "selectedAt": "2026-09-07T21:56:19Z",
-      "releaseVersion": "pg-601-0799f5003445"
+      "releaseVersion": "pg-601-0799f5003445",
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T14:44:10Z",
+        "webCoverSha256": "f0dc345b26889ee1a2a544bb43210b5e24648c5417858d103157dfa44f227296",
+        "epubCoverSha256": "bc23476df8b29319a3381993d1b17c1b8fb868c04cde9dd28ff34b302de4a173",
+        "releaseVersion": "pg-601-0799f5003445-cover-be5229825e64",
+        "artifactSha256": "be5229825e6464433484ad31523607a18f8eb007dcbddc8f75bd7d2d735c04d4"
+      }
     },
     {
       "gutenbergId": 145,
@@ -139,7 +172,18 @@
         }
       ],
       "selectedAt": "2026-09-07T21:56:20Z",
-      "releaseVersion": "pg-145-62fdc739ca64"
+      "releaseVersion": "pg-145-62fdc739ca64",
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T14:44:58Z",
+        "webCoverSha256": "9593965be304b15d1f2938a34ba33297a6660416de0c60254fd9ad684dfd215b",
+        "epubCoverSha256": "c40a1fe1452a5dab34eead51cbb4f6525e1010a9f4100ed98615e2d990903b30",
+        "releaseVersion": "pg-145-62fdc739ca64-cover-47ef1bb92bd6",
+        "artifactSha256": "47ef1bb92bd638d730cba6cb81c786ff29290a8622c6d5be72059b505d9059f0"
+      }
     },
     {
       "gutenbergId": 2701,
@@ -170,7 +214,18 @@
         }
       ],
       "selectedAt": "2026-09-07T21:56:21Z",
-      "releaseVersion": "pg-2701-81d6fa4e4168"
+      "releaseVersion": "pg-2701-81d6fa4e4168",
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T14:45:52Z",
+        "webCoverSha256": "68a1e1a4b925db73c2d3f41d6a23f5425e544d9db370480dffcbe07869ff3957",
+        "epubCoverSha256": "0f0b8856aa139c46b2638a4b639c327199fbf03e84e2b2f65ebb92ca83f27182",
+        "releaseVersion": "pg-2701-81d6fa4e4168-cover-6a1f3f637b22",
+        "artifactSha256": "6a1f3f637b2254f24ae0b58799546e73bf3a25d2055cb15683bc6d0a8b87e00e"
+      }
     },
     {
       "gutenbergId": 1695,

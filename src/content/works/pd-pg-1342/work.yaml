@@ -19,14 +19,14 @@
   "visibility": "public",
   "publication": {
     "firstPublished": "1998-06-01",
-    "lastUpdated": "2026-09-07",
+    "lastUpdated": "2026-09-08",
     "edition": 1,
-    "editionLabel": "Project Gutenberg public-domain edition",
-    "version": "pg-1342-c25cf3d9ad4d",
-    "activeRelease": "pg-1342-c25cf3d9ad4d"
+    "editionLabel": "THIEPN Library public-domain edition (Project Gutenberg source)",
+    "version": "pg-1342-c25cf3d9ad4d-cover-92c08e0ed32d",
+    "activeRelease": "pg-1342-c25cf3d9ad4d-cover-92c08e0ed32d"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-1342.svg",
+    "src": "/covers/public-domain/pd-pg-1342.webp",
     "alt": "Cover for Pride and Prejudice by Jane Austen"
   },
   "classification": {
