@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-15251",
+  "slug": "pd-pg-15251",
+  "title": "The Biography of Robert Murray M'Cheyne",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Andrew A. (Andrew Alexander) Bonar",
+      "role": "creator",
+      "birthYear": 1810,
+      "deathYear": 1892
+    }
+  ],
+  "description": "A public-domain edition of The Biography of Robert Murray M'Cheyne by Andrew A. (Andrew Alexander) Bonar. Project Gutenberg classifies it under Church of Scotland -- Clergy -- Biography, M'Cheyne, Robert Murray, 1813-1843, Presbyterian Church -- Scotland -- Clergy -- Biography.",
+  "shortDescription": "A public-domain edition of The Biography of Robert Murray M'Cheyne by Andrew A. (Andrew Alexander) Bonar. Project Gutenberg classifies it under Church of Scotland -- Clergy -- B…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2005-03-04",
+    "lastUpdated": "2026-09-08",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-15251-872c7b809a85-cover-49fc4f51386a",
+    "activeRelease": "pg-15251-872c7b809a85-cover-49fc4f51386a"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-15251.webp",
+    "alt": "Cover for The Biography of Robert Murray M'Cheyne by Andrew A. (Andrew Alexander) Bonar"
+  },
+  "classification": {
+    "subjects": [
+      "church-of-scotland",
+      "mcheyne-robert-murray-1813-1843",
+      "presbyterian-church",
+      "bx"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic",
+      "christian",
+      "christian-classic"
+    ],
+    "collections": [
+      "public-domain",
+      "christian-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/15251",
+      "gutenbergId": 15251
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/15251/pg15251.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #15251. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

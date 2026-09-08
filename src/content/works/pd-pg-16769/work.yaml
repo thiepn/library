@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-16769",
+  "slug": "pd-pg-16769",
+  "title": "Orthodoxy",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "G. K. (Gilbert Keith) Chesterton",
+      "role": "creator",
+      "birthYear": 1874,
+      "deathYear": 1936
+    }
+  ],
+  "description": "A public-domain edition of Orthodoxy by G. K. (Gilbert Keith) Chesterton. Project Gutenberg classifies it under Apologetics, Chesterton, G. K. (Gilbert Keith), 1874-1936, Christianity -- Essence, genius, nature.",
+  "shortDescription": "A public-domain edition of Orthodoxy by G. K. (Gilbert Keith) Chesterton. Project Gutenberg classifies it under Apologetics, Chesterton, G. K. (Gilbert Keith), 1874-1936, Christ…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2005-09-28",
+    "lastUpdated": "2026-09-08",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-16769-9b9ecc135dc9-cover-83340a2d6eda",
+    "activeRelease": "pg-16769-9b9ecc135dc9-cover-83340a2d6eda"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-16769.webp",
+    "alt": "Cover for Orthodoxy by G. K. (Gilbert Keith) Chesterton"
+  },
+  "classification": {
+    "subjects": [
+      "apologetics",
+      "chesterton-g-k-gilbert-keith-1874-1936",
+      "christianity",
+      "br"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic",
+      "christian",
+      "christian-classic"
+    ],
+    "collections": [
+      "public-domain",
+      "christian-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/16769",
+      "gutenbergId": 16769
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/16769/pg16769.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #16769. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

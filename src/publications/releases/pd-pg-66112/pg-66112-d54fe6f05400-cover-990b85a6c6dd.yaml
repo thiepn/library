@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-66112",
+  "version": "pg-66112-d54fe6f05400-cover-990b85a6c6dd",
+  "edition": 1,
+  "releasedAt": "2026-09-08T15:10:06Z",
+  "sourceHash": "960e00e5df628c92aa92c317ff565b8c5ac082fedebe867287a83e585a8eeec8",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-66112/editions/pg-66112-d54fe6f05400-cover-990b85a6c6dd/purpose-in-prayer-project-gutenberg.epub",
+      "filename": "purpose-in-prayer-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 540713,
+      "sha256": "990b85a6c6dd8cbf18dcdf58f8d2a40f3c0835be61badfbecf785e5bc13c01e8"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "d54fe6f05400052a3ef202885bc374c696e0edb1bf44350a638b7e337d7d2705",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-66112-d54fe6f05400",
+    "finalArtifactSha256": "990b85a6c6dd8cbf18dcdf58f8d2a40f3c0835be61badfbecf785e5bc13c01e8",
+    "releaseVersioning": "content-addressed"
+  }
+}

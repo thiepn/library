@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-26744",
+  "version": "pg-26744-66e318296ece-cover-b4c85c7a8027",
+  "edition": 1,
+  "releasedAt": "2026-09-08T15:10:01Z",
+  "sourceHash": "3d57eee86d24d33c403c25bf482117e624a9ef018d17c1c18cb765dff47119da",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-26744/editions/pg-26744-66e318296ece-cover-b4c85c7a8027/a-retrospect-project-gutenberg.epub",
+      "filename": "a-retrospect-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 491559,
+      "sha256": "b4c85c7a802700f14edc3c975a9a6bcd2eba008b1f2ab6e8ff2ac8f2915b076a"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "66e318296ece2dd65cfd1bf21dbdf4ea436805b8257ca08414b82c55a1c05fd0",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-26744-66e318296ece",
+    "finalArtifactSha256": "b4c85c7a802700f14edc3c975a9a6bcd2eba008b1f2ab6e8ff2ac8f2915b076a",
+    "releaseVersioning": "content-addressed"
+  }
+}

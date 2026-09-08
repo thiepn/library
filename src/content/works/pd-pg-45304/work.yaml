@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-45304",
+  "slug": "pd-pg-45304",
+  "title": "The City of God, Volume I",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "of Hippo, Saint Augustine",
+      "role": "creator",
+      "birthYear": 354,
+      "deathYear": 430
+    },
+    {
+      "name": "Marcus Dods",
+      "role": "edt",
+      "birthYear": 1834,
+      "deathYear": 1909
+    }
+  ],
+  "description": "A public-domain edition of The City of God, Volume I by Saint Augustine of Hippo. Project Gutenberg classifies it under Apologetics -- Early works to 1800, Kingdom of God -- Early works to 1800, BR.",
+  "shortDescription": "A public-domain edition of The City of God, Volume I by Saint Augustine of Hippo. Project Gutenberg classifies it under Apologetics -- Early works to 1800, Kingdom of God -- Ear…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2014-04-08",
+    "lastUpdated": "2026-09-08",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-45304-aa471384307c-cover-a29d9034e62e",
+    "activeRelease": "pg-45304-aa471384307c-cover-a29d9034e62e"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-45304.webp",
+    "alt": "Cover for The City of God, Volume I by of Hippo, Saint Augustine"
+  },
+  "classification": {
+    "subjects": [
+      "apologetics",
+      "kingdom-of-god",
+      "br"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic",
+      "christian",
+      "christian-classic"
+    ],
+    "collections": [
+      "public-domain",
+      "christian-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/45304",
+      "gutenbergId": 45304
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/45304/pg45304.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #45304. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

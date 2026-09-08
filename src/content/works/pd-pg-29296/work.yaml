@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-29296",
+  "slug": "pd-pg-29296",
+  "title": "The Ministry of Intercession: A Plea for More Prayer",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Andrew Murray",
+      "role": "creator",
+      "birthYear": 1828,
+      "deathYear": 1917
+    }
+  ],
+  "description": "A public-domain edition of The Ministry of Intercession: A Plea for More Prayer by Andrew Murray. Project Gutenberg classifies it under Intercessory prayer -- Christianity, BV.",
+  "shortDescription": "A public-domain edition of The Ministry of Intercession: A Plea for More Prayer by Andrew Murray. Project Gutenberg classifies it under Intercessory prayer -- Christianity, BV.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2009-07-02",
+    "lastUpdated": "2026-09-08",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-29296-2815d5e7fb09-cover-d5d61fbd0d93",
+    "activeRelease": "pg-29296-2815d5e7fb09-cover-d5d61fbd0d93"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-29296.webp",
+    "alt": "Cover for The Ministry of Intercession: A Plea for More Prayer by Andrew Murray"
+  },
+  "classification": {
+    "subjects": [
+      "intercessory-prayer",
+      "bv"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic",
+      "christian",
+      "christian-classic"
+    ],
+    "collections": [
+      "public-domain",
+      "christian-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/29296",
+      "gutenbergId": 29296
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/29296/pg29296.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #29296. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-30241",
+  "slug": "pd-pg-30241",
+  "title": "The Person and Work of The Holy Spirit",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "R. A. (Reuben Archer) Torrey",
+      "role": "creator",
+      "birthYear": 1856,
+      "deathYear": 1928
+    }
+  ],
+  "description": "A public-domain edition of The Person and Work of The Holy Spirit by R. A. (Reuben Archer) Torrey. Project Gutenberg classifies it under Holy Spirit, BT.",
+  "shortDescription": "A public-domain edition of The Person and Work of The Holy Spirit by R. A. (Reuben Archer) Torrey. Project Gutenberg classifies it under Holy Spirit, BT.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2009-10-13",
+    "lastUpdated": "2026-09-08",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-30241-338109371914-cover-0c0a235f5635",
+    "activeRelease": "pg-30241-338109371914-cover-0c0a235f5635"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-30241.webp",
+    "alt": "Cover for The Person and Work of The Holy Spirit by R. A. (Reuben Archer) Torrey"
+  },
+  "classification": {
+    "subjects": [
+      "holy-spirit",
+      "bt"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic",
+      "christian",
+      "christian-classic"
+    ],
+    "collections": [
+      "public-domain",
+      "christian-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/30241",
+      "gutenbergId": 30241
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/30241/pg30241.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #30241. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

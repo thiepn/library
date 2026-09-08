@@ -1449,6 +1449,981 @@
         "rank": 34,
         "downloadCount": 60944
       }
+    },
+    {
+      "gutenbergId": 3296,
+      "workId": "pd-pg-3296",
+      "title": "The Confessions of St. Augustine",
+      "author": "Saint Augustine of Hippo",
+      "score": 120.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Christianity",
+        "Classical Antiquity",
+        "Harvard Classics",
+        "Category: Biographies",
+        "Category: Classics of Literature",
+        "Category: Philosophy & Ethics",
+        "Category: Religion/Spirituality"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/3296",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/3296/pg3296.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/3296/pg3296.epub",
+      "sourceRdfSha256": "c47d71a42da6f71ba280fe208cfc6fb51af909d12b2d50fffec47a540f367d62",
+      "sourceEpubSha256": "e599766050b2c1ca41489042dda8edf5ffc7b5a73d55215d408495cb0a91621c",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "of Hippo, Saint Augustine",
+          "role": "creator",
+          "birthYear": 354,
+          "deathYear": 430
+        },
+        {
+          "name": "E. B. (Edward Bouverie) Pusey",
+          "role": "trl",
+          "birthYear": 1800,
+          "deathYear": 1882
+        }
+      ],
+      "selectedAt": "2026-09-08T15:09:54Z",
+      "releaseVersion": "pg-3296-e599766050b2-cover-3598c12ffb37",
+      "curation": {
+        "mode": "curated-christian-classics",
+        "source": "user-requested-christian-classics",
+        "requestedPosition": 1,
+        "collection": "christian-classics"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T15:10:53Z",
+        "webCoverSha256": "cd4d9be93349867d108642cb95c1fa95b3fd13a1381883c0978389935b7c879d",
+        "epubCoverSha256": "4d4bdbb66e0c55cfaaf2120c0ab49a9964227c52b109d24c5a94a7c60c0a5e1d",
+        "releaseVersion": "pg-3296-e599766050b2-cover-3598c12ffb37",
+        "artifactSha256": "3598c12ffb3707211449752e941ba28cbc5837632eb862def796bf7e58b7f3b7"
+      }
+    },
+    {
+      "gutenbergId": 131,
+      "workId": "pd-pg-131",
+      "title": "The Pilgrim's Progress from this world to that which is to come",
+      "author": "John Bunyan",
+      "score": 128.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Christianity",
+        "Harvard Classics",
+        "Category: Novels",
+        "Category: Classics of Literature",
+        "Category: British Literature",
+        "Category: Religion/Spirituality"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/131",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/131/pg131.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/131/pg131.epub",
+      "sourceRdfSha256": "79a301e95c76707d2bc8678b1a1afde77c758a881f92d4e5ea7084d5f261679e",
+      "sourceEpubSha256": "c1d012debe05dd911c48cf7f5f6563d4fa31e9f4dfc1858e9531c00ac4c9285a",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "John Bunyan",
+          "role": "creator",
+          "birthYear": 1628,
+          "deathYear": 1688
+        }
+      ],
+      "selectedAt": "2026-09-08T15:09:54Z",
+      "releaseVersion": "pg-131-c1d012debe05-cover-e6970b201405",
+      "curation": {
+        "mode": "curated-christian-classics",
+        "source": "user-requested-christian-classics",
+        "requestedPosition": 2,
+        "collection": "christian-classics"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T15:11:46Z",
+        "webCoverSha256": "26575fb30f87a3efa550e13de87f042847d44c0304e452a876b3f463652b88f7",
+        "epubCoverSha256": "b09caee4cefeeff93387476222f45ca68788730a7cf1e76837f4f50de6faa3c3",
+        "releaseVersion": "pg-131-c1d012debe05-cover-e6970b201405",
+        "artifactSha256": "e6970b20140555793877076d30cc5ce14fd4ee813af2dc086e0891c04c71a3f8"
+      }
+    },
+    {
+      "gutenbergId": 1653,
+      "workId": "pd-pg-1653",
+      "title": "The Imitation of Christ",
+      "author": "à Kempis Thomas",
+      "score": 120.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Christianity",
+        "Harvard Classics",
+        "Category: Classics of Literature",
+        "Category: Philosophy & Ethics",
+        "Category: Religion/Spirituality"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/1653",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/1653/pg1653.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/1653/pg1653.epub",
+      "sourceRdfSha256": "1637523d9c4994f5d6fab9afe2c0486384fc61e750dcd03309d5a5737c008b12",
+      "sourceEpubSha256": "6353d7ffc75b20baecf36746902e1403497de3f6c2723fd4ca642da0a90169fd",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "à Kempis Thomas",
+          "role": "creator",
+          "birthYear": 1380,
+          "deathYear": 1471
+        },
+        {
+          "name": "William Benham",
+          "role": "trl",
+          "birthYear": 1831,
+          "deathYear": 1910
+        }
+      ],
+      "selectedAt": "2026-09-08T15:09:55Z",
+      "releaseVersion": "pg-1653-6353d7ffc75b-cover-3eb817aaaff5",
+      "curation": {
+        "mode": "curated-christian-classics",
+        "source": "user-requested-christian-classics",
+        "requestedPosition": 3,
+        "collection": "christian-classics"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T15:12:37Z",
+        "webCoverSha256": "0acdce767d4179cab4b27c0509460ba13233c4ec4aa7767e09850f2f64bfaab8",
+        "epubCoverSha256": "ec18c7ab590318369c07e42f10ee71662661bca1c507c1fed662c33c61cdf57a",
+        "releaseVersion": "pg-1653-6353d7ffc75b-cover-3eb817aaaff5",
+        "artifactSha256": "3eb817aaaff5ad6588ebd699c5b82a42182f71e345e5d67a69cc3da08a1879ad"
+      }
+    },
+    {
+      "gutenbergId": 16769,
+      "workId": "pd-pg-16769",
+      "title": "Orthodoxy",
+      "author": "G. K. (Gilbert Keith) Chesterton",
+      "score": 15.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Category: Philosophy & Ethics",
+        "Category: Religion/Spirituality"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/16769",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/16769/pg16769.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/16769/pg16769.epub",
+      "sourceRdfSha256": "e1e545fd1ea59ec5c568c7ab7094bcc2b8cc156f93f0a4d471cfeee56ecf51d9",
+      "sourceEpubSha256": "9b9ecc135dc9736e895d97d37e669d87c52e18af2785a9f2d1d52a7b347b76cf",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "G. K. (Gilbert Keith) Chesterton",
+          "role": "creator",
+          "birthYear": 1874,
+          "deathYear": 1936
+        }
+      ],
+      "selectedAt": "2026-09-08T15:09:56Z",
+      "releaseVersion": "pg-16769-9b9ecc135dc9-cover-83340a2d6eda",
+      "curation": {
+        "mode": "curated-christian-classics",
+        "source": "user-requested-christian-classics",
+        "requestedPosition": 4,
+        "collection": "christian-classics"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T15:13:40Z",
+        "webCoverSha256": "f5567070dc99ea2e950795fdf20a7ced62efb36a811a9ced6719fdd500930249",
+        "epubCoverSha256": "4dde3e7584d59d87893f405751aab95621a1f5b191fed8ffc2df91ef60654345",
+        "releaseVersion": "pg-16769-9b9ecc135dc9-cover-83340a2d6eda",
+        "artifactSha256": "83340a2d6eda65aba615d7fd4b7bb3a5d03b79b32d542ff03fabc1e334c93543"
+      }
+    },
+    {
+      "gutenbergId": 45304,
+      "workId": "pd-pg-45304",
+      "title": "The City of God, Volume I",
+      "author": "Saint Augustine of Hippo",
+      "score": 15.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Category: History - Ancient",
+        "Category: Philosophy & Ethics",
+        "Category: Religion/Spirituality"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/45304",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/45304/pg45304.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/45304/pg45304.epub",
+      "sourceRdfSha256": "a9795898e0a6631deef1ea89caf86f214ab5511cb37baa47ec827a7b649c2ff5",
+      "sourceEpubSha256": "aa471384307cfabd58ae7c992a7b4b7e5ada87ff6d621dd5078ba1c0bd1f7832",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "of Hippo, Saint Augustine",
+          "role": "creator",
+          "birthYear": 354,
+          "deathYear": 430
+        },
+        {
+          "name": "Marcus Dods",
+          "role": "edt",
+          "birthYear": 1834,
+          "deathYear": 1909
+        }
+      ],
+      "selectedAt": "2026-09-08T15:09:56Z",
+      "releaseVersion": "pg-45304-aa471384307c-cover-a29d9034e62e",
+      "curation": {
+        "mode": "curated-christian-classics",
+        "source": "user-requested-christian-classics",
+        "requestedPosition": 5,
+        "collection": "christian-classics"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T15:14:25Z",
+        "webCoverSha256": "429639ceb56eb6abacf302f55bfd43bd1089828d523f61326326aa0a9ca26159",
+        "epubCoverSha256": "122f2b0c0ee948c2c45e4c57cdcc800b4f140e51f76dbc8cabee3a2c78cde10d",
+        "releaseVersion": "pg-45304-aa471384307c-cover-a29d9034e62e",
+        "artifactSha256": "a29d9034e62ea02a367763f54e3469c74d2236ed9a9745cc2f1862182b162a11"
+      }
+    },
+    {
+      "gutenbergId": 45305,
+      "workId": "pd-pg-45305",
+      "title": "The City of God, Volume II",
+      "author": "Saint Augustine of Hippo",
+      "score": 15.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Category: Classics of Literature",
+        "Category: Philosophy & Ethics",
+        "Category: Religion/Spirituality"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/45305",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/45305/pg45305.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/45305/pg45305.epub",
+      "sourceRdfSha256": "ece03b98376f6230d1ef05b78b2800fb499cd13979400c17a8f0939e9b86f26e",
+      "sourceEpubSha256": "e76805e23c9ca468605e1005d2c25ad9eb22535148f042f09e93fe3bcbe6f81a",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "of Hippo, Saint Augustine",
+          "role": "creator",
+          "birthYear": 354,
+          "deathYear": 430
+        },
+        {
+          "name": "Marcus Dods",
+          "role": "edt",
+          "birthYear": 1834,
+          "deathYear": 1909
+        }
+      ],
+      "selectedAt": "2026-09-08T15:09:57Z",
+      "releaseVersion": "pg-45305-e76805e23c9c-cover-8856077fd200",
+      "curation": {
+        "mode": "curated-christian-classics",
+        "source": "user-requested-christian-classics",
+        "requestedPosition": 6,
+        "collection": "christian-classics"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T15:15:11Z",
+        "webCoverSha256": "46d2852777301a1a9b2a2ae6ada3b5757ef1afd7c93da4db8a1d54fc20878024",
+        "epubCoverSha256": "7b041fc618f3200ab3486808162347102467169cd55017cf771c6a44188c68e7",
+        "releaseVersion": "pg-45305-e76805e23c9c-cover-8856077fd200",
+        "artifactSha256": "8856077fd200ec9aa77ab62ab713fd6b3b10a5856ccac2655b1d83958ef4a740"
+      }
+    },
+    {
+      "gutenbergId": 57121,
+      "workId": "pd-pg-57121",
+      "title": "Humility: The Beauty of Holiness",
+      "author": "Andrew Murray",
+      "score": 15.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Category: Philosophy & Ethics",
+        "Category: Religion/Spirituality"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/57121",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/57121/pg57121.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/57121/pg57121.epub",
+      "sourceRdfSha256": "0af9a13dbc383b7dd88312c539c2220f2456f89324efc09d868c915d419c83c0",
+      "sourceEpubSha256": "dfe41fd08349051d5c5d94825fca5ffd06dcfc1fd497d63d968392ba121c0913",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Andrew Murray",
+          "role": "creator",
+          "birthYear": 1828,
+          "deathYear": 1917
+        }
+      ],
+      "selectedAt": "2026-09-08T15:09:58Z",
+      "releaseVersion": "pg-57121-dfe41fd08349-cover-03c49ec83f06",
+      "curation": {
+        "mode": "curated-christian-classics",
+        "source": "user-requested-christian-classics",
+        "requestedPosition": 7,
+        "collection": "christian-classics"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T15:15:55Z",
+        "webCoverSha256": "6f5346d46fbf95f8d64dd5b29069ba76be2759b39c078c91b1bc73995b5d9410",
+        "epubCoverSha256": "dfead159f3f8119c12c585016e9f35b7d0273d3065bdfa296e5af28afa4a737c",
+        "releaseVersion": "pg-57121-dfe41fd08349-cover-03c49ec83f06",
+        "artifactSha256": "03c49ec83f061ef26f8bd1f8357275d71861452b0470afed8da62f5df6790faf"
+      }
+    },
+    {
+      "gutenbergId": 22400,
+      "workId": "pd-pg-22400",
+      "title": "Fox's Book of Martyrs",
+      "author": "John Foxe",
+      "score": 25.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Category: History - Religious"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/22400",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/22400/pg22400.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/22400/pg22400.epub",
+      "sourceRdfSha256": "aa4aa8a87892ea7c3af47e6dab78844e66497025d530ea25c8281f1c3012d9e0",
+      "sourceEpubSha256": "0bfb936e308c55886e9351ebce834c584d7fc3fc72658b30a29d161f470a4ca4",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "John Foxe",
+          "role": "creator",
+          "birthYear": 1516,
+          "deathYear": 1587
+        }
+      ],
+      "selectedAt": "2026-09-08T15:09:59Z",
+      "releaseVersion": "pg-22400-0bfb936e308c-cover-e5744a102db5",
+      "curation": {
+        "mode": "curated-christian-classics",
+        "source": "user-requested-christian-classics",
+        "requestedPosition": 8,
+        "collection": "christian-classics"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T15:16:46Z",
+        "webCoverSha256": "995678c96f88cc4b5b396160beb5471f234fcdc00c4ccd5147c1e676b61a94b9",
+        "epubCoverSha256": "340657926fe95e5dbf0eabcb8905d069846e91b18fcdb7989b25e1fe8ffbd836",
+        "releaseVersion": "pg-22400-0bfb936e308c-cover-e5744a102db5",
+        "artifactSha256": "e5744a102db5fd7d18a7bcd830c1559fe199498ec2f7f2603960d4a9a9e9a01d"
+      }
+    },
+    {
+      "gutenbergId": 45001,
+      "workId": "pd-pg-45001",
+      "title": "Institutes of the Christian Religion (Vol. 1 of 2)",
+      "author": "Jean Calvin",
+      "score": 15.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Category: History - Early Modern (c. 1450-1750)",
+        "Category: Philosophy & Ethics",
+        "Category: Religion/Spirituality"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/45001",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/45001/pg45001.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/45001/pg45001.epub",
+      "sourceRdfSha256": "2848f263dce584b9c3c763bd65afb0acfe441a17c4c139f5873943ba16fe14a4",
+      "sourceEpubSha256": "a21c65f286de183234afc9bd171f6482b8680824b9aedc1f5d8f55030b486137",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Jean Calvin",
+          "role": "creator",
+          "birthYear": 1509,
+          "deathYear": 1564
+        },
+        {
+          "name": "John Allen",
+          "role": "trl",
+          "birthYear": 1771,
+          "deathYear": 1839
+        }
+      ],
+      "selectedAt": "2026-09-08T15:10:00Z",
+      "releaseVersion": "pg-45001-a21c65f286de-cover-704d731e7d4f",
+      "curation": {
+        "mode": "curated-christian-classics",
+        "source": "user-requested-christian-classics",
+        "requestedPosition": 10,
+        "collection": "christian-classics"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T15:17:36Z",
+        "webCoverSha256": "f1ea18126508be376dd04edf1bc1c0cd751eff0509393597221164f9709e6bd6",
+        "epubCoverSha256": "2dbc9cffe25fc1605449c89374f284315d756634245821db217f97377ead9afa",
+        "releaseVersion": "pg-45001-a21c65f286de-cover-704d731e7d4f",
+        "artifactSha256": "704d731e7d4f4de01aa54dd21bafe8e794e8f053fdcb755587381c3a6fde74fa"
+      }
+    },
+    {
+      "gutenbergId": 64392,
+      "workId": "pd-pg-64392",
+      "title": "Institutes of the Christian Religion (Vol. 2 of 2)",
+      "author": "Jean Calvin",
+      "score": 15.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Category: History - Early Modern (c. 1450-1750)",
+        "Category: Philosophy & Ethics",
+        "Category: Religion/Spirituality"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/64392",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/64392/pg64392.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/64392/pg64392.epub",
+      "sourceRdfSha256": "f3aa478dc6ec9e418ca841b071ca7fc029ec3c1dc2f17325a5dcabc56d1f6c80",
+      "sourceEpubSha256": "465873e050fb2bdc666902095d223cd57537746bcadb8e01fb883dc18c80b86a",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Jean Calvin",
+          "role": "creator",
+          "birthYear": 1509,
+          "deathYear": 1564
+        },
+        {
+          "name": "John Allen",
+          "role": "trl",
+          "birthYear": 1771,
+          "deathYear": 1839
+        }
+      ],
+      "selectedAt": "2026-09-08T15:10:01Z",
+      "releaseVersion": "pg-64392-465873e050fb-cover-4f68904a9c22",
+      "curation": {
+        "mode": "curated-christian-classics",
+        "source": "user-requested-christian-classics",
+        "requestedPosition": 11,
+        "collection": "christian-classics"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T15:21:37Z",
+        "webCoverSha256": "b7bd4d7c544bfd4d9095f60e7926f804e297756ec2a265e1dfcf722eaf1fbe22",
+        "epubCoverSha256": "f923d38a6799534328543cf42a5c3005bdbc672f9da86af8c541a45e84c0c660",
+        "releaseVersion": "pg-64392-465873e050fb-cover-4f68904a9c22",
+        "artifactSha256": "4f68904a9c22e92aff650d795c817b283e1f990f74e137faeb7b2d81d7d5a2c5"
+      }
+    },
+    {
+      "gutenbergId": 26744,
+      "workId": "pd-pg-26744",
+      "title": "A Retrospect",
+      "author": "James Hudson Taylor",
+      "score": 15.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Category: Biographies",
+        "Category: History - Modern (1750+)",
+        "Category: History - Religious",
+        "Category: Religion/Spirituality"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/26744",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/26744/pg26744.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/26744/pg26744.epub",
+      "sourceRdfSha256": "3d57eee86d24d33c403c25bf482117e624a9ef018d17c1c18cb765dff47119da",
+      "sourceEpubSha256": "66e318296ece2dd65cfd1bf21dbdf4ea436805b8257ca08414b82c55a1c05fd0",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "James Hudson Taylor",
+          "role": "creator",
+          "birthYear": 1832,
+          "deathYear": 1905
+        }
+      ],
+      "selectedAt": "2026-09-08T15:10:01Z",
+      "releaseVersion": "pg-26744-66e318296ece-cover-b4c85c7a8027",
+      "curation": {
+        "mode": "curated-christian-classics",
+        "source": "user-requested-christian-classics",
+        "requestedPosition": 12,
+        "collection": "christian-classics"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T15:24:10Z",
+        "webCoverSha256": "7b08cd0298b4d202e5dab589489ebdac1a44c7b544965bfe206ae343a8f36a39",
+        "epubCoverSha256": "5bf399333c8b1019c7d17e5485fecf54242a891cfd09fc80ae4765db5287258b",
+        "releaseVersion": "pg-26744-66e318296ece-cover-b4c85c7a8027",
+        "artifactSha256": "b4c85c7a802700f14edc3c975a9a6bcd2eba008b1f2ab6e8ff2ac8f2915b076a"
+      }
+    },
+    {
+      "gutenbergId": 65066,
+      "workId": "pd-pg-65066",
+      "title": "The Life of Rev. David Brainerd, Chiefly Extracted from His Diary",
+      "author": "David Brainerd",
+      "score": 15.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Category: Biographies",
+        "Category: History - American",
+        "Category: Religion/Spirituality"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/65066",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/65066/pg65066.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/65066/pg65066.epub",
+      "sourceRdfSha256": "cfa8a30e22f9a38b179b496697f51e0df6630eb764bfdf1899fb104a9ddf2822",
+      "sourceEpubSha256": "b5c8a423d32df5aa24fb59e66b7dd60932aec3662851ab10a5e31ac50818abc8",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "David Brainerd",
+          "role": "creator",
+          "birthYear": 1718,
+          "deathYear": 1747
+        },
+        {
+          "name": "Jonathan Edwards",
+          "role": "edt",
+          "birthYear": 1703,
+          "deathYear": 1758
+        }
+      ],
+      "selectedAt": "2026-09-08T15:10:02Z",
+      "releaseVersion": "pg-65066-b5c8a423d32d-cover-a412a4962614",
+      "curation": {
+        "mode": "curated-christian-classics",
+        "source": "user-requested-christian-classics",
+        "requestedPosition": 13,
+        "collection": "christian-classics"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T15:25:06Z",
+        "webCoverSha256": "425feb63a65b2070d8094437b78aa2521a13de467019b9224513a47386021876",
+        "epubCoverSha256": "427c41cfaa0b65700cdc59dffd5edb6969700ec5803ffbfc79aa1d6bf9a53446",
+        "releaseVersion": "pg-65066-b5c8a423d32d-cover-a412a4962614",
+        "artifactSha256": "a412a4962614a4f41e960854bb46bdca7dde54538b1ba916cc9d5888871d2e5d"
+      }
+    },
+    {
+      "gutenbergId": 70894,
+      "workId": "pd-pg-70894",
+      "title": "The life of Adoniram Judson",
+      "author": "Edward Judson",
+      "score": 15.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Category: Biographies",
+        "Category: History - American",
+        "Category: History - Religious"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/70894",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/70894/pg70894.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/70894/pg70894.epub",
+      "sourceRdfSha256": "29935bd1deb1ce4ba4757690fbf9cce404c2de7b09bb6230b79d649780c0f6bd",
+      "sourceEpubSha256": "daecfd72cd20708ccb3cc9ad1a629ee83c5e04fdc63a3c8115f2bcb73a40f491",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Edward Judson",
+          "role": "creator",
+          "birthYear": 1844,
+          "deathYear": 1914
+        }
+      ],
+      "selectedAt": "2026-09-08T15:10:03Z",
+      "releaseVersion": "pg-70894-daecfd72cd20-cover-2e2b11643350",
+      "curation": {
+        "mode": "curated-christian-classics",
+        "source": "user-requested-christian-classics",
+        "requestedPosition": 14,
+        "collection": "christian-classics"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T15:27:30Z",
+        "webCoverSha256": "0eafbcf61dd01e7a3f66911d047209232c4d195846d64252b20df453ba5675b0",
+        "epubCoverSha256": "69eab9bfcc4616a144111fd0f5a7e106cf5f3b778ae89f34e4144ea8d5ad94d0",
+        "releaseVersion": "pg-70894-daecfd72cd20-cover-2e2b11643350",
+        "artifactSha256": "2e2b1164335016077c9a7290c49e12e13fafff70ddfbe6932c2a4c8eb2e7ecbc"
+      }
+    },
+    {
+      "gutenbergId": 15251,
+      "workId": "pd-pg-15251",
+      "title": "The Biography of Robert Murray M'Cheyne",
+      "author": "Andrew A. (Andrew Alexander) Bonar",
+      "score": 15.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Category: Biographies",
+        "Category: History - British",
+        "Category: Religion/Spirituality"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/15251",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/15251/pg15251.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/15251/pg15251.epub",
+      "sourceRdfSha256": "61abe3607406b60fc94a9e9874e9249657025616a17b53b225554e334d55066e",
+      "sourceEpubSha256": "872c7b809a85ef65f8f4436734e41232b691eb3a7cf62143f4b33fb08701a082",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Andrew A. (Andrew Alexander) Bonar",
+          "role": "creator",
+          "birthYear": 1810,
+          "deathYear": 1892
+        }
+      ],
+      "selectedAt": "2026-09-08T15:10:03Z",
+      "releaseVersion": "pg-15251-872c7b809a85-cover-49fc4f51386a",
+      "curation": {
+        "mode": "curated-christian-classics",
+        "source": "user-requested-christian-classics",
+        "requestedPosition": 15,
+        "collection": "christian-classics"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T15:28:40Z",
+        "webCoverSha256": "99600cc72857843ddaf2cec68ccb41c1fdee2c88969d97808a03895547335524",
+        "epubCoverSha256": "224df41b075ef5f40365447467426a1835a980383a315f142fb3f36460860857",
+        "releaseVersion": "pg-15251-872c7b809a85-cover-49fc4f51386a",
+        "artifactSha256": "49fc4f51386a4bd5e5678af23dc033955a38b906860751c7e34986ad68627439"
+      }
+    },
+    {
+      "gutenbergId": 654,
+      "workId": "pd-pg-654",
+      "title": "Grace Abounding to the Chief of Sinners",
+      "author": "John Bunyan",
+      "score": 15.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Christianity",
+        "Category: Biographies",
+        "Category: British Literature",
+        "Category: Religion/Spirituality"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/654",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/654/pg654.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/654/pg654.epub",
+      "sourceRdfSha256": "e9bc40c64c813760d1ece6a83be0c27966f4099ac0d0b8b7e3283b59a0c895a2",
+      "sourceEpubSha256": "1399a7d1d8de6c460034a1c66efda99c60b3b0ab3b662ed915c7d38fb0130c02",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "John Bunyan",
+          "role": "creator",
+          "birthYear": 1628,
+          "deathYear": 1688
+        },
+        {
+          "name": "Harold Copping",
+          "role": "ill",
+          "birthYear": 1863,
+          "deathYear": 1932
+        }
+      ],
+      "selectedAt": "2026-09-08T15:10:04Z",
+      "releaseVersion": "pg-654-1399a7d1d8de-cover-22e23c5e5987",
+      "curation": {
+        "mode": "curated-christian-classics",
+        "source": "user-requested-christian-classics",
+        "requestedPosition": 16,
+        "collection": "christian-classics"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T15:29:55Z",
+        "webCoverSha256": "48fe42509bf1194098d7fdc5c11f46fd557d07bc1e46c977c899fec254c8aa9b",
+        "epubCoverSha256": "610dc80cf3a7a94923dfee542422882a721100c8df5514150370bbe23ca4e470",
+        "releaseVersion": "pg-654-1399a7d1d8de-cover-22e23c5e5987",
+        "artifactSha256": "22e23c5e59872b65bcf35b392df68332ba394efce2c322a045c3b47fbbd35bfe"
+      }
+    },
+    {
+      "gutenbergId": 395,
+      "workId": "pd-pg-395",
+      "title": "The Holy War, Made by King Shaddai Upon Diabolus, for the Regaining of the Metropolis of the World; Or, The Losing and Taking Again of the Town of Mansoul",
+      "author": "John Bunyan",
+      "score": 23.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Category: Novels",
+        "Category: Mythology, Legends & Folklore",
+        "Category: British Literature",
+        "Category: Religion/Spirituality"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/395",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/395/pg395.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/395/pg395.epub",
+      "sourceRdfSha256": "83b80ee433f13c6522a1d706c599b1bc93f1f078fb4ed533a2deaaf5d983e663",
+      "sourceEpubSha256": "67a2fe57c591ed59c9c862ac1214155066edf7309372af10e949f5e9d11483a4",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "John Bunyan",
+          "role": "creator",
+          "birthYear": 1628,
+          "deathYear": 1688
+        }
+      ],
+      "selectedAt": "2026-09-08T15:10:05Z",
+      "releaseVersion": "pg-395-67a2fe57c591-cover-e4c53ee9b3db",
+      "curation": {
+        "mode": "curated-christian-classics",
+        "source": "user-requested-christian-classics",
+        "requestedPosition": 17,
+        "collection": "christian-classics"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T15:31:14Z",
+        "webCoverSha256": "5c1ee72eca0f43302144cb8c243e1bf9e1fee647ced6865e692ebb0d628c8ce4",
+        "epubCoverSha256": "cf3f89cb1068e030415dcdface519ac0d15cd0ddb8353f7140e40e3bd1babd17",
+        "releaseVersion": "pg-395-67a2fe57c591-cover-e4c53ee9b3db",
+        "artifactSha256": "e4c53ee9b3db06487d86b4b37362dc08ec44bf873d0136f6eb47e35e16d617ad"
+      }
+    },
+    {
+      "gutenbergId": 30241,
+      "workId": "pd-pg-30241",
+      "title": "The Person and Work of The Holy Spirit",
+      "author": "R. A. (Reuben Archer) Torrey",
+      "score": 15.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Category: Religion/Spirituality"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/30241",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/30241/pg30241.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/30241/pg30241.epub",
+      "sourceRdfSha256": "0318632636bb1d60f03149e9ba51820e5051369c5f71dacd5409c768be421bd2",
+      "sourceEpubSha256": "3381093719140ef7001e7415d448976900049dc5ae4ff0b55602baef8fc700e2",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "R. A. (Reuben Archer) Torrey",
+          "role": "creator",
+          "birthYear": 1856,
+          "deathYear": 1928
+        }
+      ],
+      "selectedAt": "2026-09-08T15:10:05Z",
+      "releaseVersion": "pg-30241-338109371914-cover-0c0a235f5635",
+      "curation": {
+        "mode": "curated-christian-classics",
+        "source": "user-requested-christian-classics",
+        "requestedPosition": 18,
+        "collection": "christian-classics"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T15:35:20Z",
+        "webCoverSha256": "9b4bfde07cc66f4ff31e96760b173667c68c7356cfcd42fa8643f49bcf77d159",
+        "epubCoverSha256": "705dbb5ac399093938488c350f02855568da03819c412fc1e1c65a02fdd67b2d",
+        "releaseVersion": "pg-30241-338109371914-cover-0c0a235f5635",
+        "artifactSha256": "0c0a235f5635493a2de2762f5891b08568c38fb72e2474bdbeae2e42f50af0d5"
+      }
+    },
+    {
+      "gutenbergId": 66112,
+      "workId": "pd-pg-66112",
+      "title": "Purpose in Prayer",
+      "author": "Edward M. (Edward McKendree) Bounds",
+      "score": 15.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Category: Religion/Spirituality"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/66112",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/66112/pg66112.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/66112/pg66112.epub",
+      "sourceRdfSha256": "960e00e5df628c92aa92c317ff565b8c5ac082fedebe867287a83e585a8eeec8",
+      "sourceEpubSha256": "d54fe6f05400052a3ef202885bc374c696e0edb1bf44350a638b7e337d7d2705",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Edward M. (Edward McKendree) Bounds",
+          "role": "creator",
+          "birthYear": 1835,
+          "deathYear": 1913
+        }
+      ],
+      "selectedAt": "2026-09-08T15:10:06Z",
+      "releaseVersion": "pg-66112-d54fe6f05400-cover-990b85a6c6dd",
+      "curation": {
+        "mode": "curated-christian-classics",
+        "source": "user-requested-christian-classics",
+        "requestedPosition": 19,
+        "collection": "christian-classics"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T15:36:18Z",
+        "webCoverSha256": "42f18bf35e930550a479cb66da60230f06eb54ca66abe90c1a1fcb54a0cd0c6b",
+        "epubCoverSha256": "2466e680ca83a6ea71f3368ec5f537601354dd69cf22f3f1334f86b7dded6ed9",
+        "releaseVersion": "pg-66112-d54fe6f05400-cover-990b85a6c6dd",
+        "artifactSha256": "990b85a6c6dd8cbf18dcdf58f8d2a40f3c0835be61badfbecf785e5bc13c01e8"
+      }
+    },
+    {
+      "gutenbergId": 27288,
+      "workId": "pd-pg-27288",
+      "title": "The Life of Trust: Being a Narrative of the Lord's Dealings With George Müller",
+      "author": "George Müller",
+      "score": 15.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Category: Biographies",
+        "Category: Religion/Spirituality"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/27288",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/27288/pg27288.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/27288/pg27288.epub",
+      "sourceRdfSha256": "7807627748274dd95db7b9aced11d9ba7c445afe8d477377107c77d1c6cfb4bc",
+      "sourceEpubSha256": "fbe73ea2beea4ac6f53756b02aa1c815457b0ae3f392862e760090ddd9664951",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "George Müller",
+          "role": "creator",
+          "birthYear": 1805,
+          "deathYear": 1898
+        },
+        {
+          "name": "H. L. (Heman Lincoln) Wayland",
+          "role": "edt",
+          "birthYear": 1830,
+          "deathYear": 1898
+        }
+      ],
+      "selectedAt": "2026-09-08T15:10:07Z",
+      "releaseVersion": "pg-27288-fbe73ea2beea-cover-5164116ff763",
+      "curation": {
+        "mode": "curated-christian-classics",
+        "source": "user-requested-christian-classics",
+        "requestedPosition": 20,
+        "collection": "christian-classics"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T15:38:52Z",
+        "webCoverSha256": "5ab65c8bc56c34ebc76c8f6811299cf3414823af0ec6b721b13cb162cdbd61e7",
+        "epubCoverSha256": "ea998639aef58dbff87b597cd0e78aecebda5b1d0c5d540608ffafdb1668d686",
+        "releaseVersion": "pg-27288-fbe73ea2beea-cover-5164116ff763",
+        "artifactSha256": "5164116ff7638e08c3a252ecdf36b7b344f507869ead004c93bb3e642533ca3b"
+      }
+    },
+    {
+      "gutenbergId": 29296,
+      "workId": "pd-pg-29296",
+      "title": "The Ministry of Intercession: A Plea for More Prayer",
+      "author": "Andrew Murray",
+      "score": 15.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Category: Religion/Spirituality"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/29296",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/29296/pg29296.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/29296/pg29296.epub",
+      "sourceRdfSha256": "4b20d7285d8edc536a9d0553199b7a8514276cc29e2a6c70b83171cc711eba34",
+      "sourceEpubSha256": "2815d5e7fb098b7c7b565a2f85097312ed06c3dd22ab882155e1aa8840ae5b89",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Andrew Murray",
+          "role": "creator",
+          "birthYear": 1828,
+          "deathYear": 1917
+        }
+      ],
+      "selectedAt": "2026-09-08T15:10:07Z",
+      "releaseVersion": "pg-29296-2815d5e7fb09-cover-d5d61fbd0d93",
+      "curation": {
+        "mode": "curated-christian-classics",
+        "source": "user-requested-christian-classics",
+        "requestedPosition": 21,
+        "collection": "christian-classics"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T15:44:42Z",
+        "webCoverSha256": "198f0ca981975c5aacd41d0f02c92992028a2b9c8ed1e332df2912dbe05e7b7c",
+        "epubCoverSha256": "b4fef47bc3aad5357b3a5cdb631d1393753b7360e2c6e700d8e02314a51986ac",
+        "releaseVersion": "pg-29296-2815d5e7fb09-cover-d5d61fbd0d93",
+        "artifactSha256": "d5d61fbd0d934b36d1b4f4f1b270e9769c1c0e506194e38cc457e31f31db2deb"
+      }
     }
   ],
   "rejections": {
@@ -1501,68 +2476,66 @@
       "reason": "unknown death year for creator Austin Bidwell",
       "checkedAt": "2026-09-08T00:18:38Z",
       "copyrightCutoffYear": 1955
+    },
+    "52958": {
+      "gutenbergId": 52958,
+      "title": "Revelations of Divine Love",
+      "requestedPosition": 9,
+      "curationMode": "curated-christian-classics",
+      "reason": "unknown death year for creator of Norwich Julian",
+      "checkedAt": "2026-09-08T15:09:59Z",
+      "copyrightCutoffYear": 1955
     }
   },
   "lastRun": {
-    "at": "2026-09-08T00:18:41Z",
-    "rankingMode": "official-project-gutenberg-top100-30d",
-    "rankingSource": "https://www.gutenberg.org/browse/scores/top",
-    "rankingWindow": "last 30 days",
-    "rankingRowsVerified": 100,
+    "at": "2026-09-08T15:10:08Z",
+    "rankingMode": "curated-christian-classics",
+    "curationSource": "user-requested-christian-classics",
+    "collection": "christian-classics",
+    "requestedIds": [
+      3296,
+      131,
+      1653,
+      16769,
+      45304,
+      45305,
+      57121,
+      22400,
+      52958,
+      45001,
+      64392,
+      26744,
+      65066,
+      70894,
+      15251,
+      654,
+      395,
+      30241,
+      66112,
+      27288,
+      29296,
+      12854,
+      30449,
+      61883,
+      58135,
+      13871,
+      65115
+    ],
     "copyrightCutoffYear": 1955,
-    "candidateCount": 94,
-    "checkedCount": 26,
+    "candidateCount": 27,
+    "checkedCount": 21,
     "candidateCheckLimit": 100,
     "addedCount": 20,
-    "skippedCount": 6,
+    "skippedCount": 1,
     "recentSkips": [
       {
-        "gutenbergId": 65238,
-        "title": "The Secret of Chimneys",
-        "popularityRank": 10,
-        "downloadCount30d": 91423,
-        "reason": "creator Agatha Christie died 1976, after automatic German cutoff 1955",
-        "checkedAt": "2026-09-08T00:18:31Z",
+        "gutenbergId": 52958,
+        "title": "Revelations of Divine Love",
+        "requestedPosition": 9,
+        "curationMode": "curated-christian-classics",
+        "reason": "unknown death year for creator of Norwich Julian",
+        "checkedAt": "2026-09-08T15:09:59Z",
         "copyrightCutoffYear": 1955
-      },
-      {
-        "gutenbergId": 2641,
-        "title": "A Room with a View",
-        "popularityRank": 13,
-        "downloadCount30d": 89649,
-        "reason": "creator E. M. (Edward Morgan) Forster died 1970, after automatic German cutoff 1955",
-        "checkedAt": "2026-09-08T00:18:33Z",
-        "copyrightCutoffYear": 1955
-      },
-      {
-        "gutenbergId": 37683,
-        "title": "Chambers's Twentieth Century Dictionary (part 1 of 4: A-D)",
-        "popularityRank": 20,
-        "downloadCount30d": 72591,
-        "reason": "no identifiable creator in official RDF",
-        "checkedAt": "2026-09-08T00:18:36Z",
-        "copyrightCutoffYear": 1955
-      },
-      {
-        "gutenbergId": 45839,
-        "title": "Dracula",
-        "popularityRank": 25,
-        "reason": "logical work already represented in Library: Dracula — Bram Stoker"
-      },
-      {
-        "gutenbergId": 24739,
-        "title": "Bidwell's Travels, from Wall Street to London Prison: Fifteen Years in Solitude",
-        "popularityRank": 26,
-        "downloadCount30d": 65865,
-        "reason": "unknown death year for creator Austin Bidwell",
-        "checkedAt": "2026-09-08T00:18:38Z",
-        "copyrightCutoffYear": 1955
-      },
-      {
-        "gutenbergId": 42,
-        "title": "The strange case of Dr. Jekyll and Mr. Hyde",
-        "popularityRank": 30,
-        "reason": "logical work already represented in Library: The strange case of Dr. Jekyll and Mr. Hyde — Robert Louis Stevenson"
       }
     ]
   }

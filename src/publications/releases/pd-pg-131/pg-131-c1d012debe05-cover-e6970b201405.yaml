@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-131",
+  "version": "pg-131-c1d012debe05-cover-e6970b201405",
+  "edition": 1,
+  "releasedAt": "2026-09-08T15:09:54Z",
+  "sourceHash": "79a301e95c76707d2bc8678b1a1afde77c758a881f92d4e5ea7084d5f261679e",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-131/editions/pg-131-c1d012debe05-cover-e6970b201405/the-pilgrims-progress-from-this-world-to-that-which-is-to-come-project-gutenberg.epub",
+      "filename": "the-pilgrims-progress-from-this-world-to-that-which-is-to-come-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 568824,
+      "sha256": "e6970b20140555793877076d30cc5ce14fd4ee813af2dc086e0891c04c71a3f8"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "c1d012debe05dd911c48cf7f5f6563d4fa31e9f4dfc1858e9531c00ac4c9285a",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-131-c1d012debe05",
+    "finalArtifactSha256": "e6970b20140555793877076d30cc5ce14fd4ee813af2dc086e0891c04c71a3f8",
+    "releaseVersioning": "content-addressed"
+  }
+}

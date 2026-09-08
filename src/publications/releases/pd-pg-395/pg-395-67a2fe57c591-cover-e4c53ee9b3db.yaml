@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-395",
+  "version": "pg-395-67a2fe57c591-cover-e4c53ee9b3db",
+  "edition": 1,
+  "releasedAt": "2026-09-08T15:10:05Z",
+  "sourceHash": "83b80ee433f13c6522a1d706c599b1bc93f1f078fb4ed533a2deaaf5d983e663",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-395/editions/pg-395-67a2fe57c591-cover-e4c53ee9b3db/the-holy-war-made-by-king-shaddai-upon-diabolus-for-the-regaining-of-the-metropo-project-gutenberg.epub",
+      "filename": "the-holy-war-made-by-king-shaddai-upon-diabolus-for-the-regaining-of-the-metropo-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 645789,
+      "sha256": "e4c53ee9b3db06487d86b4b37362dc08ec44bf873d0136f6eb47e35e16d617ad"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "67a2fe57c591ed59c9c862ac1214155066edf7309372af10e949f5e9d11483a4",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-395-67a2fe57c591",
+    "finalArtifactSha256": "e4c53ee9b3db06487d86b4b37362dc08ec44bf873d0136f6eb47e35e16d617ad",
+    "releaseVersioning": "content-addressed"
+  }
+}

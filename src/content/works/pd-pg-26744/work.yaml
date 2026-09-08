@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-26744",
+  "slug": "pd-pg-26744",
+  "title": "A Retrospect",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "James Hudson Taylor",
+      "role": "creator",
+      "birthYear": 1832,
+      "deathYear": 1905
+    }
+  ],
+  "description": "A public-domain edition of A Retrospect by James Hudson Taylor. Project Gutenberg classifies it under Missions -- China, BV.",
+  "shortDescription": "A public-domain edition of A Retrospect by James Hudson Taylor. Project Gutenberg classifies it under Missions -- China, BV.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2008-10-01",
+    "lastUpdated": "2026-09-08",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-26744-66e318296ece-cover-b4c85c7a8027",
+    "activeRelease": "pg-26744-66e318296ece-cover-b4c85c7a8027"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-26744.webp",
+    "alt": "Cover for A Retrospect by James Hudson Taylor"
+  },
+  "classification": {
+    "subjects": [
+      "missions",
+      "bv"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic",
+      "christian",
+      "christian-classic"
+    ],
+    "collections": [
+      "public-domain",
+      "christian-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/26744",
+      "gutenbergId": 26744
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/26744/pg26744.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #26744. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

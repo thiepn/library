@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-65066",
+  "version": "pg-65066-b5c8a423d32d-cover-a412a4962614",
+  "edition": 1,
+  "releasedAt": "2026-09-08T15:10:02Z",
+  "sourceHash": "cfa8a30e22f9a38b179b496697f51e0df6630eb764bfdf1899fb104a9ddf2822",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-65066/editions/pg-65066-b5c8a423d32d-cover-a412a4962614/the-life-of-rev-david-brainerd-chiefly-extracted-from-his-diary-project-gutenberg.epub",
+      "filename": "the-life-of-rev-david-brainerd-chiefly-extracted-from-his-diary-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 677932,
+      "sha256": "a412a4962614a4f41e960854bb46bdca7dde54538b1ba916cc9d5888871d2e5d"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "b5c8a423d32df5aa24fb59e66b7dd60932aec3662851ab10a5e31ac50818abc8",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-65066-b5c8a423d32d",
+    "finalArtifactSha256": "a412a4962614a4f41e960854bb46bdca7dde54538b1ba916cc9d5888871d2e5d",
+    "releaseVersioning": "content-addressed"
+  }
+}

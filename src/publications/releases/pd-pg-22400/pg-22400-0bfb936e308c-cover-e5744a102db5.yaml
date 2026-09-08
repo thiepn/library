@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-22400",
+  "version": "pg-22400-0bfb936e308c-cover-e5744a102db5",
+  "edition": 1,
+  "releasedAt": "2026-09-08T15:09:59Z",
+  "sourceHash": "aa4aa8a87892ea7c3af47e6dab78844e66497025d530ea25c8281f1c3012d9e0",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-22400/editions/pg-22400-0bfb936e308c-cover-e5744a102db5/foxs-book-of-martyrs-project-gutenberg.epub",
+      "filename": "foxs-book-of-martyrs-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 1115356,
+      "sha256": "e5744a102db5fd7d18a7bcd830c1559fe199498ec2f7f2603960d4a9a9e9a01d"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "0bfb936e308c55886e9351ebce834c584d7fc3fc72658b30a29d161f470a4ca4",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-22400-0bfb936e308c",
+    "finalArtifactSha256": "e5744a102db5fd7d18a7bcd830c1559fe199498ec2f7f2603960d4a9a9e9a01d",
+    "releaseVersioning": "content-addressed"
+  }
+}

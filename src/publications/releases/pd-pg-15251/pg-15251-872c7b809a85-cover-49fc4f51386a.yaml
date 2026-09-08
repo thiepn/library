@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-15251",
+  "version": "pg-15251-872c7b809a85-cover-49fc4f51386a",
+  "edition": 1,
+  "releasedAt": "2026-09-08T15:10:03Z",
+  "sourceHash": "61abe3607406b60fc94a9e9874e9249657025616a17b53b225554e334d55066e",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-15251/editions/pg-15251-872c7b809a85-cover-49fc4f51386a/the-biography-of-robert-murray-mcheyne-project-gutenberg.epub",
+      "filename": "the-biography-of-robert-murray-mcheyne-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 581365,
+      "sha256": "49fc4f51386a4bd5e5678af23dc033955a38b906860751c7e34986ad68627439"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "872c7b809a85ef65f8f4436734e41232b691eb3a7cf62143f4b33fb08701a082",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-15251-872c7b809a85",
+    "finalArtifactSha256": "49fc4f51386a4bd5e5678af23dc033955a38b906860751c7e34986ad68627439",
+    "releaseVersioning": "content-addressed"
+  }
+}

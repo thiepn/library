@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-29296",
+  "version": "pg-29296-2815d5e7fb09-cover-d5d61fbd0d93",
+  "edition": 1,
+  "releasedAt": "2026-09-08T15:10:07Z",
+  "sourceHash": "4b20d7285d8edc536a9d0553199b7a8514276cc29e2a6c70b83171cc711eba34",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-29296/editions/pg-29296-2815d5e7fb09-cover-d5d61fbd0d93/the-ministry-of-intercession-a-plea-for-more-prayer-project-gutenberg.epub",
+      "filename": "the-ministry-of-intercession-a-plea-for-more-prayer-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 585430,
+      "sha256": "d5d61fbd0d934b36d1b4f4f1b270e9769c1c0e506194e38cc457e31f31db2deb"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "2815d5e7fb098b7c7b565a2f85097312ed06c3dd22ab882155e1aa8840ae5b89",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-29296-2815d5e7fb09",
+    "finalArtifactSha256": "d5d61fbd0d934b36d1b4f4f1b270e9769c1c0e506194e38cc457e31f31db2deb",
+    "releaseVersioning": "content-addressed"
+  }
+}
