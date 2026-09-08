@@ -74,6 +74,10 @@ jobs:
             --limit "$LIMIT" \
             $force_flag
 
+      - name: Give generated-cover releases content-addressed immutable keys
+        if: steps.covers.outputs.processed_count != '0'
+        run: python3 scripts/public-domain/finalize-cover-release.py --mode backfill
+
       - name: Certify complete Library before upload
         if: steps.covers.outputs.processed_count != '0'
         run: pnpm release:certify
@@ -149,6 +153,7 @@ jobs:
             echo "Generated **${{ steps.covers.outputs.processed_count }}** book-specific illustrated covers."
             echo
             echo '- Source EPUB releases remain immutable.'
+            echo '- Each generated result uses a content-addressed release key, so retries cannot overwrite different bytes at the same R2 path.'
             echo '- Each covered book receives a new immutable EPUB release with the new JPEG cover embedded.'
             echo '- Library cards switch from the generic SVG template to optimized WebP covers.'
             echo '- EPUB hashes and sizes were recalculated and R2 readback-verified.'
