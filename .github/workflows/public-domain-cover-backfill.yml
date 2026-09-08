@@ -50,6 +50,16 @@ jobs:
       - name: Install cover renderer dependency
         run: python3 -m pip install --disable-pip-version-check 'Pillow==11.3.0'
 
+      - name: Verify cover renderer and EPUB embedding
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            scripts/public-domain/cover_pipeline.py \
+            scripts/public-domain/cover_job.py \
+            scripts/public-domain/finalize-cover-release.py \
+            scripts/public-domain/verify-cover-pipeline.py
+          python3 scripts/public-domain/verify-cover-pipeline.py
+
       - name: Require cover and publication credentials
         run: |
           set -euo pipefail
