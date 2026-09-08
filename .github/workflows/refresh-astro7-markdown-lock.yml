@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   refresh-lock:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout branch
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
@@ -29,24 +29,23 @@ jobs:
           install: false
           cache: true
 
-      - name: Regenerate lockfile
-        run: pnpm install --lockfile-only --no-frozen-lockfile
-
-      - name: Validate Astro 7 migration
-        run: |
-          pnpm install --frozen-lockfile
-          pnpm check
-          pnpm audit --prod --audit-level=high
-
-      - name: Commit refreshed lockfile
+      - name: Regenerate lockfile and certify Astro 7 migration
+        shell: bash
         run: |
           set -euo pipefail
-          if git diff --quiet -- pnpm-lock.yaml; then
-            echo 'No lockfile changes required.'
-            exit 0
-          fi
+          pnpm install --lockfile-only --no-frozen-lockfile
+          git diff --exit-code -- package.json pnpm-workspace.yaml astro.config.mjs
+          pnpm install --frozen-lockfile
+          pnpm audit --prod --audit-level=high
+          pnpm build
+
+      - name: Commit generated lockfile and remove helper workflow
+        shell: bash
+        run: |
+          set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/refresh-astro7-markdown-lock.yml
           git add pnpm-lock.yaml
-          git commit -m 'chore: refresh lockfile for Astro 7 markdown processor'
+          git commit -m 'chore: certify Astro 7 markdown migration lockfile'
           git push origin HEAD
