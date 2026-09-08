@@ -52,12 +52,18 @@ if (present) {
     'Release claims distinguish supported tiers, unsupported content, core journeys, engine evidence, device-profile evidence, and physical-device evidence',
   );
 
+  const productionBrowserScriptPresent =
+    pkg.includes('"test:e2e:production"')
+    && pkg.includes('playwright test tests/e2e/historical-storage-migration.spec.ts && playwright test --grep-invert')
+    && pkg.includes('historical main v8 and personal v2 records upgrade into versioned portable state');
+
   pass(
     'RELEASE_PHASE1_PLAYWRIGHT_PIN',
     pkg.includes('"@playwright/test": "1.62.1"')
       && pkg.includes('"test:e2e": "playwright test"')
+      && productionBrowserScriptPresent
       && pkg.includes('"test:e2e:headed": "playwright test --headed"'),
-    'Playwright is pinned and exposed through stable package scripts',
+    'Playwright is pinned and exposes stable general, isolated-production, and headed browser scripts',
   );
 
   pass(
@@ -129,19 +135,21 @@ if (present) {
 
   const mediaIndex = deployment.indexOf('pnpm stage:media');
   const browserIndex = deployment.indexOf('id: browser');
+  const productionBrowserCommandIndex = deployment.indexOf('run: pnpm test:e2e:production');
   const pagesIndex = deployment.indexOf('actions/upload-pages-artifact@');
   pass(
     'RELEASE_PHASE1_PRODUCTION_GATE',
     deployment.includes('playwright install --with-deps chromium firefox webkit')
       && deployment.includes('Run browser acceptance against the staged production artifact')
-      && deployment.includes('run: pnpm test:e2e')
+      && productionBrowserScriptPresent
       && deployment.includes("if: failure() && steps.browser.outcome == 'failure'")
       && deployment.includes('production-browser-acceptance-${{ github.run_id }}')
       && deployment.includes('browser acceptance before artifact upload')
       && mediaIndex >= 0
       && browserIndex > mediaIndex
-      && pagesIndex > browserIndex,
-    'The GitHub Pages artifact cannot be uploaded until the staged production build passes the full browser acceptance matrix, with failure evidence retained',
+      && productionBrowserCommandIndex > browserIndex
+      && pagesIndex > productionBrowserCommandIndex,
+    'The GitHub Pages artifact cannot be uploaded until the isolated historical migration and remaining full browser acceptance matrix pass, with failure evidence retained',
   );
 
   pass(

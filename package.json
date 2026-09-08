@@ -18,6 +18,7 @@
     "test:reader": "node --import tsx --test scripts/regression/*.test.ts",
     "test:reader:postbuild": "node scripts/regression/reader-postbuild.mjs",
     "test:e2e": "playwright test",
+    "test:e2e:production": "playwright test tests/e2e/historical-storage-migration.spec.ts && playwright test --grep-invert \"historical main v8 and personal v2 records upgrade into versioned portable state\"",
     "test:e2e:headed": "playwright test --headed",
     "test:compatibility": "playwright test tests/e2e/publication-compatibility.spec.ts",
     "test:performance": "playwright test --config=playwright.performance.config.ts",
