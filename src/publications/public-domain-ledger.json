@@ -2479,6 +2479,236 @@
         "releaseVersion": "pg-29296-2815d5e7fb09-cover-d5d61fbd0d93",
         "artifactSha256": "d5d61fbd0d934b36d1b4f4f1b270e9769c1c0e506194e38cc457e31f31db2deb"
       }
+    },
+    {
+      "gutenbergId": 12854,
+      "workId": "pd-pg-12854",
+      "title": "The Master's Indwelling",
+      "author": "Andrew Murray",
+      "score": 15.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Category: Religion/Spirituality"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/12854",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/12854/pg12854.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/12854/pg12854.epub",
+      "sourceRdfSha256": "18b8c32cf39a351037c4ef8d44543ad183bf6cd9fe1cef4c01385119d27f50d7",
+      "sourceEpubSha256": "aaa903169384926de4d347410b88c15e9917d01bfe4cf8615c23865aa910f619",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Andrew Murray",
+          "role": "creator",
+          "birthYear": 1828,
+          "deathYear": 1917
+        }
+      ],
+      "selectedAt": "2026-09-08T18:30:31Z",
+      "releaseVersion": "pg-12854-aaa903169384-cover-46b4e65370af",
+      "curation": {
+        "mode": "curated-christian-classics",
+        "source": "user-requested-christian-classics",
+        "requestedPosition": 22,
+        "collection": "christian-classics"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T18:31:22Z",
+        "webCoverSha256": "710f9eab3ef3b67bff581b0c90060bc06465725864fb40bdea4a9e7915cee99c",
+        "epubCoverSha256": "7b8faf7fba6462c48d280302a336a8cf1086de71682eac17d6bdd243c511d14c",
+        "releaseVersion": "pg-12854-aaa903169384-cover-46b4e65370af",
+        "artifactSha256": "46b4e65370af3c01b31b7d326e091d20645346b8580f377db9ce589431661e87"
+      }
+    },
+    {
+      "gutenbergId": 30449,
+      "workId": "pd-pg-30449",
+      "title": "The Way to God and How to Find It",
+      "author": "Dwight Lyman Moody",
+      "score": 15.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Category: Religion/Spirituality"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/30449",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/30449/pg30449.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/30449/pg30449.epub",
+      "sourceRdfSha256": "e2c77097cf785c177a0abb92dcae8d617dd5969338910a1dc22d499e58f228e2",
+      "sourceEpubSha256": "d2e153125a4d35c231a712bca46e3eb2d634f109235958371b4ab29d7b04b77b",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Dwight Lyman Moody",
+          "role": "creator",
+          "birthYear": 1837,
+          "deathYear": 1899
+        }
+      ],
+      "selectedAt": "2026-09-08T18:30:31Z",
+      "releaseVersion": "pg-30449-d2e153125a4d-cover-f3c4249d39f2",
+      "curation": {
+        "mode": "curated-christian-classics",
+        "source": "user-requested-christian-classics",
+        "requestedPosition": 23,
+        "collection": "christian-classics"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T18:32:02Z",
+        "webCoverSha256": "10fe701af8ca5ffe3b0bb0579db3fb6ab27b5247dd2c0f7a35850bf42b63ab78",
+        "epubCoverSha256": "9bec8d15cc9f8c785f7930332d2fbda4c877be4987147f020f5ec9461355f0fc",
+        "releaseVersion": "pg-30449-d2e153125a4d-cover-f3c4249d39f2",
+        "artifactSha256": "f3c4249d39f278783a9c5721234ddbebd7f807db4d07012aae333871f717951c"
+      }
+    },
+    {
+      "gutenbergId": 61883,
+      "workId": "pd-pg-61883",
+      "title": "Prevailing Prayer: What Hinders It?",
+      "author": "Dwight Lyman Moody",
+      "score": 15.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Category: Religion/Spirituality"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/61883",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/61883/pg61883.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/61883/pg61883.epub",
+      "sourceRdfSha256": "c298f24b2d1822c063e4c2486ef5ca5852806a881eb23c7e324565d55a90ed8f",
+      "sourceEpubSha256": "e713da00ba7800f251959d96c0dcd10f83c9e9588ab87ce05f218be66ab0a213",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Dwight Lyman Moody",
+          "role": "creator",
+          "birthYear": 1837,
+          "deathYear": 1899
+        }
+      ],
+      "selectedAt": "2026-09-08T18:30:32Z",
+      "releaseVersion": "pg-61883-e713da00ba78-cover-fcd6efe07663",
+      "curation": {
+        "mode": "curated-christian-classics",
+        "source": "user-requested-christian-classics",
+        "requestedPosition": 24,
+        "collection": "christian-classics"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T18:32:41Z",
+        "webCoverSha256": "49e85a989403693bd97c0dc1a364b35b9955a4b7fb29bcc5521309ff66c22472",
+        "epubCoverSha256": "f2744d9fd0890f13041c10d0e9e9369bb513fdf5ea98ad5efeeea9ef9db7adb6",
+        "releaseVersion": "pg-61883-e713da00ba78-cover-fcd6efe07663",
+        "artifactSha256": "fcd6efe076631c25ec3ee54195ea7eb6aecda5836901320534a865373ff73005"
+      }
+    },
+    {
+      "gutenbergId": 58135,
+      "workId": "pd-pg-58135",
+      "title": "The Saint's Everlasting Rest",
+      "author": "Richard Baxter",
+      "score": 15.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Category: Religion/Spirituality"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/58135",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/58135/pg58135.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/58135/pg58135.epub",
+      "sourceRdfSha256": "c15420fe3039beca82abc94f09430f455f3507f3152d16fc2cafe3bbf9ad286b",
+      "sourceEpubSha256": "5139857397b51e10572d87888b8061e5694efe009fcd6dcb73f76b5c22db9510",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Richard Baxter",
+          "role": "creator",
+          "birthYear": 1615,
+          "deathYear": 1691
+        },
+        {
+          "name": "Benjamin Fawcett",
+          "role": "edt",
+          "birthYear": 1715,
+          "deathYear": 1780
+        }
+      ],
+      "selectedAt": "2026-09-08T18:30:32Z",
+      "releaseVersion": "pg-58135-5139857397b5-cover-69c48fafac1f",
+      "curation": {
+        "mode": "curated-christian-classics",
+        "source": "user-requested-christian-classics",
+        "requestedPosition": 25,
+        "collection": "christian-classics"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T18:33:24Z",
+        "webCoverSha256": "d29a3f67d2acdacc85a88f2758bbff48f98bf63a83d55fde143519d3e475fc65",
+        "epubCoverSha256": "1a62b271353872f877992f26ad72a29145544c473b4ed1641e76cfe16d39cf48",
+        "releaseVersion": "pg-58135-5139857397b5-cover-69c48fafac1f",
+        "artifactSha256": "69c48fafac1f1fd1ec5e79156889c0803bc37bc6f755bc1979bc7ccfdd4e8486"
+      }
+    },
+    {
+      "gutenbergId": 13871,
+      "workId": "pd-pg-13871",
+      "title": "The Practice of the Presence of God the Best Rule of a Holy Life",
+      "author": "Brother Lawrence of the Resurrection",
+      "score": 15.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Christianity",
+        "Category: Essays, Letters & Speeches",
+        "Category: History - Early Modern (c. 1450-1750)",
+        "Category: Philosophy & Ethics",
+        "Category: Religion/Spirituality"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/13871",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/13871/pg13871.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/13871/pg13871.epub",
+      "sourceRdfSha256": "d7fb9d68fb5b38461566dd924432b324ebb6d37eee6925fc8b05158735f13429",
+      "sourceEpubSha256": "eb5a54b6ffb1734dce3f63d4efece6d001b5255c9dbdc233e1d4fd517928be91",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "of the Resurrection, Brother Lawrence",
+          "role": "creator",
+          "birthYear": 1611,
+          "deathYear": 1691
+        }
+      ],
+      "selectedAt": "2026-09-08T18:30:32Z",
+      "releaseVersion": "pg-13871-eb5a54b6ffb1-cover-3d4586b1c9de",
+      "curation": {
+        "mode": "curated-christian-classics",
+        "source": "user-requested-christian-classics",
+        "requestedPosition": 26,
+        "collection": "christian-classics"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-08T18:34:10Z",
+        "webCoverSha256": "4e13b0a88f6908f7c6c514a0dd8d0eafa5f2a9c0af7415897fa39a77c7ea3b8a",
+        "epubCoverSha256": "f596fc58696cca00d72e37fce6c914eb08b6296d2008a346e9c7d319b61d67a7",
+        "releaseVersion": "pg-13871-eb5a54b6ffb1-cover-3d4586b1c9de",
+        "artifactSha256": "3d4586b1c9de3bf445b51b67faa85081813cf9efd470e82779d9d7132d29a272"
+      }
     }
   ],
   "rejections": {
@@ -2540,10 +2770,19 @@
       "reason": "unknown death year for creator of Norwich Julian",
       "checkedAt": "2026-09-08T15:09:59Z",
       "copyrightCutoffYear": 1955
+    },
+    "65115": {
+      "gutenbergId": 65115,
+      "title": "Power Through Prayer",
+      "requestedPosition": 27,
+      "curationMode": "curated-christian-classics",
+      "reason": "unknown death year for aui Albert A. Head",
+      "checkedAt": "2026-09-08T18:30:33Z",
+      "copyrightCutoffYear": 1955
     }
   },
   "lastRun": {
-    "at": "2026-09-08T15:10:08Z",
+    "at": "2026-09-08T18:30:33Z",
     "rankingMode": "curated-christian-classics",
     "curationSource": "user-requested-christian-classics",
     "collection": "christian-classics",
@@ -2578,18 +2817,18 @@
     ],
     "copyrightCutoffYear": 1955,
     "candidateCount": 27,
-    "checkedCount": 21,
+    "checkedCount": 6,
     "candidateCheckLimit": 100,
-    "addedCount": 20,
+    "addedCount": 5,
     "skippedCount": 1,
     "recentSkips": [
       {
-        "gutenbergId": 52958,
-        "title": "Revelations of Divine Love",
-        "requestedPosition": 9,
+        "gutenbergId": 65115,
+        "title": "Power Through Prayer",
+        "requestedPosition": 27,
         "curationMode": "curated-christian-classics",
-        "reason": "unknown death year for creator of Norwich Julian",
-        "checkedAt": "2026-09-08T15:09:59Z",
+        "reason": "unknown death year for aui Albert A. Head",
+        "checkedAt": "2026-09-08T18:30:33Z",
         "copyrightCutoffYear": 1955
       }
     ]

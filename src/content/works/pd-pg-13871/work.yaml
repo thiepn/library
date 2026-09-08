@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-13871",
+  "slug": "pd-pg-13871",
+  "title": "The Practice of the Presence of God the Best Rule of a Holy Life",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "of the Resurrection, Brother Lawrence",
+      "role": "creator",
+      "birthYear": 1611,
+      "deathYear": 1691
+    }
+  ],
+  "description": "A public-domain edition of The Practice of the Presence of God the Best Rule of a Holy Life by Brother Lawrence of the Resurrection. Project Gutenberg classifies it under Christian life -- Catholic authors, Spiritual life -- Catholic Church, BX.",
+  "shortDescription": "A public-domain edition of The Practice of the Presence of God the Best Rule of a Holy Life by Brother Lawrence of the Resurrection. Project Gutenberg classifies it under Christ…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2004-10-26",
+    "lastUpdated": "2026-09-08",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-13871-eb5a54b6ffb1-cover-3d4586b1c9de",
+    "activeRelease": "pg-13871-eb5a54b6ffb1-cover-3d4586b1c9de"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-13871.webp",
+    "alt": "Cover for The Practice of the Presence of God the Best Rule of a Holy Life by of the Resurrection, Brother Lawrence"
+  },
+  "classification": {
+    "subjects": [
+      "christian-life",
+      "spiritual-life",
+      "bx"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic",
+      "christian",
+      "christian-classic"
+    ],
+    "collections": [
+      "public-domain",
+      "christian-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/13871",
+      "gutenbergId": 13871
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/13871/pg13871.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #13871. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

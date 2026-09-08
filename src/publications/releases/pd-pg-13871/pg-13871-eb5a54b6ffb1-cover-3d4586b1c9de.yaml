@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-13871",
+  "version": "pg-13871-eb5a54b6ffb1-cover-3d4586b1c9de",
+  "edition": 1,
+  "releasedAt": "2026-09-08T18:30:32Z",
+  "sourceHash": "d7fb9d68fb5b38461566dd924432b324ebb6d37eee6925fc8b05158735f13429",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-13871/editions/pg-13871-eb5a54b6ffb1-cover-3d4586b1c9de/the-practice-of-the-presence-of-god-the-best-rule-of-a-holy-life-project-gutenberg.epub",
+      "filename": "the-practice-of-the-presence-of-god-the-best-rule-of-a-holy-life-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 415199,
+      "sha256": "3d4586b1c9de3bf445b51b67faa85081813cf9efd470e82779d9d7132d29a272"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "eb5a54b6ffb1734dce3f63d4efece6d001b5255c9dbdc233e1d4fd517928be91",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-13871-eb5a54b6ffb1",
+    "finalArtifactSha256": "3d4586b1c9de3bf445b51b67faa85081813cf9efd470e82779d9d7132d29a272",
+    "releaseVersioning": "content-addressed"
+  }
+}

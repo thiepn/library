@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-30449",
+  "version": "pg-30449-d2e153125a4d-cover-f3c4249d39f2",
+  "edition": 1,
+  "releasedAt": "2026-09-08T18:30:31Z",
+  "sourceHash": "e2c77097cf785c177a0abb92dcae8d617dd5969338910a1dc22d499e58f228e2",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-30449/editions/pg-30449-d2e153125a4d-cover-f3c4249d39f2/the-way-to-god-and-how-to-find-it-project-gutenberg.epub",
+      "filename": "the-way-to-god-and-how-to-find-it-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 512389,
+      "sha256": "f3c4249d39f278783a9c5721234ddbebd7f807db4d07012aae333871f717951c"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "d2e153125a4d35c231a712bca46e3eb2d634f109235958371b4ab29d7b04b77b",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-30449-d2e153125a4d",
+    "finalArtifactSha256": "f3c4249d39f278783a9c5721234ddbebd7f807db4d07012aae333871f717951c",
+    "releaseVersioning": "content-addressed"
+  }
+}

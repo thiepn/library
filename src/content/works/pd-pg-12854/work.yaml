@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-12854",
+  "slug": "pd-pg-12854",
+  "title": "The Master's Indwelling",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Andrew Murray",
+      "role": "creator",
+      "birthYear": 1828,
+      "deathYear": 1917
+    }
+  ],
+  "description": "A public-domain edition of The Master's Indwelling by Andrew Murray. Project Gutenberg classifies it under Christian life, BV.",
+  "shortDescription": "A public-domain edition of The Master's Indwelling by Andrew Murray. Project Gutenberg classifies it under Christian life, BV.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2004-07-08",
+    "lastUpdated": "2026-09-08",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-12854-aaa903169384-cover-46b4e65370af",
+    "activeRelease": "pg-12854-aaa903169384-cover-46b4e65370af"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-12854.webp",
+    "alt": "Cover for The Master's Indwelling by Andrew Murray"
+  },
+  "classification": {
+    "subjects": [
+      "christian-life",
+      "bv"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic",
+      "christian",
+      "christian-classic"
+    ],
+    "collections": [
+      "public-domain",
+      "christian-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/12854",
+      "gutenbergId": 12854
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/12854/pg12854.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #12854. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}
