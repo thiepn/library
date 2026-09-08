@@ -88,7 +88,11 @@ jobs:
 
       - name: Run browser acceptance against the staged production artifact
         id: browser
-        run: pnpm test:e2e
+        shell: bash
+        run: |
+          set -euo pipefail
+          pnpm exec playwright test tests/e2e/historical-storage-migration.spec.ts
+          pnpm test:e2e --grep-invert "historical main v8 and personal v2 records upgrade into versioned portable state"
 
       - name: Upload failed production browser evidence
         if: failure() && steps.browser.outcome == 'failure'
