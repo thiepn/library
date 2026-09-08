@@ -1,2 +1,2 @@
-triggered_by: repair-cover-refresh-source-v3
-reason: rebuild corrected Amy Carmichael cover from original verified source EPUB and process any uncovered books
+triggered_by: user-cover-refresh-after-source-repair
+reason: rebuild corrected Amy Carmichael cover from original verified source EPUB and process any newly uncovered public-domain books
