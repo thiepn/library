@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-1513",
+  "version": "pg-1513-d8e2deda0fe5-cover-c3b61bdfb20b",
+  "edition": 1,
+  "releasedAt": "2026-09-08T17:05:11Z",
+  "sourceHash": "e7b4401621c012aae9e9104e3bb338664161e676aa410092194f2f025b162ab0",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-1513/editions/pg-1513-d8e2deda0fe5-cover-c3b61bdfb20b/romeo-and-juliet-project-gutenberg.epub",
+      "filename": "romeo-and-juliet-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 522317,
+      "sha256": "c3b61bdfb20b11f09a2c822a59e21aef391e9ce3d7ea95d592831a349707e741"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceReleaseVersion": "pg-1513-d8e2deda0fe5",
+    "sourceArtifactSha256": "d8e2deda0fe5ed56e191680918a52b0b27dbb19c4d492800c6638cd97badf7c5",
+    "embeddedCover": true,
+    "finalArtifactSha256": "c3b61bdfb20b11f09a2c822a59e21aef391e9ce3d7ea95d592831a349707e741",
+    "releaseVersioning": "content-addressed"
+  }
+}

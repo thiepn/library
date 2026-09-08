@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-244",
+  "version": "pg-244-76df519d3ce0-cover-5287fa8a5386",
+  "edition": 1,
+  "releasedAt": "2026-09-08T17:16:00Z",
+  "sourceHash": "4b424d653780988efb8f46340fb607c451bc1ae5c43b58b9295fe629308aa5b7",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-244/editions/pg-244-76df519d3ce0-cover-5287fa8a5386/a-study-in-scarlet-project-gutenberg.epub",
+      "filename": "a-study-in-scarlet-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 470047,
+      "sha256": "5287fa8a53866ec48b6180a4b69fffe9dbb4e07701c24669a230b269ce4db48e"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceReleaseVersion": "pg-244-76df519d3ce0",
+    "sourceArtifactSha256": "76df519d3ce04fb50e2d2502328c62decb945e7c20a99d8cbd69e97fe707b252",
+    "embeddedCover": true,
+    "finalArtifactSha256": "5287fa8a53866ec48b6180a4b69fffe9dbb4e07701c24669a230b269ce4db48e",
+    "releaseVersioning": "content-addressed"
+  }
+}

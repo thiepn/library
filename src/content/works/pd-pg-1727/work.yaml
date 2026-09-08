@@ -25,14 +25,14 @@
   "visibility": "public",
   "publication": {
     "firstPublished": "1999-04-01",
-    "lastUpdated": "2026-09-07",
+    "lastUpdated": "2026-09-08",
     "edition": 1,
-    "editionLabel": "Project Gutenberg public-domain edition",
-    "version": "pg-1727-af9b1e35583d",
-    "activeRelease": "pg-1727-af9b1e35583d"
+    "editionLabel": "THIEPN Library public-domain edition (Project Gutenberg source)",
+    "version": "pg-1727-af9b1e35583d-cover-635c7b54e2db",
+    "activeRelease": "pg-1727-af9b1e35583d-cover-635c7b54e2db"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-1727.svg",
+    "src": "/covers/public-domain/pd-pg-1727.webp",
     "alt": "Cover for The Odyssey by Homer"
   },
   "classification": {

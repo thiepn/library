@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-1399",
+  "version": "pg-1399-99a2f9600e40-cover-25a3aefba671",
+  "edition": 1,
+  "releasedAt": "2026-09-08T16:58:57Z",
+  "sourceHash": "456ca3cf1165bbf504c0ebb1b8ec5144fe2a585f04a06f81bde7a265424ad43b",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-1399/editions/pg-1399-99a2f9600e40-cover-25a3aefba671/anna-karenina-project-gutenberg.epub",
+      "filename": "anna-karenina-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 1198667,
+      "sha256": "25a3aefba671e72c951a3c4892b7d89fc41d5253838c4cd69291c0b156330876"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceReleaseVersion": "pg-1399-99a2f9600e40",
+    "sourceArtifactSha256": "99a2f9600e408454070c46a155da9389aec85c872ab186caddad3375a9699aaa",
+    "embeddedCover": true,
+    "finalArtifactSha256": "25a3aefba671e72c951a3c4892b7d89fc41d5253838c4cd69291c0b156330876",
+    "releaseVersioning": "content-addressed"
+  }
+}

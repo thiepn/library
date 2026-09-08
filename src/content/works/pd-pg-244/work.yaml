@@ -21,12 +21,12 @@
     "firstPublished": "1995-04-01",
     "lastUpdated": "2026-09-08",
     "edition": 1,
-    "editionLabel": "Project Gutenberg public-domain edition",
-    "version": "pg-244-76df519d3ce0",
-    "activeRelease": "pg-244-76df519d3ce0"
+    "editionLabel": "THIEPN Library public-domain edition (Project Gutenberg source)",
+    "version": "pg-244-76df519d3ce0-cover-5287fa8a5386",
+    "activeRelease": "pg-244-76df519d3ce0-cover-5287fa8a5386"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-244.svg",
+    "src": "/covers/public-domain/pd-pg-244.webp",
     "alt": "Cover for A Study in Scarlet by Arthur Conan Doyle"
   },
   "classification": {

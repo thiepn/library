@@ -25,14 +25,14 @@
   "visibility": "public",
   "publication": {
     "firstPublished": "2004-07-27",
-    "lastUpdated": "2026-09-07",
+    "lastUpdated": "2026-09-08",
     "edition": 1,
-    "editionLabel": "Project Gutenberg public-domain edition",
-    "version": "pg-996-dba65db312e5",
-    "activeRelease": "pg-996-dba65db312e5"
+    "editionLabel": "THIEPN Library public-domain edition (Project Gutenberg source)",
+    "version": "pg-996-dba65db312e5-cover-3b498af7e503",
+    "activeRelease": "pg-996-dba65db312e5-cover-3b498af7e503"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-996.svg",
+    "src": "/covers/public-domain/pd-pg-996.webp",
     "alt": "Cover for Don Quixote by Miguel de Cervantes Saavedra"
   },
   "classification": {

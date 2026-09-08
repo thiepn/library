@@ -21,12 +21,12 @@
     "firstPublished": "2000-04-01",
     "lastUpdated": "2026-09-08",
     "edition": 1,
-    "editionLabel": "Project Gutenberg public-domain edition",
-    "version": "pg-2148-db2d99693d94",
-    "activeRelease": "pg-2148-db2d99693d94"
+    "editionLabel": "THIEPN Library public-domain edition (Project Gutenberg source)",
+    "version": "pg-2148-db2d99693d94-cover-eb2f3d26a8f3",
+    "activeRelease": "pg-2148-db2d99693d94-cover-eb2f3d26a8f3"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-2148.svg",
+    "src": "/covers/public-domain/pd-pg-2148.webp",
     "alt": "Cover for The Works of Edgar Allan Poe — Volume 2 by Edgar Allan Poe"
   },
   "classification": {

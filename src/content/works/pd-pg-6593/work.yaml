@@ -19,14 +19,14 @@
   "visibility": "public",
   "publication": {
     "firstPublished": "2004-09-01",
-    "lastUpdated": "2026-09-07",
+    "lastUpdated": "2026-09-08",
     "edition": 1,
-    "editionLabel": "Project Gutenberg public-domain edition",
-    "version": "pg-6593-676139d467a6",
-    "activeRelease": "pg-6593-676139d467a6"
+    "editionLabel": "THIEPN Library public-domain edition (Project Gutenberg source)",
+    "version": "pg-6593-676139d467a6-cover-2a133cd9129e",
+    "activeRelease": "pg-6593-676139d467a6-cover-2a133cd9129e"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-6593.svg",
+    "src": "/covers/public-domain/pd-pg-6593.webp",
     "alt": "Cover for History of Tom Jones, a Foundling by Henry Fielding"
   },
   "classification": {

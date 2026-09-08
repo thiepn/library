@@ -21,13 +21,13 @@
     "firstPublished": "1993-10-01",
     "lastUpdated": "2026-09-08",
     "edition": 1,
-    "editionLabel": "Project Gutenberg public-domain edition",
-    "version": "pg-84-f717864263e3",
-    "activeRelease": "pg-84-f717864263e3"
+    "editionLabel": "THIEPN Library public-domain edition (Project Gutenberg source)",
+    "version": "pg-84-f717864263e3-cover-a99bd009d2ab",
+    "activeRelease": "pg-84-f717864263e3-cover-a99bd009d2ab"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-84.svg",
-    "alt": "Cover for Frankenstein; or, the modern prometheus by Mary Wollstonecraft Shelley"
+    "src": "/covers/public-domain/pd-pg-84.webp",
+    "alt": "Cover for Frankenstein; or, The Modern Prometheus by Mary Shelley"
   },
   "classification": {
     "subjects": [

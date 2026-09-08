@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-43",
+  "version": "pg-43-fd748fa858f1-cover-18ebad16564f",
+  "edition": 1,
+  "releasedAt": "2026-09-08T17:08:05Z",
+  "sourceHash": "22f87c62b22471897163ce73f57c8c7a1e1e35d3fd69c0efc8e59ca19e6436ff",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-43/editions/pg-43-fd748fa858f1-cover-18ebad16564f/the-strange-case-of-dr-jekyll-and-mr-hyde-project-gutenberg.epub",
+      "filename": "the-strange-case-of-dr-jekyll-and-mr-hyde-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 513550,
+      "sha256": "18ebad16564fbfb1aa7f4fbf9b91d6a52660d21c1f524fe673b30d6c6d022cfc"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceReleaseVersion": "pg-43-fd748fa858f1",
+    "sourceArtifactSha256": "fd748fa858f128838e19c68df3694e10e1327abd9e80a569393c86cef48bb21a",
+    "embeddedCover": true,
+    "finalArtifactSha256": "18ebad16564fbfb1aa7f4fbf9b91d6a52660d21c1f524fe673b30d6c6d022cfc",
+    "releaseVersioning": "content-addressed"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-1260",
+  "version": "pg-1260-afced5466c9c-cover-7169ed8e1072",
+  "edition": 1,
+  "releasedAt": "2026-09-08T17:10:58Z",
+  "sourceHash": "588a3461f0628e4e6ae279871a10b8e298f1e05d4115e2b80373331d6af982fc",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-1260/editions/pg-1260-afced5466c9c-cover-7169ed8e1072/jane-eyre-an-autobiography-project-gutenberg.epub",
+      "filename": "jane-eyre-an-autobiography-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 937807,
+      "sha256": "7169ed8e10723d977d13764502537c63cf48487b24b77cf5b17950a3985e248e"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceReleaseVersion": "pg-1260-afced5466c9c",
+    "sourceArtifactSha256": "afced5466c9c6eda02752dd38816fc212d2531e48981f6d00d69f261b475a1eb",
+    "embeddedCover": true,
+    "finalArtifactSha256": "7169ed8e10723d977d13764502537c63cf48487b24b77cf5b17950a3985e248e",
+    "releaseVersioning": "content-addressed"
+  }
+}

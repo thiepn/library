@@ -25,14 +25,14 @@
   "visibility": "public",
   "publication": {
     "firstPublished": "2006-03-08",
-    "lastUpdated": "2026-09-07",
+    "lastUpdated": "2026-09-08",
     "edition": 1,
-    "editionLabel": "Project Gutenberg public-domain edition",
-    "version": "pg-31-2d1bb3261d1a",
-    "activeRelease": "pg-31-2d1bb3261d1a"
+    "editionLabel": "THIEPN Library public-domain edition (Project Gutenberg source)",
+    "version": "pg-31-2d1bb3261d1a-cover-702815b4b2ba",
+    "activeRelease": "pg-31-2d1bb3261d1a-cover-702815b4b2ba"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-31.svg",
+    "src": "/covers/public-domain/pd-pg-31.webp",
     "alt": "Cover for Plays of Sophocles: Oedipus the King; Oedipus at Colonus; Antigone by Sophocles"
   },
   "classification": {

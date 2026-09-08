@@ -25,15 +25,15 @@
   "visibility": "public",
   "publication": {
     "firstPublished": "1998-07-01",
-    "lastUpdated": "2026-09-07",
+    "lastUpdated": "2026-09-08",
     "edition": 1,
-    "editionLabel": "Project Gutenberg public-domain edition",
-    "version": "pg-1399-99a2f9600e40",
-    "activeRelease": "pg-1399-99a2f9600e40"
+    "editionLabel": "THIEPN Library public-domain edition (Project Gutenberg source)",
+    "version": "pg-1399-99a2f9600e40-cover-25a3aefba671",
+    "activeRelease": "pg-1399-99a2f9600e40-cover-25a3aefba671"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-1399.svg",
-    "alt": "Cover for Anna Karenina by graf Tolstoy Leo"
+    "src": "/covers/public-domain/pd-pg-1399.webp",
+    "alt": "Cover for Anna Karenina by Leo Tolstoy"
   },
   "classification": {
     "subjects": [

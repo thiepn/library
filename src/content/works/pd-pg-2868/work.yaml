@@ -21,12 +21,12 @@
     "firstPublished": "2001-10-01",
     "lastUpdated": "2026-09-08",
     "edition": 1,
-    "editionLabel": "Project Gutenberg public-domain edition",
-    "version": "pg-2868-d3e35eb1f701",
-    "activeRelease": "pg-2868-d3e35eb1f701"
+    "editionLabel": "THIEPN Library public-domain edition (Project Gutenberg source)",
+    "version": "pg-2868-d3e35eb1f701-cover-88e9cd786da5",
+    "activeRelease": "pg-2868-d3e35eb1f701-cover-88e9cd786da5"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-2868.svg",
+    "src": "/covers/public-domain/pd-pg-2868.webp",
     "alt": "Cover for The Green Mummy by Fergus Hume"
   },
   "classification": {

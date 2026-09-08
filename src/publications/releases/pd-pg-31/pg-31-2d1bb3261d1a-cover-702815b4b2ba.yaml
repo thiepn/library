@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-31",
+  "version": "pg-31-2d1bb3261d1a-cover-702815b4b2ba",
+  "edition": 1,
+  "releasedAt": "2026-09-08T17:00:24Z",
+  "sourceHash": "2cb39729af537117d8f9be0206054e592771303f80d090a62749f1473d1bb785",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-31/editions/pg-31-2d1bb3261d1a-cover-702815b4b2ba/plays-of-sophocles-oedipus-the-king-oedipus-at-colonus-antigone-project-gutenberg.epub",
+      "filename": "plays-of-sophocles-oedipus-the-king-oedipus-at-colonus-antigone-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 621520,
+      "sha256": "702815b4b2ba773dead9c444400982b3bb8ef8cd08df9aa9e6ba1e68556e9cb0"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceReleaseVersion": "pg-31-2d1bb3261d1a",
+    "sourceArtifactSha256": "2d1bb3261d1ab21e6153cc8702b4c7d195b8c1fa74ac812da9b63fe14dcb725b",
+    "embeddedCover": true,
+    "finalArtifactSha256": "702815b4b2ba773dead9c444400982b3bb8ef8cd08df9aa9e6ba1e68556e9cb0",
+    "releaseVersioning": "content-addressed"
+  }
+}

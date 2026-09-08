@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-3300",
+  "version": "pg-3300-2db4a352fd89-cover-7920d7eebb0f",
+  "edition": 1,
+  "releasedAt": "2026-09-08T17:03:44Z",
+  "sourceHash": "8c9332537cf731ee0f73f186754ebdc4afbdc03f7f2eeda441299d20021c612f",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-3300/editions/pg-3300-2db4a352fd89-cover-7920d7eebb0f/an-inquiry-into-the-nature-and-causes-of-the-wealth-of-nations-project-gutenberg.epub",
+      "filename": "an-inquiry-into-the-nature-and-causes-of-the-wealth-of-nations-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 1392651,
+      "sha256": "7920d7eebb0f6dfb21808f99e10a268b47968792d736a926150846769dc83cb0"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceReleaseVersion": "pg-3300-2db4a352fd89",
+    "sourceArtifactSha256": "2db4a352fd89e297c76fce82e75f1ad8f3b7ea7e9e43db4337f81fa61807572c",
+    "embeddedCover": true,
+    "finalArtifactSha256": "7920d7eebb0f6dfb21808f99e10a268b47968792d736a926150846769dc83cb0",
+    "releaseVersioning": "content-addressed"
+  }
+}

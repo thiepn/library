@@ -21,12 +21,12 @@
     "firstPublished": "2004-02-01",
     "lastUpdated": "2026-09-08",
     "edition": 1,
-    "editionLabel": "Project Gutenberg public-domain edition",
-    "version": "pg-5197-fd52b138cad6",
-    "activeRelease": "pg-5197-fd52b138cad6"
+    "editionLabel": "THIEPN Library public-domain edition (Project Gutenberg source)",
+    "version": "pg-5197-fd52b138cad6-cover-9b234431a161",
+    "activeRelease": "pg-5197-fd52b138cad6-cover-9b234431a161"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-5197.svg",
+    "src": "/covers/public-domain/pd-pg-5197.webp",
     "alt": "Cover for My Life — Volume 1 by Richard Wagner"
   },
   "classification": {

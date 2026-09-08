@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-5197",
+  "version": "pg-5197-fd52b138cad6-cover-9b234431a161",
+  "edition": 1,
+  "releasedAt": "2026-09-08T17:14:34Z",
+  "sourceHash": "969d392967600e19c99bbdbc95b5e417261b14fbb003831e07ba55670ac2b6b6",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-5197/editions/pg-5197-fd52b138cad6-cover-9b234431a161/my-life-volume-1-project-gutenberg.epub",
+      "filename": "my-life-volume-1-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 892458,
+      "sha256": "9b234431a1611450f9f5412213b4d0ec10911c617e38e800f967d734556a40c6"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceReleaseVersion": "pg-5197-fd52b138cad6",
+    "sourceArtifactSha256": "fd52b138cad6cc2703be2edb617c7985f1e8de33b33bcce55e248762b13f1077",
+    "embeddedCover": true,
+    "finalArtifactSha256": "9b234431a1611450f9f5412213b4d0ec10911c617e38e800f967d734556a40c6",
+    "releaseVersioning": "content-addressed"
+  }
+}

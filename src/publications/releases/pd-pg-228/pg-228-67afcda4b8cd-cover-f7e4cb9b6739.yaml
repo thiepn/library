@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-228",
+  "version": "pg-228-67afcda4b8cd-cover-f7e4cb9b6739",
+  "edition": 1,
+  "releasedAt": "2026-09-08T17:01:29Z",
+  "sourceHash": "20b5734ad91f889fa4ed8d51f602bb315267acae4bc03e60b004a6064dc6cfe0",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-228/editions/pg-228-67afcda4b8cd-cover-f7e4cb9b6739/the-aeneid-project-gutenberg.epub",
+      "filename": "the-aeneid-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 650412,
+      "sha256": "f7e4cb9b67391c8160fbc08ef0e773d8c95e54e476fc53aefb6ec2c2ebc335a1"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceReleaseVersion": "pg-228-67afcda4b8cd",
+    "sourceArtifactSha256": "67afcda4b8cddf7fb7671742696e1950d443e5b4b3a9ed005a22e974dbe73ebc",
+    "embeddedCover": true,
+    "finalArtifactSha256": "f7e4cb9b67391c8160fbc08ef0e773d8c95e54e476fc53aefb6ec2c2ebc335a1",
+    "releaseVersioning": "content-addressed"
+  }
+}

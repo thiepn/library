@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-19476",
+  "version": "pg-19476-7853b6c1abf4-cover-e4bbf522d4c2",
+  "edition": 1,
+  "releasedAt": "2026-09-08T16:55:24Z",
+  "sourceHash": "c9870e43d64718c8ab264dd58f4f7a90fb9552caea938423ab295d40e46b9286",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-19476/editions/pg-19476-7853b6c1abf4-cover-e4bbf522d4c2/a-honeymoon-in-space-project-gutenberg.epub",
+      "filename": "a-honeymoon-in-space-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 559558,
+      "sha256": "e4bbf522d4c27625faa5fc953a339bb66b7297ed3db5307e832208038438cd1f"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceReleaseVersion": "pg-19476-7853b6c1abf4",
+    "sourceArtifactSha256": "7853b6c1abf4154e754805c971814598245b0008dd4b0c24b2d11803139ae855",
+    "embeddedCover": true,
+    "finalArtifactSha256": "e4bbf522d4c27625faa5fc953a339bb66b7297ed3db5307e832208038438cd1f",
+    "releaseVersioning": "content-addressed"
+  }
+}

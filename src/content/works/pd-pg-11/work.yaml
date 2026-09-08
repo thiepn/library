@@ -19,14 +19,14 @@
   "visibility": "public",
   "publication": {
     "firstPublished": "2008-06-27",
-    "lastUpdated": "2026-09-07",
+    "lastUpdated": "2026-09-08",
     "edition": 1,
-    "editionLabel": "Project Gutenberg public-domain edition",
-    "version": "pg-11-d6524a6b578d",
-    "activeRelease": "pg-11-d6524a6b578d"
+    "editionLabel": "THIEPN Library public-domain edition (Project Gutenberg source)",
+    "version": "pg-11-d6524a6b578d-cover-06e7d88871fe",
+    "activeRelease": "pg-11-d6524a6b578d-cover-06e7d88871fe"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-11.svg",
+    "src": "/covers/public-domain/pd-pg-11.webp",
     "alt": "Cover for Alice's Adventures in Wonderland by Lewis Carroll"
   },
   "classification": {

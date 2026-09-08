@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-2148",
+  "version": "pg-2148-db2d99693d94-cover-eb2f3d26a8f3",
+  "edition": 1,
+  "releasedAt": "2026-09-08T17:18:06Z",
+  "sourceHash": "749a604a8fec92aa55415435062cf4429a71b2395f386f2610aff72ef4f09a72",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-2148/editions/pg-2148-db2d99693d94-cover-eb2f3d26a8f3/the-works-of-edgar-allan-poe-volume-2-project-gutenberg.epub",
+      "filename": "the-works-of-edgar-allan-poe-volume-2-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 741509,
+      "sha256": "eb2f3d26a8f3e9636f429b1d4bfe18f4db2ad0acd11c6e673562d9adff742f59"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceReleaseVersion": "pg-2148-db2d99693d94",
+    "sourceArtifactSha256": "db2d99693d940e4a1423d3803cf2ac199f42bb194a16619faad69efda59ec5a7",
+    "embeddedCover": true,
+    "finalArtifactSha256": "eb2f3d26a8f3e9636f429b1d4bfe18f4db2ad0acd11c6e673562d9adff742f59",
+    "releaseVersioning": "content-addressed"
+  }
+}

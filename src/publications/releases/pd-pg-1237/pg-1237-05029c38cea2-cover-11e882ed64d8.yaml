@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-1237",
+  "version": "pg-1237-05029c38cea2-cover-11e882ed64d8",
+  "edition": 1,
+  "releasedAt": "2026-09-08T16:56:14Z",
+  "sourceHash": "4e5e1985eef46eafe67ddc6e87123b8abe28205f4249539663e0f14f7fb7bb8a",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-1237/editions/pg-1237-05029c38cea2-cover-11e882ed64d8/father-goriot-project-gutenberg.epub",
+      "filename": "father-goriot-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 619514,
+      "sha256": "11e882ed64d8b2a3e14113d880187d08fdca89f592463ab255ec2c7aa9e9af6f"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceReleaseVersion": "pg-1237-05029c38cea2",
+    "sourceArtifactSha256": "05029c38cea2be7e6dabe7fda17e42f17bd2cca6d0be844569a4e14c5f39878d",
+    "embeddedCover": true,
+    "finalArtifactSha256": "11e882ed64d8b2a3e14113d880187d08fdca89f592463ab255ec2c7aa9e9af6f",
+    "releaseVersioning": "content-addressed"
+  }
+}

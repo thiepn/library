@@ -27,12 +27,12 @@
     "firstPublished": "2014-12-04",
     "lastUpdated": "2026-09-08",
     "edition": 1,
-    "editionLabel": "Project Gutenberg public-domain edition",
-    "version": "pg-47530-77d2e12f0251",
-    "activeRelease": "pg-47530-77d2e12f0251"
+    "editionLabel": "THIEPN Library public-domain edition (Project Gutenberg source)",
+    "version": "pg-47530-77d2e12f0251-cover-b471c1a37478",
+    "activeRelease": "pg-47530-77d2e12f0251-cover-b471c1a37478"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-47530.svg",
+    "src": "/covers/public-domain/pd-pg-47530.webp",
     "alt": "Cover for Oliver Twist, Vol. 2 (of 3) by Charles Dickens"
   },
   "classification": {

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-100",
+  "version": "pg-100-13201b7761bd-cover-b7f387ff898b",
+  "edition": 1,
+  "releasedAt": "2026-09-08T17:07:19Z",
+  "sourceHash": "a573e2b82db00c89b7d1a0e6ebb718e7b48dd422a01dc3e39bec7cab2e4e05f2",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-100/editions/pg-100-13201b7761bd-cover-b7f387ff898b/the-complete-works-of-william-shakespeare-project-gutenberg.epub",
+      "filename": "the-complete-works-of-william-shakespeare-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 3225499,
+      "sha256": "b7f387ff898b8dab3e776c2b944a0569fc8156890e25d752de367dd77d6b4a76"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceReleaseVersion": "pg-100-13201b7761bd",
+    "sourceArtifactSha256": "13201b7761bd4b7bf1cb57db26c0846ead2975df71a5d111f6d39e200dd56d31",
+    "embeddedCover": true,
+    "finalArtifactSha256": "b7f387ff898b8dab3e776c2b944a0569fc8156890e25d752de367dd77d6b4a76",
+    "releaseVersioning": "content-addressed"
+  }
+}

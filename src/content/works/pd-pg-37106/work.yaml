@@ -27,12 +27,12 @@
     "firstPublished": "2011-08-16",
     "lastUpdated": "2026-09-08",
     "edition": 1,
-    "editionLabel": "Project Gutenberg public-domain edition",
-    "version": "pg-37106-9d0b11a8ef90",
-    "activeRelease": "pg-37106-9d0b11a8ef90"
+    "editionLabel": "THIEPN Library public-domain edition (Project Gutenberg source)",
+    "version": "pg-37106-9d0b11a8ef90-cover-071ee0cad529",
+    "activeRelease": "pg-37106-9d0b11a8ef90-cover-071ee0cad529"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-37106.svg",
+    "src": "/covers/public-domain/pd-pg-37106.webp",
     "alt": "Cover for Little Women; Or, Meg, Jo, Beth, and Amy by Louisa May Alcott"
   },
   "classification": {
