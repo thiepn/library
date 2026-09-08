@@ -1,0 +1,46 @@
+name: Public Domain Cover Quality
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/public-domain/cover_pipeline.py'
+      - 'scripts/public-domain/cover_job.py'
+      - 'scripts/public-domain/finalize-cover-release.py'
+      - 'scripts/public-domain/verify-cover-pipeline.py'
+      - '.github/workflows/public-domain-cover-*.yml'
+      - '.github/workflows/public-domain-autopilot.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/public-domain/cover_pipeline.py'
+      - 'scripts/public-domain/cover_job.py'
+      - 'scripts/public-domain/finalize-cover-release.py'
+      - 'scripts/public-domain/verify-cover-pipeline.py'
+      - '.github/workflows/public-domain-cover-*.yml'
+      - '.github/workflows/public-domain-autopilot.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  cover-quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout Library
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - name: Install pinned cover renderer
+        run: python3 -m pip install --disable-pip-version-check 'Pillow==11.3.0'
+
+      - name: Compile cover pipeline
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            scripts/public-domain/cover_pipeline.py \
+            scripts/public-domain/cover_job.py \
+            scripts/public-domain/finalize-cover-release.py \
+            scripts/public-domain/verify-cover-pipeline.py
+
+      - name: Verify rendering and EPUB embedding
+        run: python3 scripts/public-domain/verify-cover-pipeline.py

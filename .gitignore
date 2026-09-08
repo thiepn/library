@@ -5,6 +5,8 @@ dist/
 .wrangler/
 playwright-report/
 test-results/
+.public-domain-staging/
+.cover-staging/
 .dev.vars
 .env
 .DS_Store

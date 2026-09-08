@@ -53,8 +53,15 @@ async function expectRejectedImport(page: Page, fixture: BrowserFixtureFile): Pr
   await expect(page.locator('[data-personal-book]')).toHaveCount(0);
 }
 
-async function openPersonalCard(card: Locator): Promise<void> {
-  await card.getByRole('link', { name: /Start reading|Continue reading|Read again/ }).click();
+async function openPersonalCard(page: Page, card: Locator): Promise<void> {
+  const link = card.getByRole('link', { name: /Start reading|Continue reading|Read again/ });
+  await expect(link).toBeVisible();
+  const href = await link.getAttribute('href');
+  expect(href).toBeTruthy();
+  const target = new URL(href!, page.url());
+  expect(target.pathname).toMatch(/^\/library\/personal\/(?:read|pdf)$/);
+  expect(target.searchParams.get('id')).toBeTruthy();
+  await page.goto(target.href);
 }
 
 test('RR3 deterministic corpus has exact preflight dispositions and rejection codes', async () => {
@@ -97,7 +104,7 @@ test('supported and degraded EPUB classes import and reach the canonical reader'
 
   for (const item of cases) {
     const card = await importFixture(page, item.fixture, item.title);
-    await openPersonalCard(card);
+    await openPersonalCard(page, card);
     await expect(page).toHaveURL(/\/library\/personal\/read\?id=/);
     const shell = page.locator('[data-reader-shell]');
     await expect(shell).toHaveAttribute('data-reader-status', 'ready', { timeout: 30_000 });
@@ -109,7 +116,7 @@ test('supported and degraded EPUB classes import and reach the canonical reader'
 test('scripted EPUB content remains inert while the publication still opens', async ({ page }) => {
   await page.addInitScript(() => { (window as Window & { __rr3ScriptRan?: boolean }).__rr3ScriptRan = false; });
   const card = await importFixture(page, scriptedFixture, 'RR3 Scripted Attempt');
-  await openPersonalCard(card);
+  await openPersonalCard(page, card);
   const shell = page.locator('[data-reader-shell]');
   await expect(shell).toHaveAttribute('data-reader-status', 'ready', { timeout: 30_000 });
   await expect(shell).toHaveAttribute('data-epub-scripted-content', 'disabled');
@@ -128,7 +135,7 @@ test('hostile and structurally unsupported EPUBs fail before persistence or netw
 
 test('text, image-only, rotated/mixed-size, and large-page PDFs open with accurate capabilities', async ({ page }) => {
   const textCard = await importFixture(page, textPdfFixture, expectedPersonalTitle(textPdfFixture));
-  await openPersonalCard(textCard);
+  await openPersonalCard(page, textCard);
   let root = page.locator('[data-pdf-reader-root]');
   await expect(root).toHaveAttribute('data-pdf-reader-state', 'ready', { timeout: 30_000 });
   await expect(root).toHaveAttribute('data-pdf-compatibility', 'supported');
@@ -138,7 +145,7 @@ test('text, image-only, rotated/mixed-size, and large-page PDFs open with accura
   await expect(page.locator('[data-pdf-page-input]')).toHaveValue('2');
 
   const imageCard = await importFixture(page, imageOnlyPdfFixture, expectedPersonalTitle(imageOnlyPdfFixture));
-  await openPersonalCard(imageCard);
+  await openPersonalCard(page, imageCard);
   root = page.locator('[data-pdf-reader-root]');
   await expect(root).toHaveAttribute('data-pdf-reader-state', 'ready', { timeout: 30_000 });
   await expect(root).toHaveAttribute('data-pdf-page-text', 'unavailable');
@@ -147,7 +154,7 @@ test('text, image-only, rotated/mixed-size, and large-page PDFs open with accura
   await expect(page.locator('[data-pdf-text-layer]')).toHaveAttribute('aria-label', /no selectable text/i);
 
   const largeCard = await importFixture(page, largePagePdfFixture, expectedPersonalTitle(largePagePdfFixture));
-  await openPersonalCard(largeCard);
+  await openPersonalCard(page, largeCard);
   root = page.locator('[data-pdf-reader-root]');
   await expect(root).toHaveAttribute('data-pdf-reader-state', 'ready', { timeout: 30_000 });
   const canvasBox = await page.locator('[data-pdf-canvas]').boundingBox();
@@ -167,7 +174,7 @@ test('encrypted, active-content, and truncated PDFs are rejected before persiste
 test('corrupt-xref and incremental PDFs resolve to ready or bounded error without hanging', async ({ page }) => {
   for (const fixture of [corruptXrefPdfFixture, incrementalPdfFixture]) {
     const card = await importFixture(page, fixture, expectedPersonalTitle(fixture));
-    await openPersonalCard(card);
+    await openPersonalCard(page, card);
     const root = page.locator('[data-pdf-reader-root]');
     await expect.poll(async () => root.getAttribute('data-pdf-reader-state'), { timeout: 30_000 })
       .toMatch(/^(ready|error)$/);

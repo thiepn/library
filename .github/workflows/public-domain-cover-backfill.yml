@@ -1,0 +1,196 @@
+name: Public Domain Cover Backfill
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/public-domain-cover-backfill-trigger'
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: Maximum number of existing public-domain books to cover in this run
+        required: false
+        default: '100'
+      force:
+        description: Regenerate books that already use the current cover prompt version
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: public-domain-cover-backfill
+  cancel-in-progress: false
+
+jobs:
+  covers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      R2_BUCKET: thiepn-library-publications
+    steps:
+      - name: Checkout Library
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm and Node
+        uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2
+        with:
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+          cache: true
+
+      - name: Install frozen dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install cover renderer dependency
+        run: python3 -m pip install --disable-pip-version-check 'Pillow==11.3.0'
+
+      - name: Verify cover renderer and EPUB embedding
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            scripts/public-domain/cover_pipeline.py \
+            scripts/public-domain/cover_job.py \
+            scripts/public-domain/finalize-cover-release.py \
+            scripts/public-domain/verify-cover-pipeline.py
+          python3 scripts/public-domain/verify-cover-pipeline.py
+
+      - name: Require cover and publication credentials
+        run: |
+          set -euo pipefail
+          test -n "${OPENAI_API_KEY:-}"
+          test -n "${CLOUDFLARE_API_TOKEN:-}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID:-}"
+          test -n "${R2_BUCKET:-}"
+
+      - name: Generate covers and stage new immutable EPUB releases
+        id: covers
+        env:
+          LIMIT: ${{ inputs.limit || '100' }}
+          FORCE: ${{ inputs.force || false }}
+        run: |
+          set -euo pipefail
+          force_flag=''
+          if [ "$FORCE" = 'true' ]; then
+            force_flag='--force'
+          fi
+          python3 scripts/public-domain/cover_job.py \
+            --backfill \
+            --limit "$LIMIT" \
+            $force_flag
+
+      - name: Give generated-cover releases content-addressed immutable keys
+        if: steps.covers.outputs.processed_count != '0'
+        run: python3 scripts/public-domain/finalize-cover-release.py --mode backfill
+
+      - name: Certify complete Library before upload
+        if: steps.covers.outputs.processed_count != '0'
+        run: pnpm release:certify
+
+      - name: Upload immutable cover-enhanced EPUBs to R2 and verify readback
+        if: steps.covers.outputs.processed_count != '0'
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/cover-readback
+          python3 - <<'PY' > /tmp/cover-artifacts.tsv
+          import json
+          from pathlib import Path
+          items = json.loads(Path('.cover-staging/artifacts.json').read_text())
+          for item in items:
+              print('\t'.join([
+                  item['localPath'],
+                  item['r2Key'],
+                  str(item['sizeBytes']),
+                  item['sha256'],
+              ]))
+          PY
+
+          while IFS=$'\t' read -r local_path key bytes hash; do
+            test -f "$local_path"
+            readback="/tmp/cover-readback/$(basename "$local_path")"
+            pnpm exec wrangler r2 object put "$R2_BUCKET/$key" --file="$local_path" --remote
+            pnpm exec wrangler r2 object get "$R2_BUCKET/$key" --file="$readback" --remote
+            test "$(stat -c %s "$readback")" = "$bytes"
+            printf '%s  %s\n' "$hash" "$readback" | sha256sum -c -
+            echo "R2_VERIFIED $key"
+          done < /tmp/cover-artifacts.tsv
+
+      - name: Upload catalog cover contact sheet
+        if: steps.covers.outputs.processed_count != '0'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: public-domain-cover-review-${{ github.run_id }}
+          path: .cover-staging/contact-sheet.jpg
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Create review branch
+        if: steps.covers.outputs.processed_count != '0'
+        id: promote
+        run: |
+          set -euo pipefail
+          rm -rf .cover-staging
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+          branch="autopilot/covers-${GITHUB_RUN_ID}"
+          git switch -c "$branch"
+          git add \
+            src/content/works \
+            src/publications/releases \
+            src/publications/public-domain-ledger.json \
+            public/covers/public-domain
+
+          if git diff --cached --quiet; then
+            echo "No persistent cover changes after certification."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          git commit -m "Autopilot: add illustrated public-domain covers"
+          git push origin "HEAD:$branch"
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+          echo "branch=$branch" >> "$GITHUB_OUTPUT"
+
+      - name: Open cover review pull request
+        if: steps.promote.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ steps.promote.outputs.branch }}
+          WORK_IDS: ${{ steps.covers.outputs.work_ids }}
+        run: |
+          set -euo pipefail
+          body_file="$(mktemp)"
+          {
+            echo '## Public-domain cover backfill'
+            echo
+            echo "Generated **${{ steps.covers.outputs.processed_count }}** book-specific illustrated covers."
+            echo
+            echo '- Source EPUB releases remain immutable.'
+            echo '- Each generated result uses a content-addressed release key, so retries cannot overwrite different bytes at the same R2 path.'
+            echo '- Each covered book receives a new immutable EPUB release with the new JPEG cover embedded.'
+            echo '- Library cards switch from the generic SVG template to optimized WebP covers.'
+            echo '- EPUB hashes and sizes were recalculated and R2 readback-verified.'
+            echo '- Full Library release certification passed before promotion.'
+            echo '- A catalog-wide contact sheet is retained as a workflow artifact for visual QA.'
+            echo
+            echo "Works: \`$WORK_IDS\`"
+          } > "$body_file"
+          gh pr create \
+            --base main \
+            --head "$BRANCH" \
+            --title 'Library: illustrated public-domain covers' \
+            --body-file "$body_file"
+
+      - name: Summarize no-op
+        if: steps.covers.outputs.processed_count == '0'
+        run: echo 'All eligible public-domain works already use the current cover pipeline.' >> "$GITHUB_STEP_SUMMARY"
