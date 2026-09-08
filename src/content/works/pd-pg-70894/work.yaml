@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-70894",
+  "slug": "pd-pg-70894",
+  "title": "The life of Adoniram Judson",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Edward Judson",
+      "role": "creator",
+      "birthYear": 1844,
+      "deathYear": 1914
+    }
+  ],
+  "description": "A public-domain edition of The life of Adoniram Judson by Edward Judson. Project Gutenberg classifies it under Missionaries -- United States -- Biography, Judson, Adoniram, 1788-1850, Missionaries -- Burma -- Biography.",
+  "shortDescription": "A public-domain edition of The life of Adoniram Judson by Edward Judson. Project Gutenberg classifies it under Missionaries -- United States -- Biography, Judson, Adoniram, 1788…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2023-06-02",
+    "lastUpdated": "2026-09-08",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-70894-daecfd72cd20-cover-2e2b11643350",
+    "activeRelease": "pg-70894-daecfd72cd20-cover-2e2b11643350"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-70894.webp",
+    "alt": "Cover for The life of Adoniram Judson by Edward Judson"
+  },
+  "classification": {
+    "subjects": [
+      "missionaries",
+      "judson-adoniram-1788-1850",
+      "bv"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic",
+      "christian",
+      "christian-classic"
+    ],
+    "collections": [
+      "public-domain",
+      "christian-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/70894",
+      "gutenbergId": 70894
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/70894/pg70894.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #70894. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-654",
+  "version": "pg-654-1399a7d1d8de-cover-22e23c5e5987",
+  "edition": 1,
+  "releasedAt": "2026-09-08T15:10:04Z",
+  "sourceHash": "e9bc40c64c813760d1ece6a83be0c27966f4099ac0d0b8b7e3283b59a0c895a2",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-654/editions/pg-654-1399a7d1d8de-cover-22e23c5e5987/grace-abounding-to-the-chief-of-sinners-project-gutenberg.epub",
+      "filename": "grace-abounding-to-the-chief-of-sinners-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 505571,
+      "sha256": "22e23c5e59872b65bcf35b392df68332ba394efce2c322a045c3b47fbbd35bfe"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "1399a7d1d8de6c460034a1c66efda99c60b3b0ab3b662ed915c7d38fb0130c02",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-654-1399a7d1d8de",
+    "finalArtifactSha256": "22e23c5e59872b65bcf35b392df68332ba394efce2c322a045c3b47fbbd35bfe",
+    "releaseVersioning": "content-addressed"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-16769",
+  "version": "pg-16769-9b9ecc135dc9-cover-83340a2d6eda",
+  "edition": 1,
+  "releasedAt": "2026-09-08T15:09:56Z",
+  "sourceHash": "e1e545fd1ea59ec5c568c7ab7094bcc2b8cc156f93f0a4d471cfeee56ecf51d9",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-16769/editions/pg-16769-9b9ecc135dc9-cover-83340a2d6eda/orthodoxy-project-gutenberg.epub",
+      "filename": "orthodoxy-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 595948,
+      "sha256": "83340a2d6eda65aba615d7fd4b7bb3a5d03b79b32d542ff03fabc1e334c93543"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "9b9ecc135dc9736e895d97d37e669d87c52e18af2785a9f2d1d52a7b347b76cf",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-16769-9b9ecc135dc9",
+    "finalArtifactSha256": "83340a2d6eda65aba615d7fd4b7bb3a5d03b79b32d542ff03fabc1e334c93543",
+    "releaseVersioning": "content-addressed"
+  }
+}

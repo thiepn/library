@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-45001",
+  "slug": "pd-pg-45001",
+  "title": "Institutes of the Christian Religion (Vol. 1 of 2)",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Jean Calvin",
+      "role": "creator",
+      "birthYear": 1509,
+      "deathYear": 1564
+    },
+    {
+      "name": "John Allen",
+      "role": "trl",
+      "birthYear": 1771,
+      "deathYear": 1839
+    }
+  ],
+  "description": "A public-domain edition of Institutes of the Christian Religion (Vol. 1 of 2) by Jean Calvin. Project Gutenberg classifies it under Theology, Doctrinal -- Early works to 1800, Reformed Church -- Doctrines -- Early works to 1800, BX.",
+  "shortDescription": "A public-domain edition of Institutes of the Christian Religion (Vol. 1 of 2) by Jean Calvin. Project Gutenberg classifies it under Theology, Doctrinal -- Early works to 1800, R…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2014-02-24",
+    "lastUpdated": "2026-09-08",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-45001-a21c65f286de-cover-704d731e7d4f",
+    "activeRelease": "pg-45001-a21c65f286de-cover-704d731e7d4f"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-45001.webp",
+    "alt": "Cover for Institutes of the Christian Religion (Vol. 1 of 2) by Jean Calvin"
+  },
+  "classification": {
+    "subjects": [
+      "theology-doctrinal",
+      "reformed-church",
+      "bx"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic",
+      "christian",
+      "christian-classic"
+    ],
+    "collections": [
+      "public-domain",
+      "christian-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/45001",
+      "gutenbergId": 45001
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/45001/pg45001.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #45001. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

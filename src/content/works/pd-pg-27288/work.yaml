@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-27288",
+  "slug": "pd-pg-27288",
+  "title": "The Life of Trust: Being a Narrative of the Lord's Dealings With George Müller",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "George Müller",
+      "role": "creator",
+      "birthYear": 1805,
+      "deathYear": 1898
+    },
+    {
+      "name": "H. L. (Heman Lincoln) Wayland",
+      "role": "edt",
+      "birthYear": 1830,
+      "deathYear": 1898
+    }
+  ],
+  "description": "A public-domain edition of The Life of Trust: Being a Narrative of the Lord's Dealings With George Müller by George Müller. Project Gutenberg classifies it under Prayer, Orphanages -- Great Britain, HV.",
+  "shortDescription": "A public-domain edition of The Life of Trust: Being a Narrative of the Lord's Dealings With George Müller by George Müller. Project Gutenberg classifies it under Prayer, Orphana…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2008-11-17",
+    "lastUpdated": "2026-09-08",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-27288-fbe73ea2beea-cover-5164116ff763",
+    "activeRelease": "pg-27288-fbe73ea2beea-cover-5164116ff763"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-27288.webp",
+    "alt": "Cover for The Life of Trust: Being a Narrative of the Lord's Dealings With George Müller by George Müller"
+  },
+  "classification": {
+    "subjects": [
+      "prayer",
+      "orphanages",
+      "hv"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic",
+      "christian",
+      "christian-classic"
+    ],
+    "collections": [
+      "public-domain",
+      "christian-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/27288",
+      "gutenbergId": 27288
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/27288/pg27288.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #27288. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

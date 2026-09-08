@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-1653",
+  "version": "pg-1653-6353d7ffc75b-cover-3eb817aaaff5",
+  "edition": 1,
+  "releasedAt": "2026-09-08T15:09:55Z",
+  "sourceHash": "1637523d9c4994f5d6fab9afe2c0486384fc61e750dcd03309d5a5737c008b12",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-1653/editions/pg-1653-6353d7ffc75b-cover-3eb817aaaff5/the-imitation-of-christ-project-gutenberg.epub",
+      "filename": "the-imitation-of-christ-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 603262,
+      "sha256": "3eb817aaaff5ad6588ebd699c5b82a42182f71e345e5d67a69cc3da08a1879ad"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "6353d7ffc75b20baecf36746902e1403497de3f6c2723fd4ca642da0a90169fd",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-1653-6353d7ffc75b",
+    "finalArtifactSha256": "3eb817aaaff5ad6588ebd699c5b82a42182f71e345e5d67a69cc3da08a1879ad",
+    "releaseVersioning": "content-addressed"
+  }
+}

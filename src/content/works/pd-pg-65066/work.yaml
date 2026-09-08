@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-65066",
+  "slug": "pd-pg-65066",
+  "title": "The Life of Rev. David Brainerd, Chiefly Extracted from His Diary",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "David Brainerd",
+      "role": "creator",
+      "birthYear": 1718,
+      "deathYear": 1747
+    },
+    {
+      "name": "Jonathan Edwards",
+      "role": "edt",
+      "birthYear": 1703,
+      "deathYear": 1758
+    }
+  ],
+  "description": "A public-domain edition of The Life of Rev. David Brainerd, Chiefly Extracted from His Diary by David Brainerd. Project Gutenberg classifies it under Indians of North America -- Missions -- Early works to 1800, E011.",
+  "shortDescription": "A public-domain edition of The Life of Rev. David Brainerd, Chiefly Extracted from His Diary by David Brainerd. Project Gutenberg classifies it under Indians of North America --…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2021-04-12",
+    "lastUpdated": "2026-09-08",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-65066-b5c8a423d32d-cover-a412a4962614",
+    "activeRelease": "pg-65066-b5c8a423d32d-cover-a412a4962614"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-65066.webp",
+    "alt": "Cover for The Life of Rev. David Brainerd, Chiefly Extracted from His Diary by David Brainerd"
+  },
+  "classification": {
+    "subjects": [
+      "indians-of-north-america",
+      "e011"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic",
+      "christian",
+      "christian-classic"
+    ],
+    "collections": [
+      "public-domain",
+      "christian-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/65066",
+      "gutenbergId": 65066
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/65066/pg65066.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #65066. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

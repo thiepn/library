@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-1653",
+  "slug": "pd-pg-1653",
+  "title": "The Imitation of Christ",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "à Kempis Thomas",
+      "role": "creator",
+      "birthYear": 1380,
+      "deathYear": 1471
+    },
+    {
+      "name": "William Benham",
+      "role": "trl",
+      "birthYear": 1831,
+      "deathYear": 1910
+    }
+  ],
+  "description": "A public-domain edition of The Imitation of Christ by à Kempis Thomas. Project Gutenberg classifies it under Catholic Church -- Doctrines -- Early works to 1800, Spiritual life -- Catholic Church -- Early works to 1800, Meditations -- Early works to 1800.",
+  "shortDescription": "A public-domain edition of The Imitation of Christ by à Kempis Thomas. Project Gutenberg classifies it under Catholic Church -- Doctrines -- Early works to 1800, Spiritual life…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "1999-02-01",
+    "lastUpdated": "2026-09-08",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-1653-6353d7ffc75b-cover-3eb817aaaff5",
+    "activeRelease": "pg-1653-6353d7ffc75b-cover-3eb817aaaff5"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-1653.webp",
+    "alt": "Cover for The Imitation of Christ by à Kempis Thomas"
+  },
+  "classification": {
+    "subjects": [
+      "catholic-church",
+      "spiritual-life",
+      "meditations",
+      "bv"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic",
+      "christian",
+      "christian-classic"
+    ],
+    "collections": [
+      "public-domain",
+      "harvard-classics",
+      "christian-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/1653",
+      "gutenbergId": 1653
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/1653/pg1653.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #1653. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

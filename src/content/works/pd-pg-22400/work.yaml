@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-22400",
+  "slug": "pd-pg-22400",
+  "title": "Fox's Book of Martyrs",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "John Foxe",
+      "role": "creator",
+      "birthYear": 1516,
+      "deathYear": 1587
+    }
+  ],
+  "description": "A public-domain edition of Fox's Book of Martyrs by John Foxe. Project Gutenberg classifies it under Church history, Persecution, Martyrs.",
+  "shortDescription": "A public-domain edition of Fox's Book of Martyrs by John Foxe. Project Gutenberg classifies it under Church history, Persecution, Martyrs.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2007-08-25",
+    "lastUpdated": "2026-09-08",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-22400-0bfb936e308c-cover-e5744a102db5",
+    "activeRelease": "pg-22400-0bfb936e308c-cover-e5744a102db5"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-22400.webp",
+    "alt": "Cover for Fox's Book of Martyrs by John Foxe"
+  },
+  "classification": {
+    "subjects": [
+      "church-history",
+      "persecution",
+      "martyrs",
+      "br"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic",
+      "christian",
+      "christian-classic"
+    ],
+    "collections": [
+      "public-domain",
+      "christian-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/22400",
+      "gutenbergId": 22400
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/22400/pg22400.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #22400. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

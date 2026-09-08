@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-131",
+  "slug": "pd-pg-131",
+  "title": "The Pilgrim's Progress from this world to that which is to come",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "John Bunyan",
+      "role": "creator",
+      "birthYear": 1628,
+      "deathYear": 1688
+    }
+  ],
+  "description": "A public-domain edition of The Pilgrim's Progress from this world to that which is to come by John Bunyan. Project Gutenberg classifies it under Christian fiction, Christian pilgrims and pilgrimages -- Fiction, PR.",
+  "shortDescription": "A public-domain edition of The Pilgrim's Progress from this world to that which is to come by John Bunyan. Project Gutenberg classifies it under Christian fiction, Christian pil…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "1994-05-01",
+    "lastUpdated": "2026-09-08",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-131-c1d012debe05-cover-e6970b201405",
+    "activeRelease": "pg-131-c1d012debe05-cover-e6970b201405"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-131.webp",
+    "alt": "Cover for The Pilgrim's Progress from this world to that which is to come by John Bunyan"
+  },
+  "classification": {
+    "subjects": [
+      "christian-fiction",
+      "christian-pilgrims-and-pilgrimages",
+      "pr"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic",
+      "christian",
+      "christian-classic"
+    ],
+    "collections": [
+      "public-domain",
+      "harvard-classics",
+      "christian-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/131",
+      "gutenbergId": 131
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/131/pg131.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #131. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

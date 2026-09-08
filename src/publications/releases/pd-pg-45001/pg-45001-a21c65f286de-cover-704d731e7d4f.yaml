@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-45001",
+  "version": "pg-45001-a21c65f286de-cover-704d731e7d4f",
+  "edition": 1,
+  "releasedAt": "2026-09-08T15:10:00Z",
+  "sourceHash": "2848f263dce584b9c3c763bd65afb0acfe441a17c4c139f5873943ba16fe14a4",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-45001/editions/pg-45001-a21c65f286de-cover-704d731e7d4f/institutes-of-the-christian-religion-vol-1-of-2-project-gutenberg.epub",
+      "filename": "institutes-of-the-christian-religion-vol-1-of-2-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 1231097,
+      "sha256": "704d731e7d4f4de01aa54dd21bafe8e794e8f053fdcb755587381c3a6fde74fa"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "a21c65f286de183234afc9bd171f6482b8680824b9aedc1f5d8f55030b486137",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-45001-a21c65f286de",
+    "finalArtifactSha256": "704d731e7d4f4de01aa54dd21bafe8e794e8f053fdcb755587381c3a6fde74fa",
+    "releaseVersioning": "content-addressed"
+  }
+}

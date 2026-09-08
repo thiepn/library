@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-70894",
+  "version": "pg-70894-daecfd72cd20-cover-2e2b11643350",
+  "edition": 1,
+  "releasedAt": "2026-09-08T15:10:03Z",
+  "sourceHash": "29935bd1deb1ce4ba4757690fbf9cce404c2de7b09bb6230b79d649780c0f6bd",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-70894/editions/pg-70894-daecfd72cd20-cover-2e2b11643350/the-life-of-adoniram-judson-project-gutenberg.epub",
+      "filename": "the-life-of-adoniram-judson-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 916055,
+      "sha256": "2e2b1164335016077c9a7290c49e12e13fafff70ddfbe6932c2a4c8eb2e7ecbc"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "daecfd72cd20708ccb3cc9ad1a629ee83c5e04fdc63a3c8115f2bcb73a40f491",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-70894-daecfd72cd20",
+    "finalArtifactSha256": "2e2b1164335016077c9a7290c49e12e13fafff70ddfbe6932c2a4c8eb2e7ecbc",
+    "releaseVersioning": "content-addressed"
+  }
+}

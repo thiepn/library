@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-57121",
+  "slug": "pd-pg-57121",
+  "title": "Humility: The Beauty of Holiness",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Andrew Murray",
+      "role": "creator",
+      "birthYear": 1828,
+      "deathYear": 1917
+    }
+  ],
+  "description": "A public-domain edition of Humility: The Beauty of Holiness by Andrew Murray. Project Gutenberg classifies it under Humility -- Religious aspects -- Christianity, BV.",
+  "shortDescription": "A public-domain edition of Humility: The Beauty of Holiness by Andrew Murray. Project Gutenberg classifies it under Humility -- Religious aspects -- Christianity, BV.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2018-05-09",
+    "lastUpdated": "2026-09-08",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-57121-dfe41fd08349-cover-03c49ec83f06",
+    "activeRelease": "pg-57121-dfe41fd08349-cover-03c49ec83f06"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-57121.webp",
+    "alt": "Cover for Humility: The Beauty of Holiness by Andrew Murray"
+  },
+  "classification": {
+    "subjects": [
+      "humility",
+      "bv"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic",
+      "christian",
+      "christian-classic"
+    ],
+    "collections": [
+      "public-domain",
+      "christian-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/57121",
+      "gutenbergId": 57121
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/57121/pg57121.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #57121. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

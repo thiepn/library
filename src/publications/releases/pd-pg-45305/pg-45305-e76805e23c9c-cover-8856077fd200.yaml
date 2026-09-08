@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-45305",
+  "version": "pg-45305-e76805e23c9c-cover-8856077fd200",
+  "edition": 1,
+  "releasedAt": "2026-09-08T15:09:57Z",
+  "sourceHash": "ece03b98376f6230d1ef05b78b2800fb499cd13979400c17a8f0939e9b86f26e",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-45305/editions/pg-45305-e76805e23c9c-cover-8856077fd200/the-city-of-god-volume-ii-project-gutenberg.epub",
+      "filename": "the-city-of-god-volume-ii-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 1018996,
+      "sha256": "8856077fd200ec9aa77ab62ab713fd6b3b10a5856ccac2655b1d83958ef4a740"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "e76805e23c9ca468605e1005d2c25ad9eb22535148f042f09e93fe3bcbe6f81a",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-45305-e76805e23c9c",
+    "finalArtifactSha256": "8856077fd200ec9aa77ab62ab713fd6b3b10a5856ccac2655b1d83958ef4a740",
+    "releaseVersioning": "content-addressed"
+  }
+}

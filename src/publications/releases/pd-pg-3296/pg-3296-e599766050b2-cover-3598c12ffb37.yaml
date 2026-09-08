@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-3296",
+  "version": "pg-3296-e599766050b2-cover-3598c12ffb37",
+  "edition": 1,
+  "releasedAt": "2026-09-08T15:09:54Z",
+  "sourceHash": "c47d71a42da6f71ba280fe208cfc6fb51af909d12b2d50fffec47a540f367d62",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-3296/editions/pg-3296-e599766050b2-cover-3598c12ffb37/the-confessions-of-st-augustine-project-gutenberg.epub",
+      "filename": "the-confessions-of-st-augustine-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 631453,
+      "sha256": "3598c12ffb3707211449752e941ba28cbc5837632eb862def796bf7e58b7f3b7"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "e599766050b2c1ca41489042dda8edf5ffc7b5a73d55215d408495cb0a91621c",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-3296-e599766050b2",
+    "finalArtifactSha256": "3598c12ffb3707211449752e941ba28cbc5837632eb862def796bf7e58b7f3b7",
+    "releaseVersioning": "content-addressed"
+  }
+}

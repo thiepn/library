@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-395",
+  "slug": "pd-pg-395",
+  "title": "The Holy War, Made by King Shaddai Upon Diabolus, for the Regaining of the Metropolis of the World; Or, The Losing and Taking Again of the Town of Mansoul",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "John Bunyan",
+      "role": "creator",
+      "birthYear": 1628,
+      "deathYear": 1688
+    }
+  ],
+  "description": "A public-domain edition of The Holy War, Made by King Shaddai Upon Diabolus, for the Regaining of the Metropolis of the World; Or, The Losing and Taking Again of the Town of Mansoul by John Bunyan. Project Gutenberg classifies it under Soul, Christian fiction, Spiritual warfare -- Fiction.",
+  "shortDescription": "A public-domain edition of The Holy War, Made by King Shaddai Upon Diabolus, for the Regaining of the Metropolis of the World; Or, The Losing and Taking Again of the Town of Man…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "1996-01-01",
+    "lastUpdated": "2026-09-08",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-395-67a2fe57c591-cover-e4c53ee9b3db",
+    "activeRelease": "pg-395-67a2fe57c591-cover-e4c53ee9b3db"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-395.webp",
+    "alt": "Cover for The Holy War, Made by King Shaddai Upon Diabolus, for the Regaining of the Metropolis of the World; Or, The Losing and Taking Again of the Town of Mansoul by John Bunyan"
+  },
+  "classification": {
+    "subjects": [
+      "soul",
+      "christian-fiction",
+      "spiritual-warfare",
+      "pr"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic",
+      "christian",
+      "christian-classic"
+    ],
+    "collections": [
+      "public-domain",
+      "christian-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/395",
+      "gutenbergId": 395
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/395/pg395.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #395. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

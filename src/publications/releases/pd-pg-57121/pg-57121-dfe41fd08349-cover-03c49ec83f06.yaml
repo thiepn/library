@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-57121",
+  "version": "pg-57121-dfe41fd08349-cover-03c49ec83f06",
+  "edition": 1,
+  "releasedAt": "2026-09-08T15:09:58Z",
+  "sourceHash": "0af9a13dbc383b7dd88312c539c2220f2456f89324efc09d868c915d419c83c0",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-57121/editions/pg-57121-dfe41fd08349-cover-03c49ec83f06/humility-the-beauty-of-holiness-project-gutenberg.epub",
+      "filename": "humility-the-beauty-of-holiness-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 408608,
+      "sha256": "03c49ec83f061ef26f8bd1f8357275d71861452b0470afed8da62f5df6790faf"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "dfe41fd08349051d5c5d94825fca5ffd06dcfc1fd497d63d968392ba121c0913",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-57121-dfe41fd08349",
+    "finalArtifactSha256": "03c49ec83f061ef26f8bd1f8357275d71861452b0470afed8da62f5df6790faf",
+    "releaseVersioning": "content-addressed"
+  }
+}

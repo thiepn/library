@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-30241",
+  "version": "pg-30241-338109371914-cover-0c0a235f5635",
+  "edition": 1,
+  "releasedAt": "2026-09-08T15:10:05Z",
+  "sourceHash": "0318632636bb1d60f03149e9ba51820e5051369c5f71dacd5409c768be421bd2",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-30241/editions/pg-30241-338109371914-cover-0c0a235f5635/the-person-and-work-of-the-holy-spirit-project-gutenberg.epub",
+      "filename": "the-person-and-work-of-the-holy-spirit-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 547097,
+      "sha256": "0c0a235f5635493a2de2762f5891b08568c38fb72e2474bdbeae2e42f50af0d5"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "3381093719140ef7001e7415d448976900049dc5ae4ff0b55602baef8fc700e2",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-30241-338109371914",
+    "finalArtifactSha256": "0c0a235f5635493a2de2762f5891b08568c38fb72e2474bdbeae2e42f50af0d5",
+    "releaseVersioning": "content-addressed"
+  }
+}
