@@ -1,2 +1,2 @@
-triggered_at: 2026-09-08T18:42:00+02:00
-reason: full public-domain cover backfill after five-book pilot approval
+triggered_by_commit: 91e2731ddc720e892216fd8cc1c60007a051baaa
+reason: refresh corrected Amy Carmichael title cover and process any newly uncovered public-domain books
