@@ -38,25 +38,8 @@ jobs:
       - name: Build static Library
         run: pnpm build
 
-      - name: Run deterministic historical IndexedDB migration acceptance in clean browser contexts
-        run: pnpm exec playwright test tests/e2e/historical-storage-migration.spec.ts
-
-      - name: Run publication compatibility in a clean browser process
-        run: pnpm exec playwright test tests/e2e/publication-compatibility.spec.ts
-
-      - name: Run remaining browser acceptance matrix
-        shell: bash
-        run: |
-          set -euo pipefail
-          mapfile -t specs < <(
-            find tests/e2e -type f -name '*.spec.ts' \
-              ! -name 'publication-compatibility.spec.ts' \
-              ! -name 'historical-storage-migration.spec.ts' \
-              -print | sort
-          )
-          test "${#specs[@]}" -gt 0
-          pnpm test:e2e "${specs[@]}" \
-            --grep-invert "historical main v8 and personal v2 records upgrade into versioned portable state"
+      - name: Run the canonical isolated browser acceptance gate
+        run: pnpm test:e2e:production
 
       - name: Upload failed browser evidence
         if: failure()
