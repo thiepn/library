@@ -41,20 +41,8 @@ jobs:
       - name: Build static Library
         run: pnpm build
 
-      - name: Run historical IndexedDB migration acceptance in a clean browser context
-        run: >-
-          pnpm exec playwright test tests/e2e/data-portability.spec.ts
-          --grep "historical main v8 and personal v2 records upgrade into versioned portable state"
-
-      - name: Run remaining cross-engine durability and portability acceptance
-        run: >-
-          pnpm exec playwright test
-          tests/e2e/data-portability.spec.ts
-          tests/e2e/data-portability-conflicts.spec.ts
-          --grep-invert "historical main v8 and personal v2 records upgrade into versioned portable state"
-
-      - name: Run offline storage reliability acceptance
-        run: pnpm exec playwright test --config=playwright.offline.config.ts tests/e2e/storage-reliability.spec.ts
+      - name: Run cross-engine durability, migration, and portability acceptance
+        run: pnpm test:durability
 
       - name: Upload failed durability evidence
         if: failure()
