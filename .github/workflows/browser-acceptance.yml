@@ -55,7 +55,7 @@ jobs:
               -print | sort
           )
           test "${#specs[@]}" -gt 0
-          pnpm test:e2e -- "${specs[@]}" \
+          pnpm test:e2e "${specs[@]}" \
             --grep-invert "historical main v8 and personal v2 records upgrade into versioned portable state"
 
       - name: Upload failed browser evidence
