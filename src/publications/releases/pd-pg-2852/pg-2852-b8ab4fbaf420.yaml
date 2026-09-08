@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-2852",
+  "version": "pg-2852-b8ab4fbaf420",
+  "edition": 1,
+  "releasedAt": "2026-09-08T00:18:40Z",
+  "sourceHash": "288c5cd529e1a141993367d0503de31a3125165831b331711caf855b9c21e94e",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-2852/editions/pg-2852-b8ab4fbaf420/the-hound-of-the-baskervilles-project-gutenberg.epub",
+      "filename": "the-hound-of-the-baskervilles-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 227917,
+      "sha256": "b8ab4fbaf420d428f4f73928a007efb8cc7b2ee7a3f7851ddaa80712863a851b"
+    }
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-43",
+  "slug": "pd-pg-43",
+  "title": "The strange case of Dr. Jekyll and Mr. Hyde",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Robert Louis Stevenson",
+      "role": "creator",
+      "birthYear": 1850,
+      "deathYear": 1894
+    }
+  ],
+  "description": "A public-domain edition of The strange case of Dr. Jekyll and Mr. Hyde by Robert Louis Stevenson. Project Gutenberg classifies it under Science fiction, Horror tales, London (England) -- Fiction.",
+  "shortDescription": "A public-domain edition of The strange case of Dr. Jekyll and Mr. Hyde by Robert Louis Stevenson. Project Gutenberg classifies it under Science fiction, Horror tales, London (En…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2008-06-27",
+    "lastUpdated": "2026-09-08",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-43-fd748fa858f1",
+    "activeRelease": "pg-43-fd748fa858f1"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-43.svg",
+    "alt": "Cover for The strange case of Dr. Jekyll and Mr. Hyde by Robert Louis Stevenson"
+  },
+  "classification": {
+    "subjects": [
+      "science-fiction",
+      "horror-tales",
+      "london-england",
+      "physicians",
+      "psychological-fiction"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/43",
+      "gutenbergId": 43
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/43/pg43.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #43. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

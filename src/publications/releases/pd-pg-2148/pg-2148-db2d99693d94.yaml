@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-2148",
+  "version": "pg-2148-db2d99693d94",
+  "edition": 1,
+  "releasedAt": "2026-09-08T00:18:41Z",
+  "sourceHash": "749a604a8fec92aa55415435062cf4429a71b2395f386f2610aff72ef4f09a72",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-2148/editions/pg-2148-db2d99693d94/the-works-of-edgar-allan-poe-volume-2-project-gutenberg.epub",
+      "filename": "the-works-of-edgar-allan-poe-volume-2-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 364480,
+      "sha256": "db2d99693d940e4a1423d3803cf2ac199f42bb194a16619faad69efda59ec5a7"
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-2465",
+  "version": "pg-2465-ae6d356392e7",
+  "edition": 1,
+  "releasedAt": "2026-09-08T00:18:34Z",
+  "sourceHash": "aaaedfbf93d352778143cf1faaab5e297cbbc9e7a837e527b842fa0347c91fd6",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-2465/editions/pg-2465-ae6d356392e7/carmen-project-gutenberg.epub",
+      "filename": "carmen-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 126623,
+      "sha256": "ae6d356392e7e7294b8864c81274cf4c86ff72cc4a9e9ef2dafb042d370560a7"
+    }
+  }
+}

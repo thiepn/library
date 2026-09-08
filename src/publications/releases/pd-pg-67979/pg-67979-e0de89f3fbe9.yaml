@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-67979",
+  "version": "pg-67979-e0de89f3fbe9",
+  "edition": 1,
+  "releasedAt": "2026-09-08T00:18:35Z",
+  "sourceHash": "c988eab9a9d25a892590b33aeea2544a16e3500a48a55bc2cb321d5125045a48",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-67979/editions/pg-67979-e0de89f3fbe9/the-blue-castle-a-novel-project-gutenberg.epub",
+      "filename": "the-blue-castle-a-novel-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 363900,
+      "sha256": "e0de89f3fbe9c05b3239ae5b03a48d577f8db4f271908bea7625f064985e36cd"
+    }
+  }
+}

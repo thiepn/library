@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-2852",
+  "slug": "pd-pg-2852",
+  "title": "The Hound of the Baskervilles",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Arthur Conan Doyle",
+      "role": "creator",
+      "birthYear": 1859,
+      "deathYear": 1930
+    }
+  ],
+  "description": "A public-domain edition of The Hound of the Baskervilles by Arthur Conan Doyle. Project Gutenberg classifies it under Holmes, Sherlock (Fictitious character) -- Fiction, Private investigators -- England -- Fiction, Dogs -- Fiction.",
+  "shortDescription": "A public-domain edition of The Hound of the Baskervilles by Arthur Conan Doyle. Project Gutenberg classifies it under Holmes, Sherlock (Fictitious character) -- Fiction, Private…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2001-10-01",
+    "lastUpdated": "2026-09-08",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-2852-b8ab4fbaf420",
+    "activeRelease": "pg-2852-b8ab4fbaf420"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-2852.svg",
+    "alt": "Cover for The Hound of the Baskervilles by Arthur Conan Doyle"
+  },
+  "classification": {
+    "subjects": [
+      "holmes-sherlock-fictitious-character",
+      "private-investigators",
+      "dogs",
+      "detective-and-mystery-stories",
+      "blessing-and-cursing"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/2852",
+      "gutenbergId": 2852
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/2852/pg2852.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #2852. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

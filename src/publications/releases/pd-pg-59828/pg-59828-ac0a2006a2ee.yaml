@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-59828",
+  "version": "pg-59828-ac0a2006a2ee",
+  "edition": 1,
+  "releasedAt": "2026-09-08T00:18:37Z",
+  "sourceHash": "8573dce3f02d8ea0453336a80303f73949c170f90837f28081a4881701e17b8c",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-59828/editions/pg-59828-ac0a2006a2ee/the-string-of-pearls-or-the-barber-of-fleet-street-a-domestic-romance-project-gutenberg.epub",
+      "filename": "the-string-of-pearls-or-the-barber-of-fleet-street-a-domestic-romance-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 1237288,
+      "sha256": "ac0a2006a2ee4751057a6917f77248b9a82ae64ddbb19b8937c9a579b8b89ff7"
+    }
+  }
+}

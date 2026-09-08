@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-2465",
+  "slug": "pd-pg-2465",
+  "title": "Carmen",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Prosper Mérimée",
+      "role": "creator",
+      "birthYear": 1803,
+      "deathYear": 1870
+    },
+    {
+      "name": "Mary, Lady Loyd",
+      "role": "trl",
+      "birthYear": 1853,
+      "deathYear": 1936
+    }
+  ],
+  "description": "A public-domain edition of Carmen by Prosper Mérimée. Project Gutenberg classifies it under Spain -- Social life and customs -- 19th century -- Fiction, Carmen (Fictitious character) -- Fiction, PQ.",
+  "shortDescription": "A public-domain edition of Carmen by Prosper Mérimée. Project Gutenberg classifies it under Spain -- Social life and customs -- 19th century -- Fiction, Carmen (Fictitious chara…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2006-03-28",
+    "lastUpdated": "2026-09-08",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-2465-ae6d356392e7",
+    "activeRelease": "pg-2465-ae6d356392e7"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-2465.svg",
+    "alt": "Cover for Carmen by Prosper Mérimée"
+  },
+  "classification": {
+    "subjects": [
+      "spain",
+      "carmen-fictitious-character",
+      "pq"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/2465",
+      "gutenbergId": 2465
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/2465/pg2465.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #2465. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}
