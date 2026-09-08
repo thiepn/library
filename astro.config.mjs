@@ -8,6 +8,7 @@ export default defineConfig({
   outDir: './dist/library',
   output: 'static',
   trailingSlash: 'never',
+  compressHTML: true,
   markdown: {
     processor: unified({
       remarkPlugins: [remarkExplicitHeadingIds],
