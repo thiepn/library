@@ -1,6 +1,10 @@
 name: Public Domain Cover Backfill
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/public-domain-cover-backfill-trigger'
   workflow_dispatch:
     inputs:
       limit:
