@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-271",
+  "slug": "pd-pg-271",
+  "title": "Black Beauty : $b The autobiography of a horse",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Anna Sewell",
+      "role": "creator",
+      "birthYear": 1820,
+      "deathYear": 1878
+    }
+  ],
+  "description": "A public-domain edition of Black Beauty : $b The autobiography of a horse by Anna Sewell. Project Gutenberg classifies it under Historical fiction, Horses -- Juvenile fiction, Human-animal relationships -- Juvenile fiction.",
+  "shortDescription": "A public-domain edition of Black Beauty : $b The autobiography of a horse by Anna Sewell. Project Gutenberg classifies it under Historical fiction, Horses -- Juvenile fiction, H…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2006-01-16",
+    "lastUpdated": "2026-09-08",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-271-b7ec29c5f5a0",
+    "activeRelease": "pg-271-b7ec29c5f5a0"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-271.svg",
+    "alt": "Cover for Black Beauty : $b The autobiography of a horse by Anna Sewell"
+  },
+  "classification": {
+    "subjects": [
+      "historical-fiction",
+      "horses",
+      "human-animal-relationships",
+      "great-britain",
+      "pr"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "childrens-literature",
+      "best-books-ever-listings"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/271",
+      "gutenbergId": 271
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/271/pg271.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #271. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-14591",
+  "version": "pg-14591-56fe186e92b7",
+  "edition": 1,
+  "releasedAt": "2026-09-08T00:03:15Z",
+  "sourceHash": "ce5acedacd99cb3af063ab14439f6af75f7e25f19c1b5a4e364d894ef2211d84",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-14591/editions/pg-14591-56fe186e92b7/faust-part-1-translated-into-english-in-the-original-metres-project-gutenberg.epub",
+      "filename": "faust-part-1-translated-into-english-in-the-original-metres-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 254851,
+      "sha256": "56fe186e92b79e3724b39e0f3af006d1ddfb25786cc282b9ec68725116d77340"
+    }
+  }
+}

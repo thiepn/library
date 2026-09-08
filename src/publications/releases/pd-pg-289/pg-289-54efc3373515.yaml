@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-289",
+  "version": "pg-289-54efc3373515",
+  "edition": 1,
+  "releasedAt": "2026-09-08T00:03:22Z",
+  "sourceHash": "9562a91d7047ad5850ddda6f1796a528651098336ab612bf505bada9921659ee",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-289/editions/pg-289-54efc3373515/the-wind-in-the-willows-project-gutenberg.epub",
+      "filename": "the-wind-in-the-willows-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 242674,
+      "sha256": "54efc3373515b5a702dc81cb25eed895f70a1a5224985d04ea795ceb90563ee9"
+    }
+  }
+}

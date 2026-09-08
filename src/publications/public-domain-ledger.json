@@ -678,6 +678,349 @@
       ],
       "selectedAt": "2026-09-07T22:53:30Z",
       "releaseVersion": "pg-3300-2db4a352fd89"
+    },
+    {
+      "gutenbergId": 14460,
+      "workId": "pd-pg-14460",
+      "title": "Faust: a Tragedy [part 1], Translated from the German of Goethe",
+      "author": "Johann Wolfgang von Goethe",
+      "score": 240.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Germany",
+        "Best Books Ever Listings",
+        "Harvard Classics",
+        "Category: Plays/Films/Dramas",
+        "Category: Classics of Literature",
+        "Category: German Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/14460",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/14460/pg14460.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/14460/pg14460.epub",
+      "sourceRdfSha256": "5098771ef9fd6bbf8ef63478b1c508fd6e7474ef80c841cc4e5db8d20a20e24a",
+      "sourceEpubSha256": "2c8eaa5b4c5294e0c114a38c30af9108c956da68bffba348f111397c27bb8450",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Johann Wolfgang von Goethe",
+          "role": "creator",
+          "birthYear": 1749,
+          "deathYear": 1832
+        },
+        {
+          "name": "Charles Timothy Brooks",
+          "role": "trl",
+          "birthYear": 1813,
+          "deathYear": 1883
+        }
+      ],
+      "selectedAt": "2026-09-08T00:03:14Z",
+      "releaseVersion": "pg-14460-2c8eaa5b4c52"
+    },
+    {
+      "gutenbergId": 14591,
+      "workId": "pd-pg-14591",
+      "title": "Faust [part 1]. Translated Into English in the Original Metres",
+      "author": "Johann Wolfgang von Goethe",
+      "score": 240.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Best Books Ever Listings",
+        "Harvard Classics",
+        "Banned Books from Anne Haight's list",
+        "Category: Plays/Films/Dramas",
+        "Category: Classics of Literature",
+        "Category: German Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/14591",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/14591/pg14591.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/14591/pg14591.epub",
+      "sourceRdfSha256": "ce5acedacd99cb3af063ab14439f6af75f7e25f19c1b5a4e364d894ef2211d84",
+      "sourceEpubSha256": "56fe186e92b79e3724b39e0f3af006d1ddfb25786cc282b9ec68725116d77340",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Johann Wolfgang von Goethe",
+          "role": "creator",
+          "birthYear": 1749,
+          "deathYear": 1832
+        },
+        {
+          "name": "Harry Clarke",
+          "role": "ill",
+          "birthYear": 1889,
+          "deathYear": 1931
+        },
+        {
+          "name": "Bayard Taylor",
+          "role": "trl",
+          "birthYear": 1825,
+          "deathYear": 1878
+        }
+      ],
+      "selectedAt": "2026-09-08T00:03:15Z",
+      "releaseVersion": "pg-14591-56fe186e92b7"
+    },
+    {
+      "gutenbergId": 421,
+      "workId": "pd-pg-421",
+      "title": "Kidnapped",
+      "author": "Robert Louis Stevenson",
+      "score": 208.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Children's Literature",
+        "Adventure",
+        "Historical Fiction",
+        "Best Books Ever Listings",
+        "Movie Books",
+        "Category: Historical Novels",
+        "Category: Adventure",
+        "Category: Novels",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/421",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/421/pg421.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/421/pg421.epub",
+      "sourceRdfSha256": "edb0f32b09a5831e4c1a937f412be5ab4b3e8649eb3b750912c45cb4ffe7e448",
+      "sourceEpubSha256": "8fdae0417d11909dc2a45837b962656365341224dd0a1d417930da181591591c",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Robert Louis Stevenson",
+          "role": "creator",
+          "birthYear": 1850,
+          "deathYear": 1894
+        }
+      ],
+      "selectedAt": "2026-09-08T00:03:16Z",
+      "releaseVersion": "pg-421-8fdae0417d11"
+    },
+    {
+      "gutenbergId": 120,
+      "workId": "pd-pg-120",
+      "title": "Treasure Island",
+      "author": "Robert Louis Stevenson",
+      "score": 198.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Children's Literature",
+        "Historical Fiction",
+        "Best Books Ever Listings",
+        "Pirates, Buccaneers, Corsairs, etc.",
+        "Category: Adventure",
+        "Category: Novels",
+        "Category: Classics of Literature",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/120",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/120/pg120.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/120/pg120.epub",
+      "sourceRdfSha256": "9220d2f9d7aafd21615c50b7a3827e4d395e4234e127ace25756f14043b415fc",
+      "sourceEpubSha256": "5f6027f3ca2597990d117c28e0acaf855daae8a3059b3088f727cbfc8a00fe67",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Robert Louis Stevenson",
+          "role": "creator",
+          "birthYear": 1850,
+          "deathYear": 1894
+        },
+        {
+          "name": "Louis Rhead",
+          "role": "ill",
+          "birthYear": 1857,
+          "deathYear": 1926
+        }
+      ],
+      "selectedAt": "2026-09-08T00:03:17Z",
+      "releaseVersion": "pg-120-5f6027f3ca25"
+    },
+    {
+      "gutenbergId": 271,
+      "workId": "pd-pg-271",
+      "title": "Black Beauty : $b The autobiography of a horse",
+      "author": "Anna Sewell",
+      "score": 188.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Children's Literature",
+        "Best Books Ever Listings",
+        "Category: Children & Young Adult Reading",
+        "Category: Novels",
+        "Category: Classics of Literature",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/271",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/271/pg271.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/271/pg271.epub",
+      "sourceRdfSha256": "2735d77a21ca1fcb6512ab7be5d1cfc36e6885d2a1b35af3542c979b749f0184",
+      "sourceEpubSha256": "b7ec29c5f5a0224f1699d9cad5ac22d597d45a9158db0d1c3c77f4a6bf2b6710",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Anna Sewell",
+          "role": "creator",
+          "birthYear": 1820,
+          "deathYear": 1878
+        }
+      ],
+      "selectedAt": "2026-09-08T00:03:18Z",
+      "releaseVersion": "pg-271-b7ec29c5f5a0"
+    },
+    {
+      "gutenbergId": 12,
+      "workId": "pd-pg-12",
+      "title": "Through the Looking-Glass",
+      "author": "Lewis Carroll",
+      "score": 178.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Children's Literature",
+        "Best Books Ever Listings",
+        "Category: Children & Young Adult Reading",
+        "Category: Novels",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/12",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/12/pg12.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/12/pg12.epub",
+      "sourceRdfSha256": "b7b79a69c5417260e484bf870e83de9aed89a494c5c4e20001c65afe5e7638b9",
+      "sourceEpubSha256": "38e55220522cb9ce9c6485d322501e791c3a991aaf1f387dcb091a440ba9d0b8",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Lewis Carroll",
+          "role": "creator",
+          "birthYear": 1832,
+          "deathYear": 1898
+        }
+      ],
+      "selectedAt": "2026-09-08T00:03:19Z",
+      "releaseVersion": "pg-12-38e55220522c"
+    },
+    {
+      "gutenbergId": 62,
+      "workId": "pd-pg-62",
+      "title": "A princess of Mars",
+      "author": "Edgar Rice Burroughs",
+      "score": 178.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Science Fiction",
+        "Best Books Ever Listings",
+        "Category: Science-Fiction & Fantasy",
+        "Category: Adventure"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/62",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/62/pg62.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/62/pg62.epub",
+      "sourceRdfSha256": "fd6d684261c3976abc7584a0d0cce6da5cff225d8fe7e526b4abbb04ddc429db",
+      "sourceEpubSha256": "a24507a85cb4ebc6e6418feb63f973faf9e579cace228b0bfd1740ece9a63a86",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Edgar Rice Burroughs",
+          "role": "creator",
+          "birthYear": 1875,
+          "deathYear": 1950
+        }
+      ],
+      "selectedAt": "2026-09-08T00:03:20Z",
+      "releaseVersion": "pg-62-a24507a85cb4"
+    },
+    {
+      "gutenbergId": 159,
+      "workId": "pd-pg-159",
+      "title": "The island of Doctor Moreau",
+      "author": "H. G. (Herbert George) Wells",
+      "score": 178.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Science Fiction",
+        "Best Books Ever Listings",
+        "Movie Books",
+        "Category: Science-Fiction & Fantasy",
+        "Category: Novels",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/159",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/159/pg159.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/159/pg159.epub",
+      "sourceRdfSha256": "6273eb9631fa69f092931235552403340a89725087e9752d98e44f4bf9006213",
+      "sourceEpubSha256": "81e80c6f03da5896ca49b691c6c1b734dacd1dd5b8bb4255cfd925ff8ed5cc0a",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "H. G. (Herbert George) Wells",
+          "role": "creator",
+          "birthYear": 1866,
+          "deathYear": 1946
+        }
+      ],
+      "selectedAt": "2026-09-08T00:03:21Z",
+      "releaseVersion": "pg-159-81e80c6f03da"
+    },
+    {
+      "gutenbergId": 289,
+      "workId": "pd-pg-289",
+      "title": "The Wind in the Willows",
+      "author": "Kenneth Grahame",
+      "score": 178.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Children's Literature",
+        "Best Books Ever Listings",
+        "Category: Children & Young Adult Reading",
+        "Category: Novels",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/289",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/289/pg289.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/289/pg289.epub",
+      "sourceRdfSha256": "9562a91d7047ad5850ddda6f1796a528651098336ab612bf505bada9921659ee",
+      "sourceEpubSha256": "54efc3373515b5a702dc81cb25eed895f70a1a5224985d04ea795ceb90563ee9",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Kenneth Grahame",
+          "role": "creator",
+          "birthYear": 1859,
+          "deathYear": 1932
+        }
+      ],
+      "selectedAt": "2026-09-08T00:03:22Z",
+      "releaseVersion": "pg-289-54efc3373515"
+    },
+    {
+      "gutenbergId": 792,
+      "workId": "pd-pg-792",
+      "title": "Wieland; Or, The Transformation: An American Tale",
+      "author": "Charles Brockden Brown",
+      "score": 178.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Best Books Ever Listings",
+        "Gothic Fiction",
+        "Category: Novels",
+        "Category: American Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/792",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/792/pg792.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/792/pg792.epub",
+      "sourceRdfSha256": "1701502ec2491306351c6632f40c8073375f445d238ead25975f25f4e423507e",
+      "sourceEpubSha256": "43b68378cccc5253c0fd25e8f2dc2ec9778717c27e282ac96b8b5cb456f040b3",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Charles Brockden Brown",
+          "role": "creator",
+          "birthYear": 1771,
+          "deathYear": 1810
+        }
+      ],
+      "selectedAt": "2026-09-08T00:03:23Z",
+      "releaseVersion": "pg-792-43b68378cccc"
     }
   ],
   "rejections": {
@@ -694,16 +1037,32 @@
       "reason": "unknown death year for edt Frank Woodworth Pine",
       "checkedAt": "2026-09-07T21:56:25Z",
       "copyrightCutoffYear": 1955
+    },
+    "8018": {
+      "gutenbergId": 8018,
+      "title": "The Bible, King James version, Book 18: Job",
+      "reason": "unknown death year for creator Anonymous",
+      "checkedAt": "2026-09-08T00:03:13Z",
+      "copyrightCutoffYear": 1955
     }
   },
   "lastRun": {
-    "at": "2026-09-07T22:53:30Z",
+    "at": "2026-09-08T00:03:23Z",
+    "rankingMode": "live-download-popularity-first",
     "copyrightCutoffYear": 1955,
-    "candidateCount": 2220,
-    "checkedCount": 10,
-    "candidateCheckLimit": 40,
+    "candidateCount": 2174,
+    "checkedCount": 11,
+    "candidateCheckLimit": 80,
     "addedCount": 10,
-    "skippedCount": 0,
-    "recentSkips": []
+    "skippedCount": 1,
+    "recentSkips": [
+      {
+        "gutenbergId": 8018,
+        "title": "The Bible, King James version, Book 18: Job",
+        "reason": "unknown death year for creator Anonymous",
+        "checkedAt": "2026-09-08T00:03:13Z",
+        "copyrightCutoffYear": 1955
+      }
+    ]
   }
 }

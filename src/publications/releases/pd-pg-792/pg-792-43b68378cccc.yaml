@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-792",
+  "version": "pg-792-43b68378cccc",
+  "edition": 1,
+  "releasedAt": "2026-09-08T00:03:23Z",
+  "sourceHash": "1701502ec2491306351c6632f40c8073375f445d238ead25975f25f4e423507e",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-792/editions/pg-792-43b68378cccc/wieland-or-the-transformation-an-american-tale-project-gutenberg.epub",
+      "filename": "wieland-or-the-transformation-an-american-tale-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 272972,
+      "sha256": "43b68378cccc5253c0fd25e8f2dc2ec9778717c27e282ac96b8b5cb456f040b3"
+    }
+  }
+}

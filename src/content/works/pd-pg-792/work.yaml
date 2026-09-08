@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-792",
+  "slug": "pd-pg-792",
+  "title": "Wieland; Or, The Transformation: An American Tale",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Charles Brockden Brown",
+      "role": "creator",
+      "birthYear": 1771,
+      "deathYear": 1810
+    }
+  ],
+  "description": "A public-domain edition of Wieland; Or, The Transformation: An American Tale by Charles Brockden Brown. Project Gutenberg classifies it under Horror tales, Psychological fiction, Epistolary fiction.",
+  "shortDescription": "A public-domain edition of Wieland; Or, The Transformation: An American Tale by Charles Brockden Brown. Project Gutenberg classifies it under Horror tales, Psychological fiction…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "1997-01-01",
+    "lastUpdated": "2026-09-08",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-792-43b68378cccc",
+    "activeRelease": "pg-792-43b68378cccc"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-792.svg",
+    "alt": "Cover for Wieland; Or, The Transformation: An American Tale by Charles Brockden Brown"
+  },
+  "classification": {
+    "subjects": [
+      "horror-tales",
+      "psychological-fiction",
+      "epistolary-fiction",
+      "gothic-fiction",
+      "combustion-spontaneous"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "best-books-ever-listings",
+      "gothic-fiction"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/792",
+      "gutenbergId": 792
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/792/pg792.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #792. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

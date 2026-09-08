@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-289",
+  "slug": "pd-pg-289",
+  "title": "The Wind in the Willows",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Kenneth Grahame",
+      "role": "creator",
+      "birthYear": 1859,
+      "deathYear": 1932
+    }
+  ],
+  "description": "A public-domain edition of The Wind in the Willows by Kenneth Grahame. Project Gutenberg classifies it under Fantasy fiction, Animals -- Fiction, Humorous stories.",
+  "shortDescription": "A public-domain edition of The Wind in the Willows by Kenneth Grahame. Project Gutenberg classifies it under Fantasy fiction, Animals -- Fiction, Humorous stories.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "1995-07-01",
+    "lastUpdated": "2026-09-08",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-289-54efc3373515",
+    "activeRelease": "pg-289-54efc3373515"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-289.svg",
+    "alt": "Cover for The Wind in the Willows by Kenneth Grahame"
+  },
+  "classification": {
+    "subjects": [
+      "fantasy-fiction",
+      "animals",
+      "humorous-stories",
+      "england",
+      "friendship"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "childrens-literature",
+      "best-books-ever-listings"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/289",
+      "gutenbergId": 289
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/289/pg289.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #289. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

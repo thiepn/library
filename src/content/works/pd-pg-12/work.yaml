@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-12",
+  "slug": "pd-pg-12",
+  "title": "Through the Looking-Glass",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Lewis Carroll",
+      "role": "creator",
+      "birthYear": 1832,
+      "deathYear": 1898
+    }
+  ],
+  "description": "A public-domain edition of Through the Looking-Glass by Lewis Carroll. Project Gutenberg classifies it under Fantasy fiction, Children's stories, Imaginary places -- Juvenile fiction.",
+  "shortDescription": "A public-domain edition of Through the Looking-Glass by Lewis Carroll. Project Gutenberg classifies it under Fantasy fiction, Children's stories, Imaginary places -- Juvenile fi…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2008-06-25",
+    "lastUpdated": "2026-09-08",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-12-38e55220522c",
+    "activeRelease": "pg-12-38e55220522c"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-12.svg",
+    "alt": "Cover for Through the Looking-Glass by Lewis Carroll"
+  },
+  "classification": {
+    "subjects": [
+      "fantasy-fiction",
+      "childrens-stories",
+      "imaginary-places",
+      "alice-fictitious-character-from-carroll",
+      "pr"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "childrens-literature",
+      "best-books-ever-listings"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/12",
+      "gutenbergId": 12
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/12/pg12.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #12. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

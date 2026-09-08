@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-62",
+  "version": "pg-62-a24507a85cb4",
+  "edition": 1,
+  "releasedAt": "2026-09-08T00:03:20Z",
+  "sourceHash": "fd6d684261c3976abc7584a0d0cce6da5cff225d8fe7e526b4abbb04ddc429db",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-62/editions/pg-62-a24507a85cb4/a-princess-of-mars-project-gutenberg.epub",
+      "filename": "a-princess-of-mars-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 249454,
+      "sha256": "a24507a85cb4ebc6e6418feb63f973faf9e579cace228b0bfd1740ece9a63a86"
+    }
+  }
+}

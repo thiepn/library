@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-62",
+  "slug": "pd-pg-62",
+  "title": "A princess of Mars",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Edgar Rice Burroughs",
+      "role": "creator",
+      "birthYear": 1875,
+      "deathYear": 1950
+    }
+  ],
+  "description": "A public-domain edition of A princess of Mars by Edgar Rice Burroughs. Project Gutenberg classifies it under Science fiction, Mars (Planet) -- Fiction, Princesses -- Fiction.",
+  "shortDescription": "A public-domain edition of A princess of Mars by Edgar Rice Burroughs. Project Gutenberg classifies it under Science fiction, Mars (Planet) -- Fiction, Princesses -- Fiction.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "1993-04-01",
+    "lastUpdated": "2026-09-08",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-62-a24507a85cb4",
+    "activeRelease": "pg-62-a24507a85cb4"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-62.svg",
+    "alt": "Cover for A princess of Mars by Edgar Rice Burroughs"
+  },
+  "classification": {
+    "subjects": [
+      "science-fiction",
+      "mars-planet",
+      "princesses",
+      "carter-john-fictitious-character",
+      "dejah-thoris-fictitious-character"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "science-fiction",
+      "best-books-ever-listings"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/62",
+      "gutenbergId": 62
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/62/pg62.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #62. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

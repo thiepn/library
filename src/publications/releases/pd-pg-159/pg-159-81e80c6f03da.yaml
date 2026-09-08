@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-159",
+  "version": "pg-159-81e80c6f03da",
+  "edition": 1,
+  "releasedAt": "2026-09-08T00:03:21Z",
+  "sourceHash": "6273eb9631fa69f092931235552403340a89725087e9752d98e44f4bf9006213",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-159/editions/pg-159-81e80c6f03da/the-island-of-doctor-moreau-project-gutenberg.epub",
+      "filename": "the-island-of-doctor-moreau-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 200188,
+      "sha256": "81e80c6f03da5896ca49b691c6c1b734dacd1dd5b8bb4255cfd925ff8ed5cc0a"
+    }
+  }
+}

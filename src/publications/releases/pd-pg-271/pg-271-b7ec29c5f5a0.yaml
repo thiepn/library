@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-271",
+  "version": "pg-271-b7ec29c5f5a0",
+  "edition": 1,
+  "releasedAt": "2026-09-08T00:03:18Z",
+  "sourceHash": "2735d77a21ca1fcb6512ab7be5d1cfc36e6885d2a1b35af3542c979b749f0184",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-271/editions/pg-271-b7ec29c5f5a0/black-beauty-b-the-autobiography-of-a-horse-project-gutenberg.epub",
+      "filename": "black-beauty-b-the-autobiography-of-a-horse-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 419741,
+      "sha256": "b7ec29c5f5a0224f1699d9cad5ac22d597d45a9158db0d1c3c77f4a6bf2b6710"
+    }
+  }
+}

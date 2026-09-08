@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-12",
+  "version": "pg-12-38e55220522c",
+  "edition": 1,
+  "releasedAt": "2026-09-08T00:03:19Z",
+  "sourceHash": "b7b79a69c5417260e484bf870e83de9aed89a494c5c4e20001c65afe5e7638b9",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-12/editions/pg-12-38e55220522c/through-the-looking-glass-project-gutenberg.epub",
+      "filename": "through-the-looking-glass-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 143630,
+      "sha256": "38e55220522cb9ce9c6485d322501e791c3a991aaf1f387dcb091a440ba9d0b8"
+    }
+  }
+}

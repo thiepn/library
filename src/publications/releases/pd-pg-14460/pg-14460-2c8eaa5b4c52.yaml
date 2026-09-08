@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-14460",
+  "version": "pg-14460-2c8eaa5b4c52",
+  "edition": 1,
+  "releasedAt": "2026-09-08T00:03:14Z",
+  "sourceHash": "5098771ef9fd6bbf8ef63478b1c508fd6e7474ef80c841cc4e5db8d20a20e24a",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-14460/editions/pg-14460-2c8eaa5b4c52/faust-a-tragedy-part-1-translated-from-the-german-of-goethe-project-gutenberg.epub",
+      "filename": "faust-a-tragedy-part-1-translated-from-the-german-of-goethe-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 182170,
+      "sha256": "2c8eaa5b4c5294e0c114a38c30af9108c956da68bffba348f111397c27bb8450"
+    }
+  }
+}

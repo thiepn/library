@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-421",
+  "version": "pg-421-8fdae0417d11",
+  "edition": 1,
+  "releasedAt": "2026-09-08T00:03:16Z",
+  "sourceHash": "edb0f32b09a5831e4c1a937f412be5ab4b3e8649eb3b750912c45cb4ffe7e448",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-421/editions/pg-421-8fdae0417d11/kidnapped-project-gutenberg.epub",
+      "filename": "kidnapped-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 261781,
+      "sha256": "8fdae0417d11909dc2a45837b962656365341224dd0a1d417930da181591591c"
+    }
+  }
+}
