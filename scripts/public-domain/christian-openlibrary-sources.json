@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "policy": {
+    "source": "Internet Archive / Open Library historical scans",
+    "scope": "explicitly curated Christian classics only",
+    "editionCutoffYear": 1929,
+    "rightsPolicy": "fail closed unless every declared creative contributor passes the German ordinary-term cutoff and live IA metadata matches the pinned historical edition",
+    "restrictedItems": "borrow-only, encrypted, contributor-incomplete, title-mismatched, date-mismatched, or EPUB-less items are rejected"
+  },
+  "entries": [
+    {
+      "itemId": "treatiseconcerni00edwa",
+      "openLibraryId": "OL23349814M",
+      "title": "The Religious Affections",
+      "sourceTitleAliases": ["Religious Affections", "A Treatise Concerning Religious Affections"],
+      "editionPublishedYear": 1768,
+      "creativeContributors": [{"name": "Jonathan Edwards", "role": "author", "birthYear": 1703, "deathYear": 1758}],
+      "subjects": ["christianity", "theology", "spiritual-formation", "discernment"],
+      "description": "Jonathan Edwards examines the nature of genuine Christian experience, asking how true spiritual affections can be distinguished from impressive but unreliable religious emotion.",
+      "rightsBasis": "Pinned historical edition published in 1768. Jonathan Edwards died in 1758. No modern editor, translator, illustrator, annotator, adapter, or compiler is accepted unless separately declared in this manifest.",
+      "rightsEvidence": ["https://archive.org/details/treatiseconcerni00edwa", "https://openlibrary.org/books/OL23349814M"]
+    },
+    {
+      "itemId": "gildassalvianusf00baxt",
+      "openLibraryId": "OL24665917M",
+      "title": "The Reformed Pastor",
+      "sourceTitleAliases": ["The Reformed Pastor", "Gildas Salvianus"],
+      "editionPublishedYear": 1656,
+      "creativeContributors": [{"name": "Richard Baxter", "role": "author", "birthYear": 1615, "deathYear": 1691}],
+      "subjects": ["christianity", "pastoral-ministry", "church", "spiritual-leadership"],
+      "description": "Richard Baxter's classic call to pastoral seriousness joins self-examination, faithful teaching, personal care, and accountable ministry into a demanding vision of the pastor's work.",
+      "rightsBasis": "Pinned 1656 historical edition. Richard Baxter died in 1691. Live source metadata must continue to identify this historical edition and no undeclared creative edition contributor may be present.",
+      "rightsEvidence": ["https://archive.org/details/gildassalvianusf00baxt", "https://openlibrary.org/books/OL24665917M"]
+    },
+    {
+      "itemId": "seriouscalltode00laww",
+      "openLibraryId": "OL18085461M",
+      "title": "A Serious Call to a Devout and Holy Life",
+      "sourceTitleAliases": ["A Serious Call to a Devout and Holy Life", "Serious Call to a Devout and Holy Life"],
+      "editionPublishedYear": 1729,
+      "creativeContributors": [{"name": "William Law", "role": "author", "birthYear": 1686, "deathYear": 1761}],
+      "subjects": ["christianity", "devotional", "holiness", "discipleship"],
+      "description": "William Law argues that Christian devotion must shape the ordinary structure of life—work, money, prayer, relationships, habits, and the use of time—not remain a private religious compartment.",
+      "rightsBasis": "Pinned first edition published in 1729. William Law died in 1761. A separate Library of Congress digitized historical edition also identifies the work as public domain; the IA source itself must still pass the pinned edition metadata gate.",
+      "rightsEvidence": ["https://archive.org/details/seriouscalltode00laww", "https://openlibrary.org/books/OL18085461M", "https://www.loc.gov/item/36025702/"]
+    },
+    {
+      "itemId": "christianincom00gurn",
+      "openLibraryId": "OL22877896M",
+      "title": "The Christian in Complete Armour",
+      "sourceTitleAliases": ["The Christian in Complete Armour", "Christian in Complete Armour"],
+      "editionPublishedYear": 1845,
+      "creativeContributors": [{"name": "William Gurnall", "role": "author", "birthYear": 1617, "deathYear": 1679}],
+      "subjects": ["christianity", "spiritual-warfare", "perseverance", "devotional"],
+      "description": "William Gurnall's expansive meditation on the armour of God treats Christian perseverance as disciplined dependence on truth, faith, prayer, and the grace of God.",
+      "rightsBasis": "Pinned historical edition published in 1845. William Gurnall died in 1679. Internet Archive identifies the scanned item as NOT_IN_COPYRIGHT; any access restriction or undeclared creative contributor causes rejection.",
+      "rightsEvidence": ["https://archive.org/details/christianincom00gurn", "https://openlibrary.org/books/OL22877896M"]
+    },
+    {
+      "itemId": "lifeofgodinsoulo00scou",
+      "openLibraryId": "OL14020218M",
+      "title": "The Life of God in the Soul of Man",
+      "sourceTitleAliases": ["The Life of God in the Soul of Man", "Life of God in the Soul of Man"],
+      "editionPublishedYear": 1868,
+      "creativeContributors": [{"name": "Henry Scougal", "role": "author", "birthYear": 1650, "deathYear": 1678}],
+      "subjects": ["christianity", "spiritual-formation", "devotional", "holiness"],
+      "description": "Henry Scougal presents Christianity as the inward life of God in the human soul: a transformed disposition of love toward God and others rather than merely external religious performance.",
+      "rightsBasis": "Pinned historical edition published in 1868. Henry Scougal died in 1678. The source is accepted only when live IA metadata matches this old edition and exposes an unrestricted EPUB without undeclared creative edition contributors.",
+      "rightsEvidence": ["https://archive.org/details/lifeofgodinsoulo00scou", "https://openlibrary.org/books/OL14020218M"]
+    }
+  ]
+}

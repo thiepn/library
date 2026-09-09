@@ -31,10 +31,15 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Source certification
         run: pnpm certify:source
-      - name: Certify curated public-domain ingestion runner
+      - name: Certify curated public-domain ingestion runners
         run: |
-          python3 -m py_compile scripts/public-domain/run-curated.py
+          python3 -m py_compile \
+            scripts/public-domain/run-curated.py \
+            scripts/public-domain/run-curated-ia.py \
+            scripts/public-domain/verify-curated-ia.py
           python3 scripts/public-domain/run-curated.py --help >/dev/null
+          python3 scripts/public-domain/run-curated-ia.py --help >/dev/null
+          python3 scripts/public-domain/verify-curated-ia.py
       - name: Reader behavioral regression suite
         run: pnpm test:reader
       - name: Validate and build launch shell

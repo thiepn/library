@@ -54,15 +54,18 @@ jobs:
       - name: Install cover renderer dependency
         run: python3 -m pip install --disable-pip-version-check 'Pillow==11.3.0'
 
-      - name: Verify cover renderer and EPUB embedding
+      - name: Verify curated providers, cover renderer, and EPUB embedding
         run: |
           set -euo pipefail
           python3 -m py_compile \
             scripts/public-domain/run-curated.py \
+            scripts/public-domain/run-curated-ia.py \
+            scripts/public-domain/verify-curated-ia.py \
             scripts/public-domain/cover_pipeline.py \
             scripts/public-domain/cover_job.py \
             scripts/public-domain/finalize-cover-release.py \
             scripts/public-domain/verify-cover-pipeline.py
+          python3 scripts/public-domain/verify-curated-ia.py
           python3 scripts/public-domain/verify-cover-pipeline.py
 
       - name: Require cover and publication credentials
@@ -82,14 +85,20 @@ jobs:
         run: |
           set -euo pipefail
           curated_ids=''
+          curated_ia_items=''
           mode='official-project-gutenberg-top100-30d'
           if [ "${GITHUB_EVENT_NAME}" = 'push' ] && grep -Fxq 'mode: curated-christian-classics' .github/public-domain-autopilot-trigger; then
             curated_ids="$(sed -n 's/^curated-ids:[[:space:]]*//p' .github/public-domain-autopilot-trigger | head -n 1 | tr -d '[:space:]')"
             test -n "$curated_ids"
             mode='curated-christian-classics'
+          elif [ "${GITHUB_EVENT_NAME}" = 'push' ] && grep -Fxq 'mode: curated-christian-openlibrary' .github/public-domain-autopilot-trigger; then
+            curated_ia_items="$(sed -n 's/^curated-ia-items:[[:space:]]*//p' .github/public-domain-autopilot-trigger | head -n 1 | tr -d '[:space:]')"
+            test -n "$curated_ia_items"
+            mode='curated-christian-openlibrary'
           fi
           echo "mode=$mode" >> "$GITHUB_OUTPUT"
           echo "curated_ids=$curated_ids" >> "$GITHUB_OUTPUT"
+          echo "curated_ia_items=$curated_ia_items" >> "$GITHUB_OUTPUT"
           echo "ACQUISITION_MODE $mode"
 
       - name: Discover, verify, and stage public-domain books
@@ -99,9 +108,14 @@ jobs:
           DISCOVERY_PAGES: ${{ github.event.inputs.discovery_pages || '5' }}
           MAX_CANDIDATE_CHECKS: '100'
           CURATED_IDS: ${{ steps.acquisition.outputs.curated_ids }}
+          CURATED_IA_ITEMS: ${{ steps.acquisition.outputs.curated_ia_items }}
         run: |
           set -euo pipefail
-          if [ -n "${CURATED_IDS:-}" ]; then
+          if [ -n "${CURATED_IA_ITEMS:-}" ]; then
+            timeout 30m python3 scripts/public-domain/run-curated-ia.py \
+              --items "$CURATED_IA_ITEMS" \
+              --max-books "$MAX_BOOKS"
+          elif [ -n "${CURATED_IDS:-}" ]; then
             timeout 20m python3 scripts/public-domain/run-curated.py \
               --ids "$CURATED_IDS" \
               --max-books "$MAX_BOOKS" \
@@ -136,12 +150,7 @@ jobs:
           from pathlib import Path
           items = json.loads(Path('.public-domain-staging/artifacts.json').read_text())
           for item in items:
-              print('\t'.join([
-                  item['localPath'],
-                  item['r2Key'],
-                  str(item['sizeBytes']),
-                  item['sha256'],
-              ]))
+              print('\t'.join([item['localPath'], item['r2Key'], str(item['sizeBytes']), item['sha256']]))
           PY
 
           while IFS=$'\t' read -r local_path key bytes hash; do
