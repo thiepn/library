@@ -5,6 +5,7 @@ official-top100-run: 2026-09-08
 continuation-run: 2026-09-08T20:08+02:00
 continuation-run-2: 2026-09-09T00:14+02:00
 continuation-run-3: 2026-09-09T01:50+02:00
+continuation-run-4: 2026-09-09T01:58+02:00
 mode: curated-christian-classics
-curated-ids: 654,395,70894,15251,12854
-purpose: continue adding the user-requested Christian public-domain Library backlog; exact Gutenberg candidates are Grace Abounding to the Chief of Sinners, The Holy War, The Life of Adoniram Judson, The Biography of Robert Murray M'Cheyne, and The Master's Indwelling, with normal fail-closed Germany-oriented contributor rights, source EPUB, dedupe, cover, R2, certification, promotion, deployment, and live-verification gates
+curated-ids: 24989,55743,51931,33341,30657
+purpose: continue adding the user-requested Christian public-domain Library backlog with genuinely unrepresented Project Gutenberg works; exact candidates are A Short Method of Prayer, How to Succeed in the Christian Life, How to Bring Men to Christ, Secret Power, and Sovereign Grace, with normal fail-closed Germany-oriented contributor rights, source EPUB, logical-work dedupe, cover generation, immutable R2 readback, complete release certification, promotion, deployment, and live-verification gates
