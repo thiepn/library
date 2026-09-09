@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-24989",
+  "slug": "pd-pg-24989",
+  "title": "A Short Method of Prayer",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Jeanne Marie Bouvier de la Motte Guyon",
+      "role": "creator",
+      "birthYear": 1648,
+      "deathYear": 1717
+    }
+  ],
+  "description": "A public-domain edition of A Short Method of Prayer by Jeanne Marie Bouvier de la Motte Guyon. Project Gutenberg classifies it under Prayer -- Christianity, BV.",
+  "shortDescription": "A public-domain edition of A Short Method of Prayer by Jeanne Marie Bouvier de la Motte Guyon. Project Gutenberg classifies it under Prayer -- Christianity, BV.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2008-04-05",
+    "lastUpdated": "2026-09-09",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-24989-5b7a088e85c4-cover-329fee793b5f",
+    "activeRelease": "pg-24989-5b7a088e85c4-cover-329fee793b5f"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-24989.webp",
+    "alt": "Cover for A Short Method of Prayer by Jeanne Marie Bouvier de la Motte Guyon"
+  },
+  "classification": {
+    "subjects": [
+      "prayer",
+      "bv"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic",
+      "christian",
+      "christian-classic"
+    ],
+    "collections": [
+      "public-domain",
+      "christian-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/24989",
+      "gutenbergId": 24989
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/24989/pg24989.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #24989. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

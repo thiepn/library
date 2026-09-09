@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-30657",
+  "version": "pg-30657-8e95c878204b-cover-554485711185",
+  "edition": 1,
+  "releasedAt": "2026-09-09T00:02:31Z",
+  "sourceHash": "317c11573a8d0aa7f3c0dd735454c21bce2408a067c691f91b722be8f59b50f1",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-30657/editions/pg-30657-8e95c878204b-cover-554485711185/sovereign-grace-its-source-its-nature-and-its-effects-project-gutenberg.epub",
+      "filename": "sovereign-grace-its-source-its-nature-and-its-effects-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 542659,
+      "sha256": "55448571118559525e952e0a9d61c4d5cc8d0dd2492538456f7481a1be428440"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "8e95c878204bb167a9c9d355332dcd6192603bf9c18efd0ae3a092841b4c2eac",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-30657-8e95c878204b",
+    "finalArtifactSha256": "55448571118559525e952e0a9d61c4d5cc8d0dd2492538456f7481a1be428440",
+    "releaseVersioning": "content-addressed"
+  }
+}

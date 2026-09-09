@@ -3183,6 +3183,230 @@
         "releaseVersion": "pg-29426-cb1e530b8b6a-cover-948f8cb066ec",
         "artifactSha256": "948f8cb066ecc30287d920fba49eab573182a119a2060290c98fd47dbd5d67f5"
       }
+    },
+    {
+      "gutenbergId": 24989,
+      "workId": "pd-pg-24989",
+      "title": "A Short Method of Prayer",
+      "author": "Jeanne Marie Bouvier de la Motte Guyon",
+      "score": 15.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Christianity",
+        "Category: How To ...",
+        "Category: Religion/Spirituality"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/24989",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/24989/pg24989.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/24989/pg24989.epub",
+      "sourceRdfSha256": "bb045073e82c7c90df9ca1dc8a54e7ee25d68735f5fe91c91d0daac79087a738",
+      "sourceEpubSha256": "5b7a088e85c48f9a3d5086e9bf82cb7c4b202e678420165f3ce4afcf723c09b6",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Jeanne Marie Bouvier de la Motte Guyon",
+          "role": "creator",
+          "birthYear": 1648,
+          "deathYear": 1717
+        }
+      ],
+      "selectedAt": "2026-09-09T00:02:30Z",
+      "releaseVersion": "pg-24989-5b7a088e85c4-cover-329fee793b5f",
+      "curation": {
+        "mode": "curated-christian-classics",
+        "source": "user-requested-christian-classics",
+        "requestedPosition": 1,
+        "collection": "christian-classics"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-09T00:03:09Z",
+        "webCoverSha256": "052fed4424338b32ad49dc1fc186310b742e8c7e47845a185bcbb78477792883",
+        "epubCoverSha256": "a90b2d1dd6b3756746fff0bc05a101efc9a51b83220b0bb05260a6a5a04408b1",
+        "releaseVersion": "pg-24989-5b7a088e85c4-cover-329fee793b5f",
+        "artifactSha256": "329fee793b5f42458e02657d3d2e7d560b33e7ad386c6e90fb77e135014402c2"
+      }
+    },
+    {
+      "gutenbergId": 55743,
+      "workId": "pd-pg-55743",
+      "title": "How to Succeed in the Christian Life",
+      "author": "R. A. (Reuben Archer) Torrey",
+      "score": 15.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Category: How To ...",
+        "Category: Religion/Spirituality"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/55743",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/55743/pg55743.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/55743/pg55743.epub",
+      "sourceRdfSha256": "9666b406dc17cb0e0d07c5ee3beeb2ceabb13e0c671637ac9674af7d5cfbf779",
+      "sourceEpubSha256": "526b42b2375e8c4dec96deee0c5f80de409e480b56c14062192950aa2d770e73",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "R. A. (Reuben Archer) Torrey",
+          "role": "creator",
+          "birthYear": 1856,
+          "deathYear": 1928
+        }
+      ],
+      "selectedAt": "2026-09-09T00:02:30Z",
+      "releaseVersion": "pg-55743-526b42b2375e-cover-48fd71020e16",
+      "curation": {
+        "mode": "curated-christian-classics",
+        "source": "user-requested-christian-classics",
+        "requestedPosition": 2,
+        "collection": "christian-classics"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-09T00:03:46Z",
+        "webCoverSha256": "26ae70cad2917778701dea11971be774c7fda06adab557cadef9e9ae3ede02e3",
+        "epubCoverSha256": "6355cd5669ecf0211cc7ce76301bcb50ff15b8ed8103365366f073bf3d6b26e0",
+        "releaseVersion": "pg-55743-526b42b2375e-cover-48fd71020e16",
+        "artifactSha256": "48fd71020e168d846176025c696d9f79868d140296a63ddb9dda4baa0b1f92b9"
+      }
+    },
+    {
+      "gutenbergId": 51931,
+      "workId": "pd-pg-51931",
+      "title": "How to bring men to Christ",
+      "author": "R. A. (Reuben Archer) Torrey",
+      "score": 15.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Category: How To ...",
+        "Category: Religion/Spirituality"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/51931",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/51931/pg51931.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/51931/pg51931.epub",
+      "sourceRdfSha256": "e991d262230920eae6cd5ffa20ae32e2dfdc713b5bdeafc9730b5bca2752c813",
+      "sourceEpubSha256": "3a0c405fd02b437d89882de542ee0afae03751dc27854491e473cc894e98004d",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "R. A. (Reuben Archer) Torrey",
+          "role": "creator",
+          "birthYear": 1856,
+          "deathYear": 1928
+        }
+      ],
+      "selectedAt": "2026-09-09T00:02:31Z",
+      "releaseVersion": "pg-51931-3a0c405fd02b-cover-f2f7345f74fb",
+      "curation": {
+        "mode": "curated-christian-classics",
+        "source": "user-requested-christian-classics",
+        "requestedPosition": 3,
+        "collection": "christian-classics"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-09T00:04:21Z",
+        "webCoverSha256": "7ff8c6615beda12c15417ab3727c737e0273842e4e3c5b22c96385127e28aeae",
+        "epubCoverSha256": "1a7f6f58bfb335696eb5a5cee3d2cc58ca3265617f155b42aa8ff1df399d790b",
+        "releaseVersion": "pg-51931-3a0c405fd02b-cover-f2f7345f74fb",
+        "artifactSha256": "f2f7345f74fb14b36d98f7e776c0eb652cbb7483095497d8fe151822c48bf6f0"
+      }
+    },
+    {
+      "gutenbergId": 33341,
+      "workId": "pd-pg-33341",
+      "title": "Secret Power; or, The Secret of Success in Christian Life and Work",
+      "author": "Dwight Lyman Moody",
+      "score": 15.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Category: Religion/Spirituality"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/33341",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/33341/pg33341.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/33341/pg33341.epub",
+      "sourceRdfSha256": "c6b798663c625fdb5d009c32ea1f7726799d17cd32cfebe565bdca395954d5a6",
+      "sourceEpubSha256": "076576b145e645fb67af866e9a82a4042499b1dedc099aee47f85893f3e39d8c",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Dwight Lyman Moody",
+          "role": "creator",
+          "birthYear": 1837,
+          "deathYear": 1899
+        }
+      ],
+      "selectedAt": "2026-09-09T00:02:31Z",
+      "releaseVersion": "pg-33341-076576b145e6-cover-c20238d93db4",
+      "curation": {
+        "mode": "curated-christian-classics",
+        "source": "user-requested-christian-classics",
+        "requestedPosition": 4,
+        "collection": "christian-classics"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-09T00:05:05Z",
+        "webCoverSha256": "0f1ec410a8a044ee44abf627387b99828ee95510b630ce1d839587cb283b4cea",
+        "epubCoverSha256": "1ee02c82aac0a9d5e87d0c1f62360e37a715b5f09b1110563d4fe0d6292d5cdb",
+        "releaseVersion": "pg-33341-076576b145e6-cover-c20238d93db4",
+        "artifactSha256": "c20238d93db4b504e67d6ebaacafeaafe18a851d687ad007f2c10f90f1aef0c8"
+      }
+    },
+    {
+      "gutenbergId": 30657,
+      "workId": "pd-pg-30657",
+      "title": "Sovereign Grace: Its Source, Its Nature and Its Effects",
+      "author": "Dwight Lyman Moody",
+      "score": 15.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Category: Religion/Spirituality"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/30657",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/30657/pg30657.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/30657/pg30657.epub",
+      "sourceRdfSha256": "317c11573a8d0aa7f3c0dd735454c21bce2408a067c691f91b722be8f59b50f1",
+      "sourceEpubSha256": "8e95c878204bb167a9c9d355332dcd6192603bf9c18efd0ae3a092841b4c2eac",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Dwight Lyman Moody",
+          "role": "creator",
+          "birthYear": 1837,
+          "deathYear": 1899
+        }
+      ],
+      "selectedAt": "2026-09-09T00:02:31Z",
+      "releaseVersion": "pg-30657-8e95c878204b-cover-554485711185",
+      "curation": {
+        "mode": "curated-christian-classics",
+        "source": "user-requested-christian-classics",
+        "requestedPosition": 5,
+        "collection": "christian-classics"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-09T00:05:44Z",
+        "webCoverSha256": "05331da4fc399f31f029f02fe0c92071625b49bbcd0499f659da8c53a132aadb",
+        "epubCoverSha256": "5fe260f0427a674359f7a15cb2ec02a0d6a688330ae6c4d4658517eb1e6c0f35",
+        "releaseVersion": "pg-30657-8e95c878204b-cover-554485711185",
+        "artifactSha256": "55448571118559525e952e0a9d61c4d5cc8d0dd2492538456f7481a1be428440"
+      }
     }
   ],
   "rejections": {
@@ -3256,27 +3480,23 @@
     }
   },
   "lastRun": {
-    "at": "2026-09-08T22:17:12Z",
+    "at": "2026-09-09T00:02:32Z",
     "rankingMode": "curated-christian-classics",
     "curationSource": "user-requested-christian-classics",
     "collection": "christian-classics",
     "requestedIds": [
-      42657,
-      29426,
-      19572
+      24989,
+      55743,
+      51931,
+      33341,
+      30657
     ],
     "copyrightCutoffYear": 1955,
-    "candidateCount": 2,
-    "checkedCount": 2,
+    "candidateCount": 5,
+    "checkedCount": 5,
     "candidateCheckLimit": 100,
-    "addedCount": 2,
-    "skippedCount": 1,
-    "recentSkips": [
-      {
-        "gutenbergId": 19572,
-        "requestedPosition": 3,
-        "reason": "not found as an English text in official Project Gutenberg catalog"
-      }
-    ]
+    "addedCount": 5,
+    "skippedCount": 0,
+    "recentSkips": []
   }
 }

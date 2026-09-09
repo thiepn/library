@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-51931",
+  "slug": "pd-pg-51931",
+  "title": "How to bring men to Christ",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "R. A. (Reuben Archer) Torrey",
+      "role": "creator",
+      "birthYear": 1856,
+      "deathYear": 1928
+    }
+  ],
+  "description": "A public-domain edition of How to bring men to Christ by R. A. (Reuben Archer) Torrey. Project Gutenberg classifies it under Evangelistic work, Witness bearing (Christianity), BV.",
+  "shortDescription": "A public-domain edition of How to bring men to Christ by R. A. (Reuben Archer) Torrey. Project Gutenberg classifies it under Evangelistic work, Witness bearing (Christianity), BV.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2016-05-01",
+    "lastUpdated": "2026-09-09",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-51931-3a0c405fd02b-cover-f2f7345f74fb",
+    "activeRelease": "pg-51931-3a0c405fd02b-cover-f2f7345f74fb"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-51931.webp",
+    "alt": "Cover for How to bring men to Christ by R. A. (Reuben Archer) Torrey"
+  },
+  "classification": {
+    "subjects": [
+      "evangelistic-work",
+      "witness-bearing-christianity",
+      "bv"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic",
+      "christian",
+      "christian-classic"
+    ],
+    "collections": [
+      "public-domain",
+      "christian-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/51931",
+      "gutenbergId": 51931
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/51931/pg51931.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #51931. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}
