@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-33341",
+  "slug": "pd-pg-33341",
+  "title": "Secret Power; or, The Secret of Success in Christian Life and Work",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Dwight Lyman Moody",
+      "role": "creator",
+      "birthYear": 1837,
+      "deathYear": 1899
+    }
+  ],
+  "description": "A public-domain edition of Secret Power; or, The Secret of Success in Christian Life and Work by Dwight Lyman Moody. Project Gutenberg classifies it under Christian life, Holy Spirit, Baptism in the Holy Spirit.",
+  "shortDescription": "A public-domain edition of Secret Power; or, The Secret of Success in Christian Life and Work by Dwight Lyman Moody. Project Gutenberg classifies it under Christian life, Holy S…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2010-08-03",
+    "lastUpdated": "2026-09-09",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-33341-076576b145e6-cover-c20238d93db4",
+    "activeRelease": "pg-33341-076576b145e6-cover-c20238d93db4"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-33341.webp",
+    "alt": "Cover for Secret Power; or, The Secret of Success in Christian Life and Work by Dwight Lyman Moody"
+  },
+  "classification": {
+    "subjects": [
+      "christian-life",
+      "holy-spirit",
+      "baptism-in-the-holy-spirit",
+      "bt"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic",
+      "christian",
+      "christian-classic"
+    ],
+    "collections": [
+      "public-domain",
+      "christian-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/33341",
+      "gutenbergId": 33341
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/33341/pg33341.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #33341. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

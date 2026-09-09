@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-55743",
+  "version": "pg-55743-526b42b2375e-cover-48fd71020e16",
+  "edition": 1,
+  "releasedAt": "2026-09-09T00:02:30Z",
+  "sourceHash": "9666b406dc17cb0e0d07c5ee3beeb2ceabb13e0c671637ac9674af7d5cfbf779",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-55743/editions/pg-55743-526b42b2375e-cover-48fd71020e16/how-to-succeed-in-the-christian-life-project-gutenberg.epub",
+      "filename": "how-to-succeed-in-the-christian-life-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 508961,
+      "sha256": "48fd71020e168d846176025c696d9f79868d140296a63ddb9dda4baa0b1f92b9"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "526b42b2375e8c4dec96deee0c5f80de409e480b56c14062192950aa2d770e73",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-55743-526b42b2375e",
+    "finalArtifactSha256": "48fd71020e168d846176025c696d9f79868d140296a63ddb9dda4baa0b1f92b9",
+    "releaseVersioning": "content-addressed"
+  }
+}

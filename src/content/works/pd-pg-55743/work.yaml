@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-55743",
+  "slug": "pd-pg-55743",
+  "title": "How to Succeed in the Christian Life",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "R. A. (Reuben Archer) Torrey",
+      "role": "creator",
+      "birthYear": 1856,
+      "deathYear": 1928
+    }
+  ],
+  "description": "A public-domain edition of How to Succeed in the Christian Life by R. A. (Reuben Archer) Torrey. Project Gutenberg classifies it under Christian life -- Congregational authors, BV.",
+  "shortDescription": "A public-domain edition of How to Succeed in the Christian Life by R. A. (Reuben Archer) Torrey. Project Gutenberg classifies it under Christian life -- Congregational authors, BV.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2017-10-13",
+    "lastUpdated": "2026-09-09",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-55743-526b42b2375e-cover-48fd71020e16",
+    "activeRelease": "pg-55743-526b42b2375e-cover-48fd71020e16"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-55743.webp",
+    "alt": "Cover for How to Succeed in the Christian Life by R. A. (Reuben Archer) Torrey"
+  },
+  "classification": {
+    "subjects": [
+      "christian-life",
+      "bv"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic",
+      "christian",
+      "christian-classic"
+    ],
+    "collections": [
+      "public-domain",
+      "christian-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/55743",
+      "gutenbergId": 55743
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/55743/pg55743.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #55743. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

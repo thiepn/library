@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-51931",
+  "version": "pg-51931-3a0c405fd02b-cover-f2f7345f74fb",
+  "edition": 1,
+  "releasedAt": "2026-09-09T00:02:31Z",
+  "sourceHash": "e991d262230920eae6cd5ffa20ae32e2dfdc713b5bdeafc9730b5bca2752c813",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-51931/editions/pg-51931-3a0c405fd02b-cover-f2f7345f74fb/how-to-bring-men-to-christ-project-gutenberg.epub",
+      "filename": "how-to-bring-men-to-christ-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 526097,
+      "sha256": "f2f7345f74fb14b36d98f7e776c0eb652cbb7483095497d8fe151822c48bf6f0"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "3a0c405fd02b437d89882de542ee0afae03751dc27854491e473cc894e98004d",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-51931-3a0c405fd02b",
+    "finalArtifactSha256": "f2f7345f74fb14b36d98f7e776c0eb652cbb7483095497d8fe151822c48bf6f0",
+    "releaseVersioning": "content-addressed"
+  }
+}

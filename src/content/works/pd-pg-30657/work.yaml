@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-30657",
+  "slug": "pd-pg-30657",
+  "title": "Sovereign Grace: Its Source, Its Nature and Its Effects",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Dwight Lyman Moody",
+      "role": "creator",
+      "birthYear": 1837,
+      "deathYear": 1899
+    }
+  ],
+  "description": "A public-domain edition of Sovereign Grace: Its Source, Its Nature and Its Effects by Dwight Lyman Moody. Project Gutenberg classifies it under Grace (Theology) -- Sermons, Sermons, American -- 19th century, BT.",
+  "shortDescription": "A public-domain edition of Sovereign Grace: Its Source, Its Nature and Its Effects by Dwight Lyman Moody. Project Gutenberg classifies it under Grace (Theology) -- Sermons, Serm…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2009-12-12",
+    "lastUpdated": "2026-09-09",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-30657-8e95c878204b-cover-554485711185",
+    "activeRelease": "pg-30657-8e95c878204b-cover-554485711185"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-30657.webp",
+    "alt": "Cover for Sovereign Grace: Its Source, Its Nature and Its Effects by Dwight Lyman Moody"
+  },
+  "classification": {
+    "subjects": [
+      "grace-theology",
+      "sermons-american",
+      "bt"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic",
+      "christian",
+      "christian-classic"
+    ],
+    "collections": [
+      "public-domain",
+      "christian-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/30657",
+      "gutenbergId": 30657
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/30657/pg30657.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #30657. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

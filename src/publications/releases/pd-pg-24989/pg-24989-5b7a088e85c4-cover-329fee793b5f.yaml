@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-24989",
+  "version": "pg-24989-5b7a088e85c4-cover-329fee793b5f",
+  "edition": 1,
+  "releasedAt": "2026-09-09T00:02:30Z",
+  "sourceHash": "bb045073e82c7c90df9ca1dc8a54e7ee25d68735f5fe91c91d0daac79087a738",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-24989/editions/pg-24989-5b7a088e85c4-cover-329fee793b5f/a-short-method-of-prayer-project-gutenberg.epub",
+      "filename": "a-short-method-of-prayer-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 407659,
+      "sha256": "329fee793b5f42458e02657d3d2e7d560b33e7ad386c6e90fb77e135014402c2"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "5b7a088e85c48f9a3d5086e9bf82cb7c4b202e678420165f3ce4afcf723c09b6",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-24989-5b7a088e85c4",
+    "finalArtifactSha256": "329fee793b5f42458e02657d3d2e7d560b33e7ad386c6e90fb77e135014402c2",
+    "releaseVersioning": "content-addressed"
+  }
+}

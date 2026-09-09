@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-33341",
+  "version": "pg-33341-076576b145e6-cover-c20238d93db4",
+  "edition": 1,
+  "releasedAt": "2026-09-09T00:02:31Z",
+  "sourceHash": "c6b798663c625fdb5d009c32ea1f7726799d17cd32cfebe565bdca395954d5a6",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-33341/editions/pg-33341-076576b145e6-cover-c20238d93db4/secret-power-or-the-secret-of-success-in-christian-life-and-work-project-gutenberg.epub",
+      "filename": "secret-power-or-the-secret-of-success-in-christian-life-and-work-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 569861,
+      "sha256": "c20238d93db4b504e67d6ebaacafeaafe18a851d687ad007f2c10f90f1aef0c8"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "076576b145e645fb67af866e9a82a4042499b1dedc099aee47f85893f3e39d8c",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-33341-076576b145e6",
+    "finalArtifactSha256": "c20238d93db4b504e67d6ebaacafeaafe18a851d687ad007f2c10f90f1aef0c8",
+    "releaseVersioning": "content-addressed"
+  }
+}
