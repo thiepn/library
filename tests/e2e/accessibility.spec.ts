@@ -50,6 +50,7 @@ test('@rr6 EPUB exposes reader semantics, language, keyboard navigation, and foc
   const viewport = page.locator('[data-reader-viewport]');
   const appearance = page.locator('[data-reader-command="appearance"]');
   const appearancePanel = page.locator('[data-reader-appearance-panel]');
+  const appearanceClose = appearancePanel.getByRole('button', { name: 'Close reading appearance' });
   const previous = page.locator('[data-reader-command="previous"]');
   const next = page.locator('[data-reader-command="next"]');
 
@@ -76,7 +77,7 @@ test('@rr6 EPUB exposes reader semantics, language, keyboard navigation, and foc
   await appearance.click();
   await expect(appearance).toHaveAttribute('aria-expanded', 'true');
   await expect(appearancePanel).toHaveAttribute('role', 'dialog');
-  await expect(appearancePanel).toBeFocused();
+  await expect(appearanceClose).toBeFocused();
   await page.keyboard.press('Escape');
   await expect(appearancePanel).toBeHidden();
   await expect(appearance).toBeFocused();
