@@ -168,6 +168,32 @@ function clampRatio(value: number): number {
   return Math.max(0, Math.min(1, value));
 }
 
+/**
+ * Touch coordinates reported from EPUB.js iframes are not reliable on every mobile engine.
+ * A real touch's screenX is anchored to the physical display and does not move when EPUB.js
+ * translates/replaces paginated iframe contents. Use it only for touch and only when it is a
+ * plausible real coordinate; synthetic tests commonly expose screenX=0 and therefore retain
+ * the established iframe-local behavior.
+ */
+function touchTapXRatio(
+  win: Window,
+  doc: Document,
+  clientX: number,
+  screenX: number | undefined,
+  pointerType: ReaderPointerType,
+): number {
+  const localWidth = Math.max(1, win.innerWidth || doc.documentElement?.clientWidth || 1);
+  if (pointerType !== 'touch' || typeof screenX !== 'number' || !Number.isFinite(screenX) || screenX <= 0) {
+    return clampRatio(clientX / localWidth);
+  }
+
+  const screenWidth = Number(win.screen?.width);
+  if (!Number.isFinite(screenWidth) || screenWidth <= 1 || screenX > screenWidth) {
+    return clampRatio(clientX / localWidth);
+  }
+  return clampRatio(screenX / screenWidth);
+}
+
 function mapLocation(location: EpubLocation): ReaderLocation {
   const start = location.start;
   const locationNumber = finite(start.location);
@@ -209,6 +235,7 @@ export class EpubJsEngine implements ReaderEngine {
   private selectionListeners = new Set<(selection: ReaderSelection) => void>();
   private interactionListeners = new Set<ReaderInteractionHandler>();
   private instrumentedDocuments = new WeakSet<Document>();
+  private lastHandledTouchAt = -Infinity;
 
   private readonly handleRelocated = (location: EpubLocation) => {
     const mapped = mapLocation(location);
@@ -263,6 +290,7 @@ export class EpubJsEngine implements ReaderEngine {
       y: number,
       pointerType: ReaderPointerType,
       target: EventTarget | null,
+      screenX?: number,
     ): boolean => {
       if (!pointerStart) return false;
 
@@ -289,14 +317,10 @@ export class EpubJsEngine implements ReaderEngine {
           hasSelection: selected,
         };
       } else if (!interactive && !selected && duration <= 650 && Math.hypot(deltaX, deltaY) <= 12) {
-        // PointerEvent/Touch client coordinates are relative to the visible iframe viewport.
-        // EPUB.js paginated documents can make the root element wider than that viewport,
-        // so using the document width can collapse center/right taps into the previous zone.
-        const width = Math.max(1, win.innerWidth || doc.documentElement?.clientWidth || 1);
         const height = Math.max(1, win.innerHeight || doc.documentElement?.clientHeight || 1);
         interaction = {
           type: 'tap',
-          xRatio: clampRatio(x / width),
+          xRatio: touchTapXRatio(win, doc, x, screenX, effectivePointerType),
           yRatio: clampRatio(y / height),
           pointerType: effectivePointerType,
           interactive,
@@ -305,7 +329,10 @@ export class EpubJsEngine implements ReaderEngine {
       }
 
       const handled = Boolean(interaction && this.emitInteraction(interaction));
-      if (handled) lastHandledPointer = { x, y, time: performance.now() };
+      if (handled) {
+        lastHandledPointer = { x, y, time: performance.now() };
+        if (effectivePointerType === 'touch') this.lastHandledTouchAt = performance.now();
+      }
       return handled;
     };
 
@@ -333,6 +360,7 @@ export class EpubJsEngine implements ReaderEngine {
         event.clientY,
         normalizePointerType(event.pointerType),
         event.target,
+        event.screenX,
       )) event.preventDefault();
     };
 
@@ -359,7 +387,13 @@ export class EpubJsEngine implements ReaderEngine {
         cancelInteraction();
         return;
       }
-      if (finishInteraction(touch.clientX, touch.clientY, 'touch', touch.target ?? event.target)) {
+      if (finishInteraction(
+        touch.clientX,
+        touch.clientY,
+        'touch',
+        touch.target ?? event.target,
+        touch.screenX,
+      )) {
         event.preventDefault();
       }
     };
@@ -369,11 +403,15 @@ export class EpubJsEngine implements ReaderEngine {
     };
 
     const handleClick = (event: MouseEvent) => {
-      // Pointer/touch events remain primary. Consume only the browser compatibility click that
-      // corresponds to the same recently handled gesture. A simple time-only gate swallowed valid
-      // rapid desktop clicks in Firefox (for example left, then center), which made reader chrome
-      // appear unresponsive. Spatial identity keeps duplicate suppression without blocking a new
-      // click in another visible reader zone.
+      // A handled touch may replace the EPUB iframe before the browser emits its synthesized
+      // compatibility click. Keep this touch-only gate on the engine instance so the follow-up
+      // click cannot turn a second page from a newly rendered Document.
+      if (performance.now() - this.lastHandledTouchAt < COMPATIBILITY_CLICK_DEDUPE_MS) {
+        event.preventDefault();
+        return;
+      }
+
+      // Pointer/mouse events retain spatial dedupe so rapid independent desktop clicks are valid.
       const duplicateOfHandledPointer = Boolean(
         lastHandledPointer
         && performance.now() - lastHandledPointer.time < COMPATIBILITY_CLICK_DEDUPE_MS
@@ -682,5 +720,6 @@ export class EpubJsEngine implements ReaderEngine {
     this.book = undefined;
     this.instrumentedDocuments = new WeakSet<Document>();
     this.currentLocation = null;
+    this.lastHandledTouchAt = -Infinity;
   }
 }
