@@ -169,11 +169,11 @@ function clampRatio(value: number): number {
 }
 
 /**
- * Touch coordinates reported from EPUB.js iframes are not reliable on every mobile engine.
- * A real touch's screenX is anchored to the physical display and does not move when EPUB.js
- * translates/replaces paginated iframe contents. Use it only for touch and only when it is a
- * plausible real coordinate; synthetic tests commonly expose screenX=0 and therefore retain
- * the established iframe-local behavior.
+ * Prefer iframe-local touch coordinates whenever they still fall inside the visible content
+ * viewport. Some physical mobile engines can report translated/replaced paginated iframe
+ * coordinates outside that viewport; only then recover with the touch's physical screenX.
+ * This keeps ordinary and synthetic browser taps tied to visible reader geometry while retaining
+ * the physical-device fallback that survives EPUB.js iframe translation.
  */
 function touchTapXRatio(
   win: Window,
@@ -183,13 +183,20 @@ function touchTapXRatio(
   pointerType: ReaderPointerType,
 ): number {
   const localWidth = Math.max(1, win.innerWidth || doc.documentElement?.clientWidth || 1);
-  if (pointerType !== 'touch' || typeof screenX !== 'number' || !Number.isFinite(screenX) || screenX <= 0) {
-    return clampRatio(clientX / localWidth);
+  const localRatio = clampRatio(clientX / localWidth);
+  if (
+    pointerType !== 'touch'
+    || (Number.isFinite(clientX) && clientX >= 0 && clientX <= localWidth)
+    || typeof screenX !== 'number'
+    || !Number.isFinite(screenX)
+    || screenX <= 0
+  ) {
+    return localRatio;
   }
 
   const screenWidth = Number(win.screen?.width);
   if (!Number.isFinite(screenWidth) || screenWidth <= 1 || screenX > screenWidth) {
-    return clampRatio(clientX / localWidth);
+    return localRatio;
   }
   return clampRatio(screenX / screenWidth);
 }
