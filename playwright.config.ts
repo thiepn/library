@@ -55,7 +55,6 @@ export default defineConfig({
       use: {
         browserName: 'chromium',
         viewport: { width: 390, height: 844 },
-        contextOptions: { screen: { width: 390, height: 844 } },
         deviceScaleFactor: 2,
         hasTouch: true,
         isMobile: true,
@@ -66,7 +65,6 @@ export default defineConfig({
       use: {
         browserName: 'webkit',
         viewport: { width: 390, height: 844 },
-        contextOptions: { screen: { width: 390, height: 844 } },
         deviceScaleFactor: 3,
         hasTouch: true,
         isMobile: true,
