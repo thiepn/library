@@ -65,11 +65,14 @@ test('@rr7 settings panels have discoverable close controls and own exposed read
   await expect(shell).toHaveAttribute('data-reader-panel', 'appearance');
   await expect(appearancePanel).toBeVisible();
   await expect(backdrop).toBeVisible();
+  await expect(backdrop).toHaveAttribute('aria-hidden', 'false');
   const appearanceClose = appearancePanel.getByRole('button', { name: 'Close reading appearance' });
   await expect(appearanceClose).toBeVisible();
+  await expect(appearanceClose).toBeFocused();
   await appearanceClose.click();
   await expect(appearancePanel).toBeHidden();
   await expect(backdrop).toBeHidden();
+  await expect(backdrop).toHaveAttribute('aria-hidden', 'true');
   await expect(appearanceTrigger).toBeFocused();
   expect(await currentCfi(shell)).toBe(start);
 
@@ -89,6 +92,7 @@ test('@rr7 settings panels have discoverable close controls and own exposed read
   await expect(shell).toHaveAttribute('data-reader-panel', 'mode');
   const modeClose = modePanel.getByRole('button', { name: 'Close reading mode' });
   await expect(modeClose).toBeVisible();
+  await expect(modeClose).toBeFocused();
   await modeClose.click();
   await expect(modePanel).toBeHidden();
   await expect(modeTrigger).toBeFocused();
@@ -109,6 +113,62 @@ test('@rr7 settings panels have discoverable close controls and own exposed read
   await expect(backdrop).toBeHidden();
   await expect(shell).toHaveAttribute('data-reader-panel', 'none');
   await expect.poll(() => shell.getAttribute('data-reader-location-cfi'), { timeout: 5_000 }).not.toBe(beforeNext);
+});
+
+test('@rr7 mobile settings sheets stay atomic through rapid switching and viewport changes', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const shell = await openFixtureReader(page);
+  const backdrop = page.locator('[data-reader-panel-backdrop]');
+  const appearancePanel = page.locator('[data-reader-appearance-panel]');
+  const modePanel = page.locator('[data-reader-mode-panel]');
+  const appearanceTrigger = page.locator('[data-reader-command="appearance"]');
+  const modeTrigger = page.locator('[data-reader-command="more"]');
+
+  await appearanceTrigger.click();
+  await expect(shell).toHaveAttribute('data-reader-panel', 'appearance');
+  await expect(appearancePanel).toBeVisible();
+  await expect(modePanel).toBeHidden();
+  await expect(backdrop).toBeVisible();
+
+  // Browser chrome/VisualViewport changes must resize the sheet without changing
+  // ownership or temporarily exposing both settings panels.
+  await page.setViewportSize({ width: 390, height: 700 });
+  await expect(shell).toHaveAttribute('data-reader-panel', 'appearance');
+  await expect(appearancePanel).toBeVisible();
+  await expect(modePanel).toBeHidden();
+  const portraitBox = await appearancePanel.boundingBox();
+  expect(portraitBox).not.toBeNull();
+  expect(portraitBox!.height).toBeLessThanOrEqual(700);
+
+  // Repeated direct switching must remain one-panel-only with a stable backdrop.
+  for (let index = 0; index < 3; index += 1) {
+    await modeTrigger.click();
+    await expect(shell).toHaveAttribute('data-reader-panel', 'mode');
+    await expect(modePanel).toBeVisible();
+    await expect(appearancePanel).toBeHidden();
+    await expect(backdrop).toBeVisible();
+
+    await appearanceTrigger.click();
+    await expect(shell).toHaveAttribute('data-reader-panel', 'appearance');
+    await expect(appearancePanel).toBeVisible();
+    await expect(modePanel).toBeHidden();
+    await expect(backdrop).toBeVisible();
+  }
+
+  // Compact landscape uses the same state while changing the sheet geometry.
+  await page.setViewportSize({ width: 700, height: 390 });
+  await expect(shell).toHaveAttribute('data-reader-panel', 'appearance');
+  await expect(appearancePanel).toBeVisible();
+  await expect(modePanel).toBeHidden();
+  const landscapeBox = await appearancePanel.boundingBox();
+  expect(landscapeBox).not.toBeNull();
+  expect(landscapeBox!.height).toBeLessThanOrEqual(390);
+
+  await appearancePanel.getByRole('button', { name: 'Close reading appearance' }).click();
+  await expect(shell).toHaveAttribute('data-reader-panel', 'none');
+  await expect(appearancePanel).toBeHidden();
+  await expect(modePanel).toBeHidden();
+  await expect(backdrop).toBeHidden();
 });
 
 test('@rr7 bookmark primary action keeps visible text contrast', async ({ page }) => {

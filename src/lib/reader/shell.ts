@@ -2,6 +2,7 @@ import type { ReaderAlignment, ReaderFlow, ReaderFontFamily, ReaderSpread, Unsub
 import type { ReaderTypographyState } from './typography';
 
 export type ReaderShellStatus = 'idle' | 'loading' | 'ready' | 'error';
+export type ReaderSettingsPanel = 'none' | 'appearance' | 'mode';
 export type ReaderShellCommand =
   | 'previous'
   | 'next'
@@ -67,6 +68,7 @@ export class ReaderShellController {
   private hideTimer: number | null = null;
   private autoHide = false;
   private autoHideDelay = 3600;
+  private settingsPanel: ReaderSettingsPanel = 'none';
   private controlsHiddenAt = -Infinity;
   private pointerRevealAnchor: { x: number; y: number } | null = null;
   private destroyed = false;
@@ -94,10 +96,15 @@ export class ReaderShellController {
     root.addEventListener('reader-shell:toggle-controls', this.handleToggleControls as EventListener);
     document.addEventListener('keydown', this.handleKeydown);
 
+    this.applySettingsPanel('none', false);
     this.setControlsVisible(true);
     this.setReadingMode('paginated', 'auto', 'single');
     this.setTypography({ fontFamily: 'publisher', fontScale: 1, lineHeight: 1.55, paragraphSpacing: 0, alignment: 'left' });
     this.setStatus((root.dataset.readerStatus as ReaderShellStatus | undefined) ?? 'idle');
+  }
+
+  get openSettingsPanel(): ReaderSettingsPanel {
+    return this.settingsPanel;
   }
 
   setStatus(status: ReaderShellStatus, message?: string): void {
@@ -116,8 +123,7 @@ export class ReaderShellController {
     this.moreButton.disabled = status !== 'ready';
     if (status !== 'ready') {
       this.setNavigationAvailability({ previous: false, next: false });
-      this.setModePanelOpen(false);
-      this.setAppearancePanelOpen(false);
+      this.setSettingsPanel('none');
     }
 
     if (status === 'ready') this.scheduleAutoHide();
@@ -190,32 +196,29 @@ export class ReaderShellController {
     this.setRangeValue('paragraphSpacing', state.paragraphSpacing, `${state.paragraphSpacing.toFixed(1)}em`);
   }
 
+  setSettingsPanel(panel: ReaderSettingsPanel): void {
+    this.assertUsable();
+    this.applySettingsPanel(panel, true);
+  }
+
   setModePanelOpen(open: boolean): void {
     this.assertUsable();
-    if (open) {
-      this.appearancePanel.hidden = true;
-      this.appearanceButton.setAttribute('aria-expanded', 'false');
-    }
-    this.modePanel.hidden = !open;
-    this.moreButton.setAttribute('aria-expanded', String(open));
+    if (open) this.setSettingsPanel('mode');
+    else if (this.settingsPanel === 'mode') this.setSettingsPanel('none');
   }
 
   toggleModePanel(): void {
-    this.setModePanelOpen(this.modePanel.hidden);
+    this.setSettingsPanel(this.settingsPanel === 'mode' ? 'none' : 'mode');
   }
 
   setAppearancePanelOpen(open: boolean): void {
     this.assertUsable();
-    if (open) {
-      this.modePanel.hidden = true;
-      this.moreButton.setAttribute('aria-expanded', 'false');
-    }
-    this.appearancePanel.hidden = !open;
-    this.appearanceButton.setAttribute('aria-expanded', String(open));
+    if (open) this.setSettingsPanel('appearance');
+    else if (this.settingsPanel === 'appearance') this.setSettingsPanel('none');
   }
 
   toggleAppearancePanel(): void {
-    this.setAppearancePanelOpen(this.appearancePanel.hidden);
+    this.setSettingsPanel(this.settingsPanel === 'appearance' ? 'none' : 'appearance');
   }
 
   setControlsVisible(visible: boolean): void {
@@ -228,8 +231,7 @@ export class ReaderShellController {
     if (!visible) {
       this.controlsHiddenAt = performance.now();
       this.pointerRevealAnchor = null;
-      this.setModePanelOpen(false);
-      this.setAppearancePanelOpen(false);
+      this.applySettingsPanel('none', false);
     } else {
       this.pointerRevealAnchor = null;
     }
@@ -241,6 +243,10 @@ export class ReaderShellController {
   hideControls(): void { this.setControlsVisible(false); }
 
   toggleControls(): void {
+    if (this.settingsPanel !== 'none') {
+      this.setSettingsPanel('none');
+      return;
+    }
     const hidden = this.root.dataset.readerControls === 'hidden';
     this.setControlsVisible(hidden);
   }
@@ -369,10 +375,32 @@ export class ReaderShellController {
 
   private readonly handleKeydown = (event: KeyboardEvent) => {
     if (event.key !== 'Escape') return;
-    if (!this.appearancePanel.hidden) this.setAppearancePanelOpen(false);
-    else if (!this.modePanel.hidden) this.setModePanelOpen(false);
+    if (this.settingsPanel !== 'none') this.setSettingsPanel('none');
     else this.showControls();
   };
+
+  private applySettingsPanel(panel: ReaderSettingsPanel, manageAutoHide: boolean): void {
+    if (panel !== 'none' && this.root.dataset.readerControls === 'hidden') {
+      this.setControlsVisible(true);
+    }
+
+    const changed = this.settingsPanel !== panel;
+    this.settingsPanel = panel;
+    this.modePanel.hidden = panel !== 'mode';
+    this.appearancePanel.hidden = panel !== 'appearance';
+    this.moreButton.setAttribute('aria-expanded', String(panel === 'mode'));
+    this.appearanceButton.setAttribute('aria-expanded', String(panel === 'appearance'));
+    this.root.dataset.readerPanel = panel;
+
+    if (panel !== 'none') this.clearAutoHide();
+    else if (manageAutoHide && this.root.dataset.readerControls !== 'hidden') this.scheduleAutoHide();
+
+    if (changed) {
+      this.root.dispatchEvent(new CustomEvent('reader-shell:panel-change', {
+        detail: { panel },
+      }));
+    }
+  }
 
   private emitTypography(intent: ReaderTypographyIntent): void {
     for (const listener of this.typographyListeners) listener(intent);
@@ -388,9 +416,13 @@ export class ReaderShellController {
   private scheduleAutoHide(): void {
     this.clearAutoHide();
     if (!this.autoHide || this.root.dataset.readerStatus !== 'ready') return;
-    if (this.root.matches(':focus-within')) return;
+    if (this.settingsPanel !== 'none' || this.root.matches(':focus-within')) return;
     this.hideTimer = window.setTimeout(() => {
-      if (!this.destroyed && !this.root.matches(':focus-within')) this.hideControls();
+      if (
+        !this.destroyed
+        && this.settingsPanel === 'none'
+        && !this.root.matches(':focus-within')
+      ) this.hideControls();
     }, this.autoHideDelay);
   }
 

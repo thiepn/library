@@ -180,12 +180,23 @@ export class ReaderMobileController {
     this.root.style.removeProperty('--reader-visual-height');
     this.root.style.removeProperty('--reader-visual-width');
     this.root.style.removeProperty('--reader-keyboard-height');
+    this.root.style.removeProperty('--reader-settings-sheet-max-height');
+    this.root.style.removeProperty('--reader-tool-sheet-height');
     this.listeners.clear();
   }
 
-  private readonly handleViewportChange = () => this.scheduleRefresh(false);
+  private readonly handleViewportChange = () => {
+    // Keep geometry-driving CSS variables in lockstep with VisualViewport. The richer
+    // mobile state can remain debounced, but the visible shell/sheets must not spend a
+    // frame using stale JS height while CSS `dvh` has already changed.
+    this.syncVisualViewportCss();
+    this.scheduleRefresh(false);
+  };
 
-  private readonly handleOrientationChange = () => this.scheduleRefresh(true);
+  private readonly handleOrientationChange = () => {
+    this.syncVisualViewportCss();
+    this.scheduleRefresh(true);
+  };
 
   private readonly handleFocusChange = () => this.scheduleRefresh(false);
 
@@ -207,9 +218,21 @@ export class ReaderMobileController {
     this.root.dataset.readerOrientation = state.orientation;
     this.root.dataset.readerKeyboard = state.keyboardOpen ? 'open' : 'closed';
     this.root.dataset.readerTouch = String(state.touch);
-    this.root.style.setProperty('--reader-visual-height', `${state.viewportHeight}px`);
-    this.root.style.setProperty('--reader-visual-width', `${state.viewportWidth}px`);
+    this.syncVisualViewportCss(state.viewportWidth, state.viewportHeight);
     this.root.style.setProperty('--reader-keyboard-height', `${state.keyboardHeight}px`);
+  }
+
+  private syncVisualViewportCss(
+    width = roundedPositive(this.visualViewport?.width ?? window.innerWidth),
+    height = roundedPositive(this.visualViewport?.height ?? window.innerHeight),
+  ): void {
+    if (this.destroyed) return;
+    const settingsMaxHeight = Math.max(240, Math.round(height * 0.72));
+    const toolPanelHeight = Math.max(260, Math.round(height * 0.74));
+    this.root.style.setProperty('--reader-visual-height', `${height}px`);
+    this.root.style.setProperty('--reader-visual-width', `${width}px`);
+    this.root.style.setProperty('--reader-settings-sheet-max-height', `${settingsMaxHeight}px`);
+    this.root.style.setProperty('--reader-tool-sheet-height', `${toolPanelHeight}px`);
   }
 
   private keepFocusedControlVisible(target: HTMLElement): void {

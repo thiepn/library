@@ -1,8 +1,8 @@
-import { mountReaderShell, type ReaderShellController } from './shell';
+import { mountReaderShell, type ReaderSettingsPanel, type ReaderShellController } from './shell';
 
 const mountedErgonomics = new WeakMap<HTMLElement, ReaderErgonomicsController>();
 
-type ReaderSettingsPanel = 'appearance' | 'mode';
+type ReaderSettingsPanelName = Exclude<ReaderSettingsPanel, 'none'>;
 
 function panelFor(root: HTMLElement, selector: string): HTMLElement {
   const panel = root.querySelector<HTMLElement>(selector);
@@ -19,7 +19,7 @@ function commandFor(root: HTMLElement, command: 'appearance' | 'more'): HTMLButt
 function addPanelCloseButton(
   panel: HTMLElement,
   headingSelector: string,
-  panelName: ReaderSettingsPanel,
+  panelName: ReaderSettingsPanelName,
   label: string,
 ): HTMLButtonElement {
   const existing = panel.querySelector<HTMLButtonElement>('[data-reader-panel-close]');
@@ -41,10 +41,11 @@ function addPanelCloseButton(
 /**
  * Owns reader-level product ergonomics that sit above the format engine.
  *
- * The settings panels intentionally remain non-modal so the top and bottom
- * reader bars stay available. The reading surface itself is protected while a
- * panel is open: tapping/clicking exposed publication content dismisses the
- * panel instead of turning a page behind it.
+ * ReaderShellController is the single source of truth for settings-panel state.
+ * This layer owns only presentation affordances around that state: backdrop,
+ * explicit close controls, focus restoration, and outside-click dismissal.
+ * The reading surface is protected while a panel is open so an exposed tap can
+ * never also become EPUB navigation behind the sheet.
  */
 export class ReaderErgonomicsController {
   private readonly shell: ReaderShellController;
@@ -55,7 +56,7 @@ export class ReaderErgonomicsController {
   private readonly backdrop: HTMLDivElement;
   private readonly appearanceClose: HTMLButtonElement;
   private readonly modeClose: HTMLButtonElement;
-  private readonly observer: MutationObserver;
+  private focusFrame: number | null = null;
   private destroyed = false;
 
   constructor(private readonly root: HTMLElement) {
@@ -88,17 +89,17 @@ export class ReaderErgonomicsController {
     }
 
     this.root.addEventListener('click', this.handleClickCapture, true);
-    this.observer = new MutationObserver(this.syncBackdrop);
-    this.observer.observe(this.modePanel, { attributes: true, attributeFilter: ['hidden'] });
-    this.observer.observe(this.appearancePanel, { attributes: true, attributeFilter: ['hidden'] });
+    this.root.addEventListener('reader-shell:panel-change', this.handlePanelChange as EventListener);
     this.syncBackdrop();
   }
 
   destroy(): void {
     if (this.destroyed) return;
     this.destroyed = true;
+    if (this.focusFrame !== null) cancelAnimationFrame(this.focusFrame);
+    this.focusFrame = null;
     this.root.removeEventListener('click', this.handleClickCapture, true);
-    this.observer.disconnect();
+    this.root.removeEventListener('reader-shell:panel-change', this.handlePanelChange as EventListener);
     this.appearanceClose.remove();
     this.modeClose.remove();
     this.backdrop.remove();
@@ -112,15 +113,15 @@ export class ReaderErgonomicsController {
     const close = origin.closest<HTMLButtonElement>('[data-reader-panel-close]');
     if (close && this.root.contains(close)) {
       event.preventDefault();
-      const panel = close.dataset.readerPanelClose === 'mode' ? 'mode' : 'appearance';
+      const panel: ReaderSettingsPanelName = close.dataset.readerPanelClose === 'mode' ? 'mode' : 'appearance';
       this.closePanels(panel);
       return;
     }
 
     if (origin.closest('[data-reader-panel-backdrop]')) {
       event.preventDefault();
-      const panel: ReaderSettingsPanel = !this.appearancePanel.hidden ? 'appearance' : 'mode';
-      this.closePanels(panel);
+      const open = this.shell.openSettingsPanel;
+      this.closePanels(open === 'mode' ? 'mode' : open === 'appearance' ? 'appearance' : undefined);
       return;
     }
 
@@ -129,30 +130,43 @@ export class ReaderErgonomicsController {
 
     // Settings controls own their interaction while the panel is open. Commands
     // elsewhere in the shell close floating settings first, then continue through
-    // the existing canonical command path exactly once.
+    // the canonical command path exactly once.
     if (command.closest('[data-reader-mode-panel], [data-reader-appearance-panel]')) return;
     if (command.dataset.readerCommand === 'appearance' || command.dataset.readerCommand === 'more') return;
-    this.closePanels();
+    if (this.shell.openSettingsPanel !== 'none') this.closePanels();
   };
 
-  private closePanels(restoreFocus?: ReaderSettingsPanel): void {
-    this.shell.setModePanelOpen(false);
-    this.shell.setAppearancePanelOpen(false);
+  private readonly handlePanelChange = () => {
     this.syncBackdrop();
+    const panel = this.shell.openSettingsPanel;
+    if (panel === 'none') return;
+
+    if (this.focusFrame !== null) cancelAnimationFrame(this.focusFrame);
+    this.focusFrame = requestAnimationFrame(() => {
+      this.focusFrame = null;
+      if (this.destroyed || this.shell.openSettingsPanel !== panel) return;
+      const close = panel === 'appearance' ? this.appearanceClose : this.modeClose;
+      try {
+        close.focus({ preventScroll: true });
+      } catch {
+        close.focus();
+      }
+    });
+  };
+
+  private closePanels(restoreFocus?: ReaderSettingsPanelName): void {
+    if (this.shell.openSettingsPanel !== 'none') this.shell.setSettingsPanel('none');
+    else this.syncBackdrop();
     if (restoreFocus === 'appearance') this.appearanceTrigger.focus();
     if (restoreFocus === 'mode') this.modeTrigger.focus();
   }
 
-  private readonly syncBackdrop = () => {
+  private syncBackdrop(): void {
     if (this.destroyed) return;
-    const open = !this.modePanel.hidden || !this.appearancePanel.hidden;
+    const open = this.shell.openSettingsPanel !== 'none';
     this.backdrop.hidden = !open;
-    this.root.dataset.readerPanel = !this.appearancePanel.hidden
-      ? 'appearance'
-      : !this.modePanel.hidden
-        ? 'mode'
-        : 'none';
-  };
+    this.backdrop.setAttribute('aria-hidden', String(!open));
+  }
 }
 
 export function mountReaderErgonomics(root: HTMLElement): ReaderErgonomicsController {

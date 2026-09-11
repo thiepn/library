@@ -104,7 +104,10 @@
     bottom: calc(var(--reader-bottombar-height) + var(--reader-safe-bottom) + var(--reader-mobile-sheet-gap));
     left: calc(var(--reader-safe-left) + var(--reader-mobile-sheet-gap));
     width: auto;
-    max-height: min(72dvh, calc(var(--reader-visual-height, 100dvh) - var(--reader-topbar-height) - var(--reader-bottombar-height) - var(--reader-safe-top) - var(--reader-safe-bottom) - 24px));
+    max-height: min(
+      var(--reader-settings-sheet-max-height, 620px),
+      calc(var(--reader-visual-height, 100dvh) - var(--reader-topbar-height) - var(--reader-bottombar-height) - var(--reader-safe-top) - var(--reader-safe-bottom) - 24px)
+    );
     padding: 16px;
     overflow: auto;
     overscroll-behavior: contain;
@@ -139,7 +142,10 @@
     bottom: calc(var(--reader-bottombar-height) + var(--reader-safe-bottom) + var(--reader-mobile-sheet-gap));
     left: calc(var(--reader-safe-left) + var(--reader-mobile-sheet-gap));
     width: auto;
-    height: min(74dvh, calc(var(--reader-visual-height, 100dvh) - var(--reader-topbar-height) - var(--reader-bottombar-height) - var(--reader-safe-top) - var(--reader-safe-bottom) - 20px));
+    height: min(
+      var(--reader-tool-sheet-height, 620px),
+      calc(var(--reader-visual-height, 100dvh) - var(--reader-topbar-height) - var(--reader-bottombar-height) - var(--reader-safe-top) - var(--reader-safe-bottom) - 20px)
+    );
     max-height: calc(var(--reader-visual-height, 100dvh) - var(--reader-topbar-height) - var(--reader-bottombar-height) - var(--reader-safe-top) - var(--reader-safe-bottom) - 20px);
     padding: 16px;
     overflow: hidden;
