@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-98",
+  "slug": "pd-pg-98",
+  "title": "A Tale of Two Cities",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Charles Dickens",
+      "role": "creator",
+      "birthYear": 1812,
+      "deathYear": 1870
+    }
+  ],
+  "description": "A public-domain edition of A Tale of Two Cities by Charles Dickens. Project Gutenberg classifies it under Historical fiction, France -- History -- Revolution, 1789-1799 -- Fiction, London (England) -- History -- 18th century -- Fiction.",
+  "shortDescription": "A public-domain edition of A Tale of Two Cities by Charles Dickens. Project Gutenberg classifies it under Historical fiction, France -- History -- Revolution, 1789-1799 -- Ficti…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "1994-01-01",
+    "lastUpdated": "2026-09-13",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-98-d424acbb08ea-cover-01cb998bd821",
+    "activeRelease": "pg-98-d424acbb08ea-cover-01cb998bd821"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-98.webp",
+    "alt": "Cover for A Tale of Two Cities by Charles Dickens"
+  },
+  "classification": {
+    "subjects": [
+      "historical-fiction",
+      "france",
+      "london-england",
+      "war-stories",
+      "executions-and-executioners"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "historical-fiction"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/98",
+      "gutenbergId": 98
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/98/pg98.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #98. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

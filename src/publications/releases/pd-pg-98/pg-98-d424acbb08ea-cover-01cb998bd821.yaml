@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-98",
+  "version": "pg-98-d424acbb08ea-cover-01cb998bd821",
+  "edition": 1,
+  "releasedAt": "2026-09-13T08:32:12Z",
+  "sourceHash": "d227c0470b470ad75290dcc6e6de43aac86aae832d112940c0a2fc83bc085c2a",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-98/editions/pg-98-d424acbb08ea-cover-01cb998bd821/a-tale-of-two-cities-project-gutenberg.epub",
+      "filename": "a-tale-of-two-cities-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 812313,
+      "sha256": "01cb998bd821106f959a6aced5e66de5214834d5519d0db646be5e99d02de2c9"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "d424acbb08ea09d91c6bac54459bd302623c747d01540ee5027c356e8c46f7db",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-98-d424acbb08ea",
+    "finalArtifactSha256": "01cb998bd821106f959a6aced5e66de5214834d5519d0db646be5e99d02de2c9",
+    "releaseVersioning": "content-addressed"
+  }
+}

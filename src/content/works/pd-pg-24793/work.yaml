@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-24793",
+  "slug": "pd-pg-24793",
+  "title": "Blow The Man Down: A Romance Of The Coast",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Holman Day",
+      "role": "creator",
+      "birthYear": 1865,
+      "deathYear": 1935
+    }
+  ],
+  "description": "A public-domain edition of Blow The Man Down: A Romance Of The Coast by Holman Day. Project Gutenberg classifies it under Ship captains -- Fiction, Love stories, Yachts -- Fiction.",
+  "shortDescription": "A public-domain edition of Blow The Man Down: A Romance Of The Coast by Holman Day. Project Gutenberg classifies it under Ship captains -- Fiction, Love stories, Yachts -- Fiction.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2008-03-09",
+    "lastUpdated": "2026-09-13",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-24793-e460a6a3c162-cover-457e7bd3d07a",
+    "activeRelease": "pg-24793-e460a6a3c162-cover-457e7bd3d07a"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-24793.webp",
+    "alt": "Cover for Blow The Man Down: A Romance Of The Coast by Holman Day"
+  },
+  "classification": {
+    "subjects": [
+      "ship-captains",
+      "love-stories",
+      "yachts",
+      "ps"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/24793",
+      "gutenbergId": 24793
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/24793/pg24793.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #24793. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

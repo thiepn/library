@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-76639",
+  "version": "pg-76639-bdd51789155e-cover-ea4dfb78dcce",
+  "edition": 1,
+  "releasedAt": "2026-09-13T08:32:10Z",
+  "sourceHash": "ee81959bcb9a26ddd734a06526f7bf839d28427f1aa4e4853c97920c386f1c35",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-76639/editions/pg-76639-bdd51789155e-cover-ea4dfb78dcce/eloisa-b-or-a-series-of-original-letters-project-gutenberg.epub",
+      "filename": "eloisa-b-or-a-series-of-original-letters-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 1071272,
+      "sha256": "ea4dfb78dcceddcb59c419d890030eec4a841f81cdbcf10cefc5d4a63e6e0689"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "bdd51789155ecde8dc0c22a34963273630e20ee41c15fdae7b0b85af581990cd",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-76639-bdd51789155e",
+    "finalArtifactSha256": "ea4dfb78dcceddcb59c419d890030eec4a841f81cdbcf10cefc5d4a63e6e0689",
+    "releaseVersioning": "content-addressed"
+  }
+}

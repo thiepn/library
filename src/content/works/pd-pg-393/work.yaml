@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-393",
+  "slug": "pd-pg-393",
+  "title": "The Blue Lagoon: A Romance",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "H. De Vere (Henry De Vere) Stacpoole",
+      "role": "creator",
+      "birthYear": 1863,
+      "deathYear": 1951
+    }
+  ],
+  "description": "A public-domain edition of The Blue Lagoon: A Romance by H. De Vere (Henry De Vere) Stacpoole. Project Gutenberg classifies it under Islands -- Fiction, Love stories, Bildungsromans.",
+  "shortDescription": "A public-domain edition of The Blue Lagoon: A Romance by H. De Vere (Henry De Vere) Stacpoole. Project Gutenberg classifies it under Islands -- Fiction, Love stories, Bildungsro…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "1996-01-01",
+    "lastUpdated": "2026-09-13",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-393-e391d2736313-cover-abc38c368173",
+    "activeRelease": "pg-393-e391d2736313-cover-abc38c368173"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-393.webp",
+    "alt": "Cover for The Blue Lagoon: A Romance by H. De Vere (Henry De Vere) Stacpoole"
+  },
+  "classification": {
+    "subjects": [
+      "islands",
+      "love-stories",
+      "bildungsromans",
+      "cousins",
+      "adventure-stories"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/393",
+      "gutenbergId": 393
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/393/pg393.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #393. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

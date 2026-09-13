@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-70175",
+  "version": "pg-70175-13f6d728e738-cover-564d16076239",
+  "edition": 1,
+  "releasedAt": "2026-09-13T08:32:16Z",
+  "sourceHash": "5d5d713b2e54286ab5c9e7554b83fae2225d6f4035356ce889ca88a4def0b483",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-70175/editions/pg-70175-13f6d728e738-cover-564d16076239/the-secret-of-father-brown-project-gutenberg.epub",
+      "filename": "the-secret-of-father-brown-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 501820,
+      "sha256": "564d1607623971b9ea55b6b3db6507925c2196e6d04b86f98f12d7b69b98c29c"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "13f6d728e738ce758eb18ece9148ba9959c692d32843d52cccbb458b0915d4cd",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-70175-13f6d728e738",
+    "finalArtifactSha256": "564d1607623971b9ea55b6b3db6507925c2196e6d04b86f98f12d7b69b98c29c",
+    "releaseVersioning": "content-addressed"
+  }
+}

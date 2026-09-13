@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-560",
+  "version": "pg-560-0f8eabf580cf-cover-b7961a3443d5",
+  "edition": 1,
+  "releasedAt": "2026-09-13T08:32:16Z",
+  "sourceHash": "bb5f5f9e7c08de2294b3366d83a685f27428cadc4ea1b98d95f35255d7257cb3",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-560/editions/pg-560-0f8eabf580cf-cover-b7961a3443d5/mr-standfast-project-gutenberg.epub",
+      "filename": "mr-standfast-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 692881,
+      "sha256": "b7961a3443d5fdb0346d79841d65d1fd347028a3aae6ac32d0b777e7d40d79bd"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "0f8eabf580cf88b9807d9132ee3aa228d3bf227035dca4db7cebac356d951c03",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-560-0f8eabf580cf",
+    "finalArtifactSha256": "b7961a3443d5fdb0346d79841d65d1fd347028a3aae6ac32d0b777e7d40d79bd",
+    "releaseVersioning": "content-addressed"
+  }
+}

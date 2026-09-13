@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-70854",
+  "slug": "pd-pg-70854",
+  "title": "The Countess of Pembroke's Arcadia",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Philip Sidney",
+      "role": "creator",
+      "birthYear": 1554,
+      "deathYear": 1586
+    },
+    {
+      "name": "Ernest A. (Ernest Albert) Baker",
+      "role": "edt",
+      "birthYear": 1869,
+      "deathYear": 1941
+    }
+  ],
+  "description": "A public-domain edition of The Countess of Pembroke's Arcadia by Philip Sidney. Project Gutenberg classifies it under Pastoral literature, English, PR.",
+  "shortDescription": "A public-domain edition of The Countess of Pembroke's Arcadia by Philip Sidney. Project Gutenberg classifies it under Pastoral literature, English, PR.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2023-05-24",
+    "lastUpdated": "2026-09-13",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-70854-19fb482b6b4f-cover-6bf2eb453fe9",
+    "activeRelease": "pg-70854-19fb482b6b4f-cover-6bf2eb453fe9"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-70854.webp",
+    "alt": "Cover for The Countess of Pembroke's Arcadia by Philip Sidney"
+  },
+  "classification": {
+    "subjects": [
+      "pastoral-literature-english",
+      "pr"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/70854",
+      "gutenbergId": 70854
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/70854/pg70854.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #70854. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

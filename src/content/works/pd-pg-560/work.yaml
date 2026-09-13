@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-560",
+  "slug": "pd-pg-560",
+  "title": "Mr. Standfast",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "John Buchan",
+      "role": "creator",
+      "birthYear": 1875,
+      "deathYear": 1940
+    }
+  ],
+  "description": "A public-domain edition of Mr. Standfast by John Buchan. Project Gutenberg classifies it under World War, 1914-1918 -- Fiction, War stories, Spy stories.",
+  "shortDescription": "A public-domain edition of Mr. Standfast by John Buchan. Project Gutenberg classifies it under World War, 1914-1918 -- Fiction, War stories, Spy stories.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "1996-06-01",
+    "lastUpdated": "2026-09-13",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-560-0f8eabf580cf-cover-b7961a3443d5",
+    "activeRelease": "pg-560-0f8eabf580cf-cover-b7961a3443d5"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-560.webp",
+    "alt": "Cover for Mr. Standfast by John Buchan"
+  },
+  "classification": {
+    "subjects": [
+      "world-war-1914-1918",
+      "war-stories",
+      "spy-stories",
+      "hannay-richard-fictitious-character",
+      "intelligence-service"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/560",
+      "gutenbergId": 560
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/560/pg560.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #560. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

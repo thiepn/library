@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-468",
+  "slug": "pd-pg-468",
+  "title": "Manon Lescaut",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "abbé Prévost",
+      "role": "creator",
+      "birthYear": 1697,
+      "deathYear": 1763
+    }
+  ],
+  "description": "A public-domain edition of Manon Lescaut by abbé Prévost. Project Gutenberg classifies it under Adventure stories, Man-woman relationships -- Fiction, Lescaut, Manon, 1689-1721 -- Fiction.",
+  "shortDescription": "A public-domain edition of Manon Lescaut by abbé Prévost. Project Gutenberg classifies it under Adventure stories, Man-woman relationships -- Fiction, Lescaut, Manon, 1689-1721…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "1996-03-01",
+    "lastUpdated": "2026-09-13",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-468-cffd3480ef06-cover-1f8815f5bc39",
+    "activeRelease": "pg-468-cffd3480ef06-cover-1f8815f5bc39"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-468.webp",
+    "alt": "Cover for Manon Lescaut by abbé Prévost"
+  },
+  "classification": {
+    "subjects": [
+      "adventure-stories",
+      "man-woman-relationships",
+      "lescaut-manon-1689-1721",
+      "pq"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/468",
+      "gutenbergId": 468
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/468/pg468.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #468. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-2160",
+  "version": "pg-2160-8c7ca187cf54-cover-6dfe30eca9ef",
+  "edition": 1,
+  "releasedAt": "2026-09-13T08:32:14Z",
+  "sourceHash": "ac53b4579cf3d2f665a239e98636d214b90041609cbf7ae40e8813e3daf97f09",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-2160/editions/pg-2160-8c7ca187cf54-cover-6dfe30eca9ef/the-expedition-of-humphry-clinker-project-gutenberg.epub",
+      "filename": "the-expedition-of-humphry-clinker-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 834958,
+      "sha256": "6dfe30eca9efbc809b547efd694466909555ccb2afc7e433ff04b29a7cf64687"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "8c7ca187cf54026287a27fe3115c9a0da3f935c201191e02d5b144824af1c495",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-2160-8c7ca187cf54",
+    "finalArtifactSha256": "6dfe30eca9efbc809b547efd694466909555ccb2afc7e433ff04b29a7cf64687",
+    "releaseVersioning": "content-addressed"
+  }
+}

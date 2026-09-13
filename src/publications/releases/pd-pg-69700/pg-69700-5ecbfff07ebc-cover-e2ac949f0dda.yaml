@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-69700",
+  "version": "pg-69700-5ecbfff07ebc-cover-e2ac949f0dda",
+  "edition": 1,
+  "releasedAt": "2026-09-13T08:32:15Z",
+  "sourceHash": "90de5f902a47c225abba95f607b7a0d28fdd17db624cbc3cf50ebf1f8193e356",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-69700/editions/pg-69700-5ecbfff07ebc-cover-e2ac949f0dda/the-case-book-of-sherlock-holmes-project-gutenberg.epub",
+      "filename": "the-case-book-of-sherlock-holmes-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 546379,
+      "sha256": "e2ac949f0dda587fc15e7e357328676487c809da9bc27af5a8962b5ddf8abd9f"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "5ecbfff07ebc793254e8bbaac5b0b1be00c7d4957effc104d44dc92ebafe7926",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-69700-5ecbfff07ebc",
+    "finalArtifactSha256": "e2ac949f0dda587fc15e7e357328676487c809da9bc27af5a8962b5ddf8abd9f",
+    "releaseVersioning": "content-addressed"
+  }
+}

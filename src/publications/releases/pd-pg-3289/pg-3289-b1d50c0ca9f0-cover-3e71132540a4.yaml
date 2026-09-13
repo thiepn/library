@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-3289",
+  "version": "pg-3289-b1d50c0ca9f0-cover-3e71132540a4",
+  "edition": 1,
+  "releasedAt": "2026-09-13T08:32:16Z",
+  "sourceHash": "fb16030774467fc7ce1849cabe981ec2ab4aba433d2fe403983a8cb5949853dd",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-3289/editions/pg-3289-b1d50c0ca9f0-cover-3e71132540a4/the-valley-of-fear-project-gutenberg.epub",
+      "filename": "the-valley-of-fear-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 639952,
+      "sha256": "3e71132540a42ceea3c7f84d714c4872bd83c8233a2917bbc7e8cbee9ea986ef"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "b1d50c0ca9f0b199b4eea5a5cacdca5534f460666aa448c496cf02879d1a9d4a",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-3289-b1d50c0ca9f0",
+    "finalArtifactSha256": "3e71132540a42ceea3c7f84d714c4872bd83c8233a2917bbc7e8cbee9ea986ef",
+    "releaseVersioning": "content-addressed"
+  }
+}

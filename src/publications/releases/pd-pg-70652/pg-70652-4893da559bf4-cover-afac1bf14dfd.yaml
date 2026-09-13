@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-70652",
+  "version": "pg-70652-4893da559bf4-cover-afac1bf14dfd",
+  "edition": 1,
+  "releasedAt": "2026-09-13T08:32:13Z",
+  "sourceHash": "ff2de7916af5dbbf237b9ba8be4f5d1009321e6e4ed62c5f5d6c7889dc5f69e3",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-70652/editions/pg-70652-4893da559bf4-cover-afac1bf14dfd/at-the-mountains-of-madness-project-gutenberg.epub",
+      "filename": "at-the-mountains-of-madness-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 663017,
+      "sha256": "afac1bf14dfdd838840a6040b4594a1cdc3c04f982524b221f31433fcab7c850"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "4893da559bf4ebfce6907cb035f3f679c6c7c28d0b72f67997b0cc9e161b6636",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-70652-4893da559bf4",
+    "finalArtifactSha256": "afac1bf14dfdd838840a6040b4594a1cdc3c04f982524b221f31433fcab7c850",
+    "releaseVersioning": "content-addressed"
+  }
+}

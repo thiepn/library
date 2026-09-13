@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-223",
+  "version": "pg-223-2f3d316be227-cover-21a9a597fa9c",
+  "edition": 1,
+  "releasedAt": "2026-09-13T08:32:09Z",
+  "sourceHash": "e9398a9c4f40a46afd14343d180e2065a4ca8099989ef42cf8b6136de576c739",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-223/editions/pg-223-2f3d316be227-cover-21a9a597fa9c/the-wisdom-of-father-brown-project-gutenberg.epub",
+      "filename": "the-wisdom-of-father-brown-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 549628,
+      "sha256": "21a9a597fa9c40c5af682b3444e0884e9929d8906b692035dbd6c53958c10093"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "2f3d316be2273a6041e91662347cd45dadd7e988af4411d22bf8d60e52bb95b1",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-223-2f3d316be227",
+    "finalArtifactSha256": "21a9a597fa9c40c5af682b3444e0884e9929d8906b692035dbd6c53958c10093",
+    "releaseVersioning": "content-addressed"
+  }
+}
