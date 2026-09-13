@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-53874",
+  "version": "pg-53874-115ae0a884ff-cover-6729a5361ca9",
+  "edition": 1,
+  "releasedAt": "2026-09-13T08:32:15Z",
+  "sourceHash": "1d76181736fcea92e4bc20c2e59fc53e8bc6f466f9a0a1c8bcf5845122a8978d",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-53874/editions/pg-53874-115ae0a884ff-cover-6729a5361ca9/under-the-red-dragon-a-novel-project-gutenberg.epub",
+      "filename": "under-the-red-dragon-a-novel-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 789970,
+      "sha256": "6729a5361ca96466735e3ade0fb037a256c3609002ce79792c68be5f14cfa528"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "115ae0a884fff177e5f45f95d2fec9949231fff8f69dd1e54b30971218e0d128",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-53874-115ae0a884ff",
+    "finalArtifactSha256": "6729a5361ca96466735e3ade0fb037a256c3609002ce79792c68be5f14cfa528",
+    "releaseVersioning": "content-addressed"
+  }
+}

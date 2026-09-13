@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-76639",
+  "slug": "pd-pg-76639",
+  "title": "Eloisa : $b or, A series of original letters",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Jean-Jacques Rousseau",
+      "role": "creator",
+      "birthYear": 1712,
+      "deathYear": 1778
+    },
+    {
+      "name": "W. (William) Kenrick",
+      "role": "trl",
+      "deathYear": 1779
+    }
+  ],
+  "description": "A public-domain edition of Eloisa : $b or, A series of original letters by Jean-Jacques Rousseau. Project Gutenberg classifies it under Psychological fiction, Epistolary fiction, Women -- Fiction.",
+  "shortDescription": "A public-domain edition of Eloisa : $b or, A series of original letters by Jean-Jacques Rousseau. Project Gutenberg classifies it under Psychological fiction, Epistolary fiction…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2025-08-06",
+    "lastUpdated": "2026-09-13",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-76639-bdd51789155e-cover-ea4dfb78dcce",
+    "activeRelease": "pg-76639-bdd51789155e-cover-ea4dfb78dcce"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-76639.webp",
+    "alt": "Cover for Eloisa : $b or, A series of original letters by Jean-Jacques Rousseau"
+  },
+  "classification": {
+    "subjects": [
+      "psychological-fiction",
+      "epistolary-fiction",
+      "women",
+      "man-woman-relationships",
+      "french-fiction"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/76639",
+      "gutenbergId": 76639
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/76639/pg76639.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #76639. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

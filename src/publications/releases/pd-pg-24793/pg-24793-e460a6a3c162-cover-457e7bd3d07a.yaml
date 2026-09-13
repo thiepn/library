@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-24793",
+  "version": "pg-24793-e460a6a3c162-cover-457e7bd3d07a",
+  "edition": 1,
+  "releasedAt": "2026-09-13T08:32:15Z",
+  "sourceHash": "97ea5384a831a1e7feca0296f74a60fa940fe4f5ecd17dd68001fa5cedd58461",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-24793/editions/pg-24793-e460a6a3c162-cover-457e7bd3d07a/blow-the-man-down-a-romance-of-the-coast-project-gutenberg.epub",
+      "filename": "blow-the-man-down-a-romance-of-the-coast-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 744940,
+      "sha256": "457e7bd3d07ac75f17a64408235bd30a5197383408f8a5782a7a0084ec321f3c"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "e460a6a3c16267ee209c92a803c2d8423cd2704c42e6ef8e43bb5a475598d735",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-24793-e460a6a3c162",
+    "finalArtifactSha256": "457e7bd3d07ac75f17a64408235bd30a5197383408f8a5782a7a0084ec321f3c",
+    "releaseVersioning": "content-addressed"
+  }
+}

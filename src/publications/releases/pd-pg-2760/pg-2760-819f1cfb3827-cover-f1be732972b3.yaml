@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-2760",
+  "version": "pg-2760-819f1cfb3827-cover-f1be732972b3",
+  "edition": 1,
+  "releasedAt": "2026-09-13T08:32:13Z",
+  "sourceHash": "d806948256a26436b1a1a9fbf14bb9a24d49132a753c8ea5c600bb7293e86a09",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-2760/editions/pg-2760-819f1cfb3827-cover-f1be732972b3/celebrated-crimes-complete-project-gutenberg.epub",
+      "filename": "celebrated-crimes-complete-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 1846375,
+      "sha256": "f1be732972b3a5fc570a20567796a50ca97968cf57ea6142c03224d88ba89e1c"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "819f1cfb38279176e5fa314a2c44a35800535aa8bc8bf0f51784a47ac22aba50",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-2760-819f1cfb3827",
+    "finalArtifactSha256": "f1be732972b3a5fc570a20567796a50ca97968cf57ea6142c03224d88ba89e1c",
+    "releaseVersioning": "content-addressed"
+  }
+}

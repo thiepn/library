@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-589",
+  "version": "pg-589-7960b90fe533-cover-f55769feb8fb",
+  "edition": 1,
+  "releasedAt": "2026-09-13T08:32:14Z",
+  "sourceHash": "d17e72305f9b7325d579e5300d9136a00dfe08cdec847fe09f24bf0d511b75e5",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-589/editions/pg-589-7960b90fe533-cover-f55769feb8fb/catriona-project-gutenberg.epub",
+      "filename": "catriona-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 650630,
+      "sha256": "f55769feb8fb1735e13c16a62f20dbcfaf933a916cdbf5acd16a004c9232df59"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "7960b90fe533e441be1a37466df018a2007fabe97c9c884035d63f8d2bca9793",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-589-7960b90fe533",
+    "finalArtifactSha256": "f55769feb8fb1735e13c16a62f20dbcfaf933a916cdbf5acd16a004c9232df59",
+    "releaseVersioning": "content-addressed"
+  }
+}

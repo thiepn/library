@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-10002",
+  "version": "pg-10002-7db916c0d59a-cover-917a95e407ef",
+  "edition": 1,
+  "releasedAt": "2026-09-13T08:32:13Z",
+  "sourceHash": "a3e886936c0f054fef72724b6b63468a0da0ab53b3edcbfeda345349ab37ed12",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-10002/editions/pg-10002-7db916c0d59a-cover-917a95e407ef/the-house-on-the-borderland-project-gutenberg.epub",
+      "filename": "the-house-on-the-borderland-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 511589,
+      "sha256": "917a95e407ef7d876f0ae657b435c263b01b2727e9098b7222202757590591bc"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "7db916c0d59a5f7468937086a788c28fcfba00ce5f804948edabbe928ffefed1",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-10002-7db916c0d59a",
+    "finalArtifactSha256": "917a95e407ef7d876f0ae657b435c263b01b2727e9098b7222202757590591bc",
+    "releaseVersioning": "content-addressed"
+  }
+}

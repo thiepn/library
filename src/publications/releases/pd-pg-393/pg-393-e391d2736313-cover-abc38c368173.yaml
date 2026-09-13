@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-393",
+  "version": "pg-393-e391d2736313-cover-abc38c368173",
+  "edition": 1,
+  "releasedAt": "2026-09-13T08:32:10Z",
+  "sourceHash": "6746db968a1016b2e043d4448acfe4c0650a09ac74d9fc0a0bcc885b52c56c11",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-393/editions/pg-393-e391d2736313-cover-abc38c368173/the-blue-lagoon-a-romance-project-gutenberg.epub",
+      "filename": "the-blue-lagoon-a-romance-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 619518,
+      "sha256": "abc38c3681737208f55620026b45e6cc2816dbf0ac550b08ad35e1bc86af0e13"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "e391d27363132e15e219a2ae8378947c9776cec7765d53672fea698cf416687c",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-393-e391d2736313",
+    "finalArtifactSha256": "abc38c3681737208f55620026b45e6cc2816dbf0ac550b08ad35e1bc86af0e13",
+    "releaseVersioning": "content-addressed"
+  }
+}

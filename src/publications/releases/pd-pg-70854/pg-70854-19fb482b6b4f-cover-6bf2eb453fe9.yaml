@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-70854",
+  "version": "pg-70854-19fb482b6b4f-cover-6bf2eb453fe9",
+  "edition": 1,
+  "releasedAt": "2026-09-13T08:32:12Z",
+  "sourceHash": "c6f107c5caccf474352399c48a76ac24b4ab504f51a16a864b38ec6ff117c603",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-70854/editions/pg-70854-19fb482b6b4f-cover-6bf2eb453fe9/the-countess-of-pembrokes-arcadia-project-gutenberg.epub",
+      "filename": "the-countess-of-pembrokes-arcadia-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 1277089,
+      "sha256": "6bf2eb453fe97e323b450ea368957170a1730b75e5319c5914998df2aad420ae"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "19fb482b6b4fb3f0f49525debb86114530bdd9c1ac193ce3b013a17baadf3ac7",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-70854-19fb482b6b4f",
+    "finalArtifactSha256": "6bf2eb453fe97e323b450ea368957170a1730b75e5319c5914998df2aad420ae",
+    "releaseVersioning": "content-addressed"
+  }
+}

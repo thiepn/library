@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-6761",
+  "slug": "pd-pg-6761",
+  "title": "The Adventures of Ferdinand Count Fathom — Complete",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "T. (Tobias) Smollett",
+      "role": "creator",
+      "birthYear": 1721,
+      "deathYear": 1771
+    }
+  ],
+  "description": "A public-domain edition of The Adventures of Ferdinand Count Fathom — Complete by T. (Tobias) Smollett. Project Gutenberg classifies it under Gothic fiction, Adventure stories, PR.",
+  "shortDescription": "A public-domain edition of The Adventures of Ferdinand Count Fathom — Complete by T. (Tobias) Smollett. Project Gutenberg classifies it under Gothic fiction, Adventure stories, PR.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2004-09-09",
+    "lastUpdated": "2026-09-13",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-6761-4ba034991ded-cover-8c23c17c5dd9",
+    "activeRelease": "pg-6761-4ba034991ded-cover-8c23c17c5dd9"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-6761.webp",
+    "alt": "Cover for The Adventures of Ferdinand Count Fathom — Complete by T. (Tobias) Smollett"
+  },
+  "classification": {
+    "subjects": [
+      "gothic-fiction",
+      "adventure-stories",
+      "pr"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "best-books-ever-listings"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/6761",
+      "gutenbergId": 6761
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/6761/pg6761.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #6761. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

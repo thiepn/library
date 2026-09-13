@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-468",
+  "version": "pg-468-cffd3480ef06-cover-1f8815f5bc39",
+  "edition": 1,
+  "releasedAt": "2026-09-13T08:32:12Z",
+  "sourceHash": "f3baa31b62936725b1171b966fb75f5c000d1602d1f0d1211eec10061c7c35c3",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-468/editions/pg-468-cffd3480ef06-cover-1f8815f5bc39/manon-lescaut-project-gutenberg.epub",
+      "filename": "manon-lescaut-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 513918,
+      "sha256": "1f8815f5bc39ad3d335cf7db748fdcd49b08d8a728920659fae9391731e86af3"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "cffd3480ef061686bd637748e8fdf48d31cbd662fa65b6169ca74106c2f377a0",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-468-cffd3480ef06",
+    "finalArtifactSha256": "1f8815f5bc39ad3d335cf7db748fdcd49b08d8a728920659fae9391731e86af3",
+    "releaseVersioning": "content-addressed"
+  }
+}

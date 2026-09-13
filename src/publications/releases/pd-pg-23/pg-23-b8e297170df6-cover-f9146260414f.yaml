@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-23",
+  "version": "pg-23-b8e297170df6-cover-f9146260414f",
+  "edition": 1,
+  "releasedAt": "2026-09-13T08:32:10Z",
+  "sourceHash": "af9aface902fc49730f0d65e2b154c7a2855cda41385facd271c9b8c12162b70",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-23/editions/pg-23-b8e297170df6-cover-f9146260414f/narrative-of-the-life-of-frederick-douglass-an-american-slave-project-gutenberg.epub",
+      "filename": "narrative-of-the-life-of-frederick-douglass-an-american-slave-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 525148,
+      "sha256": "f9146260414f60b175f40b0831156ce0fb9ab57eed8a6a416ec18a4030ec1d5a"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "b8e297170df6bcae4c23a634b747f0e4754f449845ecf842abcd1ea4b1162448",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-23-b8e297170df6",
+    "finalArtifactSha256": "f9146260414f60b175f40b0831156ce0fb9ab57eed8a6a416ec18a4030ec1d5a",
+    "releaseVersioning": "content-addressed"
+  }
+}

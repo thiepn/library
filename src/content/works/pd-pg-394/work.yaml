@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-394",
+  "slug": "pd-pg-394",
+  "title": "Cranford",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Elizabeth Cleghorn Gaskell",
+      "role": "creator",
+      "birthYear": 1810,
+      "deathYear": 1865
+    },
+    {
+      "name": "C. E. (Charles Edmund) Brock",
+      "role": "ill",
+      "birthYear": 1870,
+      "deathYear": 1938
+    }
+  ],
+  "description": "A public-domain edition of Cranford by Elizabeth Cleghorn Gaskell. Project Gutenberg classifies it under England -- Fiction, Sisters -- Fiction, Pastoral fiction.",
+  "shortDescription": "A public-domain edition of Cranford by Elizabeth Cleghorn Gaskell. Project Gutenberg classifies it under England -- Fiction, Sisters -- Fiction, Pastoral fiction.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "1996-01-01",
+    "lastUpdated": "2026-09-13",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-394-25ada831e1ba-cover-ad9d582dda5d",
+    "activeRelease": "pg-394-25ada831e1ba-cover-ad9d582dda5d"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-394.webp",
+    "alt": "Cover for Cranford by Elizabeth Cleghorn Gaskell"
+  },
+  "classification": {
+    "subjects": [
+      "england",
+      "sisters",
+      "pastoral-fiction",
+      "villages",
+      "older-women"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/394",
+      "gutenbergId": 394
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/394/pg394.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #394. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-10002",
+  "slug": "pd-pg-10002",
+  "title": "The House on the Borderland",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "William Hope Hodgson",
+      "role": "creator",
+      "birthYear": 1877,
+      "deathYear": 1918
+    }
+  ],
+  "description": "A public-domain edition of The House on the Borderland by William Hope Hodgson. Project Gutenberg classifies it under Science fiction, PR.",
+  "shortDescription": "A public-domain edition of The House on the Borderland by William Hope Hodgson. Project Gutenberg classifies it under Science fiction, PR.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2003-11-01",
+    "lastUpdated": "2026-09-13",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-10002-7db916c0d59a-cover-917a95e407ef",
+    "activeRelease": "pg-10002-7db916c0d59a-cover-917a95e407ef"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-10002.webp",
+    "alt": "Cover for The House on the Borderland by William Hope Hodgson"
+  },
+  "classification": {
+    "subjects": [
+      "science-fiction",
+      "pr"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "science-fiction"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/10002",
+      "gutenbergId": 10002
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/10002/pg10002.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #10002. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

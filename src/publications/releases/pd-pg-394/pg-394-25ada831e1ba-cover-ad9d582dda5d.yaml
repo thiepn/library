@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-394",
+  "version": "pg-394-25ada831e1ba-cover-ad9d582dda5d",
+  "edition": 1,
+  "releasedAt": "2026-09-13T08:32:11Z",
+  "sourceHash": "76827fa8abb21008a942f6857861d9dbd3abe893b32303def63dd0fa40a44bf2",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-394/editions/pg-394-25ada831e1ba-cover-ad9d582dda5d/cranford-project-gutenberg.epub",
+      "filename": "cranford-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 672883,
+      "sha256": "ad9d582dda5d9ae1fff3eac1e7bf02c7209e28f446ba1a40a63d13fcbc5a81f2"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "25ada831e1ba0471eb9b66717bad6a6cd919d45a65a04ae1ac05596910c79bee",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-394-25ada831e1ba",
+    "finalArtifactSha256": "ad9d582dda5d9ae1fff3eac1e7bf02c7209e28f446ba1a40a63d13fcbc5a81f2",
+    "releaseVersioning": "content-addressed"
+  }
+}
