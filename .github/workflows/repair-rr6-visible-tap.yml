@@ -1,0 +1,102 @@
+name: Repair RR6 visible tap geometry
+
+on:
+  push:
+    branches:
+      - recovery/rr6-visible-tap-34751544799
+    paths:
+      - .github/workflows/repair-rr6-visible-tap.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: repair-rr6-visible-tap-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout recovery branch
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm and Node
+        uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2
+        with:
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+          cache: true
+
+      - name: Normalize clipped wide-iframe tap coordinates
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          from pathlib import Path
+
+          path = Path('src/lib/reader/navigation.ts')
+          text = path.read_text()
+          old = '''  private handleTapRatio(rawRatio: number): boolean {
+            const tapRatio = visibleTapRatio(
+              rawRatio,
+              this.controllerState.location,
+              this.readingModeState.effectiveSpread,
+            );
+          '''
+          new = '''  private physicalTapRatio(rawRatio: number): number {
+            const raw = clampUnit(rawRatio);
+            const viewportWidth = this.shell.viewport.getBoundingClientRect().width;
+            if (!Number.isFinite(viewportWidth) || viewportWidth <= 1) return raw;
+
+            // EPUB.js can expose one section-wide iframe whose CSS width spans every column while
+            // the reader stage clips it to a single visible page/spread. Chromium/WebKit may then
+            // report event.clientX in visible-stage coordinates even though the engine normalized
+            // it by the full iframe width. Recover that coordinate mode only when the reconstructed
+            // clientX still fits inside the visible reader viewport. Section-global and page-local
+            // ratios remain untouched and continue through visibleTapRatio() below.
+            for (const frame of this.shell.viewport.querySelectorAll('iframe')) {
+              const frameWidth = frame.getBoundingClientRect().width;
+              if (!Number.isFinite(frameWidth) || frameWidth <= viewportWidth + 1) continue;
+              const reconstructedClientX = raw * frameWidth;
+              if (reconstructedClientX < -1 || reconstructedClientX > viewportWidth + 1) continue;
+              return clampUnit(reconstructedClientX / viewportWidth);
+            }
+            return raw;
+          }
+
+          private handleTapRatio(rawRatio: number): boolean {
+            const tapRatio = visibleTapRatio(
+              this.physicalTapRatio(rawRatio),
+              this.controllerState.location,
+              this.readingModeState.effectiveSpread,
+            );
+          '''
+          if text.count(old) != 1:
+              raise SystemExit(f'expected exactly one tap-ratio block, found {text.count(old)}')
+          path.write_text(text.replace(old, new))
+          PY
+
+      - name: Validate source and reader regressions
+        run: |
+          set -euo pipefail
+          pnpm install --frozen-lockfile
+          pnpm check
+          pnpm test:reader
+
+      - name: Commit repair and remove helper workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/repair-rr6-visible-tap.yml
+          git add src/lib/reader/navigation.ts
+          git diff --cached --check
+          git commit -m 'fix: normalize visible EPUB tap coordinates'
+          git fetch origin "$GITHUB_REF_NAME"
+          git rebase "origin/$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
