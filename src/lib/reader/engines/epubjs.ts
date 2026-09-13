@@ -190,7 +190,7 @@ function touchTapXRatio(
 
   try {
     const frame = win.frameElement;
-    const viewport = frame instanceof Element
+    const viewport = frame && typeof frame.closest === 'function'
       ? frame.closest<HTMLElement>('[data-reader-viewport]')
       : null;
     if (frame && viewport) {
