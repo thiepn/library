@@ -168,12 +168,14 @@ function clampRatio(value: number): number {
   return Math.max(0, Math.min(1, value));
 }
 
+const TOUCH_GEOMETRY_TOLERANCE_PX = 2;
+
 /**
- * Prefer iframe-local touch coordinates whenever they still fall inside the visible content
- * viewport. Some physical mobile engines can report translated/replaced paginated iframe
- * coordinates outside that viewport; only then recover with the touch's physical screenX.
- * This keeps ordinary and synthetic browser taps tied to visible reader geometry while retaining
- * the physical-device fallback that survives EPUB.js iframe translation.
+ * Normalize touch coordinates against the actually visible slice of a translated EPUB iframe.
+ * EPUB.js may render a section-wide multi-column iframe that is much wider than the reader and
+ * shift it left as pages advance. Chromium/WebKit can then report touch clientX either in full
+ * iframe coordinates or relative to the clipped visible slice. Resolve both coordinate spaces
+ * against the parent reader viewport before falling back to physical screen/local geometry.
  */
 function touchTapXRatio(
   win: Window,
@@ -184,21 +186,51 @@ function touchTapXRatio(
 ): number {
   const localWidth = Math.max(1, win.innerWidth || doc.documentElement?.clientWidth || 1);
   const localRatio = clampRatio(clientX / localWidth);
-  if (
-    pointerType !== 'touch'
-    || (Number.isFinite(clientX) && clientX >= 0 && clientX <= localWidth)
-    || typeof screenX !== 'number'
-    || !Number.isFinite(screenX)
-    || screenX <= 0
-  ) {
-    return localRatio;
+  if (pointerType !== 'touch') return localRatio;
+
+  try {
+    const frame = win.frameElement;
+    const viewport = frame instanceof Element
+      ? frame.closest<HTMLElement>('[data-reader-viewport]')
+      : null;
+    if (frame && viewport) {
+      const frameRect = frame.getBoundingClientRect();
+      const viewportRect = viewport.getBoundingClientRect();
+      const visibleLeft = Math.max(frameRect.left, viewportRect.left);
+      const visibleRight = Math.min(frameRect.right, viewportRect.right);
+      const visibleWidth = visibleRight - visibleLeft;
+
+      if (Number.isFinite(visibleWidth) && visibleWidth > 0) {
+        const parentX = frameRect.left + clientX;
+        if (
+          parentX >= visibleLeft - TOUCH_GEOMETRY_TOLERANCE_PX
+          && parentX <= visibleRight + TOUCH_GEOMETRY_TOLERANCE_PX
+        ) {
+          return clampRatio((parentX - visibleLeft) / visibleWidth);
+        }
+
+        // Some engines expose clientX relative to the clipped slice rather than the full iframe.
+        // Accept that space only when full-frame conversion falls outside the visible intersection.
+        if (
+          clientX >= -TOUCH_GEOMETRY_TOLERANCE_PX
+          && clientX <= visibleWidth + TOUCH_GEOMETRY_TOLERANCE_PX
+        ) {
+          return clampRatio(clientX / visibleWidth);
+        }
+      }
+    }
+  } catch {
+    // Cross-frame geometry is best-effort; retain the established physical/local fallbacks.
   }
 
-  const screenWidth = Number(win.screen?.width);
-  if (!Number.isFinite(screenWidth) || screenWidth <= 1 || screenX > screenWidth) {
-    return localRatio;
+  if (typeof screenX === 'number' && Number.isFinite(screenX) && screenX > 0) {
+    const screenWidth = Number(win.screen?.width);
+    if (Number.isFinite(screenWidth) && screenWidth > 1 && screenX <= screenWidth) {
+      return clampRatio(screenX / screenWidth);
+    }
   }
-  return clampRatio(screenX / screenWidth);
+
+  return localRatio;
 }
 
 function mapLocation(location: EpubLocation): ReaderLocation {
