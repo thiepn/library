@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-175",
+  "version": "pg-175-4faa7e0df97e-cover-b42c9378bf8a",
+  "edition": 1,
+  "releasedAt": "2026-09-13T05:35:43Z",
+  "sourceHash": "0c8c970ecabb11b400f4058af9c95743a6a16521174ae102eb5675594bf36fa5",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-175/editions/pg-175-4faa7e0df97e-cover-b42c9378bf8a/the-phantom-of-the-opera-project-gutenberg.epub",
+      "filename": "the-phantom-of-the-opera-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 580749,
+      "sha256": "b42c9378bf8a7fdaf233a2a88735ce3f3699efaffb27bccc53b6c9e5ee1316db"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "4faa7e0df97ec771cab460c833f23705cf62e49a15b350375f0eb06e73111039",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-175-4faa7e0df97e",
+    "finalArtifactSha256": "b42c9378bf8a7fdaf233a2a88735ce3f3699efaffb27bccc53b6c9e5ee1316db",
+    "releaseVersioning": "content-addressed"
+  }
+}

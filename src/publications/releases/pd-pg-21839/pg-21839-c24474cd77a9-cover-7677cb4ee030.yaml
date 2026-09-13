@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-21839",
+  "version": "pg-21839-c24474cd77a9-cover-7677cb4ee030",
+  "edition": 1,
+  "releasedAt": "2026-09-13T05:35:42Z",
+  "sourceHash": "1209251a6000139aab771033f615b746bd695ba82318a85126eef1ea6d0cd72c",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-21839/editions/pg-21839-c24474cd77a9-cover-7677cb4ee030/sense-and-sensibility-project-gutenberg.epub",
+      "filename": "sense-and-sensibility-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 826051,
+      "sha256": "7677cb4ee03004efa1b4025f9a6666ef2065340f027548934eceadc2558f4e94"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "c24474cd77a906875ef646672ef35e425cabaf979976f555e080488f648482fe",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-21839-c24474cd77a9",
+    "finalArtifactSha256": "7677cb4ee03004efa1b4025f9a6666ef2065340f027548934eceadc2558f4e94",
+    "releaseVersioning": "content-addressed"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-1184",
+  "version": "pg-1184-533d23f8b12e-cover-b43946f681da",
+  "edition": 1,
+  "releasedAt": "2026-09-13T05:35:40Z",
+  "sourceHash": "473fac98ba91cac0599ef03a987bf43947d2495f24d50d443bc737b8ef25fef4",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-1184/editions/pg-1184-533d23f8b12e-cover-b43946f681da/the-count-of-monte-cristo-project-gutenberg.epub",
+      "filename": "the-count-of-monte-cristo-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 1690150,
+      "sha256": "b43946f681da4d0766eba1ac953bb808a54449066657b2c6b0812fc085f339dc"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "533d23f8b12e31c1349aa11174622efcdd816d4d93219d4bd506fe09b850e31b",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-1184-533d23f8b12e",
+    "finalArtifactSha256": "b43946f681da4d0766eba1ac953bb808a54449066657b2c6b0812fc085f339dc",
+    "releaseVersioning": "content-addressed"
+  }
+}

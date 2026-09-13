@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-209",
+  "version": "pg-209-2052176de492-cover-4cf6861407e9",
+  "edition": 1,
+  "releasedAt": "2026-09-13T05:35:40Z",
+  "sourceHash": "5485f0d4090015ac0f3757a73c85afc8056de72a1410e4990e76ce07c1669a29",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-209/editions/pg-209-2052176de492-cover-4cf6861407e9/the-turn-of-the-screw-project-gutenberg.epub",
+      "filename": "the-turn-of-the-screw-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 597134,
+      "sha256": "4cf6861407e95691e0790b7ae86b8560810db7196dad002b25e3822d13cb3f7d"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "2052176de492bf2b84dee9a1a51f511f81d0f561c80504de4ff6efda9d1b19cc",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-209-2052176de492",
+    "finalArtifactSha256": "4cf6861407e95691e0790b7ae86b8560810db7196dad002b25e3822d13cb3f7d",
+    "releaseVersioning": "content-addressed"
+  }
+}

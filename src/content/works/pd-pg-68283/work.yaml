@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-68283",
+  "slug": "pd-pg-68283",
+  "title": "The call of Cthulhu",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "H. P. (Howard Phillips) Lovecraft",
+      "role": "creator",
+      "birthYear": 1890,
+      "deathYear": 1937
+    }
+  ],
+  "description": "A public-domain edition of The call of Cthulhu by H. P. (Howard Phillips) Lovecraft. Project Gutenberg classifies it under Horror tales, Cthulhu (Fictitious character) -- Fiction, PS.",
+  "shortDescription": "A public-domain edition of The call of Cthulhu by H. P. (Howard Phillips) Lovecraft. Project Gutenberg classifies it under Horror tales, Cthulhu (Fictitious character) -- Fictio…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2022-06-10",
+    "lastUpdated": "2026-09-13",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-68283-6de75e996c28-cover-bc05fa7e3ab6",
+    "activeRelease": "pg-68283-6de75e996c28-cover-bc05fa7e3ab6"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-68283.webp",
+    "alt": "Cover for The call of Cthulhu by H. P. (Howard Phillips) Lovecraft"
+  },
+  "classification": {
+    "subjects": [
+      "horror-tales",
+      "cthulhu-fictitious-character",
+      "ps"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/68283",
+      "gutenbergId": 68283
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/68283/pg68283.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #68283. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

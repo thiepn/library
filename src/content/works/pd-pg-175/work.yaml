@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-175",
+  "slug": "pd-pg-175",
+  "title": "The Phantom of the Opera",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Gaston Leroux",
+      "role": "creator",
+      "birthYear": 1868,
+      "deathYear": 1927
+    }
+  ],
+  "description": "A public-domain edition of The Phantom of the Opera by Gaston Leroux. Project Gutenberg classifies it under Horror tales, Musical fiction, Opera -- Fiction.",
+  "shortDescription": "A public-domain edition of The Phantom of the Opera by Gaston Leroux. Project Gutenberg classifies it under Horror tales, Musical fiction, Opera -- Fiction.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "1994-10-01",
+    "lastUpdated": "2026-09-13",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-175-4faa7e0df97e-cover-b42c9378bf8a",
+    "activeRelease": "pg-175-4faa7e0df97e-cover-b42c9378bf8a"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-175.webp",
+    "alt": "Cover for The Phantom of the Opera by Gaston Leroux"
+  },
+  "classification": {
+    "subjects": [
+      "horror-tales",
+      "musical-fiction",
+      "opera",
+      "paris-france",
+      "composers"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "gothic-fiction"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/175",
+      "gutenbergId": 175
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/175/pg175.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #175. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

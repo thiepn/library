@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-1259",
+  "version": "pg-1259-43c4e94aceb3-cover-6521635552f1",
+  "edition": 1,
+  "releasedAt": "2026-09-13T05:35:47Z",
+  "sourceHash": "74c681de6baa033a795a3f0eb662ce1751620015c6ab7333444c64a9b9a56b4a",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-1259/editions/pg-1259-43c4e94aceb3-cover-6521635552f1/twenty-years-after-project-gutenberg.epub",
+      "filename": "twenty-years-after-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 1226403,
+      "sha256": "6521635552f1fe407ac47386e7415510c3a86b4e2e3323dc8b14c8f09377459b"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "43c4e94aceb3fb52c9ff4e8de2f46b32838b2bbb7070c16155124a4d055cf1cf",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-1259-43c4e94aceb3",
+    "finalArtifactSha256": "6521635552f1fe407ac47386e7415510c3a86b4e2e3323dc8b14c8f09377459b",
+    "releaseVersioning": "content-addressed"
+  }
+}

@@ -3407,6 +3407,991 @@
         "releaseVersion": "pg-30657-8e95c878204b-cover-554485711185",
         "artifactSha256": "55448571118559525e952e0a9d61c4d5cc8d0dd2492538456f7481a1be428440"
       }
+    },
+    {
+      "gutenbergId": 1184,
+      "workId": "pd-pg-1184",
+      "title": "The Count of Monte Cristo",
+      "author": "Alexandre Dumas, Auguste Maquet",
+      "score": 143.996,
+      "downloadCountAtSelection": 52459,
+      "bookshelves": [
+        "Adventure",
+        "Movie Books",
+        "Category: Adventure",
+        "Category: Novels",
+        "Category: Classics of Literature",
+        "Category: French Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/1184",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/1184/pg1184.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/1184/pg1184.epub",
+      "sourceRdfSha256": "473fac98ba91cac0599ef03a987bf43947d2495f24d50d443bc737b8ef25fef4",
+      "sourceEpubSha256": "533d23f8b12e31c1349aa11174622efcdd816d4d93219d4bd506fe09b850e31b",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Alexandre Dumas",
+          "role": "creator",
+          "birthYear": 1802,
+          "deathYear": 1870
+        },
+        {
+          "name": "Auguste Maquet",
+          "role": "creator",
+          "birthYear": 1813,
+          "deathYear": 1888
+        }
+      ],
+      "selectedAt": "2026-09-13T05:35:40Z",
+      "releaseVersion": "pg-1184-533d23f8b12e-cover-b43946f681da",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 35,
+        "downloadCount": 52459
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-13T05:36:20Z",
+        "webCoverSha256": "1e572e43dcf0815f1f0ea0ba4a55010af0480b1f10a8a18e584db52e7bba5054",
+        "epubCoverSha256": "624cf06a8b2bca9ae241be0fe835413c6ccb790c07df2e65ef26978b06eaccf6",
+        "releaseVersion": "pg-1184-533d23f8b12e-cover-b43946f681da",
+        "artifactSha256": "b43946f681da4d0766eba1ac953bb808a54449066657b2c6b0812fc085f339dc"
+      }
+    },
+    {
+      "gutenbergId": 209,
+      "workId": "pd-pg-209",
+      "title": "The Turn of the Screw",
+      "author": "Henry James",
+      "score": 278.305,
+      "downloadCountAtSelection": 49224,
+      "bookshelves": [
+        "Opera",
+        "Best Books Ever Listings",
+        "Horror",
+        "Gothic Fiction",
+        "Category: Crime, Thrillers and Mystery",
+        "Category: Novels",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/209",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/209/pg209.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/209/pg209.epub",
+      "sourceRdfSha256": "5485f0d4090015ac0f3757a73c85afc8056de72a1410e4990e76ce07c1669a29",
+      "sourceEpubSha256": "2052176de492bf2b84dee9a1a51f511f81d0f561c80504de4ff6efda9d1b19cc",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Henry James",
+          "role": "creator",
+          "birthYear": 1843,
+          "deathYear": 1916
+        }
+      ],
+      "selectedAt": "2026-09-13T05:35:40Z",
+      "releaseVersion": "pg-209-2052176de492-cover-4cf6861407e9",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 38,
+        "downloadCount": 49224
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-13T05:36:55Z",
+        "webCoverSha256": "138c8b4f2f372d1a6ee18f4fd8cec2d2b1ed7f518e3ccf52875728532263076d",
+        "epubCoverSha256": "1bdbfcc3cad4baa70f15e80f6e9443b8ee3fa7428a36a39d1cb83beffdadbe15",
+        "releaseVersion": "pg-209-2052176de492-cover-4cf6861407e9",
+        "artifactSha256": "4cf6861407e95691e0790b7ae86b8560810db7196dad002b25e3822d13cb3f7d"
+      }
+    },
+    {
+      "gutenbergId": 6133,
+      "workId": "pd-pg-6133",
+      "title": "The Extraordinary Adventures of Arsène Lupin, Gentleman-Burglar",
+      "author": "Maurice Leblanc",
+      "score": 133.281,
+      "downloadCountAtSelection": 49115,
+      "bookshelves": [
+        "Crime Fiction",
+        "Category: Crime, Thrillers and Mystery",
+        "Category: Adventure",
+        "Category: Novels",
+        "Category: French Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/6133",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/6133/pg6133.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/6133/pg6133.epub",
+      "sourceRdfSha256": "eceb4bd32b6547d98f3bcc221ca08d0442a21201837c740fcb4fa13c6fc47d5a",
+      "sourceEpubSha256": "54d486576f92bab2907ee136d588730c26b8765d3c42d18c93cd647429a6f614",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Maurice Leblanc",
+          "role": "creator",
+          "birthYear": 1864,
+          "deathYear": 1941
+        }
+      ],
+      "selectedAt": "2026-09-13T05:35:41Z",
+      "releaseVersion": "pg-6133-54d486576f92-cover-5fdfa5c9b0ca",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 39,
+        "downloadCount": 49115
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-13T05:37:26Z",
+        "webCoverSha256": "35eac2821260f9632643c06e2ff339bf572f27750fa0ac9418ca2fe2c37be418",
+        "epubCoverSha256": "2694eedae54390346a00ee8ddd9a0602369e954eeed995795c80cf952071cbab",
+        "releaseVersion": "pg-6133-54d486576f92-cover-5fdfa5c9b0ca",
+        "artifactSha256": "5fdfa5c9b0cadcd8fd29d0c5e007e7b241f61f6719facc2fcf9e827c5d94a3aa"
+      }
+    },
+    {
+      "gutenbergId": 2147,
+      "workId": "pd-pg-2147",
+      "title": "The Works of Edgar Allan Poe — Volume 1",
+      "author": "Edgar Allan Poe",
+      "score": 133.229,
+      "downloadCountAtSelection": 48883,
+      "bookshelves": [
+        "Detective Fiction",
+        "Horror",
+        "Mystery Fiction",
+        "Category: Short Stories",
+        "Category: Poetry",
+        "Category: Crime, Thrillers and Mystery",
+        "Category: American Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/2147",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/2147/pg2147.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/2147/pg2147.epub",
+      "sourceRdfSha256": "021366f85c87853f825eb64dc7b0b923240d3c6434a39e692692dfff508e9be6",
+      "sourceEpubSha256": "bf17107abcdbea632e789d4e6433a84678ab3730e3f9fb6947d3db9a89298339",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Edgar Allan Poe",
+          "role": "creator",
+          "birthYear": 1809,
+          "deathYear": 1849
+        }
+      ],
+      "selectedAt": "2026-09-13T05:35:41Z",
+      "releaseVersion": "pg-2147-bf17107abcdb-cover-f1436f801eef",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 42,
+        "downloadCount": 48883
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-13T05:37:59Z",
+        "webCoverSha256": "e12d049e44cc13b030392b49b58a5dd73629c2fd8d57f319e1ecdd4c18a43ef4",
+        "epubCoverSha256": "771d7362fe673c44cbd92e2b199d93d9ebe98953ba893e104228a4d07c558b89",
+        "releaseVersion": "pg-2147-bf17107abcdb-cover-f1436f801eef",
+        "artifactSha256": "f1436f801eefbc6cda616eb122fc547dae609d33bb3254cb34bdd8eaf29a8386"
+      }
+    },
+    {
+      "gutenbergId": 21839,
+      "workId": "pd-pg-21839",
+      "title": "Sense and Sensibility",
+      "author": "Jane Austen",
+      "score": 133.078,
+      "downloadCountAtSelection": 48208,
+      "bookshelves": [
+        "Category: Romance",
+        "Category: Novels",
+        "Category: Classics of Literature",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/21839",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/21839/pg21839.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/21839/pg21839.epub",
+      "sourceRdfSha256": "1209251a6000139aab771033f615b746bd695ba82318a85126eef1ea6d0cd72c",
+      "sourceEpubSha256": "c24474cd77a906875ef646672ef35e425cabaf979976f555e080488f648482fe",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Jane Austen",
+          "role": "creator",
+          "birthYear": 1775,
+          "deathYear": 1817
+        },
+        {
+          "name": "Hugh Thomson",
+          "role": "ill",
+          "birthYear": 1860,
+          "deathYear": 1920
+        }
+      ],
+      "selectedAt": "2026-09-13T05:35:42Z",
+      "releaseVersion": "pg-21839-c24474cd77a9-cover-7677cb4ee030",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 44,
+        "downloadCount": 48208
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-13T05:38:34Z",
+        "webCoverSha256": "c8a546c12d25ccb35849be2b59060268c055c27a6111e3a5a3fb45a315289fc2",
+        "epubCoverSha256": "d8e9540386a1de8ff56b5d01df1af43915c6f2ec8d3f0eca66622452e1cab93e",
+        "releaseVersion": "pg-21839-c24474cd77a9-cover-7677cb4ee030",
+        "artifactSha256": "7677cb4ee03004efa1b4025f9a6666ef2065340f027548934eceadc2558f4e94"
+      }
+    },
+    {
+      "gutenbergId": 64317,
+      "workId": "pd-pg-64317",
+      "title": "The Great Gatsby",
+      "author": "F. Scott (Francis Scott) Fitzgerald",
+      "score": 133.029,
+      "downloadCountAtSelection": 47989,
+      "bookshelves": [
+        "Category: Novels",
+        "Category: Classics of Literature",
+        "Category: American Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/64317",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/64317/pg64317.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/64317/pg64317.epub",
+      "sourceRdfSha256": "64657bb82f78804347d9d106ba5e1b75ae131319f7dfae3b58169bd12b87e942",
+      "sourceEpubSha256": "0be65a7c8fbcf78de1663ebd87050c2a6c682f4f8abf8bc2c8d934370f44656e",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "F. Scott (Francis Scott) Fitzgerald",
+          "role": "creator",
+          "birthYear": 1896,
+          "deathYear": 1940
+        }
+      ],
+      "selectedAt": "2026-09-13T05:35:43Z",
+      "releaseVersion": "pg-64317-0be65a7c8fbc-cover-7ba922683768",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 45,
+        "downloadCount": 47989
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-13T05:39:08Z",
+        "webCoverSha256": "3b30d0a6d48bf88639556a399c272639a77eebef043725cc50fdeb27ac4197d3",
+        "epubCoverSha256": "5d8c7d2ea239950d513149aa0042e2c9126d3829a9d367374f131fbb74b92749",
+        "releaseVersion": "pg-64317-0be65a7c8fbc-cover-7ba922683768",
+        "artifactSha256": "7ba922683768342f93a8c5e8c205f9c75720abc25c0d32eefcf5e60110be0f6d"
+      }
+    },
+    {
+      "gutenbergId": 175,
+      "workId": "pd-pg-175",
+      "title": "The Phantom of the Opera",
+      "author": "Gaston Leroux",
+      "score": 157.848,
+      "downloadCountAtSelection": 47197,
+      "bookshelves": [
+        "Opera",
+        "Gothic Fiction",
+        "Movie Books",
+        "Category: Crime, Thrillers and Mystery",
+        "Category: Novels",
+        "Category: French Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/175",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/175/pg175.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/175/pg175.epub",
+      "sourceRdfSha256": "0c8c970ecabb11b400f4058af9c95743a6a16521174ae102eb5675594bf36fa5",
+      "sourceEpubSha256": "4faa7e0df97ec771cab460c833f23705cf62e49a15b350375f0eb06e73111039",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Gaston Leroux",
+          "role": "creator",
+          "birthYear": 1868,
+          "deathYear": 1927
+        }
+      ],
+      "selectedAt": "2026-09-13T05:35:43Z",
+      "releaseVersion": "pg-175-4faa7e0df97e-cover-b42c9378bf8a",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 48,
+        "downloadCount": 47197
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-13T05:39:41Z",
+        "webCoverSha256": "deb7dfe3c097f94809d03ee23823687c30d33c81b35012bffc59173e988d73f7",
+        "epubCoverSha256": "6ac0aa90cd206d51dcdbce251ec11f52ea1a431c0df2ee5f4f91ae5de2991ddc",
+        "releaseVersion": "pg-175-4faa7e0df97e-cover-b42c9378bf8a",
+        "artifactSha256": "b42c9378bf8a7fdaf233a2a88735ce3f3699efaffb27bccc53b6c9e5ee1316db"
+      }
+    },
+    {
+      "gutenbergId": 204,
+      "workId": "pd-pg-204",
+      "title": "The innocence of Father Brown",
+      "author": "G. K. (Gilbert Keith) Chesterton",
+      "score": 132.828,
+      "downloadCountAtSelection": 47109,
+      "bookshelves": [
+        "Detective Fiction",
+        "Category: Short Stories",
+        "Category: Crime, Thrillers and Mystery",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/204",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/204/pg204.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/204/pg204.epub",
+      "sourceRdfSha256": "bd44041873c07563175a7360eea398aa8f28fed30bce75b9c990811c8e836722",
+      "sourceEpubSha256": "0161c96427fda6b732d7d5f6872fb556ddf3cec26d01a7b24b57dce9652d3b68",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "G. K. (Gilbert Keith) Chesterton",
+          "role": "creator",
+          "birthYear": 1874,
+          "deathYear": 1936
+        }
+      ],
+      "selectedAt": "2026-09-13T05:35:44Z",
+      "releaseVersion": "pg-204-0161c96427fd-cover-2cc0b7da9de0",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 49,
+        "downloadCount": 47109
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-13T05:40:13Z",
+        "webCoverSha256": "f0af62d9b9545386dcabe04e6526df2b0ebe5eaa4b7733d0b39d7f7025ff7d4b",
+        "epubCoverSha256": "8f63078e053cea92d637f36cb567b22d37d37d0e9b0974024d0bfec8558be43c",
+        "releaseVersion": "pg-204-0161c96427fd-cover-2cc0b7da9de0",
+        "artifactSha256": "2cc0b7da9de06a1f78908dccbded125e45b10b43436d2e40a7a40bc8501c3047"
+      }
+    },
+    {
+      "gutenbergId": 108,
+      "workId": "pd-pg-108",
+      "title": "The Return of Sherlock Holmes",
+      "author": "Arthur Conan Doyle",
+      "score": 132.707,
+      "downloadCountAtSelection": 46588,
+      "bookshelves": [
+        "Detective Fiction",
+        "Category: Short Stories",
+        "Category: Crime, Thrillers and Mystery",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/108",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/108/pg108.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/108/pg108.epub",
+      "sourceRdfSha256": "7b4ccb3ff45cb91bb4176dbdb2c8a763c3efb7544a976d81a5ce9e3758850cab",
+      "sourceEpubSha256": "a06ef5ffada7dad83b049ce7dcf52c163fbc199661629b752ac43a33c3f92a59",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Arthur Conan Doyle",
+          "role": "creator",
+          "birthYear": 1859,
+          "deathYear": 1930
+        }
+      ],
+      "selectedAt": "2026-09-13T05:35:44Z",
+      "releaseVersion": "pg-108-a06ef5ffada7-cover-0f167adbcd1c",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 51,
+        "downloadCount": 46588
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-13T05:40:43Z",
+        "webCoverSha256": "10b1f7136d28f14c6ad2b7df56323e1421b4a50bb35a43c5e7bfd99d90296f98",
+        "epubCoverSha256": "6aa4a46a40e21076ec031ad10484d9043fcedd112fb525354a9420ee0554c225",
+        "releaseVersion": "pg-108-a06ef5ffada7-cover-0f167adbcd1c",
+        "artifactSha256": "0f167adbcd1ccfec88ab7fb877c76ea36d61fdb7e39f27a9fc3835d700abc593"
+      }
+    },
+    {
+      "gutenbergId": 2097,
+      "workId": "pd-pg-2097",
+      "title": "The Sign of the Four",
+      "author": "Arthur Conan Doyle",
+      "score": 132.669,
+      "downloadCountAtSelection": 46426,
+      "bookshelves": [
+        "Detective Fiction",
+        "Category: Crime, Thrillers and Mystery",
+        "Category: Novels",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/2097",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/2097/pg2097.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/2097/pg2097.epub",
+      "sourceRdfSha256": "c0a4f19d5294398b699bca42eeb5b0b55fa84d34a188702352e1581cb54e75c1",
+      "sourceEpubSha256": "0ee225a9a3b5fbc25ca6de4074d13c59578c56d28a277280d96091bf64979f55",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Arthur Conan Doyle",
+          "role": "creator",
+          "birthYear": 1859,
+          "deathYear": 1930
+        }
+      ],
+      "selectedAt": "2026-09-13T05:35:45Z",
+      "releaseVersion": "pg-2097-0ee225a9a3b5-cover-f99f0abb59d2",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 52,
+        "downloadCount": 46426
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-13T05:41:17Z",
+        "webCoverSha256": "bdaebe7ebdbee1ad9d929bf0af8b494e4a9bcdf913ced4a3aab73dca9c6a7008",
+        "epubCoverSha256": "3a01d8e18f9c4a9a66f93fa66bda220173aff0b47d815959ef74fcb2c0f6c137",
+        "releaseVersion": "pg-2097-0ee225a9a3b5-cover-f99f0abb59d2",
+        "artifactSha256": "f99f0abb59d2e9fd4f1bf259791450f668b2130f409394dbefe0992595c18e8d"
+      }
+    },
+    {
+      "gutenbergId": 68283,
+      "workId": "pd-pg-68283",
+      "title": "The call of Cthulhu",
+      "author": "H. P. (Howard Phillips) Lovecraft",
+      "score": 132.664,
+      "downloadCountAtSelection": 46404,
+      "bookshelves": [
+        "Category: Short Stories",
+        "Category: Science-Fiction & Fantasy",
+        "Category: Crime, Thrillers and Mystery",
+        "Category: American Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/68283",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/68283/pg68283.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/68283/pg68283.epub",
+      "sourceRdfSha256": "0e4a36646fa68a92551851d46d450b20b0f576ce797a3e8042f2205a9d103ced",
+      "sourceEpubSha256": "6de75e996c282b0600a52033fbab9474c331bf62446a483f48806a0f23dc0547",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "H. P. (Howard Phillips) Lovecraft",
+          "role": "creator",
+          "birthYear": 1890,
+          "deathYear": 1937
+        }
+      ],
+      "selectedAt": "2026-09-13T05:35:45Z",
+      "releaseVersion": "pg-68283-6de75e996c28-cover-bc05fa7e3ab6",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 53,
+        "downloadCount": 46404
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-13T05:41:53Z",
+        "webCoverSha256": "be2729ddfd3d891cf066ef8050077106166025d86de38dab6434bca91075face",
+        "epubCoverSha256": "6b7b8570bdda43393f78344d1c8d3ad81ca9d84b5026b2d618b38a0b5e155897",
+        "releaseVersion": "pg-68283-6de75e996c28-cover-bc05fa7e3ab6",
+        "artifactSha256": "bc05fa7e3ab6f6d2018359ac7277ed7246e57717a3f5dae6ad057ac3e4898d00"
+      }
+    },
+    {
+      "gutenbergId": 834,
+      "workId": "pd-pg-834",
+      "title": "The Memoirs of Sherlock Holmes",
+      "author": "Arthur Conan Doyle",
+      "score": 132.538,
+      "downloadCountAtSelection": 45866,
+      "bookshelves": [
+        "Detective Fiction",
+        "Category: Short Stories",
+        "Category: Crime, Thrillers and Mystery",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/834",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/834/pg834.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/834/pg834.epub",
+      "sourceRdfSha256": "c2d693043b2c27d6b44ff9433261add996b74c1ea8b39e32ab2498fccf4301ba",
+      "sourceEpubSha256": "4c51c033c82990e05fa42bfcb326dbb73bb756d26bcbeec8b1f8960c0505eae5",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Arthur Conan Doyle",
+          "role": "creator",
+          "birthYear": 1859,
+          "deathYear": 1930
+        }
+      ],
+      "selectedAt": "2026-09-13T05:35:46Z",
+      "releaseVersion": "pg-834-4c51c033c829-cover-382125482b83",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 54,
+        "downloadCount": 45866
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-13T05:42:26Z",
+        "webCoverSha256": "d4d368a2f8384e9d2349994522369b031d763e8d150f85c623d07b83c591ab0f",
+        "epubCoverSha256": "25f83938cee8cde15df22b10372735f3ea3ae89d4fea1c3725c9b17b0eb84951",
+        "releaseVersion": "pg-834-4c51c033c829-cover-382125482b83",
+        "artifactSha256": "382125482b832a88171b28987352bbce7b982749c4b5fe3266c1b01256976953"
+      }
+    },
+    {
+      "gutenbergId": 28054,
+      "workId": "pd-pg-28054",
+      "title": "The Brothers Karamazov",
+      "author": "Fyodor Dostoyevsky",
+      "score": 252.525,
+      "downloadCountAtSelection": 45813,
+      "bookshelves": [
+        "Best Books Ever Listings",
+        "Category: Novels",
+        "Category: Classics of Literature",
+        "Category: Russian Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/28054",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/28054/pg28054.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/28054/pg28054.epub",
+      "sourceRdfSha256": "2ce16f4e158c3be7560fc12e869b3918bd67e298cec209c57da85250c291cc41",
+      "sourceEpubSha256": "dcb87e87620aca8fc60299c47576455f25075d4ff2187195371e291d40d18add",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Fyodor Dostoyevsky",
+          "role": "creator",
+          "birthYear": 1821,
+          "deathYear": 1881
+        },
+        {
+          "name": "Constance Garnett",
+          "role": "trl",
+          "birthYear": 1861,
+          "deathYear": 1946
+        }
+      ],
+      "selectedAt": "2026-09-13T05:35:46Z",
+      "releaseVersion": "pg-28054-dcb87e87620a-cover-9cc21ebd6222",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 55,
+        "downloadCount": 45813
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-13T05:43:01Z",
+        "webCoverSha256": "5b11678e01fd47bbf2de025e8dd0aed854d278dd9cdd846a7726d6c68383b2d9",
+        "epubCoverSha256": "c1eea4f561583a33d868320e9ecf56b87afa2acf38617d71e08879330b169f4a",
+        "releaseVersion": "pg-28054-dcb87e87620a-cover-9cc21ebd6222",
+        "artifactSha256": "9cc21ebd622275798ba79815c91cca86295b4d21d1dc6f42264b284be4c1a073"
+      }
+    },
+    {
+      "gutenbergId": 583,
+      "workId": "pd-pg-583",
+      "title": "The Woman in White",
+      "author": "Wilkie Collins",
+      "score": 132.515,
+      "downloadCountAtSelection": 45773,
+      "bookshelves": [
+        "Mystery Fiction",
+        "Category: Crime, Thrillers and Mystery",
+        "Category: Novels",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/583",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/583/pg583.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/583/pg583.epub",
+      "sourceRdfSha256": "cf498a062df5055c4096f7fbf46adcfce2856657120d0878f5cdebbfc2215ecb",
+      "sourceEpubSha256": "ee19725d6902a9b3482afc3ff2d961b449481211ddb0b87a53c73e3ad9d07e5c",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Wilkie Collins",
+          "role": "creator",
+          "birthYear": 1824,
+          "deathYear": 1889
+        }
+      ],
+      "selectedAt": "2026-09-13T05:35:47Z",
+      "releaseVersion": "pg-583-ee19725d6902-cover-24283178337f",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 56,
+        "downloadCount": 45773
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-13T05:43:36Z",
+        "webCoverSha256": "aad143bd86852baea551e05b66fd4262ab36514ef0ee01a60c5fbda39d6b8a28",
+        "epubCoverSha256": "5a5d22ac64084e21f97ecb173c4c5b329ba765545802213aa32c374d2500ee32",
+        "releaseVersion": "pg-583-ee19725d6902-cover-24283178337f",
+        "artifactSha256": "24283178337f4c2672460ab5249e8e2319c5f45605e1c018fc28f8a73f945268"
+      }
+    },
+    {
+      "gutenbergId": 1259,
+      "workId": "pd-pg-1259",
+      "title": "Twenty years after",
+      "author": "Alexandre Dumas, Auguste Maquet",
+      "score": 162.505,
+      "downloadCountAtSelection": 45730,
+      "bookshelves": [
+        "Adventure",
+        "Historical Fiction",
+        "Movie Books",
+        "Category: Historical Novels",
+        "Category: Adventure",
+        "Category: Novels",
+        "Category: French Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/1259",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/1259/pg1259.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/1259/pg1259.epub",
+      "sourceRdfSha256": "74c681de6baa033a795a3f0eb662ce1751620015c6ab7333444c64a9b9a56b4a",
+      "sourceEpubSha256": "43c4e94aceb3fb52c9ff4e8de2f46b32838b2bbb7070c16155124a4d055cf1cf",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Alexandre Dumas",
+          "role": "creator",
+          "birthYear": 1802,
+          "deathYear": 1870
+        },
+        {
+          "name": "Auguste Maquet",
+          "role": "creator",
+          "birthYear": 1813,
+          "deathYear": 1888
+        }
+      ],
+      "selectedAt": "2026-09-13T05:35:47Z",
+      "releaseVersion": "pg-1259-43c4e94aceb3-cover-6521635552f1",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 57,
+        "downloadCount": 45730
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-13T05:44:09Z",
+        "webCoverSha256": "5d36b1631cd4720238368f8ce6950c3d9ceb67449ba3ded577d28fcb03a7bc80",
+        "epubCoverSha256": "44c5b10cb80d03080c4b7baee2fde0af80e048f30af8fae564c55cceda7a09dc",
+        "releaseVersion": "pg-1259-43c4e94aceb3-cover-6521635552f1",
+        "artifactSha256": "6521635552f1fe407ac47386e7415510c3a86b4e2e3323dc8b14c8f09377459b"
+      }
+    },
+    {
+      "gutenbergId": 16389,
+      "workId": "pd-pg-16389",
+      "title": "The Enchanted April",
+      "author": "Elizabeth Von Arnim",
+      "score": 132.437,
+      "downloadCountAtSelection": 45442,
+      "bookshelves": [
+        "Bestsellers, American, 1895-1923",
+        "Category: Novels",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/16389",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/16389/pg16389.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/16389/pg16389.epub",
+      "sourceRdfSha256": "13d1c207f513894ac6425d9834edbebfe4a41204e17ebf2eafc5e642351ab2fc",
+      "sourceEpubSha256": "bfd6f9027dad004250e4172f14998a7800c1944349f2485e63f73addb34c934e",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Elizabeth Von Arnim",
+          "role": "creator",
+          "birthYear": 1866,
+          "deathYear": 1941
+        }
+      ],
+      "selectedAt": "2026-09-13T05:35:48Z",
+      "releaseVersion": "pg-16389-bfd6f9027dad-cover-5d22434e0e3f",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 58,
+        "downloadCount": 45442
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-13T05:44:45Z",
+        "webCoverSha256": "1653bd2bd6166a00bb61ed08920c36ab065616d2ee925ec2d6b1747a364e46b5",
+        "epubCoverSha256": "709cb2ab328ab2754b81d3cc76f92286380987f784ccba76cffee33ee679d925",
+        "releaseVersion": "pg-16389-bfd6f9027dad-cover-5d22434e0e3f",
+        "artifactSha256": "5d22434e0e3f98a7eff7a0fc5a94d0847f840500fd20b917ebbceb558d9a0104"
+      }
+    },
+    {
+      "gutenbergId": 155,
+      "workId": "pd-pg-155",
+      "title": "The Moonstone",
+      "author": "Wilkie Collins",
+      "score": 132.381,
+      "downloadCountAtSelection": 45209,
+      "bookshelves": [
+        "Detective Fiction",
+        "Mystery Fiction",
+        "Category: Crime, Thrillers and Mystery",
+        "Category: Novels",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/155",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/155/pg155.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/155/pg155.epub",
+      "sourceRdfSha256": "0a0d78e35ce86b3327512e3708516df5ab5c8fc6e8ea066d36ed371179946ed2",
+      "sourceEpubSha256": "00b8bfacab2af36f165b023bc7409065d7f8ff7b8bacdd5759f41dc831a41370",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Wilkie Collins",
+          "role": "creator",
+          "birthYear": 1824,
+          "deathYear": 1889
+        }
+      ],
+      "selectedAt": "2026-09-13T05:35:48Z",
+      "releaseVersion": "pg-155-00b8bfacab2a-cover-72b24c804370",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 59,
+        "downloadCount": 45209
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-13T05:45:20Z",
+        "webCoverSha256": "e873a13b709584f6b328498c63ab650f03dc749f3420907fb9ad621308877e89",
+        "epubCoverSha256": "ef679e72671b2cde8fb223eb0662929ebf74e80d0aa8dd2347a49f2fdf109439",
+        "releaseVersion": "pg-155-00b8bfacab2a-cover-72b24c804370",
+        "artifactSha256": "72b24c80437009e59da97fc9e935b15f448b5559cb78df0539fd530ec81ad2c0"
+      }
+    },
+    {
+      "gutenbergId": 36462,
+      "workId": "pd-pg-36462",
+      "title": "King Arthur and the Knights of the Round Table",
+      "author": "Sir Malory Thomas",
+      "score": 124.351,
+      "downloadCountAtSelection": 45083,
+      "bookshelves": [
+        "Arthurian Legends",
+        "Category: Romance",
+        "Category: Adventure",
+        "Category: Mythology, Legends & Folklore",
+        "Category: Classics of Literature",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/36462",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/36462/pg36462.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/36462/pg36462.epub",
+      "sourceRdfSha256": "c9728c9c653c54b48f7a799d57d36f1f5e1dba650983823c12d10ff4f5de7063",
+      "sourceEpubSha256": "fc598c2898166349a90d9fc24ee24c3c3930c5593784cb2ab060f8dc62e0a3c1",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Thomas, Sir Malory",
+          "role": "creator",
+          "birthYear": null,
+          "deathYear": 1471
+        },
+        {
+          "name": "Rupert Sargent Holland",
+          "role": "edt",
+          "birthYear": 1878,
+          "deathYear": 1952
+        }
+      ],
+      "selectedAt": "2026-09-13T05:35:49Z",
+      "releaseVersion": "pg-36462-fc598c289816-cover-c3ee74db7b91",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 60,
+        "downloadCount": 45083
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-13T05:45:56Z",
+        "webCoverSha256": "18eb14363f1034e98bfbaa55e43e9583fab6871ac15a77d47fe218d29698478e",
+        "epubCoverSha256": "e0a59ec46693a405ba135e25179a3a0728cd07b76584d7a70eb85d25e8fafee7",
+        "releaseVersion": "pg-36462-fc598c289816-cover-c3ee74db7b91",
+        "artifactSha256": "c3ee74db7b91bc62a3fb9e9e35769cb4fc7fe3d55f3353f0c21891c7ac81152d"
+      }
+    },
+    {
+      "gutenbergId": 174,
+      "workId": "pd-pg-174",
+      "title": "The Picture of Dorian Gray",
+      "author": "Oscar Wilde",
+      "score": 167.349,
+      "downloadCountAtSelection": 45078,
+      "bookshelves": [
+        "Gothic Fiction",
+        "Movie Books",
+        "Category: Novels",
+        "Category: Classics of Literature",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/174",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/174/pg174.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/174/pg174.epub",
+      "sourceRdfSha256": "9994e14c2f78cecd65eb63cc0db038b4164aec9ae8964d6fe92f084701231dcc",
+      "sourceEpubSha256": "fb0835bd38db0549e167df68dae7bc5a8057c39170113bccb4436d7680f7580c",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Oscar Wilde",
+          "role": "creator",
+          "birthYear": 1854,
+          "deathYear": 1900
+        }
+      ],
+      "selectedAt": "2026-09-13T05:35:49Z",
+      "releaseVersion": "pg-174-fb0835bd38db-cover-2abd62254f1f",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 61,
+        "downloadCount": 45078
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-13T05:46:31Z",
+        "webCoverSha256": "db99e8b610c04aaa864136524bd0eb1a66711969a0c56d752958762c92f4f8cc",
+        "epubCoverSha256": "f2abaeab59539f518c87e28320a0717fa502b1e6fbb6671a4710976d38ef62fd",
+        "releaseVersion": "pg-174-fb0835bd38db-cover-2abd62254f1f",
+        "artifactSha256": "2abd62254f1fc43e7d8562c6327997678819fce013d446fc133447bead1a167f"
+      }
+    },
+    {
+      "gutenbergId": 1063,
+      "workId": "pd-pg-1063",
+      "title": "The Cask of Amontillado",
+      "author": "Edgar Allan Poe",
+      "score": 132.28,
+      "downloadCountAtSelection": 44792,
+      "bookshelves": [
+        "Category: Short Stories",
+        "Category: Crime, Thrillers and Mystery",
+        "Category: American Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/1063",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/1063/pg1063.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/1063/pg1063.epub",
+      "sourceRdfSha256": "3c387b767bf24ce7de77cb7583c7c5cc73dab492ddf05e1b61ab525eb11f7753",
+      "sourceEpubSha256": "4e4e64ae9b36a40c5476737b3a585fb7eaf9a596ed7867b10fd3ff40fecd3327",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Edgar Allan Poe",
+          "role": "creator",
+          "birthYear": 1809,
+          "deathYear": 1849
+        }
+      ],
+      "selectedAt": "2026-09-13T05:35:50Z",
+      "releaseVersion": "pg-1063-4e4e64ae9b36-cover-78fed5759ac7",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 63,
+        "downloadCount": 44792
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-13T05:47:05Z",
+        "webCoverSha256": "24a3c2e69a510b93c7a4a64c131baa66e4db07a4b0a6c2366fdebf30ed3d9fde",
+        "epubCoverSha256": "5443957134e4056d7e8d618bf83ca9e9f414b9521a172741b4108c907df0bcee",
+        "releaseVersion": "pg-1063-4e4e64ae9b36-cover-78fed5759ac7",
+        "artifactSha256": "78fed5759ac7691753649dc34355e21a23c78ce9cba151ddfef1e2875a6a80b3"
+      }
     }
   ],
   "rejections": {
@@ -3477,26 +4462,141 @@
       "reason": "unknown death year for aui Albert A. Head",
       "checkedAt": "2026-09-08T18:30:33Z",
       "copyrightCutoffYear": 1955
+    },
+    "16328": {
+      "gutenbergId": 16328,
+      "title": "Beowulf: An Anglo-Saxon Epic Poem",
+      "popularityRank": 22,
+      "downloadCount30d": 63472,
+      "reason": "no identifiable creator in official RDF",
+      "checkedAt": "2026-09-13T05:35:39Z",
+      "copyrightCutoffYear": 1955
+    },
+    "69087": {
+      "gutenbergId": 69087,
+      "title": "The murder of Roger Ackroyd",
+      "popularityRank": 41,
+      "downloadCount30d": 48977,
+      "reason": "creator Agatha Christie died 1976, after automatic German cutoff 1955",
+      "checkedAt": "2026-09-13T05:35:41Z",
+      "copyrightCutoffYear": 1955
+    },
+    "51252": {
+      "gutenbergId": 51252,
+      "title": "The Book of the Thousand Nights and a Night — Volume 01 (of 10)",
+      "popularityRank": 43,
+      "downloadCount30d": 48692,
+      "reason": "no identifiable creator in official RDF",
+      "checkedAt": "2026-09-13T05:35:42Z",
+      "copyrightCutoffYear": 1955
+    },
+    "863": {
+      "gutenbergId": 863,
+      "title": "The Mysterious Affair at Styles",
+      "popularityRank": 47,
+      "downloadCount30d": 47481,
+      "reason": "creator Agatha Christie died 1976, after automatic German cutoff 1955",
+      "checkedAt": "2026-09-13T05:35:43Z",
+      "copyrightCutoffYear": 1955
+    },
+    "831": {
+      "gutenbergId": 831,
+      "title": "Four Arthurian Romances",
+      "popularityRank": 50,
+      "downloadCount30d": 46666,
+      "reason": "unknown death year for creator Chrétien, de Troyes, active 12th century",
+      "checkedAt": "2026-09-13T05:35:44Z",
+      "copyrightCutoffYear": 1955
+    },
+    "40284": {
+      "gutenbergId": 40284,
+      "title": "The Sex Life of the Gods",
+      "popularityRank": 62,
+      "downloadCount30d": 44910,
+      "reason": "creator M. E. (Michael E.) Knerr died 1999, after automatic German cutoff 1955",
+      "checkedAt": "2026-09-13T05:35:49Z",
+      "copyrightCutoffYear": 1955
     }
   },
   "lastRun": {
-    "at": "2026-09-09T00:02:32Z",
-    "rankingMode": "curated-christian-classics",
-    "curationSource": "user-requested-christian-classics",
-    "collection": "christian-classics",
-    "requestedIds": [
-      24989,
-      55743,
-      51931,
-      33341,
-      30657
-    ],
+    "at": "2026-09-13T05:35:50Z",
+    "rankingMode": "official-project-gutenberg-top100-30d",
+    "rankingSource": "https://www.gutenberg.org/browse/scores/top",
+    "rankingWindow": "last 30 days",
+    "rankingRowsVerified": 100,
     "copyrightCutoffYear": 1955,
-    "candidateCount": 5,
-    "checkedCount": 5,
+    "candidateCount": 97,
+    "checkedCount": 28,
     "candidateCheckLimit": 100,
-    "addedCount": 5,
-    "skippedCount": 0,
-    "recentSkips": []
+    "addedCount": 20,
+    "skippedCount": 8,
+    "recentSkips": [
+      {
+        "gutenbergId": 16328,
+        "title": "Beowulf: An Anglo-Saxon Epic Poem",
+        "popularityRank": 22,
+        "downloadCount30d": 63472,
+        "reason": "no identifiable creator in official RDF",
+        "checkedAt": "2026-09-13T05:35:39Z",
+        "copyrightCutoffYear": 1955
+      },
+      {
+        "gutenbergId": 45839,
+        "title": "Dracula",
+        "popularityRank": 26,
+        "reason": "logical work already represented in Library: Dracula — Bram Stoker"
+      },
+      {
+        "gutenbergId": 42,
+        "title": "The strange case of Dr. Jekyll and Mr. Hyde",
+        "popularityRank": 34,
+        "reason": "logical work already represented in Library: The strange case of Dr. Jekyll and Mr. Hyde — Robert Louis Stevenson"
+      },
+      {
+        "gutenbergId": 69087,
+        "title": "The murder of Roger Ackroyd",
+        "popularityRank": 41,
+        "downloadCount30d": 48977,
+        "reason": "creator Agatha Christie died 1976, after automatic German cutoff 1955",
+        "checkedAt": "2026-09-13T05:35:41Z",
+        "copyrightCutoffYear": 1955
+      },
+      {
+        "gutenbergId": 51252,
+        "title": "The Book of the Thousand Nights and a Night — Volume 01 (of 10)",
+        "popularityRank": 43,
+        "downloadCount30d": 48692,
+        "reason": "no identifiable creator in official RDF",
+        "checkedAt": "2026-09-13T05:35:42Z",
+        "copyrightCutoffYear": 1955
+      },
+      {
+        "gutenbergId": 863,
+        "title": "The Mysterious Affair at Styles",
+        "popularityRank": 47,
+        "downloadCount30d": 47481,
+        "reason": "creator Agatha Christie died 1976, after automatic German cutoff 1955",
+        "checkedAt": "2026-09-13T05:35:43Z",
+        "copyrightCutoffYear": 1955
+      },
+      {
+        "gutenbergId": 831,
+        "title": "Four Arthurian Romances",
+        "popularityRank": 50,
+        "downloadCount30d": 46666,
+        "reason": "unknown death year for creator Chrétien, de Troyes, active 12th century",
+        "checkedAt": "2026-09-13T05:35:44Z",
+        "copyrightCutoffYear": 1955
+      },
+      {
+        "gutenbergId": 40284,
+        "title": "The Sex Life of the Gods",
+        "popularityRank": 62,
+        "downloadCount30d": 44910,
+        "reason": "creator M. E. (Michael E.) Knerr died 1999, after automatic German cutoff 1955",
+        "checkedAt": "2026-09-13T05:35:49Z",
+        "copyrightCutoffYear": 1955
+      }
+    ]
   }
 }

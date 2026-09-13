@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-1184",
+  "slug": "pd-pg-1184",
+  "title": "The Count of Monte Cristo",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Alexandre Dumas",
+      "role": "creator",
+      "birthYear": 1802,
+      "deathYear": 1870
+    },
+    {
+      "name": "Auguste Maquet",
+      "role": "creator",
+      "birthYear": 1813,
+      "deathYear": 1888
+    }
+  ],
+  "description": "A public-domain edition of The Count of Monte Cristo by Alexandre Dumas, Auguste Maquet. Project Gutenberg classifies it under Historical fiction, Revenge -- Fiction, Adventure stories.",
+  "shortDescription": "A public-domain edition of The Count of Monte Cristo by Alexandre Dumas, Auguste Maquet. Project Gutenberg classifies it under Historical fiction, Revenge -- Fiction, Adventure…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "1998-01-01",
+    "lastUpdated": "2026-09-13",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-1184-533d23f8b12e-cover-b43946f681da",
+    "activeRelease": "pg-1184-533d23f8b12e-cover-b43946f681da"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-1184.webp",
+    "alt": "Cover for The Count of Monte Cristo by Alexandre Dumas, Auguste Maquet"
+  },
+  "classification": {
+    "subjects": [
+      "historical-fiction",
+      "revenge",
+      "adventure-stories",
+      "prisoners",
+      "france"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/1184",
+      "gutenbergId": 1184
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/1184/pg1184.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #1184. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

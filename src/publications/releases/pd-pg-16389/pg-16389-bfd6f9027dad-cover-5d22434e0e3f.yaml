@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-16389",
+  "version": "pg-16389-bfd6f9027dad-cover-5d22434e0e3f",
+  "edition": 1,
+  "releasedAt": "2026-09-13T05:35:48Z",
+  "sourceHash": "13d1c207f513894ac6425d9834edbebfe4a41204e17ebf2eafc5e642351ab2fc",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-16389/editions/pg-16389-bfd6f9027dad-cover-5d22434e0e3f/the-enchanted-april-project-gutenberg.epub",
+      "filename": "the-enchanted-april-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 687756,
+      "sha256": "5d22434e0e3f98a7eff7a0fc5a94d0847f840500fd20b917ebbceb558d9a0104"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "bfd6f9027dad004250e4172f14998a7800c1944349f2485e63f73addb34c934e",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-16389-bfd6f9027dad",
+    "finalArtifactSha256": "5d22434e0e3f98a7eff7a0fc5a94d0847f840500fd20b917ebbceb558d9a0104",
+    "releaseVersioning": "content-addressed"
+  }
+}

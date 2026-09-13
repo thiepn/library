@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-28054",
+  "version": "pg-28054-dcb87e87620a-cover-9cc21ebd6222",
+  "edition": 1,
+  "releasedAt": "2026-09-13T05:35:46Z",
+  "sourceHash": "2ce16f4e158c3be7560fc12e869b3918bd67e298cec209c57da85250c291cc41",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-28054/editions/pg-28054-dcb87e87620a-cover-9cc21ebd6222/the-brothers-karamazov-project-gutenberg.epub",
+      "filename": "the-brothers-karamazov-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 1362930,
+      "sha256": "9cc21ebd622275798ba79815c91cca86295b4d21d1dc6f42264b284be4c1a073"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "dcb87e87620aca8fc60299c47576455f25075d4ff2187195371e291d40d18add",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-28054-dcb87e87620a",
+    "finalArtifactSha256": "9cc21ebd622275798ba79815c91cca86295b4d21d1dc6f42264b284be4c1a073",
+    "releaseVersioning": "content-addressed"
+  }
+}

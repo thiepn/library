@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-64317",
+  "slug": "pd-pg-64317",
+  "title": "The Great Gatsby",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "F. Scott (Francis Scott) Fitzgerald",
+      "role": "creator",
+      "birthYear": 1896,
+      "deathYear": 1940
+    }
+  ],
+  "description": "A public-domain edition of The Great Gatsby by F. Scott (Francis Scott) Fitzgerald. Project Gutenberg classifies it under Psychological fiction, First loves -- Fiction, Married women -- Fiction.",
+  "shortDescription": "A public-domain edition of The Great Gatsby by F. Scott (Francis Scott) Fitzgerald. Project Gutenberg classifies it under Psychological fiction, First loves -- Fiction, Married…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2021-01-17",
+    "lastUpdated": "2026-09-13",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-64317-0be65a7c8fbc-cover-7ba922683768",
+    "activeRelease": "pg-64317-0be65a7c8fbc-cover-7ba922683768"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-64317.webp",
+    "alt": "Cover for The Great Gatsby by F. Scott (Francis Scott) Fitzgerald"
+  },
+  "classification": {
+    "subjects": [
+      "psychological-fiction",
+      "first-loves",
+      "married-women",
+      "rich-people",
+      "long-island-n-y"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/64317",
+      "gutenbergId": 64317
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/64317/pg64317.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #64317. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

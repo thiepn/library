@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-2147",
+  "version": "pg-2147-bf17107abcdb-cover-f1436f801eef",
+  "edition": 1,
+  "releasedAt": "2026-09-13T05:35:41Z",
+  "sourceHash": "021366f85c87853f825eb64dc7b0b923240d3c6434a39e692692dfff508e9be6",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-2147/editions/pg-2147-bf17107abcdb-cover-f1436f801eef/the-works-of-edgar-allan-poe-volume-1-project-gutenberg.epub",
+      "filename": "the-works-of-edgar-allan-poe-volume-1-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 642828,
+      "sha256": "f1436f801eefbc6cda616eb122fc547dae609d33bb3254cb34bdd8eaf29a8386"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "bf17107abcdbea632e789d4e6433a84678ab3730e3f9fb6947d3db9a89298339",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-2147-bf17107abcdb",
+    "finalArtifactSha256": "f1436f801eefbc6cda616eb122fc547dae609d33bb3254cb34bdd8eaf29a8386",
+    "releaseVersioning": "content-addressed"
+  }
+}

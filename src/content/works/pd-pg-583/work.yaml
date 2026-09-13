@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-583",
+  "slug": "pd-pg-583",
+  "title": "The Woman in White",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Wilkie Collins",
+      "role": "creator",
+      "birthYear": 1824,
+      "deathYear": 1889
+    }
+  ],
+  "description": "A public-domain edition of The Woman in White by Wilkie Collins. Project Gutenberg classifies it under Inheritance and succession -- Fiction, England -- Fiction, Psychological fiction.",
+  "shortDescription": "A public-domain edition of The Woman in White by Wilkie Collins. Project Gutenberg classifies it under Inheritance and succession -- Fiction, England -- Fiction, Psychological f…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "1996-07-01",
+    "lastUpdated": "2026-09-13",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-583-ee19725d6902-cover-24283178337f",
+    "activeRelease": "pg-583-ee19725d6902-cover-24283178337f"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-583.webp",
+    "alt": "Cover for The Woman in White by Wilkie Collins"
+  },
+  "classification": {
+    "subjects": [
+      "inheritance-and-succession",
+      "england",
+      "psychological-fiction",
+      "love-stories",
+      "country-homes"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/583",
+      "gutenbergId": 583
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/583/pg583.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #583. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

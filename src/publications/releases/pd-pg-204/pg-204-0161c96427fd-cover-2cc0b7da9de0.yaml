@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-204",
+  "version": "pg-204-0161c96427fd-cover-2cc0b7da9de0",
+  "edition": 1,
+  "releasedAt": "2026-09-13T05:35:44Z",
+  "sourceHash": "bd44041873c07563175a7360eea398aa8f28fed30bce75b9c990811c8e836722",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-204/editions/pg-204-0161c96427fd-cover-2cc0b7da9de0/the-innocence-of-father-brown-project-gutenberg.epub",
+      "filename": "the-innocence-of-father-brown-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 570501,
+      "sha256": "2cc0b7da9de06a1f78908dccbded125e45b10b43436d2e40a7a40bc8501c3047"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "0161c96427fda6b732d7d5f6872fb556ddf3cec26d01a7b24b57dce9652d3b68",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-204-0161c96427fd",
+    "finalArtifactSha256": "2cc0b7da9de06a1f78908dccbded125e45b10b43436d2e40a7a40bc8501c3047",
+    "releaseVersioning": "content-addressed"
+  }
+}
