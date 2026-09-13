@@ -6,6 +6,6 @@ continuation-run: 2026-09-08T20:08+02:00
 continuation-run-2: 2026-09-09T00:14+02:00
 continuation-run-3: 2026-09-09T01:50+02:00
 continuation-run-4: 2026-09-09T01:58+02:00
-mode: curated-christian-classics
-curated-ids: 24989,55743,51931,33341,30657
-purpose: continue adding the user-requested Christian public-domain Library backlog with genuinely unrepresented Project Gutenberg works; exact candidates are A Short Method of Prayer, How to Succeed in the Christian Life, How to Bring Men to Christ, Secret Power, and Sovereign Grace, with normal fail-closed Germany-oriented contributor rights, source EPUB, logical-work dedupe, cover generation, immutable R2 readback, complete release certification, promotion, deployment, and live-verification gates
+recovery-run: 2026-09-13T07:32+02:00
+mode: official-project-gutenberg-top100-30d
+purpose: recover the missed 2026-09-13 scheduled Public Domain Autopilot invocation using the normal official Project Gutenberg Top 100 acquisition path
