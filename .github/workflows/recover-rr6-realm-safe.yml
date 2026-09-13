@@ -1,0 +1,49 @@
+name: Recover RR6 frame realm safety
+
+on:
+  push:
+    branches:
+      - 'autopilot/recovery-rr6-touch-34751544799'
+    paths:
+      - '.github/workflows/recover-rr6-realm-safe.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: recover-rr6-realm-safe-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  patch:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout recovery branch
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+
+      - name: Make frame lookup realm-safe and self-remove
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('src/lib/reader/engines/epubjs.ts')
+          text = path.read_text()
+          old = """    const frame = win.frameElement;\n    const viewport = frame instanceof Element\n      ? frame.closest<HTMLElement>('[data-reader-viewport]')\n      : null;"""
+          new = """    const frame = win.frameElement;\n    const viewport = frame && typeof frame.closest === 'function'\n      ? frame.closest<HTMLElement>('[data-reader-viewport]')\n      : null;"""
+          if text.count(old) != 1:
+              raise SystemExit(f'expected exactly one realm-unsafe frame lookup, found {text.count(old)}')
+          path.write_text(text.replace(old, new))
+          PY
+          git rm .github/workflows/recover-rr6-realm-safe.yml
+          git diff --check
+          git diff --exit-code -- . ':!.github/workflows/recover-rr6-realm-safe.yml' || true
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/lib/reader/engines/epubjs.ts
+          git commit -m 'fix: make RR6 frame lookup realm-safe'
+          git fetch origin "$GITHUB_REF_NAME"
+          git rebase "origin/$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
