@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-6133",
+  "version": "pg-6133-54d486576f92-cover-5fdfa5c9b0ca",
+  "edition": 1,
+  "releasedAt": "2026-09-13T05:35:41Z",
+  "sourceHash": "eceb4bd32b6547d98f3bcc221ca08d0442a21201837c740fcb4fa13c6fc47d5a",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-6133/editions/pg-6133-54d486576f92-cover-5fdfa5c9b0ca/the-extraordinary-adventures-of-ars-ne-lupin-gentleman-burglar-project-gutenberg.epub",
+      "filename": "the-extraordinary-adventures-of-ars-ne-lupin-gentleman-burglar-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 489323,
+      "sha256": "5fdfa5c9b0cadcd8fd29d0c5e007e7b241f61f6719facc2fcf9e827c5d94a3aa"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "54d486576f92bab2907ee136d588730c26b8765d3c42d18c93cd647429a6f614",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-6133-54d486576f92",
+    "finalArtifactSha256": "5fdfa5c9b0cadcd8fd29d0c5e007e7b241f61f6719facc2fcf9e827c5d94a3aa",
+    "releaseVersioning": "content-addressed"
+  }
+}

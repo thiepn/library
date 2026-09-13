@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-6133",
+  "slug": "pd-pg-6133",
+  "title": "The Extraordinary Adventures of Arsène Lupin, Gentleman-Burglar",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Maurice Leblanc",
+      "role": "creator",
+      "birthYear": 1864,
+      "deathYear": 1941
+    }
+  ],
+  "description": "A public-domain edition of The Extraordinary Adventures of Arsène Lupin, Gentleman-Burglar by Maurice Leblanc. Project Gutenberg classifies it under Short stories, Burglars -- Fiction, Lupin, Arsène (Fictitious character) -- Fiction.",
+  "shortDescription": "A public-domain edition of The Extraordinary Adventures of Arsène Lupin, Gentleman-Burglar by Maurice Leblanc. Project Gutenberg classifies it under Short stories, Burglars -- F…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2004-07-01",
+    "lastUpdated": "2026-09-13",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-6133-54d486576f92-cover-5fdfa5c9b0ca",
+    "activeRelease": "pg-6133-54d486576f92-cover-5fdfa5c9b0ca"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-6133.webp",
+    "alt": "Cover for The Extraordinary Adventures of Arsène Lupin, Gentleman-Burglar by Maurice Leblanc"
+  },
+  "classification": {
+    "subjects": [
+      "short-stories",
+      "burglars",
+      "lupin-ars-ne-fictitious-character",
+      "adventure-stories-french",
+      "mystery-and-detective-stories"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/6133",
+      "gutenbergId": 6133
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/6133/pg6133.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #6133. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

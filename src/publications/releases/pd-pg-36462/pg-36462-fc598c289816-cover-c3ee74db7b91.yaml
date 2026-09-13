@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-36462",
+  "version": "pg-36462-fc598c289816-cover-c3ee74db7b91",
+  "edition": 1,
+  "releasedAt": "2026-09-13T05:35:49Z",
+  "sourceHash": "c9728c9c653c54b48f7a799d57d36f1f5e1dba650983823c12d10ff4f5de7063",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-36462/editions/pg-36462-fc598c289816-cover-c3ee74db7b91/king-arthur-and-the-knights-of-the-round-table-project-gutenberg.epub",
+      "filename": "king-arthur-and-the-knights-of-the-round-table-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 718866,
+      "sha256": "c3ee74db7b91bc62a3fb9e9e35769cb4fc7fe3d55f3353f0c21891c7ac81152d"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "fc598c2898166349a90d9fc24ee24c3c3930c5593784cb2ab060f8dc62e0a3c1",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-36462-fc598c289816",
+    "finalArtifactSha256": "c3ee74db7b91bc62a3fb9e9e35769cb4fc7fe3d55f3353f0c21891c7ac81152d",
+    "releaseVersioning": "content-addressed"
+  }
+}

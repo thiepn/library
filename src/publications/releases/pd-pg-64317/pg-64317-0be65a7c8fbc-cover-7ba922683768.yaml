@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-64317",
+  "version": "pg-64317-0be65a7c8fbc-cover-7ba922683768",
+  "edition": 1,
+  "releasedAt": "2026-09-13T05:35:43Z",
+  "sourceHash": "64657bb82f78804347d9d106ba5e1b75ae131319f7dfae3b58169bd12b87e942",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-64317/editions/pg-64317-0be65a7c8fbc-cover-7ba922683768/the-great-gatsby-project-gutenberg.epub",
+      "filename": "the-great-gatsby-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 587652,
+      "sha256": "7ba922683768342f93a8c5e8c205f9c75720abc25c0d32eefcf5e60110be0f6d"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "0be65a7c8fbcf78de1663ebd87050c2a6c682f4f8abf8bc2c8d934370f44656e",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-64317-0be65a7c8fbc",
+    "finalArtifactSha256": "7ba922683768342f93a8c5e8c205f9c75720abc25c0d32eefcf5e60110be0f6d",
+    "releaseVersioning": "content-addressed"
+  }
+}

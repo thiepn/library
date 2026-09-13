@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-834",
+  "version": "pg-834-4c51c033c829-cover-382125482b83",
+  "edition": 1,
+  "releasedAt": "2026-09-13T05:35:46Z",
+  "sourceHash": "c2d693043b2c27d6b44ff9433261add996b74c1ea8b39e32ab2498fccf4301ba",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-834/editions/pg-834-4c51c033c829-cover-382125482b83/the-memoirs-of-sherlock-holmes-project-gutenberg.epub",
+      "filename": "the-memoirs-of-sherlock-holmes-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 642242,
+      "sha256": "382125482b832a88171b28987352bbce7b982749c4b5fe3266c1b01256976953"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "4c51c033c82990e05fa42bfcb326dbb73bb756d26bcbeec8b1f8960c0505eae5",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-834-4c51c033c829",
+    "finalArtifactSha256": "382125482b832a88171b28987352bbce7b982749c4b5fe3266c1b01256976953",
+    "releaseVersioning": "content-addressed"
+  }
+}

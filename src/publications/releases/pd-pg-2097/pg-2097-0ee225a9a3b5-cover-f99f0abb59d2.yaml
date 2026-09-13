@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-2097",
+  "version": "pg-2097-0ee225a9a3b5-cover-f99f0abb59d2",
+  "edition": 1,
+  "releasedAt": "2026-09-13T05:35:45Z",
+  "sourceHash": "c0a4f19d5294398b699bca42eeb5b0b55fa84d34a188702352e1581cb54e75c1",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-2097/editions/pg-2097-0ee225a9a3b5-cover-f99f0abb59d2/the-sign-of-the-four-project-gutenberg.epub",
+      "filename": "the-sign-of-the-four-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 473172,
+      "sha256": "f99f0abb59d2e9fd4f1bf259791450f668b2130f409394dbefe0992595c18e8d"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "0ee225a9a3b5fbc25ca6de4074d13c59578c56d28a277280d96091bf64979f55",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-2097-0ee225a9a3b5",
+    "finalArtifactSha256": "f99f0abb59d2e9fd4f1bf259791450f668b2130f409394dbefe0992595c18e8d",
+    "releaseVersioning": "content-addressed"
+  }
+}

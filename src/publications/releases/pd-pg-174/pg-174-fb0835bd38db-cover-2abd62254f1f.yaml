@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-174",
+  "version": "pg-174-fb0835bd38db-cover-2abd62254f1f",
+  "edition": 1,
+  "releasedAt": "2026-09-13T05:35:49Z",
+  "sourceHash": "9994e14c2f78cecd65eb63cc0db038b4164aec9ae8964d6fe92f084701231dcc",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-174/editions/pg-174-fb0835bd38db-cover-2abd62254f1f/the-picture-of-dorian-gray-project-gutenberg.epub",
+      "filename": "the-picture-of-dorian-gray-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 780185,
+      "sha256": "2abd62254f1fc43e7d8562c6327997678819fce013d446fc133447bead1a167f"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "fb0835bd38db0549e167df68dae7bc5a8057c39170113bccb4436d7680f7580c",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-174-fb0835bd38db",
+    "finalArtifactSha256": "2abd62254f1fc43e7d8562c6327997678819fce013d446fc133447bead1a167f",
+    "releaseVersioning": "content-addressed"
+  }
+}

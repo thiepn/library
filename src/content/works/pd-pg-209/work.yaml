@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-209",
+  "slug": "pd-pg-209",
+  "title": "The Turn of the Screw",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Henry James",
+      "role": "creator",
+      "birthYear": 1843,
+      "deathYear": 1916
+    }
+  ],
+  "description": "A public-domain edition of The Turn of the Screw by Henry James. Project Gutenberg classifies it under England -- Fiction, Psychological fiction, Governesses -- Fiction.",
+  "shortDescription": "A public-domain edition of The Turn of the Screw by Henry James. Project Gutenberg classifies it under England -- Fiction, Psychological fiction, Governesses -- Fiction.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "1995-02-01",
+    "lastUpdated": "2026-09-13",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-209-2052176de492-cover-4cf6861407e9",
+    "activeRelease": "pg-209-2052176de492-cover-4cf6861407e9"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-209.webp",
+    "alt": "Cover for The Turn of the Screw by Henry James"
+  },
+  "classification": {
+    "subjects": [
+      "england",
+      "psychological-fiction",
+      "governesses",
+      "ghost-stories",
+      "children"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "best-books-ever-listings",
+      "gothic-fiction"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/209",
+      "gutenbergId": 209
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/209/pg209.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #209. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

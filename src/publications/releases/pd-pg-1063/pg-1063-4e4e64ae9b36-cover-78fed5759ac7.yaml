@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-1063",
+  "version": "pg-1063-4e4e64ae9b36-cover-78fed5759ac7",
+  "edition": 1,
+  "releasedAt": "2026-09-13T05:35:50Z",
+  "sourceHash": "3c387b767bf24ce7de77cb7583c7c5cc73dab492ddf05e1b61ab525eb11f7753",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-1063/editions/pg-1063-4e4e64ae9b36-cover-78fed5759ac7/the-cask-of-amontillado-project-gutenberg.epub",
+      "filename": "the-cask-of-amontillado-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 333555,
+      "sha256": "78fed5759ac7691753649dc34355e21a23c78ce9cba151ddfef1e2875a6a80b3"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "4e4e64ae9b36a40c5476737b3a585fb7eaf9a596ed7867b10fd3ff40fecd3327",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-1063-4e4e64ae9b36",
+    "finalArtifactSha256": "78fed5759ac7691753649dc34355e21a23c78ce9cba151ddfef1e2875a6a80b3",
+    "releaseVersioning": "content-addressed"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-68283",
+  "version": "pg-68283-6de75e996c28-cover-bc05fa7e3ab6",
+  "edition": 1,
+  "releasedAt": "2026-09-13T05:35:45Z",
+  "sourceHash": "0e4a36646fa68a92551851d46d450b20b0f576ce797a3e8042f2205a9d103ced",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-68283/editions/pg-68283-6de75e996c28-cover-bc05fa7e3ab6/the-call-of-cthulhu-project-gutenberg.epub",
+      "filename": "the-call-of-cthulhu-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 391179,
+      "sha256": "bc05fa7e3ab6f6d2018359ac7277ed7246e57717a3f5dae6ad057ac3e4898d00"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "6de75e996c282b0600a52033fbab9474c331bf62446a483f48806a0f23dc0547",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-68283-6de75e996c28",
+    "finalArtifactSha256": "bc05fa7e3ab6f6d2018359ac7277ed7246e57717a3f5dae6ad057ac3e4898d00",
+    "releaseVersioning": "content-addressed"
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-16389",
+  "slug": "pd-pg-16389",
+  "title": "The Enchanted April",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Elizabeth Von Arnim",
+      "role": "creator",
+      "birthYear": 1866,
+      "deathYear": 1941
+    }
+  ],
+  "description": "A public-domain edition of The Enchanted April by Elizabeth Von Arnim. Project Gutenberg classifies it under Love stories, Domestic fiction, Italy -- Fiction.",
+  "shortDescription": "A public-domain edition of The Enchanted April by Elizabeth Von Arnim. Project Gutenberg classifies it under Love stories, Domestic fiction, Italy -- Fiction.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2005-07-29",
+    "lastUpdated": "2026-09-13",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-16389-bfd6f9027dad-cover-5d22434e0e3f",
+    "activeRelease": "pg-16389-bfd6f9027dad-cover-5d22434e0e3f"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-16389.webp",
+    "alt": "Cover for The Enchanted April by Elizabeth Von Arnim"
+  },
+  "classification": {
+    "subjects": [
+      "love-stories",
+      "domestic-fiction",
+      "italy",
+      "female-friendship",
+      "british"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/16389",
+      "gutenbergId": 16389
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/16389/pg16389.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #16389. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-108",
+  "version": "pg-108-a06ef5ffada7-cover-0f167adbcd1c",
+  "edition": 1,
+  "releasedAt": "2026-09-13T05:35:44Z",
+  "sourceHash": "7b4ccb3ff45cb91bb4176dbdb2c8a763c3efb7544a976d81a5ce9e3758850cab",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-108/editions/pg-108-a06ef5ffada7-cover-0f167adbcd1c/the-return-of-sherlock-holmes-project-gutenberg.epub",
+      "filename": "the-return-of-sherlock-holmes-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 658906,
+      "sha256": "0f167adbcd1ccfec88ab7fb877c76ea36d61fdb7e39f27a9fc3835d700abc593"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "a06ef5ffada7dad83b049ce7dcf52c163fbc199661629b752ac43a33c3f92a59",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-108-a06ef5ffada7",
+    "finalArtifactSha256": "0f167adbcd1ccfec88ab7fb877c76ea36d61fdb7e39f27a9fc3835d700abc593",
+    "releaseVersioning": "content-addressed"
+  }
+}

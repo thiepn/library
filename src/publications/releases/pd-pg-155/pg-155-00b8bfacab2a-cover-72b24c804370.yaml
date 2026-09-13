@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-155",
+  "version": "pg-155-00b8bfacab2a-cover-72b24c804370",
+  "edition": 1,
+  "releasedAt": "2026-09-13T05:35:48Z",
+  "sourceHash": "0a0d78e35ce86b3327512e3708516df5ab5c8fc6e8ea066d36ed371179946ed2",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-155/editions/pg-155-00b8bfacab2a-cover-72b24c804370/the-moonstone-project-gutenberg.epub",
+      "filename": "the-moonstone-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 907154,
+      "sha256": "72b24c80437009e59da97fc9e935b15f448b5559cb78df0539fd530ec81ad2c0"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "00b8bfacab2af36f165b023bc7409065d7f8ff7b8bacdd5759f41dc831a41370",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-155-00b8bfacab2a",
+    "finalArtifactSha256": "72b24c80437009e59da97fc9e935b15f448b5559cb78df0539fd530ec81ad2c0",
+    "releaseVersioning": "content-addressed"
+  }
+}

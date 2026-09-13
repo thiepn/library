@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-583",
+  "version": "pg-583-ee19725d6902-cover-24283178337f",
+  "edition": 1,
+  "releasedAt": "2026-09-13T05:35:47Z",
+  "sourceHash": "cf498a062df5055c4096f7fbf46adcfce2856657120d0878f5cdebbfc2215ecb",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-583/editions/pg-583-ee19725d6902-cover-24283178337f/the-woman-in-white-project-gutenberg.epub",
+      "filename": "the-woman-in-white-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 1082606,
+      "sha256": "24283178337f4c2672460ab5249e8e2319c5f45605e1c018fc28f8a73f945268"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "ee19725d6902a9b3482afc3ff2d961b449481211ddb0b87a53c73e3ad9d07e5c",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-583-ee19725d6902",
+    "finalArtifactSha256": "24283178337f4c2672460ab5249e8e2319c5f45605e1c018fc28f8a73f945268",
+    "releaseVersioning": "content-addressed"
+  }
+}

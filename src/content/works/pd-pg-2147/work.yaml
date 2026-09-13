@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-2147",
+  "slug": "pd-pg-2147",
+  "title": "The Works of Edgar Allan Poe — Volume 1",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Edgar Allan Poe",
+      "role": "creator",
+      "birthYear": 1809,
+      "deathYear": 1849
+    }
+  ],
+  "description": "A public-domain edition of The Works of Edgar Allan Poe — Volume 1 by Edgar Allan Poe. Project Gutenberg classifies it under Fantasy fiction, Horror tales, American, American fiction -- 19th century.",
+  "shortDescription": "A public-domain edition of The Works of Edgar Allan Poe — Volume 1 by Edgar Allan Poe. Project Gutenberg classifies it under Fantasy fiction, Horror tales, American, American fi…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2000-04-01",
+    "lastUpdated": "2026-09-13",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-2147-bf17107abcdb-cover-f1436f801eef",
+    "activeRelease": "pg-2147-bf17107abcdb-cover-f1436f801eef"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-2147.webp",
+    "alt": "Cover for The Works of Edgar Allan Poe — Volume 1 by Edgar Allan Poe"
+  },
+  "classification": {
+    "subjects": [
+      "fantasy-fiction",
+      "horror-tales-american",
+      "american-fiction",
+      "poe-edgar-allan-1809-1849",
+      "ps"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/2147",
+      "gutenbergId": 2147
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/2147/pg2147.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #2147. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}
