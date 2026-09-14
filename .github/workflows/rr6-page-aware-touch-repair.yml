@@ -1,0 +1,207 @@
+name: Repair RR6 page-aware touch geometry
+
+on:
+  push:
+    branches:
+      - 'autopilot/recovery-rr6-touch-34751544799'
+    paths:
+      - '.github/workflows/rr6-page-aware-touch-repair.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rr6-page-aware-touch-repair-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+
+      - name: Patch touch geometry
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('src/lib/reader/engines/epubjs.ts')
+          text = path.read_text()
+
+          old = '''function touchTapXRatio(
+            win: Window,
+            doc: Document,
+            clientX: number,
+            screenX: number | undefined,
+            pointerType: ReaderPointerType,
+          ): number {
+            const localWidth = Math.max(1, win.innerWidth || doc.documentElement?.clientWidth || 1);
+            const localRatio = clampRatio(clientX / localWidth);
+            if (pointerType !== 'touch') return localRatio;
+
+            try {
+              const frame = win.frameElement;
+              const viewport = frame && typeof frame.closest === 'function'
+                ? frame.closest<HTMLElement>('[data-reader-viewport]')
+                : null;
+              if (frame && viewport) {
+                const frameRect = frame.getBoundingClientRect();
+                const viewportRect = viewport.getBoundingClientRect();
+                const visibleLeft = Math.max(frameRect.left, viewportRect.left);
+                const visibleRight = Math.min(frameRect.right, viewportRect.right);
+                const visibleWidth = visibleRight - visibleLeft;
+
+                if (Number.isFinite(visibleWidth) && visibleWidth > 0) {
+                  const parentX = frameRect.left + clientX;
+                  if (
+                    parentX >= visibleLeft - TOUCH_GEOMETRY_TOLERANCE_PX
+                    && parentX <= visibleRight + TOUCH_GEOMETRY_TOLERANCE_PX
+                  ) {
+                    return clampRatio((parentX - visibleLeft) / visibleWidth);
+                  }
+
+                  // Some engines expose clientX relative to the clipped slice rather than the full iframe.
+                  // Accept that space only when full-frame conversion falls outside the visible intersection.
+                  if (
+                    clientX >= -TOUCH_GEOMETRY_TOLERANCE_PX
+                    && clientX <= visibleWidth + TOUCH_GEOMETRY_TOLERANCE_PX
+                  ) {
+                    return clampRatio(clientX / visibleWidth);
+                  }
+                }
+              }
+            } catch {
+              // Cross-frame geometry is best-effort; retain the established physical/local fallbacks.
+            }
+
+            if (typeof screenX === 'number' && Number.isFinite(screenX) && screenX > 0) {
+              const screenWidth = Number(win.screen?.width);
+              if (Number.isFinite(screenWidth) && screenWidth > 1 && screenX <= screenWidth) {
+                return clampRatio(screenX / screenWidth);
+              }
+            }
+
+            return localRatio;
+          }'''
+
+          new = '''function touchTapXRatio(
+            win: Window,
+            doc: Document,
+            clientX: number,
+            screenX: number | undefined,
+            pointerType: ReaderPointerType,
+            displayedPage?: number,
+            displayedTotal?: number,
+          ): number {
+            const localWidth = Math.max(1, win.innerWidth || doc.documentElement?.clientWidth || 1);
+            const localRatio = clampRatio(clientX / localWidth);
+            if (pointerType !== 'touch') return localRatio;
+
+            // EPUB.js paginated sections can expose an iframe whose local viewport spans every
+            // displayed column (for example 2220 px for six 370 px pages). Touch clientX is not
+            // consistent across engines: it can be section-wide or already relative to the clipped
+            // visible page. The current relocated page/total disambiguates those coordinate spaces
+            // without guessing from translated iframe rectangles.
+            if (
+              typeof displayedPage === 'number'
+              && Number.isFinite(displayedPage)
+              && typeof displayedTotal === 'number'
+              && Number.isFinite(displayedTotal)
+              && displayedPage >= 1
+              && displayedTotal >= 1
+              && displayedPage <= displayedTotal
+            ) {
+              const pageWidth = localWidth / displayedTotal;
+              if (Number.isFinite(pageWidth) && pageWidth > 1) {
+                const sectionX = clientX - (displayedPage - 1) * pageWidth;
+                if (
+                  sectionX >= -TOUCH_GEOMETRY_TOLERANCE_PX
+                  && sectionX <= pageWidth + TOUCH_GEOMETRY_TOLERANCE_PX
+                ) {
+                  return clampRatio(sectionX / pageWidth);
+                }
+
+                // Chromium/WebKit may instead report the same physical touch relative to the
+                // clipped page slice. In that case clientX is already page-local.
+                if (
+                  clientX >= -TOUCH_GEOMETRY_TOLERANCE_PX
+                  && clientX <= pageWidth + TOUCH_GEOMETRY_TOLERANCE_PX
+                ) {
+                  return clampRatio(clientX / pageWidth);
+                }
+              }
+            }
+
+            // Physical mobile coordinates are stable across iframe replacement/translation and
+            // remain the next-best fallback when page metadata is unavailable during a relocation.
+            if (typeof screenX === 'number' && Number.isFinite(screenX) && screenX > 0) {
+              const screenWidth = Number(win.screen?.width);
+              if (Number.isFinite(screenWidth) && screenWidth > 1 && screenX <= screenWidth) {
+                return clampRatio(screenX / screenWidth);
+              }
+            }
+
+            try {
+              const frame = win.frameElement;
+              const viewport = frame && typeof frame.closest === 'function'
+                ? frame.closest<HTMLElement>('[data-reader-viewport]')
+                : null;
+              if (frame && viewport) {
+                const frameRect = frame.getBoundingClientRect();
+                const viewportRect = viewport.getBoundingClientRect();
+                const visibleLeft = Math.max(frameRect.left, viewportRect.left);
+                const visibleRight = Math.min(frameRect.right, viewportRect.right);
+                const visibleWidth = visibleRight - visibleLeft;
+                const parentX = frameRect.left + clientX;
+                if (
+                  Number.isFinite(visibleWidth)
+                  && visibleWidth > 0
+                  && parentX >= visibleLeft - TOUCH_GEOMETRY_TOLERANCE_PX
+                  && parentX <= visibleRight + TOUCH_GEOMETRY_TOLERANCE_PX
+                ) {
+                  return clampRatio((parentX - visibleLeft) / visibleWidth);
+                }
+              }
+            } catch {
+              // Cross-frame geometry is best-effort; retain the local fallback.
+            }
+
+            return localRatio;
+          }'''
+
+          if text.count(old) != 1:
+              raise SystemExit(f'expected exactly one touchTapXRatio block, found {text.count(old)}')
+          text = text.replace(old, new)
+
+          old_call = '''          xRatio: touchTapXRatio(win, doc, x, screenX, effectivePointerType),'''
+          new_call = '''          xRatio: touchTapXRatio(
+            win,
+            doc,
+            x,
+            screenX,
+            effectivePointerType,
+            this.currentLocation?.displayedPage,
+            this.currentLocation?.displayedTotal,
+          ),'''
+          if text.count(old_call) != 1:
+              raise SystemExit(f'expected exactly one touchTapXRatio call, found {text.count(old_call)}')
+          text = text.replace(old_call, new_call)
+          path.write_text(text)
+          PY
+
+      - name: Commit repair and remove helper
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/rr6-page-aware-touch-repair.yml
+          git add src/lib/reader/engines/epubjs.ts
+          git diff --cached --check
+          git commit -m 'fix: make EPUB touch zones page-aware'
+          git push origin "HEAD:$GITHUB_REF_NAME"
