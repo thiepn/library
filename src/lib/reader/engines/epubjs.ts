@@ -169,11 +169,45 @@ function clampRatio(value: number): number {
 }
 
 /**
- * Prefer iframe-local touch coordinates whenever they still fall inside the visible content
- * viewport. Some physical mobile engines can report translated/replaced paginated iframe
- * coordinates outside that viewport; only then recover with the touch's physical screenX.
- * This keeps ordinary and synthetic browser taps tied to visible reader geometry while retaining
- * the physical-device fallback that survives EPUB.js iframe translation.
+ * EPUB.js can make a paginated iframe several physical page widths wide and translate it behind
+ * the visible reader viewport. Touch clientX is then section-relative even though the user's tap
+ * is viewport-relative. Recover the physical reader coordinate through the frame element before
+ * falling back to the iframe-local or screen coordinate paths.
+ */
+function visibleFrameTapXRatio(win: Window, clientX: number): number | undefined {
+  if (!Number.isFinite(clientX)) return undefined;
+  try {
+    const frame = win.frameElement as HTMLElement | null;
+    const viewport = frame?.closest?.('[data-reader-viewport]') as HTMLElement | null;
+    if (!frame || !viewport) return undefined;
+
+    const frameRect = frame.getBoundingClientRect();
+    const viewportRect = viewport.getBoundingClientRect();
+    const localWidth = Number(win.innerWidth);
+    if (
+      !Number.isFinite(frameRect.left)
+      || !Number.isFinite(frameRect.width)
+      || !Number.isFinite(viewportRect.left)
+      || !Number.isFinite(viewportRect.width)
+      || !Number.isFinite(localWidth)
+      || frameRect.width <= 1
+      || viewportRect.width <= 1
+      || localWidth <= 1
+    ) return undefined;
+
+    const parentX = frameRect.left + clientX * (frameRect.width / localWidth);
+    const tolerance = Math.max(2, viewportRect.width * 0.02);
+    if (parentX < viewportRect.left - tolerance || parentX > viewportRect.right + tolerance) return undefined;
+    return clampRatio((parentX - viewportRect.left) / viewportRect.width);
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * Prefer the actual visible reader coordinate for touch. Some physical mobile engines cannot
+ * expose parent-frame geometry, so retain the prior iframe-local path and screenX recovery as
+ * fail-safe fallbacks.
  */
 function touchTapXRatio(
   win: Window,
@@ -182,6 +216,11 @@ function touchTapXRatio(
   screenX: number | undefined,
   pointerType: ReaderPointerType,
 ): number {
+  if (pointerType === 'touch') {
+    const visibleRatio = visibleFrameTapXRatio(win, clientX);
+    if (visibleRatio !== undefined) return visibleRatio;
+  }
+
   const localWidth = Math.max(1, win.innerWidth || doc.documentElement?.clientWidth || 1);
   const localRatio = clampRatio(clientX / localWidth);
   if (
