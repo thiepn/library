@@ -1,0 +1,161 @@
+name: Repair reader touch coordinate space
+
+on:
+  push:
+    branches:
+      - 'repair/reader-touch-visible-ratio-34751544799'
+    paths:
+      - '.github/workflows/repair-reader-touch-coordinate-space.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: repair-reader-touch-coordinate-space-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout recovery branch
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+
+      - name: Patch touch coordinates without weakening acceptance
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('src/lib/reader/engines/epubjs.ts')
+          source = path.read_text()
+          old = '''/**
+           * Preserve iframe-local coordinates for normal EPUB.js content, but when a paginated
+           * iframe is materially wider than the reader viewport and touch clientX is already in
+           * visible-reader coordinates, normalize against that visible width. `screen.width` is
+           * intentionally not used: a narrow browser viewport can still report the host desktop
+           * screen width, which collapses a physical right-edge tap into the left/center zones.
+           */
+          function visibleReaderViewportWidth(win: Window): number | undefined {
+            try {
+              const frame = win.frameElement as HTMLElement | null;
+              const viewport = frame?.closest?.('[data-reader-viewport]') as HTMLElement | null;
+              const width = viewport?.getBoundingClientRect().width;
+              return typeof width === 'number' && Number.isFinite(width) && width > 1 ? width : undefined;
+            } catch {
+              return undefined;
+            }
+          }
+
+          function touchTapXRatio(
+            win: Window,
+            doc: Document,
+            clientX: number,
+            _screenX: number | undefined,
+            pointerType: ReaderPointerType,
+          ): number {
+            const localWidth = Math.max(1, win.innerWidth || doc.documentElement?.clientWidth || 1);
+            const localRatio = clampRatio(clientX / localWidth);
+            if (pointerType !== 'touch') return localRatio;
+
+            const visibleWidth = visibleReaderViewportWidth(win);
+            if (visibleWidth !== undefined && localWidth > visibleWidth * 1.25) {
+              const tolerance = Math.max(2, visibleWidth * 0.02);
+              if (Number.isFinite(clientX) && clientX >= -tolerance && clientX <= visibleWidth + tolerance) {
+                return clampRatio(clientX / visibleWidth);
+              }
+            }
+
+            return localRatio;
+          }
+          '''
+          new = '''/**
+           * EPUB.js paginated content can expose touch clientX in either of two CSS coordinate
+           * spaces: iframe-local coordinates (including the iframe's translated page offset) or
+           * already-normalized visible-reader coordinates on some physical mobile engines.
+           * Resolve both from CSS geometry only. This avoids screen.width, which is not the
+           * browser viewport under desktop device emulation and can misclassify right-edge taps.
+           */
+          function touchTapXRatio(
+            win: Window,
+            doc: Document,
+            clientX: number,
+            _screenX: number | undefined,
+            pointerType: ReaderPointerType,
+          ): number {
+            const localWidth = Math.max(1, win.innerWidth || doc.documentElement?.clientWidth || 1);
+            const localRatio = clampRatio(clientX / localWidth);
+            if (pointerType !== 'touch' || !Number.isFinite(clientX)) return localRatio;
+
+            try {
+              const frame = win.frameElement as HTMLElement | null;
+              const viewport = frame?.closest?.('[data-reader-viewport]') as HTMLElement | null;
+              const frameRect = frame?.getBoundingClientRect();
+              const viewportRect = viewport?.getBoundingClientRect();
+              const visibleWidth = viewportRect?.width;
+              if (
+                frameRect
+                && viewportRect
+                && typeof visibleWidth === 'number'
+                && Number.isFinite(visibleWidth)
+                && visibleWidth > 1
+              ) {
+                const tolerance = Math.max(2, visibleWidth * 0.02);
+                const inVisibleRange = (x: number) => x >= -tolerance && x <= visibleWidth + tolerance;
+
+                // Normal iframe events are local to a translated/wide EPUB surface. Convert that
+                // local coordinate back into the reader viewport before deciding the tap zone.
+                const translatedVisibleX = clientX + frameRect.left - viewportRect.left;
+                if (inVisibleRange(translatedVisibleX)) {
+                  return clampRatio(translatedVisibleX / visibleWidth);
+                }
+
+                // Some physical mobile engines already report clientX in visible-reader CSS
+                // coordinates despite the iframe's wider translated geometry. Accept that form
+                // only when the geometry-derived form is outside the visible reader.
+                if (inVisibleRange(clientX)) {
+                  return clampRatio(clientX / visibleWidth);
+                }
+              }
+            } catch {
+              // Cross-context geometry can be unavailable; retain the qualified local fallback.
+            }
+
+            return localRatio;
+          }
+          '''
+          if source.count(old) != 1:
+              raise SystemExit(f'expected exactly one current touch ratio block, found {source.count(old)}')
+          path.write_text(source.replace(old, new, 1))
+          PY
+
+      - name: Setup pnpm and Node
+        uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2
+        with:
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+          cache: true
+
+      - name: Certify build before committing
+        shell: bash
+        run: |
+          set -euo pipefail
+          pnpm install --frozen-lockfile
+          pnpm build
+
+      - name: Commit repair and self-remove helper
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/repair-reader-touch-coordinate-space.yml
+          git add src/lib/reader/engines/epubjs.ts
+          git commit -m 'fix: resolve translated EPUB touch coordinates'
+          git fetch origin "$GITHUB_REF_NAME"
+          git rebase "origin/$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
