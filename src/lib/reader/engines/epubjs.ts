@@ -192,15 +192,16 @@ function visibleFrameTapXRatio(win: Window, clientX: number): number | undefined
     ) return undefined;
 
     const tolerance = Math.max(2, viewportRect.width * 0.02);
+    // A clientX that already fits the visible browsing-context width is viewport-local.
+    // Prefer it before applying the translated frame offset; otherwise a partially translated
+    // oversized iframe can shift a real right/center/left tap into the wrong navigation zone.
+    if (clientX >= -tolerance && clientX <= viewportRect.width + tolerance) {
+      return clampRatio(clientX / viewportRect.width);
+    }
+
     const parentX = frameRect.left + clientX;
     if (parentX >= viewportRect.left - tolerance && parentX <= viewportRect.right + tolerance) {
       return clampRatio((parentX - viewportRect.left) / viewportRect.width);
-    }
-
-    // Some touch engines normalize iframe clientX back to the visible browsing-context width
-    // even while the frame element itself remains translated across the paginated section.
-    if (clientX >= -tolerance && clientX <= viewportRect.width + tolerance) {
-      return clampRatio(clientX / viewportRect.width);
     }
     return undefined;
   } catch {
