@@ -169,23 +169,12 @@ function clampRatio(value: number): number {
 }
 
 /**
- * Preserve iframe-local coordinates for normal EPUB.js content, but when a paginated
- * iframe is materially wider than the reader viewport and touch clientX is already in
- * visible-reader coordinates, normalize against that visible width. `screen.width` is
- * intentionally not used: a narrow browser viewport can still report the host desktop
- * screen width, which collapses a physical right-edge tap into the left/center zones.
+ * EPUB.js paginated content can expose touch clientX in either of two CSS coordinate
+ * spaces: iframe-local coordinates (including the iframe's translated page offset) or
+ * already-normalized visible-reader coordinates on some physical mobile engines.
+ * Resolve both from CSS geometry only. This avoids screen.width, which is not the
+ * browser viewport under desktop device emulation and can misclassify right-edge taps.
  */
-function visibleReaderViewportWidth(win: Window): number | undefined {
-  try {
-    const frame = win.frameElement as HTMLElement | null;
-    const viewport = frame?.closest?.('[data-reader-viewport]') as HTMLElement | null;
-    const width = viewport?.getBoundingClientRect().width;
-    return typeof width === 'number' && Number.isFinite(width) && width > 1 ? width : undefined;
-  } catch {
-    return undefined;
-  }
-}
-
 function touchTapXRatio(
   win: Window,
   doc: Document,
@@ -195,14 +184,40 @@ function touchTapXRatio(
 ): number {
   const localWidth = Math.max(1, win.innerWidth || doc.documentElement?.clientWidth || 1);
   const localRatio = clampRatio(clientX / localWidth);
-  if (pointerType !== 'touch') return localRatio;
+  if (pointerType !== 'touch' || !Number.isFinite(clientX)) return localRatio;
 
-  const visibleWidth = visibleReaderViewportWidth(win);
-  if (visibleWidth !== undefined && localWidth > visibleWidth * 1.25) {
-    const tolerance = Math.max(2, visibleWidth * 0.02);
-    if (Number.isFinite(clientX) && clientX >= -tolerance && clientX <= visibleWidth + tolerance) {
-      return clampRatio(clientX / visibleWidth);
+  try {
+    const frame = win.frameElement as HTMLElement | null;
+    const viewport = frame?.closest?.('[data-reader-viewport]') as HTMLElement | null;
+    const frameRect = frame?.getBoundingClientRect();
+    const viewportRect = viewport?.getBoundingClientRect();
+    const visibleWidth = viewportRect?.width;
+    if (
+      frameRect
+      && viewportRect
+      && typeof visibleWidth === 'number'
+      && Number.isFinite(visibleWidth)
+      && visibleWidth > 1
+    ) {
+      const tolerance = Math.max(2, visibleWidth * 0.02);
+      const inVisibleRange = (x: number) => x >= -tolerance && x <= visibleWidth + tolerance;
+
+      // Normal iframe events are local to a translated/wide EPUB surface. Convert that
+      // local coordinate back into the reader viewport before deciding the tap zone.
+      const translatedVisibleX = clientX + frameRect.left - viewportRect.left;
+      if (inVisibleRange(translatedVisibleX)) {
+        return clampRatio(translatedVisibleX / visibleWidth);
+      }
+
+      // Some physical mobile engines already report clientX in visible-reader CSS
+      // coordinates despite the iframe's wider translated geometry. Accept that form
+      // only when the geometry-derived form is outside the visible reader.
+      if (inVisibleRange(clientX)) {
+        return clampRatio(clientX / visibleWidth);
+      }
     }
+  } catch {
+    // Cross-context geometry can be unavailable; retain the qualified local fallback.
   }
 
   return localRatio;
