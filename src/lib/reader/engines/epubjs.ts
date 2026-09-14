@@ -169,10 +169,11 @@ function clampRatio(value: number): number {
 }
 
 /**
- * EPUB.js can make a paginated iframe several physical page widths wide and translate it behind
- * the visible reader viewport. Touch clientX is then section-relative even though the user's tap
- * is viewport-relative. Recover the physical reader coordinate through the frame element before
- * falling back to the iframe-local or screen coordinate paths.
+ * EPUB.js can make a paginated iframe several page widths wide and translate the frame behind
+ * the visible reader viewport. DOM event clientX is already expressed in CSS pixels; do not
+ * rescale it by frame width. Depending on the mobile engine it may be section-relative (so the
+ * translated frame offset reconstructs the visible parent coordinate) or already viewport-local.
+ * Accept either representation only when it resolves inside the visible reader viewport.
  */
 function visibleFrameTapXRatio(win: Window, clientX: number): number | undefined {
   if (!Number.isFinite(clientX)) return undefined;
@@ -183,22 +184,25 @@ function visibleFrameTapXRatio(win: Window, clientX: number): number | undefined
 
     const frameRect = frame.getBoundingClientRect();
     const viewportRect = viewport.getBoundingClientRect();
-    const localWidth = Number(win.innerWidth);
     if (
       !Number.isFinite(frameRect.left)
-      || !Number.isFinite(frameRect.width)
       || !Number.isFinite(viewportRect.left)
       || !Number.isFinite(viewportRect.width)
-      || !Number.isFinite(localWidth)
-      || frameRect.width <= 1
       || viewportRect.width <= 1
-      || localWidth <= 1
     ) return undefined;
 
-    const parentX = frameRect.left + clientX * (frameRect.width / localWidth);
     const tolerance = Math.max(2, viewportRect.width * 0.02);
-    if (parentX < viewportRect.left - tolerance || parentX > viewportRect.right + tolerance) return undefined;
-    return clampRatio((parentX - viewportRect.left) / viewportRect.width);
+    const parentX = frameRect.left + clientX;
+    if (parentX >= viewportRect.left - tolerance && parentX <= viewportRect.right + tolerance) {
+      return clampRatio((parentX - viewportRect.left) / viewportRect.width);
+    }
+
+    // Some touch engines normalize iframe clientX back to the visible browsing-context width
+    // even while the frame element itself remains translated across the paginated section.
+    if (clientX >= -tolerance && clientX <= viewportRect.width + tolerance) {
+      return clampRatio(clientX / viewportRect.width);
+    }
+    return undefined;
   } catch {
     return undefined;
   }
