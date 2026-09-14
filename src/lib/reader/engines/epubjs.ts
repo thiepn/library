@@ -169,51 +169,24 @@ function clampRatio(value: number): number {
 }
 
 /**
- * EPUB.js can make a paginated iframe several page widths wide and translate the frame behind
- * the visible reader viewport. DOM event clientX is already expressed in CSS pixels; do not
- * rescale it by frame width. Depending on the mobile engine it may be section-relative (so the
- * translated frame offset reconstructs the visible parent coordinate) or already viewport-local.
- * Accept either representation only when it resolves inside the visible reader viewport.
+ * Keep the established iframe-local coordinate path for ordinary EPUB.js taps. A physical
+ * mobile engine can instead normalize touch clientX to the visible reader width while the
+ * paginated iframe remains much wider and translated. That representation is ambiguous with
+ * section-local coordinates, so only disambiguate it when the touch also exposes a valid
+ * physical screenX. Synthetic/WebKit acceptance events without screenX retain the proven
+ * iframe-local behavior.
  */
-function visibleFrameTapXRatio(win: Window, clientX: number): number | undefined {
-  if (!Number.isFinite(clientX)) return undefined;
+function visibleReaderViewportWidth(win: Window): number | undefined {
   try {
     const frame = win.frameElement as HTMLElement | null;
     const viewport = frame?.closest?.('[data-reader-viewport]') as HTMLElement | null;
-    if (!frame || !viewport) return undefined;
-
-    const frameRect = frame.getBoundingClientRect();
-    const viewportRect = viewport.getBoundingClientRect();
-    if (
-      !Number.isFinite(frameRect.left)
-      || !Number.isFinite(viewportRect.left)
-      || !Number.isFinite(viewportRect.width)
-      || viewportRect.width <= 1
-    ) return undefined;
-
-    const tolerance = Math.max(2, viewportRect.width * 0.02);
-    // A clientX that already fits the visible browsing-context width is viewport-local.
-    // Prefer it before applying the translated frame offset; otherwise a partially translated
-    // oversized iframe can shift a real right/center/left tap into the wrong navigation zone.
-    if (clientX >= -tolerance && clientX <= viewportRect.width + tolerance) {
-      return clampRatio(clientX / viewportRect.width);
-    }
-
-    const parentX = frameRect.left + clientX;
-    if (parentX >= viewportRect.left - tolerance && parentX <= viewportRect.right + tolerance) {
-      return clampRatio((parentX - viewportRect.left) / viewportRect.width);
-    }
-    return undefined;
+    const width = viewport?.getBoundingClientRect().width;
+    return typeof width === 'number' && Number.isFinite(width) && width > 1 ? width : undefined;
   } catch {
     return undefined;
   }
 }
 
-/**
- * Prefer the actual visible reader coordinate for touch. Some physical mobile engines cannot
- * expose parent-frame geometry, so retain the prior iframe-local path and screenX recovery as
- * fail-safe fallbacks.
- */
 function touchTapXRatio(
   win: Window,
   doc: Document,
@@ -221,30 +194,42 @@ function touchTapXRatio(
   screenX: number | undefined,
   pointerType: ReaderPointerType,
 ): number {
-  if (pointerType === 'touch') {
-    const visibleRatio = visibleFrameTapXRatio(win, clientX);
-    if (visibleRatio !== undefined) return visibleRatio;
-  }
-
   const localWidth = Math.max(1, win.innerWidth || doc.documentElement?.clientWidth || 1);
   const localRatio = clampRatio(clientX / localWidth);
+  if (pointerType !== 'touch') return localRatio;
+
+  const screenWidth = Number(win.screen?.width);
+  const hasUsableScreenCoordinate = (
+    typeof screenX === 'number'
+    && Number.isFinite(screenX)
+    && screenX > 0
+    && Number.isFinite(screenWidth)
+    && screenWidth > 1
+    && screenX <= screenWidth
+  );
+
+  if (hasUsableScreenCoordinate) {
+    const visibleWidth = visibleReaderViewportWidth(win);
+    if (visibleWidth !== undefined && localWidth > visibleWidth * 1.25) {
+      const tolerance = Math.max(2, visibleWidth * 0.02);
+      // This is the staged/physical-device failure mode: the iframe is oversized but
+      // clientX has already been normalized to the visible reader. Do not divide that
+      // coordinate by the full paginated iframe width; screenX preserves the real zone.
+      if (Number.isFinite(clientX) && clientX >= -tolerance && clientX <= visibleWidth + tolerance) {
+        return clampRatio(screenX / screenWidth);
+      }
+    }
+  }
+
   if (
-    pointerType !== 'touch'
-    || (Number.isFinite(clientX) && clientX >= 0 && clientX <= localWidth)
-    || typeof screenX !== 'number'
-    || !Number.isFinite(screenX)
-    || screenX <= 0
+    (Number.isFinite(clientX) && clientX >= 0 && clientX <= localWidth)
+    || !hasUsableScreenCoordinate
   ) {
     return localRatio;
   }
 
-  const screenWidth = Number(win.screen?.width);
-  if (!Number.isFinite(screenWidth) || screenWidth <= 1 || screenX > screenWidth) {
-    return localRatio;
-  }
-  return clampRatio(screenX / screenWidth);
+  return clampRatio(screenX! / screenWidth);
 }
-
 function mapLocation(location: EpubLocation): ReaderLocation {
   const start = location.start;
   const locationNumber = finite(start.location);
