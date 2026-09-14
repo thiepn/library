@@ -183,10 +183,56 @@ function touchTapXRatio(
   clientX: number,
   screenX: number | undefined,
   pointerType: ReaderPointerType,
+  displayedPage?: number,
+  displayedTotal?: number,
 ): number {
   const localWidth = Math.max(1, win.innerWidth || doc.documentElement?.clientWidth || 1);
   const localRatio = clampRatio(clientX / localWidth);
   if (pointerType !== 'touch') return localRatio;
+
+  // EPUB.js paginated sections can expose an iframe whose local viewport spans every
+  // displayed column (for example 2220 px for six 370 px pages). Touch clientX is not
+  // consistent across engines: it can be section-wide or already relative to the clipped
+  // visible page. The current relocated page/total disambiguates those coordinate spaces
+  // without guessing from translated iframe rectangles.
+  if (
+    typeof displayedPage === 'number'
+    && Number.isFinite(displayedPage)
+    && typeof displayedTotal === 'number'
+    && Number.isFinite(displayedTotal)
+    && displayedPage >= 1
+    && displayedTotal >= 1
+    && displayedPage <= displayedTotal
+  ) {
+    const pageWidth = localWidth / displayedTotal;
+    if (Number.isFinite(pageWidth) && pageWidth > 1) {
+      const sectionX = clientX - (displayedPage - 1) * pageWidth;
+      if (
+        sectionX >= -TOUCH_GEOMETRY_TOLERANCE_PX
+        && sectionX <= pageWidth + TOUCH_GEOMETRY_TOLERANCE_PX
+      ) {
+        return clampRatio(sectionX / pageWidth);
+      }
+
+      // Chromium/WebKit may instead report the same physical touch relative to the
+      // clipped page slice. In that case clientX is already page-local.
+      if (
+        clientX >= -TOUCH_GEOMETRY_TOLERANCE_PX
+        && clientX <= pageWidth + TOUCH_GEOMETRY_TOLERANCE_PX
+      ) {
+        return clampRatio(clientX / pageWidth);
+      }
+    }
+  }
+
+  // Physical mobile coordinates are stable across iframe replacement/translation and
+  // remain the next-best fallback when page metadata is unavailable during a relocation.
+  if (typeof screenX === 'number' && Number.isFinite(screenX) && screenX > 0) {
+    const screenWidth = Number(win.screen?.width);
+    if (Number.isFinite(screenWidth) && screenWidth > 1 && screenX <= screenWidth) {
+      return clampRatio(screenX / screenWidth);
+    }
+  }
 
   try {
     const frame = win.frameElement;
@@ -199,35 +245,18 @@ function touchTapXRatio(
       const visibleLeft = Math.max(frameRect.left, viewportRect.left);
       const visibleRight = Math.min(frameRect.right, viewportRect.right);
       const visibleWidth = visibleRight - visibleLeft;
-
-      if (Number.isFinite(visibleWidth) && visibleWidth > 0) {
-        const parentX = frameRect.left + clientX;
-        if (
-          parentX >= visibleLeft - TOUCH_GEOMETRY_TOLERANCE_PX
-          && parentX <= visibleRight + TOUCH_GEOMETRY_TOLERANCE_PX
-        ) {
-          return clampRatio((parentX - visibleLeft) / visibleWidth);
-        }
-
-        // Some engines expose clientX relative to the clipped slice rather than the full iframe.
-        // Accept that space only when full-frame conversion falls outside the visible intersection.
-        if (
-          clientX >= -TOUCH_GEOMETRY_TOLERANCE_PX
-          && clientX <= visibleWidth + TOUCH_GEOMETRY_TOLERANCE_PX
-        ) {
-          return clampRatio(clientX / visibleWidth);
-        }
+      const parentX = frameRect.left + clientX;
+      if (
+        Number.isFinite(visibleWidth)
+        && visibleWidth > 0
+        && parentX >= visibleLeft - TOUCH_GEOMETRY_TOLERANCE_PX
+        && parentX <= visibleRight + TOUCH_GEOMETRY_TOLERANCE_PX
+      ) {
+        return clampRatio((parentX - visibleLeft) / visibleWidth);
       }
     }
   } catch {
-    // Cross-frame geometry is best-effort; retain the established physical/local fallbacks.
-  }
-
-  if (typeof screenX === 'number' && Number.isFinite(screenX) && screenX > 0) {
-    const screenWidth = Number(win.screen?.width);
-    if (Number.isFinite(screenWidth) && screenWidth > 1 && screenX <= screenWidth) {
-      return clampRatio(screenX / screenWidth);
-    }
+    // Cross-frame geometry is best-effort; retain the local fallback.
   }
 
   return localRatio;
@@ -359,7 +388,15 @@ export class EpubJsEngine implements ReaderEngine {
         const height = Math.max(1, win.innerHeight || doc.documentElement?.clientHeight || 1);
         interaction = {
           type: 'tap',
-          xRatio: touchTapXRatio(win, doc, x, screenX, effectivePointerType),
+          xRatio: touchTapXRatio(
+  win,
+  doc,
+  x,
+  screenX,
+  effectivePointerType,
+  this.currentLocation?.displayedPage,
+  this.currentLocation?.displayedTotal,
+),
           yRatio: clampRatio(y / height),
           pointerType: effectivePointerType,
           interactive,
