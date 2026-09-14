@@ -1,0 +1,150 @@
+name: Repair RR6 visible touch coordinate mapping
+
+on:
+  push:
+    branches:
+      - 'autopilot/recovery-rr6-touch-34751544799'
+    paths:
+      - '.github/workflows/rr6-visible-touch-repair.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rr6-visible-touch-repair-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+
+      - name: Patch touch coordinate mapping
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('src/lib/reader/engines/epubjs.ts')
+          text = path.read_text()
+          start = text.index('function touchTapXRatio(')
+          end = text.index('\nfunction mapLocation(', start)
+          replacement = r'''function touchTapXRatio(
+            win: Window,
+            doc: Document,
+            clientX: number,
+            screenX: number | undefined,
+            pointerType: ReaderPointerType,
+            displayedPage?: number,
+            displayedTotal?: number,
+          ): number {
+            const localWidth = Math.max(1, win.innerWidth || doc.documentElement?.clientWidth || 1);
+            const localRatio = clampRatio(clientX / localWidth);
+            if (pointerType !== 'touch') return localRatio;
+
+            // A physical touch's screen coordinates are stable even when EPUB.js translates or
+            // replaces a paginated iframe. Prefer that coordinate space whenever the browser
+            // supplies a valid value; screenX and screen.width are both CSS-pixel measurements.
+            if (typeof screenX === 'number' && Number.isFinite(screenX) && screenX > 0) {
+              const screenWidth = Number(win.screen?.width);
+              if (Number.isFinite(screenWidth) && screenWidth > 1 && screenX <= screenWidth) {
+                return clampRatio(screenX / screenWidth);
+              }
+            }
+
+            try {
+              const frame = win.frameElement;
+              const viewport = frame && typeof frame.closest === 'function'
+                ? frame.closest<HTMLElement>('[data-reader-viewport]')
+                : null;
+              if (frame && viewport) {
+                const frameRect = frame.getBoundingClientRect();
+                const viewportRect = viewport.getBoundingClientRect();
+                const viewportWidth = viewportRect.width;
+                if (Number.isFinite(viewportWidth) && viewportWidth > 1) {
+                  // WebKit can expose a physical/synthetic touch already relative to the clipped
+                  // visible page even when the iframe's own layout viewport spans several columns.
+                  if (
+                    clientX >= -TOUCH_GEOMETRY_TOLERANCE_PX
+                    && clientX <= viewportWidth + TOUCH_GEOMETRY_TOLERANCE_PX
+                  ) {
+                    return clampRatio(clientX / viewportWidth);
+                  }
+
+                  // Other engines report clientX in section-wide multi-column coordinates.
+                  // Convert the current displayed page back into the same visible viewport space.
+                  if (
+                    typeof displayedPage === 'number'
+                    && Number.isFinite(displayedPage)
+                    && typeof displayedTotal === 'number'
+                    && Number.isFinite(displayedTotal)
+                    && displayedPage >= 1
+                    && displayedTotal >= 1
+                    && displayedPage <= displayedTotal
+                  ) {
+                    const pageLocalX = clientX - (displayedPage - 1) * viewportWidth;
+                    if (
+                      pageLocalX >= -TOUCH_GEOMETRY_TOLERANCE_PX
+                      && pageLocalX <= viewportWidth + TOUCH_GEOMETRY_TOLERANCE_PX
+                    ) {
+                      return clampRatio(pageLocalX / viewportWidth);
+                    }
+                  }
+
+                  // Finally project full-frame coordinates into the parent reader viewport.
+                  const parentX = frameRect.left + clientX;
+                  if (
+                    parentX >= viewportRect.left - TOUCH_GEOMETRY_TOLERANCE_PX
+                    && parentX <= viewportRect.right + TOUCH_GEOMETRY_TOLERANCE_PX
+                  ) {
+                    return clampRatio((parentX - viewportRect.left) / viewportWidth);
+                  }
+                }
+              }
+            } catch {
+              // Cross-frame geometry is best-effort; retain the established local fallback.
+            }
+
+            return localRatio;
+          }'''
+          path.write_text(text[:start] + replacement + text[end:])
+          PY
+          git diff --check
+
+      - name: Setup pnpm and Node
+        uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2
+        with:
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+          cache: true
+
+      - name: Install frozen dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install phone browser engines
+        run: pnpm exec playwright install --with-deps chromium webkit
+
+      - name: Build static Library
+        run: pnpm build
+
+      - name: Reproduce RR6 tap-zone acceptance on phone engines
+        run: pnpm exec playwright test tests/e2e/reader-tap-zones.spec.ts --project=chromium-phone --project=webkit-phone
+
+      - name: Commit repair and remove helper
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/rr6-visible-touch-repair.yml
+          git add src/lib/reader/engines/epubjs.ts
+          git diff --cached --check
+          git commit -m 'fix: map EPUB touch zones to the visible viewport'
+          git push origin "HEAD:$GITHUB_REF_NAME"
