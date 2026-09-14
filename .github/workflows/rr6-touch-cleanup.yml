@@ -1,0 +1,80 @@
+name: Clean up RR6 touch repair
+
+on:
+  push:
+    branches:
+      - 'autopilot/recovery-rr6-touch-34751544799'
+    paths:
+      - '.github/workflows/rr6-touch-cleanup.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+
+      - name: Clean source formatting and documentation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('src/lib/reader/engines/epubjs.ts')
+          text = path.read_text()
+          old_comment = '''/**
+           * Normalize touch coordinates against the actually visible slice of a translated EPUB iframe.
+           * EPUB.js may render a section-wide multi-column iframe that is much wider than the reader and
+           * shift it left as pages advance. Chromium/WebKit can then report touch clientX either in full
+           * iframe coordinates or relative to the clipped visible slice. Resolve both coordinate spaces
+           * against the parent reader viewport before falling back to physical screen/local geometry.
+           */'''
+          new_comment = '''/**
+           * Normalize touch coordinates against the visible page of a paginated EPUB section.
+           * EPUB.js may expose one section-wide iframe spanning many columns while mobile engines report
+           * touch clientX either section-wide or relative to the clipped page. Relocated page metadata
+           * disambiguates those spaces before physical-screen and cross-frame geometry fallbacks.
+           */'''
+          if text.count(old_comment) != 1:
+              raise SystemExit(f'expected touch comment once, found {text.count(old_comment)}')
+          text = text.replace(old_comment, new_comment)
+
+          old_call = '''          xRatio: touchTapXRatio(
+  win,
+  doc,
+  x,
+  screenX,
+  effectivePointerType,
+  this.currentLocation?.displayedPage,
+  this.currentLocation?.displayedTotal,
+),'''
+          new_call = '''          xRatio: touchTapXRatio(
+            win,
+            doc,
+            x,
+            screenX,
+            effectivePointerType,
+            this.currentLocation?.displayedPage,
+            this.currentLocation?.displayedTotal,
+          ),'''
+          if text.count(old_call) != 1:
+              raise SystemExit(f'expected malformed touch call once, found {text.count(old_call)}')
+          path.write_text(text.replace(old_call, new_call))
+          PY
+
+      - name: Commit cleanup and remove helper
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/rr6-touch-cleanup.yml
+          git add src/lib/reader/engines/epubjs.ts
+          git diff --cached --check
+          git commit -m 'style: clean page-aware touch repair'
+          git push origin "HEAD:$GITHUB_REF_NAME"
