@@ -1,0 +1,139 @@
+name: Repair translated touch screen disambiguation
+
+on:
+  push:
+    branches:
+      - 'repair/reader-touch-visible-ratio-34751544799'
+    paths:
+      - '.github/workflows/repair-reader-touch-screen-disambiguation.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: repair-reader-touch-screen-disambiguation-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm and Node
+        uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2
+        with:
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+          cache: true
+
+      - name: Apply fail-closed touch coordinate repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('src/lib/reader/engines/epubjs.ts')
+          text = path.read_text()
+          start_marker = '/**\n * EPUB.js can make a paginated iframe several page widths wide and translate the frame behind\n'
+          end_marker = '\nfunction mapLocation(location: EpubLocation): ReaderLocation {'
+          start = text.find(start_marker)
+          end = text.find(end_marker, start)
+          if start < 0 or end < 0:
+              raise SystemExit('Expected touch-coordinate block was not found; refusing unsafe patch.')
+
+          replacement = r'''/**
+           * Keep the established iframe-local coordinate path for ordinary EPUB.js taps. A physical
+           * mobile engine can instead normalize touch clientX to the visible reader width while the
+           * paginated iframe remains much wider and translated. That representation is ambiguous with
+           * section-local coordinates, so only disambiguate it when the touch also exposes a valid
+           * physical screenX. Synthetic/WebKit acceptance events without screenX retain the proven
+           * iframe-local behavior.
+           */
+          function visibleReaderViewportWidth(win: Window): number | undefined {
+            try {
+              const frame = win.frameElement as HTMLElement | null;
+              const viewport = frame?.closest?.('[data-reader-viewport]') as HTMLElement | null;
+              const width = viewport?.getBoundingClientRect().width;
+              return typeof width === 'number' && Number.isFinite(width) && width > 1 ? width : undefined;
+            } catch {
+              return undefined;
+            }
+          }
+
+          function touchTapXRatio(
+            win: Window,
+            doc: Document,
+            clientX: number,
+            screenX: number | undefined,
+            pointerType: ReaderPointerType,
+          ): number {
+            const localWidth = Math.max(1, win.innerWidth || doc.documentElement?.clientWidth || 1);
+            const localRatio = clampRatio(clientX / localWidth);
+            if (pointerType !== 'touch') return localRatio;
+
+            const screenWidth = Number(win.screen?.width);
+            const hasUsableScreenCoordinate = (
+              typeof screenX === 'number'
+              && Number.isFinite(screenX)
+              && screenX > 0
+              && Number.isFinite(screenWidth)
+              && screenWidth > 1
+              && screenX <= screenWidth
+            );
+
+            if (hasUsableScreenCoordinate) {
+              const visibleWidth = visibleReaderViewportWidth(win);
+              if (visibleWidth !== undefined && localWidth > visibleWidth * 1.25) {
+                const tolerance = Math.max(2, visibleWidth * 0.02);
+                // This is the staged/physical-device failure mode: the iframe is oversized but
+                // clientX has already been normalized to the visible reader. Do not divide that
+                // coordinate by the full paginated iframe width; screenX preserves the real zone.
+                if (Number.isFinite(clientX) && clientX >= -tolerance && clientX <= visibleWidth + tolerance) {
+                  return clampRatio(screenX / screenWidth);
+                }
+              }
+            }
+
+            if (
+              (Number.isFinite(clientX) && clientX >= 0 && clientX <= localWidth)
+              || !hasUsableScreenCoordinate
+            ) {
+              return localRatio;
+            }
+
+            return clampRatio(screenX! / screenWidth);
+          }
+          '''
+          replacement = '\n'.join(line[10:] if line.startswith('          ') else line for line in replacement.splitlines())
+          path.write_text(text[:start] + replacement + text[end:])
+
+          docs = Path('docs/READER_TOUCH_GEOMETRY_RECOVERY.md')
+          docs_text = docs.read_text()
+          old = 'The repair keeps touch classification in one CSS coordinate space. A `clientX` that already fits the visible browsing-context width is treated as viewport-local first; otherwise section-relative coordinates are resolved through the translated frame offset before the existing guarded iframe-local/screen-coordinate fallbacks are considered. This avoids shifting an already normalized mobile touch through the frame offset a second time. Publication controls remain excluded from reader gestures and compatibility-click deduplication remains unchanged.'
+          new = 'The repair preserves the acceptance-proven iframe-local path by default. It only treats an in-range `clientX` as the staged physical-device normalization case when the iframe is materially wider than the visible reader and the touch also supplies a valid physical `screenX`; that screen coordinate then determines the visible tap zone. Synthetic/WebKit events without a physical screen coordinate keep the prior iframe-local semantics. Publication controls remain excluded from reader gestures and compatibility-click deduplication remains unchanged.'
+          if old not in docs_text:
+              raise SystemExit('Expected recovery documentation text was not found; refusing unsafe patch.')
+          docs.write_text(docs_text.replace(old, new, 1))
+          PY
+
+          pnpm install --frozen-lockfile
+          pnpm build
+
+      - name: Commit repair and remove helper
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/repair-reader-touch-screen-disambiguation.yml
+          git add src/lib/reader/engines/epubjs.ts docs/READER_TOUCH_GEOMETRY_RECOVERY.md
+          git commit -m 'fix: disambiguate normalized physical touch coordinates'
+          git fetch origin "$GITHUB_REF_NAME"
+          git rebase "origin/$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
