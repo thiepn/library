@@ -1,0 +1,97 @@
+name: Repair reader visible touch ratio
+
+on:
+  push:
+    branches:
+      - 'repair/reader-touch-visible-ratio-34751544799'
+    paths:
+      - '.github/workflows/repair-reader-touch-visible-ratio.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: repair-reader-touch-visible-ratio-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+
+      - name: Patch visible touch normalization
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          path = Path('src/lib/reader/engines/epubjs.ts')
+          text = path.read_text()
+          pattern = re.compile(r"/\*\*\n \* Keep the established iframe-local coordinate path for ordinary EPUB\.js taps\..*?\nfunction mapLocation", re.S)
+          replacement = '''/**
+           * Preserve iframe-local coordinates for normal EPUB.js content, but when a paginated
+           * iframe is materially wider than the reader viewport and touch clientX is already in
+           * visible-reader coordinates, normalize against that visible width. `screen.width` is
+           * intentionally not used: a narrow browser viewport can still report the host desktop
+           * screen width, which collapses a physical right-edge tap into the left/center zones.
+           */
+          function visibleReaderViewportWidth(win: Window): number | undefined {
+            try {
+              const frame = win.frameElement as HTMLElement | null;
+              const viewport = frame?.closest?.('[data-reader-viewport]') as HTMLElement | null;
+              const width = viewport?.getBoundingClientRect().width;
+              return typeof width === 'number' && Number.isFinite(width) && width > 1 ? width : undefined;
+            } catch {
+              return undefined;
+            }
+          }
+
+          function touchTapXRatio(
+            win: Window,
+            doc: Document,
+            clientX: number,
+            _screenX: number | undefined,
+            pointerType: ReaderPointerType,
+          ): number {
+            const localWidth = Math.max(1, win.innerWidth || doc.documentElement?.clientWidth || 1);
+            const localRatio = clampRatio(clientX / localWidth);
+            if (pointerType !== 'touch') return localRatio;
+
+            const visibleWidth = visibleReaderViewportWidth(win);
+            if (visibleWidth !== undefined && localWidth > visibleWidth * 1.25) {
+              const tolerance = Math.max(2, visibleWidth * 0.02);
+              if (Number.isFinite(clientX) && clientX >= -tolerance && clientX <= visibleWidth + tolerance) {
+                return clampRatio(clientX / visibleWidth);
+              }
+            }
+
+            return localRatio;
+          }
+          function mapLocation'''
+          updated, count = pattern.subn(replacement, text)
+          if count != 1:
+              raise SystemExit(f'expected exactly one touch ratio block, replaced {count}')
+          path.write_text(updated)
+          PY
+
+          git diff --check
+          git diff -- src/lib/reader/engines/epubjs.ts
+
+      - name: Commit repair and self-remove helper
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/repair-reader-touch-visible-ratio.yml
+          git add src/lib/reader/engines/epubjs.ts
+          git commit -m 'fix: normalize oversized iframe touches to visible reader'
+          git fetch origin "$GITHUB_REF_NAME"
+          git rebase "origin/$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
