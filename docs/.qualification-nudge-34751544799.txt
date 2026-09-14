@@ -1,1 +1,0 @@
-Temporary qualification nudge for PR #113. This file is intentionally removed in the next commit so the final branch tree remains unchanged.
