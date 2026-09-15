@@ -204,7 +204,7 @@ function physicalTapXRatio(
       // screenX remains in physical browser-window coordinates even when EPUB.js
       // translates a wide iframe. Window.screenX supplies the matching parent-window
       // origin without relying on screen.width/device emulation geometry.
-      if (typeof screenX === 'number' && Number.isFinite(screenX)) {
+      if (typeof screenX === 'number' && Number.isFinite(screenX) && screenX > 0) {
         const physicalX = screenX - parentWin.screenX - viewportRect.left;
         if (inVisibleRange(physicalX)) {
           return clampRatio(physicalX / visibleWidth);
