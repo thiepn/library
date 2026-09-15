@@ -1,0 +1,130 @@
+name: Repair reader physical tap coordinate mapping
+
+on:
+  push:
+    branches:
+      - repair/reader-touch-visible-ratio-34751544799
+    paths:
+      - .github/workflows/repair-reader-physical-tap.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: repair-reader-physical-tap-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repair branch
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+
+      - name: Normalize tap zones from physical viewport coordinates
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('src/lib/reader/engines/epubjs.ts')
+          text = path.read_text()
+
+          start = text.index('/**\n * EPUB.js paginated content can expose touch clientX')
+          end = text.index('function mapLocation(location: EpubLocation)', start)
+          replacement = r'''/**
+           * EPUB.js paginated content can render one iframe several page widths wide and
+           * translate it behind the visible reader viewport. Event clientX is therefore not
+           * a stable physical tap coordinate. Prefer screenX projected into the parent reader
+           * viewport, then fall back to same-origin frame geometry and finally iframe-local CSS.
+           */
+          function physicalTapXRatio(
+            win: Window,
+            doc: Document,
+            clientX: number,
+            screenX?: number,
+          ): number {
+            const localWidth = Math.max(1, win.innerWidth || doc.documentElement?.clientWidth || 1);
+            const localRatio = clampRatio(clientX / localWidth);
+
+            try {
+              const frame = win.frameElement as HTMLElement | null;
+              const viewport = frame?.closest?.('[data-reader-viewport]') as HTMLElement | null;
+              const parentWin = viewport?.ownerDocument.defaultView;
+              const frameRect = frame?.getBoundingClientRect();
+              const viewportRect = viewport?.getBoundingClientRect();
+              const visibleWidth = viewportRect?.width;
+              if (
+                frameRect
+                && viewportRect
+                && parentWin
+                && typeof visibleWidth === 'number'
+                && Number.isFinite(visibleWidth)
+                && visibleWidth > 1
+              ) {
+                const tolerance = Math.max(3, visibleWidth * 0.03);
+                const inVisibleRange = (x: number) => x >= -tolerance && x <= visibleWidth + tolerance;
+
+                // screenX remains in physical browser-window coordinates even when EPUB.js
+                // translates a wide iframe. Window.screenX supplies the matching parent-window
+                // origin without relying on screen.width/device emulation geometry.
+                if (typeof screenX === 'number' && Number.isFinite(screenX)) {
+                  const physicalX = screenX - parentWin.screenX - viewportRect.left;
+                  if (inVisibleRange(physicalX)) {
+                    return clampRatio(physicalX / visibleWidth);
+                  }
+                }
+
+                // Normal iframe-local events include the translated page offset. Project them
+                // through the frame rectangle back into the visible reader viewport.
+                const translatedVisibleX = clientX + frameRect.left - viewportRect.left;
+                if (inVisibleRange(translatedVisibleX)) {
+                  return clampRatio(translatedVisibleX / visibleWidth);
+                }
+
+                // Some mobile engines already expose clientX in visible-reader coordinates.
+                if (inVisibleRange(clientX)) {
+                  return clampRatio(clientX / visibleWidth);
+                }
+              }
+            } catch {
+              // Same-origin frame geometry can be unavailable during teardown; use local CSS.
+            }
+
+            return localRatio;
+          }
+          '''
+          text = text[:start] + replacement + text[end:]
+          text = text.replace(
+              'xRatio: touchTapXRatio(win, doc, x, screenX, effectivePointerType),',
+              'xRatio: physicalTapXRatio(win, doc, x, screenX),',
+          )
+          old_click = '''      const width = Math.max(1, win.innerWidth || doc.documentElement?.clientWidth || 1);\n      const height = Math.max(1, win.innerHeight || doc.documentElement?.clientHeight || 1);\n      const interaction: ReaderContentInteraction = {\n        type: 'tap',\n        xRatio: clampRatio(event.clientX / width),'''
+          new_click = '''      const height = Math.max(1, win.innerHeight || doc.documentElement?.clientHeight || 1);\n      const interaction: ReaderContentInteraction = {\n        type: 'tap',\n        xRatio: physicalTapXRatio(win, doc, event.clientX, event.screenX),'''
+          if old_click not in text:
+              raise SystemExit('expected click tap geometry block not found')
+          text = text.replace(old_click, new_click, 1)
+
+          if 'touchTapXRatio(' in text:
+              raise SystemExit('legacy touchTapXRatio call remains')
+          path.write_text(text)
+          PY
+          git diff --check -- src/lib/reader/engines/epubjs.ts
+
+      - name: Commit repair and remove helper
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/repair-reader-physical-tap.yml
+          git add src/lib/reader/engines/epubjs.ts
+          git diff --cached --check
+          git diff --cached --quiet && { echo 'Expected repair diff is empty.' >&2; exit 1; }
+          git commit -m 'fix(reader): map taps from physical reader viewport'
+          git fetch origin "$GITHUB_REF_NAME"
+          git rebase "origin/$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
