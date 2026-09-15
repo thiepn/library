@@ -1,0 +1,57 @@
+name: Repair zero-valued reader screen coordinates
+
+on:
+  push:
+    branches:
+      - repair/reader-touch-visible-ratio-34751544799
+    paths:
+      - .github/workflows/repair-reader-screenx-zero.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: repair-reader-screenx-zero-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repair branch
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+
+      - name: Ignore unavailable zero screen coordinates
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('src/lib/reader/engines/epubjs.ts')
+          text = path.read_text()
+          old = "if (typeof screenX === 'number' && Number.isFinite(screenX)) {"
+          new = "if (typeof screenX === 'number' && Number.isFinite(screenX) && screenX > 0) {"
+          if text.count(old) != 1:
+              raise SystemExit(f'expected exactly one screenX guard, found {text.count(old)}')
+          text = text.replace(old, new, 1)
+          path.write_text(text)
+          PY
+          git diff --check -- src/lib/reader/engines/epubjs.ts
+          grep -F "Number.isFinite(screenX) && screenX > 0" src/lib/reader/engines/epubjs.ts
+
+      - name: Commit repair and remove helper
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/repair-reader-screenx-zero.yml
+          git add src/lib/reader/engines/epubjs.ts
+          git diff --cached --check
+          git diff --cached --quiet && { echo 'Expected repair diff is empty.' >&2; exit 1; }
+          git commit -m 'fix(reader): ignore unavailable zero screen coordinates'
+          git fetch origin "$GITHUB_REF_NAME"
+          git rebase "origin/$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
