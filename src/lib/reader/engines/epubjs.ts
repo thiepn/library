@@ -169,55 +169,62 @@ function clampRatio(value: number): number {
 }
 
 /**
- * EPUB.js paginated content can expose touch clientX in either of two CSS coordinate
- * spaces: iframe-local coordinates (including the iframe's translated page offset) or
- * already-normalized visible-reader coordinates on some physical mobile engines.
- * Resolve both from CSS geometry only. This avoids screen.width, which is not the
- * browser viewport under desktop device emulation and can misclassify right-edge taps.
+ * EPUB.js paginated content can render one iframe several page widths wide and
+ * translate it behind the visible reader viewport. Event clientX is therefore not
+ * a stable physical tap coordinate. Prefer screenX projected into the parent reader
+ * viewport, then fall back to same-origin frame geometry and finally iframe-local CSS.
  */
-function touchTapXRatio(
+function physicalTapXRatio(
   win: Window,
   doc: Document,
   clientX: number,
-  _screenX: number | undefined,
-  pointerType: ReaderPointerType,
+  screenX?: number,
 ): number {
   const localWidth = Math.max(1, win.innerWidth || doc.documentElement?.clientWidth || 1);
   const localRatio = clampRatio(clientX / localWidth);
-  if (pointerType !== 'touch' || !Number.isFinite(clientX)) return localRatio;
 
   try {
     const frame = win.frameElement as HTMLElement | null;
     const viewport = frame?.closest?.('[data-reader-viewport]') as HTMLElement | null;
+    const parentWin = viewport?.ownerDocument.defaultView;
     const frameRect = frame?.getBoundingClientRect();
     const viewportRect = viewport?.getBoundingClientRect();
     const visibleWidth = viewportRect?.width;
     if (
       frameRect
       && viewportRect
+      && parentWin
       && typeof visibleWidth === 'number'
       && Number.isFinite(visibleWidth)
       && visibleWidth > 1
     ) {
-      const tolerance = Math.max(2, visibleWidth * 0.02);
+      const tolerance = Math.max(3, visibleWidth * 0.03);
       const inVisibleRange = (x: number) => x >= -tolerance && x <= visibleWidth + tolerance;
 
-      // Normal iframe events are local to a translated/wide EPUB surface. Convert that
-      // local coordinate back into the reader viewport before deciding the tap zone.
+      // screenX remains in physical browser-window coordinates even when EPUB.js
+      // translates a wide iframe. Window.screenX supplies the matching parent-window
+      // origin without relying on screen.width/device emulation geometry.
+      if (typeof screenX === 'number' && Number.isFinite(screenX)) {
+        const physicalX = screenX - parentWin.screenX - viewportRect.left;
+        if (inVisibleRange(physicalX)) {
+          return clampRatio(physicalX / visibleWidth);
+        }
+      }
+
+      // Normal iframe-local events include the translated page offset. Project them
+      // through the frame rectangle back into the visible reader viewport.
       const translatedVisibleX = clientX + frameRect.left - viewportRect.left;
       if (inVisibleRange(translatedVisibleX)) {
         return clampRatio(translatedVisibleX / visibleWidth);
       }
 
-      // Some physical mobile engines already report clientX in visible-reader CSS
-      // coordinates despite the iframe's wider translated geometry. Accept that form
-      // only when the geometry-derived form is outside the visible reader.
+      // Some mobile engines already expose clientX in visible-reader coordinates.
       if (inVisibleRange(clientX)) {
         return clampRatio(clientX / visibleWidth);
       }
     }
   } catch {
-    // Cross-context geometry can be unavailable; retain the qualified local fallback.
+    // Same-origin frame geometry can be unavailable during teardown; use local CSS.
   }
 
   return localRatio;
@@ -348,7 +355,7 @@ export class EpubJsEngine implements ReaderEngine {
         const height = Math.max(1, win.innerHeight || doc.documentElement?.clientHeight || 1);
         interaction = {
           type: 'tap',
-          xRatio: touchTapXRatio(win, doc, x, screenX, effectivePointerType),
+          xRatio: physicalTapXRatio(win, doc, x, screenX),
           yRatio: clampRatio(y / height),
           pointerType: effectivePointerType,
           interactive,
@@ -457,11 +464,10 @@ export class EpubJsEngine implements ReaderEngine {
       }
       if (isInteractiveTarget(event.target) || hasSelection()) return;
 
-      const width = Math.max(1, win.innerWidth || doc.documentElement?.clientWidth || 1);
       const height = Math.max(1, win.innerHeight || doc.documentElement?.clientHeight || 1);
       const interaction: ReaderContentInteraction = {
         type: 'tap',
-        xRatio: clampRatio(event.clientX / width),
+        xRatio: physicalTapXRatio(win, doc, event.clientX, event.screenX),
         yRatio: clampRatio(event.clientY / height),
         pointerType: 'mouse',
         interactive: false,
