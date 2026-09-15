@@ -1,0 +1,113 @@
+name: Repair reader tap coordinate priority
+
+on:
+  push:
+    branches:
+      - repair/reader-touch-visible-ratio-34751544799
+    paths:
+      - .github/workflows/repair-reader-tap-coordinate-priority.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: repair-reader-tap-coordinate-priority-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repair branch
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+
+      - name: Prefer CSS frame geometry over screen coordinates
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('src/lib/reader/engines/epubjs.ts')
+          text = path.read_text()
+
+          old_doc = ''' * a stable physical tap coordinate. Prefer screenX projected into the parent reader
+ * viewport, then fall back to same-origin frame geometry and finally iframe-local CSS.
+'''
+          new_doc = ''' * a stable physical tap coordinate. Project same-origin iframe CSS geometry into the
+ * reader viewport first, accept already-visible clientX next, and use screenX only as a
+ * final geometry fallback because device emulation can expose a different screen origin.
+'''
+          if text.count(old_doc) != 1:
+              raise SystemExit(f'expected one helper doc block, found {text.count(old_doc)}')
+          text = text.replace(old_doc, new_doc, 1)
+
+          screen_block = '''      // screenX remains in physical browser-window coordinates even when EPUB.js
+      // translates a wide iframe. Window.screenX supplies the matching parent-window
+      // origin without relying on screen.width/device emulation geometry.
+      if (typeof screenX === 'number' && Number.isFinite(screenX) && screenX > 0) {
+        const physicalX = screenX - parentWin.screenX - viewportRect.left;
+        if (inVisibleRange(physicalX)) {
+          return clampRatio(physicalX / visibleWidth);
+        }
+      }
+
+'''
+          if text.count(screen_block) != 1:
+              raise SystemExit(f'expected one screenX block, found {text.count(screen_block)}')
+          text = text.replace(screen_block, '', 1)
+
+          anchor = '''      // Some mobile engines already expose clientX in visible-reader coordinates.
+      if (inVisibleRange(clientX)) {
+        return clampRatio(clientX / visibleWidth);
+      }
+'''
+          replacement = anchor + '''
+      // Use screen coordinates only when neither CSS interpretation describes a visible tap.
+      // On emulated/physical mobile engines screenX can use a screen origin that differs from
+      // the browser viewport, so it must not override an unambiguous frame projection.
+      if (typeof screenX === 'number' && Number.isFinite(screenX) && screenX > 0) {
+        const physicalX = screenX - parentWin.screenX - viewportRect.left;
+        if (inVisibleRange(physicalX)) {
+          return clampRatio(physicalX / visibleWidth);
+        }
+      }
+'''
+          if text.count(anchor) != 1:
+              raise SystemExit(f'expected one visible-client fallback block, found {text.count(anchor)}')
+          text = text.replace(anchor, replacement, 1)
+          path.write_text(text)
+          PY
+          git diff --check -- src/lib/reader/engines/epubjs.ts
+
+      - name: Setup pnpm and Node
+        uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2
+        with:
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+          cache: true
+
+      - name: Certify build before committing
+        shell: bash
+        run: |
+          set -euo pipefail
+          pnpm install --frozen-lockfile
+          pnpm build
+
+      - name: Commit repair and self-remove helper
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/repair-reader-tap-coordinate-priority.yml
+          git add src/lib/reader/engines/epubjs.ts
+          git diff --cached --check
+          git diff --cached --quiet && { echo 'Expected repair diff is empty.' >&2; exit 1; }
+          git commit -m 'fix(reader): prefer frame geometry for tap zones'
+          git fetch origin "$GITHUB_REF_NAME"
+          git rebase "origin/$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
