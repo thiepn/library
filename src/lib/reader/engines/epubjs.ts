@@ -171,8 +171,9 @@ function clampRatio(value: number): number {
 /**
  * EPUB.js paginated content can render one iframe several page widths wide and
  * translate it behind the visible reader viewport. Event clientX is therefore not
- * a stable physical tap coordinate. Prefer screenX projected into the parent reader
- * viewport, then fall back to same-origin frame geometry and finally iframe-local CSS.
+ * a stable physical tap coordinate. Project same-origin iframe CSS geometry into the
+ * reader viewport first, accept already-visible clientX next, and use screenX only as a
+ * final geometry fallback because device emulation can expose a different screen origin.
  */
 function physicalTapXRatio(
   win: Window,
@@ -201,16 +202,6 @@ function physicalTapXRatio(
       const tolerance = Math.max(3, visibleWidth * 0.03);
       const inVisibleRange = (x: number) => x >= -tolerance && x <= visibleWidth + tolerance;
 
-      // screenX remains in physical browser-window coordinates even when EPUB.js
-      // translates a wide iframe. Window.screenX supplies the matching parent-window
-      // origin without relying on screen.width/device emulation geometry.
-      if (typeof screenX === 'number' && Number.isFinite(screenX) && screenX > 0) {
-        const physicalX = screenX - parentWin.screenX - viewportRect.left;
-        if (inVisibleRange(physicalX)) {
-          return clampRatio(physicalX / visibleWidth);
-        }
-      }
-
       // Normal iframe-local events include the translated page offset. Project them
       // through the frame rectangle back into the visible reader viewport.
       const translatedVisibleX = clientX + frameRect.left - viewportRect.left;
@@ -221,6 +212,16 @@ function physicalTapXRatio(
       // Some mobile engines already expose clientX in visible-reader coordinates.
       if (inVisibleRange(clientX)) {
         return clampRatio(clientX / visibleWidth);
+      }
+
+      // Use screen coordinates only when neither CSS interpretation describes a visible tap.
+      // On emulated/physical mobile engines screenX can use a screen origin that differs from
+      // the browser viewport, so it must not override an unambiguous frame projection.
+      if (typeof screenX === 'number' && Number.isFinite(screenX) && screenX > 0) {
+        const physicalX = screenX - parentWin.screenX - viewportRect.left;
+        if (inVisibleRange(physicalX)) {
+          return clampRatio(physicalX / visibleWidth);
+        }
       }
     }
   } catch {
