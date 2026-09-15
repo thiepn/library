@@ -1,0 +1,1 @@
+Temporary qualification sentinel for user-authored exact-tree PR checks.
