@@ -29,56 +29,22 @@ jobs:
           set -euo pipefail
           python - <<'PY'
           from pathlib import Path
-
           path = Path('src/lib/reader/engines/epubjs.ts')
           text = path.read_text()
-
-          old_doc = ''' * a stable physical tap coordinate. Prefer screenX projected into the parent reader
- * viewport, then fall back to same-origin frame geometry and finally iframe-local CSS.
-'''
-          new_doc = ''' * a stable physical tap coordinate. Project same-origin iframe CSS geometry into the
- * reader viewport first, accept already-visible clientX next, and use screenX only as a
- * final geometry fallback because device emulation can expose a different screen origin.
-'''
+          old_doc = " * a stable physical tap coordinate. Prefer screenX projected into the parent reader\n * viewport, then fall back to same-origin frame geometry and finally iframe-local CSS.\n"
+          new_doc = " * a stable physical tap coordinate. Project same-origin iframe CSS geometry into the\n * reader viewport first, accept already-visible clientX next, and use screenX only as a\n * final geometry fallback because device emulation can expose a different screen origin.\n"
           if text.count(old_doc) != 1:
               raise SystemExit(f'expected one helper doc block, found {text.count(old_doc)}')
           text = text.replace(old_doc, new_doc, 1)
-
-          screen_block = '''      // screenX remains in physical browser-window coordinates even when EPUB.js
-      // translates a wide iframe. Window.screenX supplies the matching parent-window
-      // origin without relying on screen.width/device emulation geometry.
-      if (typeof screenX === 'number' && Number.isFinite(screenX) && screenX > 0) {
-        const physicalX = screenX - parentWin.screenX - viewportRect.left;
-        if (inVisibleRange(physicalX)) {
-          return clampRatio(physicalX / visibleWidth);
-        }
-      }
-
-'''
+          screen_block = "      // screenX remains in physical browser-window coordinates even when EPUB.js\n      // translates a wide iframe. Window.screenX supplies the matching parent-window\n      // origin without relying on screen.width/device emulation geometry.\n      if (typeof screenX === 'number' && Number.isFinite(screenX) && screenX > 0) {\n        const physicalX = screenX - parentWin.screenX - viewportRect.left;\n        if (inVisibleRange(physicalX)) {\n          return clampRatio(physicalX / visibleWidth);\n        }\n      }\n\n"
           if text.count(screen_block) != 1:
               raise SystemExit(f'expected one screenX block, found {text.count(screen_block)}')
           text = text.replace(screen_block, '', 1)
-
-          anchor = '''      // Some mobile engines already expose clientX in visible-reader coordinates.
-      if (inVisibleRange(clientX)) {
-        return clampRatio(clientX / visibleWidth);
-      }
-'''
-          replacement = anchor + '''
-      // Use screen coordinates only when neither CSS interpretation describes a visible tap.
-      // On emulated/physical mobile engines screenX can use a screen origin that differs from
-      // the browser viewport, so it must not override an unambiguous frame projection.
-      if (typeof screenX === 'number' && Number.isFinite(screenX) && screenX > 0) {
-        const physicalX = screenX - parentWin.screenX - viewportRect.left;
-        if (inVisibleRange(physicalX)) {
-          return clampRatio(physicalX / visibleWidth);
-        }
-      }
-'''
+          anchor = "      // Some mobile engines already expose clientX in visible-reader coordinates.\n      if (inVisibleRange(clientX)) {\n        return clampRatio(clientX / visibleWidth);\n      }\n"
+          screen_fallback = "\n      // Use screen coordinates only when neither CSS interpretation describes a visible tap.\n      // On emulated/physical mobile engines screenX can use a screen origin that differs from\n      // the browser viewport, so it must not override an unambiguous frame projection.\n      if (typeof screenX === 'number' && Number.isFinite(screenX) && screenX > 0) {\n        const physicalX = screenX - parentWin.screenX - viewportRect.left;\n        if (inVisibleRange(physicalX)) {\n          return clampRatio(physicalX / visibleWidth);\n        }\n      }\n"
           if text.count(anchor) != 1:
               raise SystemExit(f'expected one visible-client fallback block, found {text.count(anchor)}')
-          text = text.replace(anchor, replacement, 1)
-          path.write_text(text)
+          path.write_text(text.replace(anchor, anchor + screen_fallback, 1))
           PY
           git diff --check -- src/lib/reader/engines/epubjs.ts
 
