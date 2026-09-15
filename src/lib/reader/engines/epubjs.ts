@@ -263,7 +263,7 @@ export class EpubJsEngine implements ReaderEngine {
   private selectionListeners = new Set<(selection: ReaderSelection) => void>();
   private interactionListeners = new Set<ReaderInteractionHandler>();
   private instrumentedDocuments = new WeakSet<Document>();
-  private lastHandledTouchAt = -Infinity;
+  private lastTouchTapAt = -Infinity;
 
   private readonly handleRelocated = (location: EpubLocation) => {
     const mapped = mapLocation(location);
@@ -356,10 +356,16 @@ export class EpubJsEngine implements ReaderEngine {
         };
       }
 
+      // A qualifying touch tap owns any compatibility click the browser may synthesize,
+      // even when the reader cannot advance at a publication boundary. Record ownership
+      // before dispatch so an unhandled boundary tap cannot fall through to a second click.
+      if (interaction?.type === 'tap' && effectivePointerType === 'touch') {
+        this.lastTouchTapAt = performance.now();
+      }
+
       const handled = Boolean(interaction && this.emitInteraction(interaction));
       if (handled) {
         lastHandledPointer = { x, y, time: performance.now() };
-        if (effectivePointerType === 'touch') this.lastHandledTouchAt = performance.now();
       }
       return handled;
     };
@@ -431,10 +437,10 @@ export class EpubJsEngine implements ReaderEngine {
     };
 
     const handleClick = (event: MouseEvent) => {
-      // A handled touch may replace the EPUB iframe before the browser emits its synthesized
-      // compatibility click. Keep this touch-only gate on the engine instance so the follow-up
-      // click cannot turn a second page from a newly rendered Document.
-      if (performance.now() - this.lastHandledTouchAt < COMPATIBILITY_CLICK_DEDUPE_MS) {
+      // A qualifying touch tap can replace the EPUB iframe before its synthesized compatibility
+      // click arrives. Suppress that follow-up even if the primary tap was unhandled at a reader
+      // boundary; standalone click-only input remains valid because it has no preceding touch tap.
+      if (performance.now() - this.lastTouchTapAt < COMPATIBILITY_CLICK_DEDUPE_MS) {
         event.preventDefault();
         return;
       }
@@ -748,6 +754,6 @@ export class EpubJsEngine implements ReaderEngine {
     this.book = undefined;
     this.instrumentedDocuments = new WeakSet<Document>();
     this.currentLocation = null;
-    this.lastHandledTouchAt = -Infinity;
+    this.lastTouchTapAt = -Infinity;
   }
 }
