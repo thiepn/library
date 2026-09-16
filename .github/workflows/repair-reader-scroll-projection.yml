@@ -1,0 +1,54 @@
+name: Repair reader scroll projection
+
+on:
+  push:
+    branches:
+      - 'repair/reader-touch-visible-ratio-34751544799'
+    paths:
+      - '.github/workflows/repair-reader-scroll-projection.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: repair-reader-scroll-projection-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repair branch
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+
+      - name: Project iframe-local taps through EPUB.js scroll state
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('src/lib/reader/engines/epubjs.ts')
+          text = path.read_text()
+          old = """      const inVisibleRange = (x: number) => x >= -tolerance && x <= visibleWidth + tolerance;\n      const visibleRatio = (x: number) => clampRatio(x / visibleWidth);\n\n      // When clientX is iframe-local, projecting through the iframe rectangle gives\n"""
+          new = """      const inVisibleRange = (x: number) => x >= -tolerance && x <= visibleWidth + tolerance;\n      const visibleRatio = (x: number) => clampRatio(x / visibleWidth);\n\n      // EPUB.js keeps the paginated strip inside an overflow-hidden scrolling container.\n      // Its scrollLeft is the exact strip origin currently hidden to the left of the visible\n      // page, so use layout offsets plus scroll state before relying on browser-specific\n      // iframe bounding-rectangle translation. This handles engines that expose clientX in\n      // strip-local coordinates while reporting frame rectangles in a different CSS space.\n      const scroller = frame?.closest?.('.epub-container') as HTMLElement | null;\n      if (\n        scroller\n        && Number.isFinite(clientX)\n        && scroller.clientWidth > 1\n        && scroller.scrollWidth > scroller.clientWidth + 1\n      ) {\n        let offsetX = 0;\n        let node: HTMLElement | null = frame;\n        while (node && node !== scroller) {\n          offsetX += node.offsetLeft;\n          node = node.offsetParent as HTMLElement | null;\n        }\n        if (node === scroller) {\n          const scrollProjectedX = clientX + offsetX - scroller.scrollLeft;\n          if (inVisibleRange(scrollProjectedX)) return visibleRatio(scrollProjectedX);\n        }\n      }\n\n      // When clientX is iframe-local, projecting through the iframe rectangle gives\n"""
+          if old not in text:
+              raise SystemExit('expected visibleRatio anchor not found; refusing to patch')
+          path.write_text(text.replace(old, new, 1))
+          PY
+          git diff --check
+          git diff -- src/lib/reader/engines/epubjs.ts
+
+      - name: Commit repair and self-remove helper
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/repair-reader-scroll-projection.yml
+          git add src/lib/reader/engines/epubjs.ts
+          git commit -m 'fix: project EPUB taps through scroll state'
+          git fetch origin "$GITHUB_REF_NAME"
+          git rebase "origin/$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
