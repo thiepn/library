@@ -183,6 +183,27 @@ function physicalTapXRatio(
   const localWidth = Math.max(1, win.innerWidth || doc.documentElement?.clientWidth || 1);
   const localRatio = clampRatio(clientX / localWidth);
 
+  // In EPUB.js paginated mode the iframe viewport can span the entire multi-page strip
+  // while the publication body remains one visible page wide. Browser touch events can
+  // still report clientX in that visible-page coordinate space. Treat that coordinate
+  // as authoritative before dividing by the much wider iframe; otherwise a physical
+  // right-edge tap (for example 310px in a 370px page inside an 1850px iframe) is
+  // misclassified as a left-edge tap. This is deliberately not modulo arithmetic: when
+  // an engine reports strip-local coordinates, page stride/gap geometry must be resolved
+  // by the parent-frame/screen fallbacks below rather than guessed.
+  const publicationPageWidth = Number(doc.body?.getBoundingClientRect().width || doc.body?.clientWidth || 0);
+  if (
+    Number.isFinite(publicationPageWidth)
+    && publicationPageWidth > 1
+    && localWidth > publicationPageWidth * 1.25
+    && Number.isFinite(clientX)
+  ) {
+    const pageTolerance = Math.max(3, publicationPageWidth * 0.03);
+    if (clientX >= -pageTolerance && clientX <= publicationPageWidth + pageTolerance) {
+      return clampRatio(clientX / publicationPageWidth);
+    }
+  }
+
   try {
     const frame = win.frameElement as HTMLElement | null;
     const viewport = frame?.closest?.('[data-reader-viewport]') as HTMLElement | null;
