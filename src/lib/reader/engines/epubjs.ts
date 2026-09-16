@@ -170,10 +170,9 @@ function clampRatio(value: number): number {
 
 /**
  * EPUB.js paginated content can render one iframe several page widths wide and
- * translate it behind the visible reader viewport. Event clientX is therefore not
- * a stable physical tap coordinate. Project same-origin iframe CSS geometry into the
- * reader viewport first, accept already-visible clientX next, and use screenX only as a
- * final geometry fallback because device emulation can expose a different screen origin.
+ * translate it behind the visible reader viewport. Event clientX may therefore be
+ * iframe-local strip geometry or already be expressed in visible-reader CSS pixels.
+ * Resolve CSS geometry first; use physical screen coordinates only as a fallback.
  */
 function physicalTapXRatio(
   win: Window,
@@ -203,31 +202,28 @@ function physicalTapXRatio(
       const inVisibleRange = (x: number) => x >= -tolerance && x <= visibleWidth + tolerance;
       const visibleRatio = (x: number) => clampRatio(x / visibleWidth);
 
-      // A real touch or mouse event can expose the physical screen coordinate even when
-      // EPUB.js reports clientX in the translated multi-page iframe. Accept screenX only
-      // when it maps cleanly back inside this reader viewport; otherwise ignore it.
+      // When clientX is iframe-local, projecting through the iframe rectangle gives
+      // the exact visible-reader coordinate, including EPUB.js page translation and gap.
+      // This must happen before any modulo/wrapping heuristic: page stride can differ
+      // from viewport width and wrapping can turn a right-edge tap into a left-edge tap.
+      if (Number.isFinite(clientX)) {
+        const projectedX = clientX + frameRect.left - viewportRect.left;
+        if (inVisibleRange(projectedX)) return visibleRatio(projectedX);
+      }
+
+      // Some engines already report clientX in visible-reader CSS coordinates. If the
+      // iframe projection is outside the viewport, preserve that coordinate directly.
+      if (Number.isFinite(clientX) && inVisibleRange(clientX)) {
+        return visibleRatio(clientX);
+      }
+
+      // Real mobile events can retain a physical screen coordinate when iframe-local
+      // CSS geometry is translated beyond the visible reader. Accept it only if it maps
+      // cleanly into this viewport; emulated/synthetic screen origins are otherwise ignored.
       if (typeof screenX === 'number' && Number.isFinite(screenX) && screenX > 0) {
         const physicalX = screenX - parentWin.screenX - viewportRect.left;
         if (inVisibleRange(physicalX)) return visibleRatio(physicalX);
       }
-
-      // Paginated EPUB.js views can be several viewport widths wide. In that case the
-      // iframe-local clientX is a content-strip coordinate; wrapping by the visible page
-      // stride recovers the physical position within the currently visible page. This
-      // also preserves already-visible clientX values because they are below one stride.
-      if (Number.isFinite(clientX) && frameRect.width > visibleWidth * 1.5) {
-        const wrappedX = ((clientX % visibleWidth) + visibleWidth) % visibleWidth;
-        if (inVisibleRange(wrappedX)) return visibleRatio(wrappedX);
-      }
-
-      // For ordinary single-page frames, project iframe-local CSS geometry into the
-      // visible reader. This remains the preferred CSS-only interpretation when screen
-      // coordinates are unavailable or intentionally omitted by a synthetic test event.
-      const translatedVisibleX = clientX + frameRect.left - viewportRect.left;
-      if (inVisibleRange(translatedVisibleX)) return visibleRatio(translatedVisibleX);
-
-      // Some engines already expose clientX in visible-reader coordinates.
-      if (inVisibleRange(clientX)) return visibleRatio(clientX);
     }
   } catch {
     // Same-origin frame geometry can be unavailable during teardown; use local CSS.
