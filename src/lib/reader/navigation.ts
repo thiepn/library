@@ -276,18 +276,24 @@ export class ReaderNavigationController {
       return true;
     }
 
-    if (interaction.type === 'tap') return this.handleTapRatio(interaction.xRatio);
+    // Engine interactions are already normalized to the visible reader surface. Only the
+    // compatibility bridge below may still deliver a section-global ratio that needs remapping.
+    if (interaction.type === 'tap') return this.handleTapRatio(interaction.xRatio, true);
 
     return false;
   };
 
-  private handleTapRatio(rawRatio: number): boolean {
-    const tapRatio = visibleTapRatio(
-      rawRatio,
-      this.controllerState.location,
-      this.readingModeState.effectiveSpread,
-    );
+  private handleTapRatio(rawRatio: number, alreadyVisible = false): boolean {
+    if (!alreadyVisible) {
+      const tapRatio = visibleTapRatio(
+        rawRatio,
+        this.controllerState.location,
+        this.readingModeState.effectiveSpread,
+      );
+      return this.handleTapRatio(tapRatio, true);
+    }
 
+    const tapRatio = clampUnit(rawRatio);
     if (this.readingModeState.flow === 'paginated') {
       if (tapRatio <= this.edgeTapRatio) {
         void this.navigate('previous', 'tap');
