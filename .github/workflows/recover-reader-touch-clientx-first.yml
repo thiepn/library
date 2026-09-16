@@ -1,0 +1,106 @@
+name: Recover reader touch clientX geometry
+
+on:
+  push:
+    branches:
+      - 'repair/reader-touch-clientx-first-e671625'
+    paths:
+      - '.github/workflows/recover-reader-touch-clientx-first.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: recover-reader-touch-clientx-first-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  recover:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repair branch
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm and Node
+        uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2
+        with:
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+          cache: true
+
+      - name: Prefer unambiguous visible-page clientX before physical screen fallback
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          path = Path('src/lib/reader/engines/epubjs.ts')
+          text = path.read_text()
+
+          legacy = re.compile(
+              r"\n  // In EPUB\.js paginated content can render one iframe several page widths wide.*?\n  }\n\n  try \{",
+              re.S,
+          )
+          text, removed = legacy.subn("\n  try {", text, count=1)
+          if removed != 1:
+              raise SystemExit(f'expected to relocate exactly one publication-page clientX block, found {removed}')
+
+          anchor = "  const localRatio = clampRatio(clientX / localWidth);\n"
+          if text.count(anchor) != 1:
+              raise SystemExit(f'expected one localRatio anchor, found {text.count(anchor)}')
+
+          early = r'''
+
+  // A clientX that already fits the publication's declared visible page is the least
+  // ambiguous coordinate we have. Chromium touch emulation can expose a synthetic screenX
+  // that does not describe the physical tap even though clientX is correct. Accept this
+  // visible-page coordinate before consulting screen geometry. Real devices that expose a
+  // translated multi-column clientX fall through because that value is outside one page.
+  const computedBodyWidth = doc.body ? Number.parseFloat(win.getComputedStyle(doc.body).width) : Number.NaN;
+  const publicationPageWidth = Number.isFinite(computedBodyWidth) && computedBodyWidth > 1
+    ? computedBodyWidth
+    : Number(doc.body?.clientWidth || 0);
+  if (
+    Number.isFinite(publicationPageWidth)
+    && publicationPageWidth > 1
+    && localWidth > publicationPageWidth * 1.25
+    && Number.isFinite(clientX)
+  ) {
+    const pageTolerance = Math.max(3, publicationPageWidth * 0.03);
+    if (clientX >= -pageTolerance && clientX <= publicationPageWidth + pageTolerance) {
+      return clampRatio(clientX / publicationPageWidth);
+    }
+  }
+'''
+          text = text.replace(anchor, anchor + early, 1)
+          path.write_text(text)
+          PY
+
+          git diff --check
+          git diff -- src/lib/reader/engines/epubjs.ts
+
+      - name: Install and qualify touch repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          pnpm install --frozen-lockfile
+          pnpm check
+          pnpm exec playwright test tests/e2e/reader-tap-zones.spec.ts --project=chromium-phone
+
+      - name: Commit repair and remove helper workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/recover-reader-touch-clientx-first.yml
+          git add src/lib/reader/engines/epubjs.ts
+          git commit -m 'fix: prefer visible EPUB touch coordinates'
+          git fetch origin "$GITHUB_REF_NAME"
+          git rebase "origin/$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
