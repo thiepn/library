@@ -25,14 +25,18 @@ jobs:
           from pathlib import Path
           p = Path('src/lib/reader/engines/epubjs.ts')
           s = p.read_text()
-          marker = "  // For a real touch gesture, screenX is anchored to the physical visible screen rather"
-          body_marker = "  // In EPUB.js paginated content can render one iframe several page widths wide"
+          screen_marker = "  // For a real touch gesture, screenX is anchored to the physical visible screen rather"
+          body_marker = "  // In EPUB.js paginated mode the iframe viewport can span the entire multi-page strip"
           body_start = s.index(body_marker)
-          try_start = s.index("  try {", body_start)
-          body_block = s[body_start:try_start]
-          s = s[:body_start] + s[try_start:]
-          start = s.index(marker)
-          s = s[:start] + body_block + s[start:]
+          body_end = s.index("\n  try {", body_start)
+          body_block = s[body_start:body_end]
+          s = s[:body_start] + s[body_end:]
+          screen_start = s.index(screen_marker)
+          s = s[:screen_start] + body_block + "\n\n" + s[screen_start:]
+          if s.count(body_marker) != 1 or s.count(screen_marker) != 1:
+              raise SystemExit('touch geometry blocks must remain unique')
+          if s.index(body_marker) > s.index(screen_marker):
+              raise SystemExit('publication-page clientX must precede physical screen fallback')
           p.write_text(s)
           PY
           git diff --check
