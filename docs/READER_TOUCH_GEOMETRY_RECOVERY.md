@@ -1,0 +1,11 @@
+# Reader touch geometry recovery
+
+This recovery documents the production deployment repair for Deploy Library run `34751544799` after public-domain batch #105 merged at `4ed22f90875440ea8cac65be502fb7f00c76df2b`.
+
+The retained RR6 evidence showed that EPUB.js can render a paginated iframe several CSS page widths wide and translate it behind the visible reader viewport. Touch `clientX` can therefore arrive as a coordinate in that multi-page content strip or already in visible-reader CSS coordinates. The repair first accepts `screenX` only when it maps cleanly back inside the current reader viewport, then normalizes wide paginated-frame `clientX` by the visible page stride, and finally falls back to same-origin frame projection or already-visible CSS coordinates. This keeps physical taps tied to the visible page without trusting an invalid screen origin or a plausible-but-wrong translated iframe coordinate.
+
+The retained cross-engine evidence also exposed a second boundary condition: a valid touch tap may be unhandled when the reader cannot advance farther, but the browser can still synthesize a compatibility `click` afterward. If that click survives, it is interpreted independently using iframe-local mouse coordinates and can turn an unintended second page. A qualifying non-interactive touch tap now owns and suppresses its immediate compatibility click whether or not the reader action changed location. Interactive controls, selections, swipes, standalone click-only input, keyboard input, and independent desktop clicks retain their existing behavior.
+
+This recovery changes only reader touch-coordinate normalization and compatibility-click deduplication. It does not alter acquisition, copyright, provenance, cover, immutable release, R2, certification, accessibility, ergonomics, security, or deployment policy. It also leaves all generated publication metadata and immutable R2 release objects untouched. Cross-engine pull-request qualification is the acceptance proof for the repaired coordinate ordering.
+
+The exact final pull-request head must pass every applicable qualification workflow before merge, and the resulting `main` SHA must pass the complete Deploy Library pipeline and exact live production identity verification before batch #105 is considered published.

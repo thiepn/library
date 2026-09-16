@@ -169,38 +169,68 @@ function clampRatio(value: number): number {
 }
 
 /**
- * Prefer iframe-local touch coordinates whenever they still fall inside the visible content
- * viewport. Some physical mobile engines can report translated/replaced paginated iframe
- * coordinates outside that viewport; only then recover with the touch's physical screenX.
- * This keeps ordinary and synthetic browser taps tied to visible reader geometry while retaining
- * the physical-device fallback that survives EPUB.js iframe translation.
+ * EPUB.js paginated content can render one iframe several page widths wide and
+ * translate it behind the visible reader viewport. Event clientX may therefore be
+ * iframe-local strip geometry or already be expressed in visible-reader CSS pixels.
+ * Resolve CSS geometry first; use physical screen coordinates only as a fallback.
  */
-function touchTapXRatio(
+function physicalTapXRatio(
   win: Window,
   doc: Document,
   clientX: number,
-  screenX: number | undefined,
-  pointerType: ReaderPointerType,
+  screenX?: number,
 ): number {
   const localWidth = Math.max(1, win.innerWidth || doc.documentElement?.clientWidth || 1);
   const localRatio = clampRatio(clientX / localWidth);
-  if (
-    pointerType !== 'touch'
-    || (Number.isFinite(clientX) && clientX >= 0 && clientX <= localWidth)
-    || typeof screenX !== 'number'
-    || !Number.isFinite(screenX)
-    || screenX <= 0
-  ) {
-    return localRatio;
+
+  try {
+    const frame = win.frameElement as HTMLElement | null;
+    const viewport = frame?.closest?.('[data-reader-viewport]') as HTMLElement | null;
+    const parentWin = viewport?.ownerDocument.defaultView;
+    const frameRect = frame?.getBoundingClientRect();
+    const viewportRect = viewport?.getBoundingClientRect();
+    const visibleWidth = viewportRect?.width;
+    if (
+      frameRect
+      && viewportRect
+      && parentWin
+      && typeof visibleWidth === 'number'
+      && Number.isFinite(visibleWidth)
+      && visibleWidth > 1
+    ) {
+      const tolerance = Math.max(3, visibleWidth * 0.03);
+      const inVisibleRange = (x: number) => x >= -tolerance && x <= visibleWidth + tolerance;
+      const visibleRatio = (x: number) => clampRatio(x / visibleWidth);
+
+      // When clientX is iframe-local, projecting through the iframe rectangle gives
+      // the exact visible-reader coordinate, including EPUB.js page translation and gap.
+      // This must happen before any modulo/wrapping heuristic: page stride can differ
+      // from viewport width and wrapping can turn a right-edge tap into a left-edge tap.
+      if (Number.isFinite(clientX)) {
+        const projectedX = clientX + frameRect.left - viewportRect.left;
+        if (inVisibleRange(projectedX)) return visibleRatio(projectedX);
+      }
+
+      // Some engines already report clientX in visible-reader CSS coordinates. If the
+      // iframe projection is outside the viewport, preserve that coordinate directly.
+      if (Number.isFinite(clientX) && inVisibleRange(clientX)) {
+        return visibleRatio(clientX);
+      }
+
+      // Real mobile events can retain a physical screen coordinate when iframe-local
+      // CSS geometry is translated beyond the visible reader. Accept it only if it maps
+      // cleanly into this viewport; emulated/synthetic screen origins are otherwise ignored.
+      if (typeof screenX === 'number' && Number.isFinite(screenX) && screenX > 0) {
+        const physicalX = screenX - parentWin.screenX - viewportRect.left;
+        if (inVisibleRange(physicalX)) return visibleRatio(physicalX);
+      }
+    }
+  } catch {
+    // Same-origin frame geometry can be unavailable during teardown; use local CSS.
   }
 
-  const screenWidth = Number(win.screen?.width);
-  if (!Number.isFinite(screenWidth) || screenWidth <= 1 || screenX > screenWidth) {
-    return localRatio;
-  }
-  return clampRatio(screenX / screenWidth);
+  return localRatio;
 }
-
 function mapLocation(location: EpubLocation): ReaderLocation {
   const start = location.start;
   const locationNumber = finite(start.location);
@@ -242,7 +272,7 @@ export class EpubJsEngine implements ReaderEngine {
   private selectionListeners = new Set<(selection: ReaderSelection) => void>();
   private interactionListeners = new Set<ReaderInteractionHandler>();
   private instrumentedDocuments = new WeakSet<Document>();
-  private lastHandledTouchAt = -Infinity;
+  private lastTouchTapAt = -Infinity;
 
   private readonly handleRelocated = (location: EpubLocation) => {
     const mapped = mapLocation(location);
@@ -327,7 +357,7 @@ export class EpubJsEngine implements ReaderEngine {
         const height = Math.max(1, win.innerHeight || doc.documentElement?.clientHeight || 1);
         interaction = {
           type: 'tap',
-          xRatio: touchTapXRatio(win, doc, x, screenX, effectivePointerType),
+          xRatio: physicalTapXRatio(win, doc, x, screenX),
           yRatio: clampRatio(y / height),
           pointerType: effectivePointerType,
           interactive,
@@ -335,10 +365,16 @@ export class EpubJsEngine implements ReaderEngine {
         };
       }
 
+      // A qualifying touch tap owns any compatibility click the browser may synthesize,
+      // even when the reader cannot advance at a publication boundary. Record ownership
+      // before dispatch so an unhandled boundary tap cannot fall through to a second click.
+      if (interaction?.type === 'tap' && effectivePointerType === 'touch') {
+        this.lastTouchTapAt = performance.now();
+      }
+
       const handled = Boolean(interaction && this.emitInteraction(interaction));
       if (handled) {
         lastHandledPointer = { x, y, time: performance.now() };
-        if (effectivePointerType === 'touch') this.lastHandledTouchAt = performance.now();
       }
       return handled;
     };
@@ -410,10 +446,10 @@ export class EpubJsEngine implements ReaderEngine {
     };
 
     const handleClick = (event: MouseEvent) => {
-      // A handled touch may replace the EPUB iframe before the browser emits its synthesized
-      // compatibility click. Keep this touch-only gate on the engine instance so the follow-up
-      // click cannot turn a second page from a newly rendered Document.
-      if (performance.now() - this.lastHandledTouchAt < COMPATIBILITY_CLICK_DEDUPE_MS) {
+      // A qualifying touch tap can replace the EPUB iframe before its synthesized compatibility
+      // click arrives. Suppress that follow-up even if the primary tap was unhandled at a reader
+      // boundary; standalone click-only input remains valid because it has no preceding touch tap.
+      if (performance.now() - this.lastTouchTapAt < COMPATIBILITY_CLICK_DEDUPE_MS) {
         event.preventDefault();
         return;
       }
@@ -430,11 +466,10 @@ export class EpubJsEngine implements ReaderEngine {
       }
       if (isInteractiveTarget(event.target) || hasSelection()) return;
 
-      const width = Math.max(1, win.innerWidth || doc.documentElement?.clientWidth || 1);
       const height = Math.max(1, win.innerHeight || doc.documentElement?.clientHeight || 1);
       const interaction: ReaderContentInteraction = {
         type: 'tap',
-        xRatio: clampRatio(event.clientX / width),
+        xRatio: physicalTapXRatio(win, doc, event.clientX, event.screenX),
         yRatio: clampRatio(event.clientY / height),
         pointerType: 'mouse',
         interactive: false,
@@ -727,6 +762,6 @@ export class EpubJsEngine implements ReaderEngine {
     this.book = undefined;
     this.instrumentedDocuments = new WeakSet<Document>();
     this.currentLocation = null;
-    this.lastHandledTouchAt = -Infinity;
+    this.lastTouchTapAt = -Infinity;
   }
 }
