@@ -1,0 +1,54 @@
+name: Repair reader computed page width
+
+on:
+  push:
+    branches:
+      - 'repair/reader-touch-visible-ratio-34751544799'
+    paths:
+      - '.github/workflows/repair-reader-computed-page-width.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: repair-reader-computed-page-width-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repair branch
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+
+      - name: Use the declared one-page body width
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('src/lib/reader/engines/epubjs.ts')
+          text = path.read_text()
+          old = "  const publicationPageWidth = Number(doc.body?.getBoundingClientRect().width || doc.body?.clientWidth || 0);\n"
+          new = """  // CSS multi-column layout can make getBoundingClientRect()/clientWidth span the whole\n  // strip even though EPUB.js declares one visible page on the body (for example 370px).\n  // Read that declared CSS width first so a visible-page clientX is classified against\n  // the page the reader actually sees, not the five-page iframe strip.\n  const computedBodyWidth = doc.body ? Number.parseFloat(win.getComputedStyle(doc.body).width) : Number.NaN;\n  const publicationPageWidth = Number.isFinite(computedBodyWidth) && computedBodyWidth > 1\n    ? computedBodyWidth\n    : Number(doc.body?.clientWidth || 0);\n"""
+          if old not in text:
+              raise SystemExit('expected publicationPageWidth anchor not found; refusing to patch')
+          path.write_text(text.replace(old, new, 1))
+          PY
+          git diff --check
+          git diff -- src/lib/reader/engines/epubjs.ts
+
+      - name: Commit repair and self-remove helper
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/repair-reader-computed-page-width.yml
+          git add src/lib/reader/engines/epubjs.ts
+          git commit -m 'fix: read EPUB visible width from computed body style'
+          git fetch origin "$GITHUB_REF_NAME"
+          git rebase "origin/$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
