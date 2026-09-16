@@ -191,7 +191,14 @@ function physicalTapXRatio(
   // misclassified as a left-edge tap. This is deliberately not modulo arithmetic: when
   // an engine reports strip-local coordinates, page stride/gap geometry must be resolved
   // by the parent-frame/screen fallbacks below rather than guessed.
-  const publicationPageWidth = Number(doc.body?.getBoundingClientRect().width || doc.body?.clientWidth || 0);
+  // CSS multi-column layout can make getBoundingClientRect()/clientWidth span the whole
+  // strip even though EPUB.js declares one visible page on the body (for example 370px).
+  // Read that declared CSS width first so a visible-page clientX is classified against
+  // the page the reader actually sees, not the five-page iframe strip.
+  const computedBodyWidth = doc.body ? Number.parseFloat(win.getComputedStyle(doc.body).width) : Number.NaN;
+  const publicationPageWidth = Number.isFinite(computedBodyWidth) && computedBodyWidth > 1
+    ? computedBodyWidth
+    : Number(doc.body?.clientWidth || 0);
   if (
     Number.isFinite(publicationPageWidth)
     && publicationPageWidth > 1
