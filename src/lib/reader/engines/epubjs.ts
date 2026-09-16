@@ -178,10 +178,44 @@ function physicalTapXRatio(
   win: Window,
   doc: Document,
   clientX: number,
+  pointerType: ReaderPointerType,
   screenX?: number,
 ): number {
   const localWidth = Math.max(1, win.innerWidth || doc.documentElement?.clientWidth || 1);
   const localRatio = clampRatio(clientX / localWidth);
+
+  // For a real touch gesture, screenX is anchored to the physical visible screen rather
+  // than EPUB.js' translated multi-column iframe. Prefer it when it maps cleanly into
+  // the reader viewport. Synthetic WebKit probes intentionally have screenX=0 and fall
+  // through to same-origin frame geometry below.
+  if (pointerType === 'touch' && typeof screenX === 'number' && Number.isFinite(screenX) && screenX > 0) {
+    try {
+      const frame = win.frameElement as HTMLElement | null;
+      const viewport = frame?.closest?.('[data-reader-viewport]') as HTMLElement | null;
+      const parentWin = viewport?.ownerDocument.defaultView;
+      const viewportRect = viewport?.getBoundingClientRect();
+      const visibleWidth = viewportRect?.width;
+      const screenWidth = Number(win.screen?.width);
+      if (
+        parentWin
+        && viewportRect
+        && typeof visibleWidth === 'number'
+        && Number.isFinite(visibleWidth)
+        && visibleWidth > 1
+        && Number.isFinite(screenWidth)
+        && screenWidth > 1
+        && screenX <= screenWidth + Math.max(3, screenWidth * 0.03)
+      ) {
+        const tolerance = Math.max(3, visibleWidth * 0.03);
+        const physicalX = screenX - parentWin.screenX - viewportRect.left;
+        if (physicalX >= -tolerance && physicalX <= visibleWidth + tolerance) {
+          return clampRatio(physicalX / visibleWidth);
+        }
+      }
+    } catch {
+      // Fall through to same-origin CSS geometry when screen/viewport state is unavailable.
+    }
+  }
 
   // In EPUB.js paginated mode the iframe viewport can span the entire multi-page strip
   // while the publication body remains one visible page wide. Browser touch events can
@@ -230,11 +264,25 @@ function physicalTapXRatio(
       const inVisibleRange = (x: number) => x >= -tolerance && x <= visibleWidth + tolerance;
       const visibleRatio = (x: number) => clampRatio(x / visibleWidth);
 
-      // EPUB.js keeps the paginated strip inside an overflow-hidden scrolling container.
-      // Its scrollLeft is the exact strip origin currently hidden to the left of the visible
-      // page, so use layout offsets plus scroll state before relying on browser-specific
-      // iframe bounding-rectangle translation. This handles engines that expose clientX in
-      // strip-local coordinates while reporting frame rectangles in a different CSS space.
+      // When clientX is iframe-local, projecting through the iframe rectangle gives
+      // the exact visible-reader coordinate, including EPUB.js page translation and gap.
+      // This must happen before any modulo/wrapping heuristic: page stride can differ
+      // from viewport width and wrapping can turn a right-edge tap into a left-edge tap.
+      if (Number.isFinite(clientX)) {
+        const projectedX = clientX + frameRect.left - viewportRect.left;
+        if (inVisibleRange(projectedX)) return visibleRatio(projectedX);
+      }
+
+      // Some engines already report clientX in visible-reader CSS coordinates. If the
+      // iframe projection is outside the viewport, preserve that coordinate directly.
+      if (Number.isFinite(clientX) && inVisibleRange(clientX)) {
+        return visibleRatio(clientX);
+      }
+
+      // Only after exact frame projection and an already-visible clientX have failed,
+      // try EPUB.js' overflow-container scroll state. offsetLeft/scrollLeft live in layout
+      // coordinates and can disagree with transformed frame rectangles, so this is a
+      // guarded fallback rather than an authoritative first interpretation.
       const scroller = frame?.closest?.('.epub-container') as HTMLElement | null;
       if (
         scroller
@@ -252,21 +300,6 @@ function physicalTapXRatio(
           const scrollProjectedX = clientX + offsetX - scroller.scrollLeft;
           if (inVisibleRange(scrollProjectedX)) return visibleRatio(scrollProjectedX);
         }
-      }
-
-      // When clientX is iframe-local, projecting through the iframe rectangle gives
-      // the exact visible-reader coordinate, including EPUB.js page translation and gap.
-      // This must happen before any modulo/wrapping heuristic: page stride can differ
-      // from viewport width and wrapping can turn a right-edge tap into a left-edge tap.
-      if (Number.isFinite(clientX)) {
-        const projectedX = clientX + frameRect.left - viewportRect.left;
-        if (inVisibleRange(projectedX)) return visibleRatio(projectedX);
-      }
-
-      // Some engines already report clientX in visible-reader CSS coordinates. If the
-      // iframe projection is outside the viewport, preserve that coordinate directly.
-      if (Number.isFinite(clientX) && inVisibleRange(clientX)) {
-        return visibleRatio(clientX);
       }
 
       // Real mobile events can retain a physical screen coordinate when iframe-local
@@ -409,7 +442,7 @@ export class EpubJsEngine implements ReaderEngine {
         const height = Math.max(1, win.innerHeight || doc.documentElement?.clientHeight || 1);
         interaction = {
           type: 'tap',
-          xRatio: physicalTapXRatio(win, doc, x, screenX),
+          xRatio: physicalTapXRatio(win, doc, x, effectivePointerType, screenX),
           yRatio: clampRatio(y / height),
           pointerType: effectivePointerType,
           interactive,
@@ -521,7 +554,7 @@ export class EpubJsEngine implements ReaderEngine {
       const height = Math.max(1, win.innerHeight || doc.documentElement?.clientHeight || 1);
       const interaction: ReaderContentInteraction = {
         type: 'tap',
-        xRatio: physicalTapXRatio(win, doc, event.clientX, event.screenX),
+        xRatio: physicalTapXRatio(win, doc, event.clientX, 'mouse', event.screenX),
         yRatio: clampRatio(event.clientY / height),
         pointerType: 'mouse',
         interactive: false,
