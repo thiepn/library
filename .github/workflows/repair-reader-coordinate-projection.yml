@@ -1,0 +1,129 @@
+name: Repair reader coordinate projection
+
+on:
+  push:
+    branches:
+      - repair/reader-touch-visible-ratio-34751544799
+    paths:
+      - .github/workflows/repair-reader-coordinate-projection.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: repair-reader-coordinate-projection-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repair branch
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm and Node
+        uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2
+        with:
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+          cache: true
+
+      - name: Apply geometry repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('src/lib/reader/engines/epubjs.ts')
+          text = path.read_text()
+          start = text.index('/**\n * EPUB.js paginated content can render one iframe several page widths wide')
+          end = text.index('function mapLocation', start)
+          replacement = '''/**
+           * EPUB.js paginated content can render one iframe several page widths wide and
+           * translate it behind the visible reader viewport. Event clientX may therefore be
+           * iframe-local strip geometry or already be expressed in visible-reader CSS pixels.
+           * Resolve CSS geometry first; use physical screen coordinates only as a fallback.
+           */
+          function physicalTapXRatio(
+            win: Window,
+            doc: Document,
+            clientX: number,
+            screenX?: number,
+          ): number {
+            const localWidth = Math.max(1, win.innerWidth || doc.documentElement?.clientWidth || 1);
+            const localRatio = clampRatio(clientX / localWidth);
+
+            try {
+              const frame = win.frameElement as HTMLElement | null;
+              const viewport = frame?.closest?.('[data-reader-viewport]') as HTMLElement | null;
+              const parentWin = viewport?.ownerDocument.defaultView;
+              const frameRect = frame?.getBoundingClientRect();
+              const viewportRect = viewport?.getBoundingClientRect();
+              const visibleWidth = viewportRect?.width;
+              if (
+                frameRect
+                && viewportRect
+                && parentWin
+                && typeof visibleWidth === 'number'
+                && Number.isFinite(visibleWidth)
+                && visibleWidth > 1
+              ) {
+                const tolerance = Math.max(3, visibleWidth * 0.03);
+                const inVisibleRange = (x: number) => x >= -tolerance && x <= visibleWidth + tolerance;
+                const visibleRatio = (x: number) => clampRatio(x / visibleWidth);
+
+                // When clientX is iframe-local, projecting through the iframe rectangle gives
+                // the exact visible-reader coordinate, including EPUB.js page translation and gap.
+                // This must happen before any modulo/wrapping heuristic: page stride can differ
+                // from viewport width and wrapping can turn a right-edge tap into a left-edge tap.
+                if (Number.isFinite(clientX)) {
+                  const projectedX = clientX + frameRect.left - viewportRect.left;
+                  if (inVisibleRange(projectedX)) return visibleRatio(projectedX);
+                }
+
+                // Some engines already report clientX in visible-reader CSS coordinates. If the
+                // iframe projection is outside the viewport, preserve that coordinate directly.
+                if (Number.isFinite(clientX) && inVisibleRange(clientX)) {
+                  return visibleRatio(clientX);
+                }
+
+                // Real mobile events can retain a physical screen coordinate when iframe-local
+                // CSS geometry is translated beyond the visible reader. Accept it only if it maps
+                // cleanly into this viewport; emulated/synthetic screen origins are otherwise ignored.
+                if (typeof screenX === 'number' && Number.isFinite(screenX) && screenX > 0) {
+                  const physicalX = screenX - parentWin.screenX - viewportRect.left;
+                  if (inVisibleRange(physicalX)) return visibleRatio(physicalX);
+                }
+              }
+            } catch {
+              // Same-origin frame geometry can be unavailable during teardown; use local CSS.
+            }
+
+            return localRatio;
+          }
+          '''
+          path.write_text(text[:start] + replacement + text[end:])
+          PY
+
+      - name: Certify build
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm build
+
+      - name: Commit repair and self-remove helper
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/repair-reader-coordinate-projection.yml
+          git add src/lib/reader/engines/epubjs.ts
+          git commit -m 'fix: project EPUB tap coordinates before fallbacks'
+          git fetch origin "$GITHUB_REF_NAME"
+          git rebase "origin/$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
