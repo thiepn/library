@@ -284,14 +284,16 @@ export class ReaderNavigationController {
   };
 
   private handleTapRatio(rawRatio: number, alreadyVisible = false): boolean {
-    const tapRatio = alreadyVisible
-      ? clampUnit(rawRatio)
-      : visibleTapRatio(
-          rawRatio,
-          this.controllerState.location,
-          this.readingModeState.effectiveSpread,
-        );
+    if (!alreadyVisible) {
+      const tapRatio = visibleTapRatio(
+        rawRatio,
+        this.controllerState.location,
+        this.readingModeState.effectiveSpread,
+      );
+      return this.handleTapRatio(tapRatio, true);
+    }
 
+    const tapRatio = clampUnit(rawRatio);
     if (this.readingModeState.flow === 'paginated') {
       if (tapRatio <= this.edgeTapRatio) {
         void this.navigate('previous', 'tap');
