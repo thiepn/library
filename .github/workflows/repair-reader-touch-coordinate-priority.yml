@@ -1,0 +1,191 @@
+name: Repair reader touch coordinate priority
+
+on:
+  push:
+    branches:
+      - 'repair/reader-touch-visible-ratio-34751544799'
+    paths:
+      - '.github/workflows/repair-reader-touch-coordinate-priority.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: reader-touch-coordinate-priority-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repair branch
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+
+      - name: Prioritize trustworthy visible touch coordinates
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('src/lib/reader/engines/epubjs.ts')
+          text = path.read_text()
+
+          old_signature = """function physicalTapXRatio(
+            win: Window,
+            doc: Document,
+            clientX: number,
+            screenX?: number,
+          ): number {
+            const localWidth = Math.max(1, win.innerWidth || doc.documentElement?.clientWidth || 1);
+            const localRatio = clampRatio(clientX / localWidth);
+          """
+          new_signature = """function physicalTapXRatio(
+            win: Window,
+            doc: Document,
+            clientX: number,
+            pointerType: ReaderPointerType,
+            screenX?: number,
+          ): number {
+            const localWidth = Math.max(1, win.innerWidth || doc.documentElement?.clientWidth || 1);
+            const localRatio = clampRatio(clientX / localWidth);
+
+            // For a real touch gesture, screenX is anchored to the physical visible screen rather
+            // than EPUB.js' translated multi-column iframe. Prefer it when it maps cleanly into
+            // the reader viewport. Synthetic WebKit probes intentionally have screenX=0 and fall
+            // through to same-origin frame geometry below.
+            if (pointerType === 'touch' && typeof screenX === 'number' && Number.isFinite(screenX) && screenX > 0) {
+              try {
+                const frame = win.frameElement as HTMLElement | null;
+                const viewport = frame?.closest?.('[data-reader-viewport]') as HTMLElement | null;
+                const parentWin = viewport?.ownerDocument.defaultView;
+                const viewportRect = viewport?.getBoundingClientRect();
+                const visibleWidth = viewportRect?.width;
+                const screenWidth = Number(win.screen?.width);
+                if (
+                  parentWin
+                  && viewportRect
+                  && typeof visibleWidth === 'number'
+                  && Number.isFinite(visibleWidth)
+                  && visibleWidth > 1
+                  && Number.isFinite(screenWidth)
+                  && screenWidth > 1
+                  && screenX <= screenWidth + Math.max(3, screenWidth * 0.03)
+                ) {
+                  const tolerance = Math.max(3, visibleWidth * 0.03);
+                  const physicalX = screenX - parentWin.screenX - viewportRect.left;
+                  if (physicalX >= -tolerance && physicalX <= visibleWidth + tolerance) {
+                    return clampRatio(physicalX / visibleWidth);
+                  }
+                }
+              } catch {
+                // Fall through to same-origin CSS geometry when screen/viewport state is unavailable.
+              }
+            }
+          """
+          if text.count(old_signature) != 1:
+              raise SystemExit(f'expected one physicalTapXRatio signature, found {text.count(old_signature)}')
+          text = text.replace(old_signature, new_signature, 1)
+
+          scroller = """      // EPUB.js keeps the paginated strip inside an overflow-hidden scrolling container.
+                // Its scrollLeft is the exact strip origin currently hidden to the left of the visible
+                // page, so use layout offsets plus scroll state before relying on browser-specific
+                // iframe bounding-rectangle translation. This handles engines that expose clientX in
+                // strip-local coordinates while reporting frame rectangles in a different CSS space.
+                const scroller = frame?.closest?.('.epub-container') as HTMLElement | null;
+                if (
+                  scroller
+                  && Number.isFinite(clientX)
+                  && scroller.clientWidth > 1
+                  && scroller.scrollWidth > scroller.clientWidth + 1
+                ) {
+                  let offsetX = 0;
+                  let node: HTMLElement | null = frame;
+                  while (node && node !== scroller) {
+                    offsetX += node.offsetLeft;
+                    node = node.offsetParent as HTMLElement | null;
+                  }
+                  if (node === scroller) {
+                    const scrollProjectedX = clientX + offsetX - scroller.scrollLeft;
+                    if (inVisibleRange(scrollProjectedX)) return visibleRatio(scrollProjectedX);
+                  }
+                }
+
+          """
+          if text.count(scroller) != 1:
+              raise SystemExit(f'expected one scroll-projection block, found {text.count(scroller)}')
+          text = text.replace(scroller, '', 1)
+
+          direct = """      // Some engines already report clientX in visible-reader CSS coordinates. If the
+                // iframe projection is outside the viewport, preserve that coordinate directly.
+                if (Number.isFinite(clientX) && inVisibleRange(clientX)) {
+                  return visibleRatio(clientX);
+                }
+
+          """
+          fallback = """      // Some engines already report clientX in visible-reader CSS coordinates. If the
+                // iframe projection is outside the viewport, preserve that coordinate directly.
+                if (Number.isFinite(clientX) && inVisibleRange(clientX)) {
+                  return visibleRatio(clientX);
+                }
+
+                // Only after exact frame projection and an already-visible clientX have failed,
+                // try EPUB.js' overflow-container scroll state. offsetLeft/scrollLeft live in layout
+                // coordinates and can disagree with transformed frame rectangles, so this is a
+                // guarded fallback rather than an authoritative first interpretation.
+                const scroller = frame?.closest?.('.epub-container') as HTMLElement | null;
+                if (
+                  scroller
+                  && Number.isFinite(clientX)
+                  && scroller.clientWidth > 1
+                  && scroller.scrollWidth > scroller.clientWidth + 1
+                ) {
+                  let offsetX = 0;
+                  let node: HTMLElement | null = frame;
+                  while (node && node !== scroller) {
+                    offsetX += node.offsetLeft;
+                    node = node.offsetParent as HTMLElement | null;
+                  }
+                  if (node === scroller) {
+                    const scrollProjectedX = clientX + offsetX - scroller.scrollLeft;
+                    if (inVisibleRange(scrollProjectedX)) return visibleRatio(scrollProjectedX);
+                  }
+                }
+
+          """
+          if text.count(direct) != 1:
+              raise SystemExit(f'expected one direct visible-coordinate block, found {text.count(direct)}')
+          text = text.replace(direct, fallback, 1)
+
+          old_touch_call = "xRatio: physicalTapXRatio(win, doc, x, screenX),"
+          new_touch_call = "xRatio: physicalTapXRatio(win, doc, x, effectivePointerType, screenX),"
+          if text.count(old_touch_call) != 1:
+              raise SystemExit(f'expected one touch call, found {text.count(old_touch_call)}')
+          text = text.replace(old_touch_call, new_touch_call, 1)
+
+          old_mouse_call = "xRatio: physicalTapXRatio(win, doc, event.clientX, event.screenX),"
+          new_mouse_call = "xRatio: physicalTapXRatio(win, doc, event.clientX, 'mouse', event.screenX),"
+          if text.count(old_mouse_call) != 1:
+              raise SystemExit(f'expected one mouse call, found {text.count(old_mouse_call)}')
+          text = text.replace(old_mouse_call, new_mouse_call, 1)
+
+          path.write_text(text)
+          PY
+
+          git diff --check
+          git diff -- src/lib/reader/engines/epubjs.ts
+
+      - name: Commit repair and self-remove helper
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/repair-reader-touch-coordinate-priority.yml
+          git add src/lib/reader/engines/epubjs.ts
+          git commit -m 'fix: prioritize visible touch coordinates'
+          git fetch origin "$GITHUB_REF_NAME"
+          git rebase "origin/$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
