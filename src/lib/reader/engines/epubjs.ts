@@ -230,6 +230,30 @@ function physicalTapXRatio(
       const inVisibleRange = (x: number) => x >= -tolerance && x <= visibleWidth + tolerance;
       const visibleRatio = (x: number) => clampRatio(x / visibleWidth);
 
+      // EPUB.js keeps the paginated strip inside an overflow-hidden scrolling container.
+      // Its scrollLeft is the exact strip origin currently hidden to the left of the visible
+      // page, so use layout offsets plus scroll state before relying on browser-specific
+      // iframe bounding-rectangle translation. This handles engines that expose clientX in
+      // strip-local coordinates while reporting frame rectangles in a different CSS space.
+      const scroller = frame?.closest?.('.epub-container') as HTMLElement | null;
+      if (
+        scroller
+        && Number.isFinite(clientX)
+        && scroller.clientWidth > 1
+        && scroller.scrollWidth > scroller.clientWidth + 1
+      ) {
+        let offsetX = 0;
+        let node: HTMLElement | null = frame;
+        while (node && node !== scroller) {
+          offsetX += node.offsetLeft;
+          node = node.offsetParent as HTMLElement | null;
+        }
+        if (node === scroller) {
+          const scrollProjectedX = clientX + offsetX - scroller.scrollLeft;
+          if (inVisibleRange(scrollProjectedX)) return visibleRatio(scrollProjectedX);
+        }
+      }
+
       // When clientX is iframe-local, projecting through the iframe rectangle gives
       // the exact visible-reader coordinate, including EPUB.js page translation and gap.
       // This must happen before any modulo/wrapping heuristic: page stride can differ
