@@ -184,6 +184,35 @@ function physicalTapXRatio(
   const localWidth = Math.max(1, win.innerWidth || doc.documentElement?.clientWidth || 1);
   const localRatio = clampRatio(clientX / localWidth);
 
+  // In EPUB.js paginated mode the iframe viewport can span the entire multi-page strip
+  // while the publication body remains one visible page wide. Browser touch events can
+  // still report clientX in that visible-page coordinate space. Treat that coordinate
+  // as authoritative before dividing by the much wider iframe; otherwise a physical
+  // right-edge tap (for example 310px in a 370px page inside an 1850px iframe) is
+  // misclassified as a left-edge tap. This is deliberately not modulo arithmetic: when
+  // an engine reports strip-local coordinates, page stride/gap geometry must be resolved
+  // by the parent-frame/screen fallbacks below rather than guessed.
+  // CSS multi-column layout can make getBoundingClientRect()/clientWidth span the whole
+  // strip even though EPUB.js declares one visible page on the body (for example 370px).
+  // Read that declared CSS width first so a visible-page clientX is classified against
+  // the page the reader actually sees, not the five-page iframe strip.
+  const computedBodyWidth = doc.body ? Number.parseFloat(win.getComputedStyle(doc.body).width) : Number.NaN;
+  const publicationPageWidth = Number.isFinite(computedBodyWidth) && computedBodyWidth > 1
+    ? computedBodyWidth
+    : Number(doc.body?.clientWidth || 0);
+  if (
+    Number.isFinite(publicationPageWidth)
+    && publicationPageWidth > 1
+    && localWidth > publicationPageWidth * 1.25
+    && Number.isFinite(clientX)
+  ) {
+    const pageTolerance = Math.max(3, publicationPageWidth * 0.03);
+    if (clientX >= -pageTolerance && clientX <= publicationPageWidth + pageTolerance) {
+      return clampRatio(clientX / publicationPageWidth);
+    }
+  }
+
+
   // For a real touch gesture, screenX is anchored to the physical visible screen rather
   // than EPUB.js' translated multi-column iframe. Prefer it when it maps cleanly into
   // the reader viewport. Synthetic WebKit probes intentionally have screenX=0 and fall
@@ -217,33 +246,6 @@ function physicalTapXRatio(
     }
   }
 
-  // In EPUB.js paginated mode the iframe viewport can span the entire multi-page strip
-  // while the publication body remains one visible page wide. Browser touch events can
-  // still report clientX in that visible-page coordinate space. Treat that coordinate
-  // as authoritative before dividing by the much wider iframe; otherwise a physical
-  // right-edge tap (for example 310px in a 370px page inside an 1850px iframe) is
-  // misclassified as a left-edge tap. This is deliberately not modulo arithmetic: when
-  // an engine reports strip-local coordinates, page stride/gap geometry must be resolved
-  // by the parent-frame/screen fallbacks below rather than guessed.
-  // CSS multi-column layout can make getBoundingClientRect()/clientWidth span the whole
-  // strip even though EPUB.js declares one visible page on the body (for example 370px).
-  // Read that declared CSS width first so a visible-page clientX is classified against
-  // the page the reader actually sees, not the five-page iframe strip.
-  const computedBodyWidth = doc.body ? Number.parseFloat(win.getComputedStyle(doc.body).width) : Number.NaN;
-  const publicationPageWidth = Number.isFinite(computedBodyWidth) && computedBodyWidth > 1
-    ? computedBodyWidth
-    : Number(doc.body?.clientWidth || 0);
-  if (
-    Number.isFinite(publicationPageWidth)
-    && publicationPageWidth > 1
-    && localWidth > publicationPageWidth * 1.25
-    && Number.isFinite(clientX)
-  ) {
-    const pageTolerance = Math.max(3, publicationPageWidth * 0.03);
-    if (clientX >= -pageTolerance && clientX <= publicationPageWidth + pageTolerance) {
-      return clampRatio(clientX / publicationPageWidth);
-    }
-  }
 
   try {
     const frame = win.frameElement as HTMLElement | null;
