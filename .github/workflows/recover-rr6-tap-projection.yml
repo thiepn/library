@@ -45,7 +45,6 @@ jobs:
           set -euo pipefail
           python - <<'PY'
           from pathlib import Path
-
           path = Path('src/lib/reader/engines/epubjs.ts')
           text = path.read_text()
           marker = "  // For a real touch gesture, screenX is anchored to the physical visible screen rather"
@@ -55,11 +54,7 @@ jobs:
           start = text.index(marker)
           end = text.index(end_marker, start)
           block = text[start:end]
-          required = [
-              "pointerType === 'touch'",
-              'screenX <= screenWidth',
-              'return clampRatio(physicalX / visibleWidth)',
-          ]
+          required = ["pointerType === 'touch'", 'screenX <= screenWidth', 'return clampRatio(physicalX / visibleWidth)']
           missing = [needle for needle in required if needle not in block]
           if missing:
               raise SystemExit(f'early screen-coordinate block did not match expected implementation: {missing}')
@@ -71,11 +66,8 @@ jobs:
           git diff --check
           git diff -- src/lib/reader/engines/epubjs.ts
 
-      - name: Certify release and stage immutable production media
-        run: |
-          set -euo pipefail
-          pnpm release:certify
-          pnpm stage:media
+      - name: Certify release graph
+        run: pnpm release:certify
 
       - name: Install browser engines and system dependencies
         run: pnpm exec playwright install --with-deps chromium firefox webkit
