@@ -1,0 +1,103 @@
+name: Recover staged RR6 strip tap mapping
+
+on:
+  push:
+    branches:
+      - 'autopilot/deploy-recovery-35212466938-v2'
+    paths:
+      - '.github/workflows/recover-rr6-strip-tap.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: recover-rr6-strip-tap-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout recovery branch
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm and Node
+        uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2
+        with:
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+          cache: true
+
+      - name: Patch exact multi-page iframe tap geometry
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('src/lib/reader/engines/epubjs.ts')
+          text = path.read_text()
+          old = """      if (Number.isFinite(clientX) && inVisibleRange(clientX)) {
+                return visibleRatio(clientX);
+              }
+
+              // Only after exact frame projection and an already-visible clientX have failed,
+              // try EPUB.js' overflow-container scroll state. offsetLeft/scrollLeft live in layout
+"""
+          new = """      if (Number.isFinite(clientX) && inVisibleRange(clientX)) {
+                return visibleRatio(clientX);
+              }
+
+              // Hosted Gutenberg chapters can expose an iframe-local viewport that is an exact
+              // integer strip of the visible reader width without declaring a numeric viewport
+              // meta width. In Chromium touch events, clientX can then be strip-local (for
+              // example 1295px inside a 1480px four-page strip for a physical 185px center tap).
+              // Only wrap against the parent reader width when the child viewport proves that
+              // exact integer-page geometry; this preserves ordinary visible coordinates and
+              // avoids guessing when EPUB column gaps make the page stride ambiguous.
+              if (Number.isFinite(clientX)) {
+                const pageCount = localWidth / visibleWidth;
+                const roundedPageCount = Math.round(pageCount);
+                if (roundedPageCount >= 2 && Math.abs(pageCount - roundedPageCount) <= 0.02) {
+                  const wrappedX = ((clientX % visibleWidth) + visibleWidth) % visibleWidth;
+                  return visibleRatio(wrappedX);
+                }
+              }
+
+              // Only after exact frame projection, an already-visible clientX, and a proven
+              // integer-page strip have failed, try EPUB.js' overflow-container scroll state.
+              // offsetLeft/scrollLeft live in layout
+"""
+          count = text.count(old)
+          if count != 1:
+              raise SystemExit(f'Expected exactly one tap-geometry anchor, found {count}')
+          path.write_text(text.replace(old, new))
+          PY
+          git diff --check
+          git diff -- src/lib/reader/engines/epubjs.ts
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Certify source and build
+        run: |
+          set -euo pipefail
+          pnpm certify:source
+          pnpm test:reader
+          pnpm build
+
+      - name: Commit recovery and self-remove helper
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/recover-rr6-strip-tap.yml
+          git add src/lib/reader/engines/epubjs.ts
+          git commit -m 'Fix RR6 multi-page iframe tap normalization'
+          git fetch origin "$GITHUB_REF_NAME"
+          git rebase "origin/$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
