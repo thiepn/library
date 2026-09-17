@@ -171,14 +171,29 @@ async function resolveVisibleTapPoint(page: Page, xRatio: number, preferredYRati
     const target = await page.frameLocator('[data-reader-viewport] iframe').locator('html').evaluate(
       (_html, input) => {
         const element = document.elementFromPoint(input.x, input.y) ?? document.documentElement;
-        const interactive = Boolean(element.closest(input.interactiveSelector));
-        const id = element.id ? `#${element.id}` : '';
-        const className = typeof element.className === 'string' && element.className.trim()
-          ? `.${element.className.trim().split(/\s+/).join('.')}`
+        const directInteractive = element.closest(input.interactiveSelector);
+        // Chromium can visually paginate one wide EPUB iframe inside a scrolled/clipped parent.
+        // In that geometry elementFromPoint() may report the underlying publication surface even
+        // though the physical touchscreen target is an anchor in the visible CSS column. Treat an
+        // interactive element whose rendered client rect contains the physical frame coordinate as
+        // authoritative too, so the acceptance helper never steals a real publication interaction.
+        const rectInteractive = directInteractive ?? Array.from(document.querySelectorAll(input.interactiveSelector)).find((candidate) =>
+          Array.from(candidate.getClientRects()).some((rect) =>
+            input.x >= rect.left
+            && input.x <= rect.right
+            && input.y >= rect.top
+            && input.y <= rect.bottom,
+          ),
+        );
+        const targetElement = rectInteractive ?? element;
+        const interactive = Boolean(rectInteractive);
+        const id = targetElement.id ? `#${targetElement.id}` : '';
+        const className = typeof targetElement.className === 'string' && targetElement.className.trim()
+          ? `.${targetElement.className.trim().split(/\s+/).join('.')}`
           : '';
         return {
           interactive,
-          description: `${element.tagName.toLowerCase()}${id}${className}`,
+          description: `${targetElement.tagName.toLowerCase()}${id}${className}`,
         };
       },
       { x: frameX, y: frameY, interactiveSelector: PUBLICATION_INTERACTIVE_SELECTOR },
