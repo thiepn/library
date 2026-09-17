@@ -1,0 +1,114 @@
+name: RR6 tap-strip recovery
+
+on:
+  push:
+    branches:
+      - fix/rr6-staged-tap-strip-fallback
+    paths:
+      - .github/workflows/rr6-tap-strip-recovery.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rr6-tap-strip-recovery-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout recovery branch
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+      - name: Setup pnpm and Node
+        uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2
+        with:
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+          cache: true
+      - name: Patch exact-page-strip touch fallback
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('src/lib/reader/engines/epubjs.ts')
+          text = path.read_text()
+          old = '''// Last-resort fallback for engines that expose a one-page publication body width but
+// cannot provide usable parent-frame or physical-screen geometry. Keep this behind
+// exact viewport projection: in translated EPUB.js multi-page iframes, clientX is
+// strip-local and dividing it by the publication width can turn a physical center
+// tap into an edge-navigation tap.
+const computedBodyWidth = doc.body ? Number.parseFloat(win.getComputedStyle(doc.body).width) : Number.NaN;
+const publicationPageWidth = Number.isFinite(computedBodyWidth) && computedBodyWidth > 1
+  ? computedBodyWidth
+  : Number(doc.body?.clientWidth || 0);
+if (
+  Number.isFinite(publicationPageWidth)
+  && publicationPageWidth > 1
+  && localWidth > publicationPageWidth * 1.25
+  && Number.isFinite(clientX)
+) {
+  const pageTolerance = Math.max(3, publicationPageWidth * 0.03);
+  if (clientX >= -pageTolerance && clientX <= publicationPageWidth + pageTolerance) {
+    return clampRatio(clientX / publicationPageWidth);
+  }
+}
+'''
+          new = '''  // Last-resort fallback for engines that expose a one-page publication body width but
+  // cannot provide usable parent-frame or physical-screen geometry. A real EPUB.js
+  // paginated strip can be an exact integer number of page widths (for example a
+  // 1480px iframe containing four 370px pages). In that proven geometry, wrap the
+  // iframe-local coordinate back onto its physical page before falling back to the
+  // full-strip ratio. Do not wrap approximate page strides: column gaps can otherwise
+  // turn a real right-edge tap into a false left-edge tap.
+  const computedBodyWidth = doc.body ? Number.parseFloat(win.getComputedStyle(doc.body).width) : Number.NaN;
+  const publicationPageWidth = Number.isFinite(computedBodyWidth) && computedBodyWidth > 1
+    ? computedBodyWidth
+    : Number(doc.body?.clientWidth || 0);
+  if (
+    Number.isFinite(publicationPageWidth)
+    && publicationPageWidth > 1
+    && localWidth > publicationPageWidth * 1.25
+    && Number.isFinite(clientX)
+  ) {
+    const pageTolerance = Math.max(3, publicationPageWidth * 0.03);
+    if (clientX >= -pageTolerance && clientX <= publicationPageWidth + pageTolerance) {
+      return clampRatio(clientX / publicationPageWidth);
+    }
+
+    const pageCount = localWidth / publicationPageWidth;
+    const roundedPageCount = Math.round(pageCount);
+    if (roundedPageCount >= 2 && Math.abs(pageCount - roundedPageCount) <= 0.02) {
+      const wrappedX = ((clientX % publicationPageWidth) + publicationPageWidth) % publicationPageWidth;
+      return clampRatio(wrappedX / publicationPageWidth);
+    }
+  }
+'''
+          if old not in text:
+              raise SystemExit('expected RR6 fallback block not found; refusing to patch')
+          path.write_text(text.replace(old, new, 1))
+          PY
+          git diff --check
+      - name: Install and certify source
+        run: |
+          set -euo pipefail
+          pnpm install --frozen-lockfile
+          pnpm check
+          pnpm test:reader
+      - name: Commit repair and self-remove helper
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/rr6-tap-strip-recovery.yml
+          git add src/lib/reader/engines/epubjs.ts
+          git commit -m 'fix: wrap exact EPUB page-strip tap coordinates'
+          git fetch origin "$GITHUB_REF_NAME"
+          git rebase "origin/$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
