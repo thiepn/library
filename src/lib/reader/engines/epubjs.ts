@@ -459,11 +459,11 @@ export class EpubJsEngine implements ReaderEngine {
         visibleColumnX = currentPageStart + wrappedX;
       }
 
-      const yCandidates = [y];
-      if (frameRect && Number.isFinite(frameRect.top)) {
-        const frameLocalY = y - frameRect.top;
-        if (Number.isFinite(frameLocalY) && Math.abs(frameLocalY - y) > 1) yCandidates.push(frameLocalY);
-      }
+      // DOM client coordinates delivered inside the EPUB iframe are already local to that
+      // document. Mixing in the parent-frame top offset can falsely project the same tap onto
+      // an unrelated link in another vertical position, which makes a reader-owned center tap
+      // look interactive. Keep hit testing in the iframe's own coordinate space.
+      const visibleColumnY = y;
 
       // Chromium can report event.target from an underlying column when EPUB.js exposes a
       // multi-page iframe viewport. In that proven geometry, rendered client rectangles in
@@ -473,7 +473,8 @@ export class EpubJsEngine implements ReaderEngine {
         Array.from(candidate.getClientRects()).some((rect) =>
           visibleColumnX >= rect.left - 1
           && visibleColumnX <= rect.right + 1
-          && yCandidates.some((candidateY) => candidateY >= rect.top - 1 && candidateY <= rect.bottom + 1),
+          && visibleColumnY >= rect.top - 1
+              && visibleColumnY <= rect.bottom + 1,
         ),
       );
     };
@@ -629,6 +630,7 @@ export class EpubJsEngine implements ReaderEngine {
       // boundary; standalone click-only input remains valid because it has no preceding touch tap.
       if (performance.now() - this.lastTouchTapAt < COMPATIBILITY_CLICK_DEDUPE_MS) {
         event.preventDefault();
+        event.stopImmediatePropagation();
         return;
       }
 
@@ -640,6 +642,7 @@ export class EpubJsEngine implements ReaderEngine {
       );
       if (duplicateOfHandledPointer) {
         event.preventDefault();
+        event.stopImmediatePropagation();
         return;
       }
       if (isInteractiveTarget(event.target) || hasSelection()) return;
@@ -683,7 +686,8 @@ export class EpubJsEngine implements ReaderEngine {
     doc.addEventListener('touchcancel', handleTouchCancel, { passive: true });
     // A compatibility click gives WebKit/Safari and assistive input a browser-agnostic tap
     // path when a touchscreen gesture does not surface through the iframe pointer/touch path.
-    doc.addEventListener('click', handleClick);
+    // Capture reader-owned compatibility clicks before EPUB.js link handlers can act on a hidden-column target.
+    doc.addEventListener('click', handleClick, { capture: true });
     doc.addEventListener('keydown', handleKeyDown);
   };
 
