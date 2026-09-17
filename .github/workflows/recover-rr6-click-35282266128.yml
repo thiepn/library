@@ -44,9 +44,9 @@ jobs:
           )
           text = text[:y_start] + new_y + text[y_end:]
 
-          old_rect_y = "              && yCandidates.some((candidateY) => candidateY >= rect.top - 1 && candidateY <= rect.bottom + 1),"
+          old_rect_y = "&& yCandidates.some((candidateY) => candidateY >= rect.top - 1 && candidateY <= rect.bottom + 1),"
           new_rect_y = (
-              "              && visibleColumnY >= rect.top - 1\n"
+              "&& visibleColumnY >= rect.top - 1\n"
               "              && visibleColumnY <= rect.bottom + 1,"
           )
           if text.count(old_rect_y) != 1:
