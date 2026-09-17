@@ -184,40 +184,6 @@ function physicalTapXRatio(
   const localWidth = Math.max(1, win.innerWidth || doc.documentElement?.clientWidth || 1);
   const localRatio = clampRatio(clientX / localWidth);
 
-  // For a real touch gesture, screenX is anchored to the physical visible screen rather
-  // than EPUB.js' translated multi-column iframe. Prefer it when it maps cleanly into
-  // the reader viewport. Synthetic WebKit probes intentionally have screenX=0 and fall
-  // through to same-origin frame geometry below.
-  if (pointerType === 'touch' && typeof screenX === 'number' && Number.isFinite(screenX) && screenX > 0) {
-    try {
-      const frame = win.frameElement as HTMLElement | null;
-      const viewport = frame?.closest?.('[data-reader-viewport]') as HTMLElement | null;
-      const parentWin = viewport?.ownerDocument.defaultView;
-      const viewportRect = viewport?.getBoundingClientRect();
-      const visibleWidth = viewportRect?.width;
-      const screenWidth = Number(win.screen?.width);
-      if (
-        parentWin
-        && viewportRect
-        && typeof visibleWidth === 'number'
-        && Number.isFinite(visibleWidth)
-        && visibleWidth > 1
-        && Number.isFinite(screenWidth)
-        && screenWidth > 1
-        && screenX <= screenWidth + Math.max(3, screenWidth * 0.03)
-      ) {
-        const tolerance = Math.max(3, visibleWidth * 0.03);
-        const physicalX = screenX - parentWin.screenX - viewportRect.left;
-        if (physicalX >= -tolerance && physicalX <= visibleWidth + tolerance) {
-          return clampRatio(physicalX / visibleWidth);
-        }
-      }
-    } catch {
-      // Fall through to same-origin CSS geometry when screen/viewport state is unavailable.
-    }
-  }
-
-
   try {
     const frame = win.frameElement as HTMLElement | null;
     const viewport = frame?.closest?.('[data-reader-viewport]') as HTMLElement | null;
