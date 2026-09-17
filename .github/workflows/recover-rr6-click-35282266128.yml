@@ -1,0 +1,119 @@
+name: Recover staged RR6 touch ownership
+
+on:
+  push:
+    branches:
+      - 'autopilot/deploy-recovery-35282266128'
+    paths:
+      - '.github/workflows/recover-rr6-click-35282266128.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout recovery branch
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+
+      - name: Patch EPUB touch ownership without weakening RR6
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('src/lib/reader/engines/epubjs.ts')
+          text = path.read_text(encoding='utf-8')
+
+          old_y = '''      const yCandidates = [y];
+          if (frameRect && Number.isFinite(frameRect.top)) {
+            const frameLocalY = y - frameRect.top;
+            if (Number.isFinite(frameLocalY) && Math.abs(frameLocalY - y) > 1) yCandidates.push(frameLocalY);
+          }
+
+          // Chromium can report event.target from an underlying column when EPUB.js exposes a
+          // multi-page iframe viewport. In that proven geometry, rendered client rectangles in
+          // the currently displayed column are authoritative: a hidden-column link must not
+          // steal a center/edge reader gesture, while a link actually under the visible tap must.
+          return Array.from(doc.querySelectorAll<HTMLElement>(INTERACTIVE_SELECTOR)).some((candidate) =>
+            Array.from(candidate.getClientRects()).some((rect) =>
+              visibleColumnX >= rect.left - 1
+              && visibleColumnX <= rect.right + 1
+              && yCandidates.some((candidateY) => candidateY >= rect.top - 1 && candidateY <= rect.bottom + 1),
+            ),
+          );'''
+          new_y = '''      // DOM client coordinates delivered inside the EPUB iframe are already local to that
+          // document. Mixing in the parent-frame top offset can falsely project the same tap onto
+          // an unrelated link in another vertical position, which makes a reader-owned center tap
+          // look interactive. Keep hit testing in the iframe's own coordinate space.
+          const visibleColumnY = y;
+
+          // Chromium can report event.target from an underlying column when EPUB.js exposes a
+          // multi-page iframe viewport. In that proven geometry, rendered client rectangles in
+          // the currently displayed column are authoritative: a hidden-column link must not
+          // steal a center/edge reader gesture, while a link actually under the visible tap must.
+          return Array.from(doc.querySelectorAll<HTMLElement>(INTERACTIVE_SELECTOR)).some((candidate) =>
+            Array.from(candidate.getClientRects()).some((rect) =>
+              visibleColumnX >= rect.left - 1
+              && visibleColumnX <= rect.right + 1
+              && visibleColumnY >= rect.top - 1
+              && visibleColumnY <= rect.bottom + 1,
+            ),
+          );'''
+
+          old_touch_dedupe = '''      if (performance.now() - this.lastTouchTapAt < COMPATIBILITY_CLICK_DEDUPE_MS) {
+            event.preventDefault();
+            return;
+          }'''
+          new_touch_dedupe = '''      if (performance.now() - this.lastTouchTapAt < COMPATIBILITY_CLICK_DEDUPE_MS) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            return;
+          }'''
+
+          old_pointer_dedupe = '''      if (duplicateOfHandledPointer) {
+            event.preventDefault();
+            return;
+          }'''
+          new_pointer_dedupe = '''      if (duplicateOfHandledPointer) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            return;
+          }'''
+
+          old_listener = "    doc.addEventListener('click', handleClick);"
+          new_listener = "    // Capture reader-owned compatibility clicks before EPUB.js link handlers can act on a hidden-column target.\n    doc.addEventListener('click', handleClick, { capture: true });"
+
+          replacements = [
+              (old_y, new_y, 'iframe-local interactive hit testing'),
+              (old_touch_dedupe, new_touch_dedupe, 'touch compatibility click propagation'),
+              (old_pointer_dedupe, new_pointer_dedupe, 'pointer compatibility click propagation'),
+              (old_listener, new_listener, 'capture-phase click ownership'),
+          ]
+
+          for old, new, label in replacements:
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f'{label}: expected exactly one match, found {count}')
+              text = text.replace(old, new, 1)
+
+          path.write_text(text, encoding='utf-8')
+          PY
+          git diff --check
+
+      - name: Commit repair and self-remove helper
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/recover-rr6-click-35282266128.yml
+          git add src/lib/reader/engines/epubjs.ts
+          git commit -m 'Fix staged RR6 EPUB touch click ownership'
+          git fetch origin "$GITHUB_REF_NAME"
+          git rebase "origin/$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
