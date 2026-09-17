@@ -1,0 +1,151 @@
+name: Refine staged RR6 spatial compatibility click recovery
+
+on:
+  push:
+    branches:
+      - 'autopilot/deploy-recovery-35282266128'
+    paths:
+      - '.github/workflows/recover-rr6-spatial-click-35282266128.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout recovery branch
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+
+      - name: Refine compatibility-click ownership
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('src/lib/reader/engines/epubjs.ts')
+          text = path.read_text(encoding='utf-8')
+
+          replacements = [
+            (
+              '  private lastTouchTapAt = -Infinity;',
+              '  private lastTouchTap: HandledPointerInteraction | null = null;',
+              'class-level touch record',
+            ),
+            (
+              "      if (interaction?.type === 'tap' && effectivePointerType === 'touch') {\n        this.lastTouchTapAt = performance.now();\n      }",
+              "      if (interaction?.type === 'tap' && effectivePointerType === 'touch') {\n        this.lastTouchTap = { x, y, time: performance.now() };\n      }",
+              'touch ownership record',
+            ),
+            (
+              "          && visibleColumnY >= rect.top - 1\n              && visibleColumnY <= rect.bottom + 1,",
+              "          && visibleColumnY >= rect.top - 1\n          && visibleColumnY <= rect.bottom + 1,",
+              'visible Y indentation',
+            ),
+          ]
+
+          for old, new, label in replacements:
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f'{label}: expected one match, found {count}')
+              text = text.replace(old, new, 1)
+
+          old_start = "    const handleClick = (event: MouseEvent) => {\n"
+          old_end = "      // Pointer/mouse events retain spatial dedupe so rapid independent desktop clicks are valid.\n"
+          start = text.index(old_start)
+          end = text.index(old_end, start)
+          prefix = text[start:end]
+          expected_prefix = (
+              "    const handleClick = (event: MouseEvent) => {\n"
+              "      // A qualifying touch tap can replace the EPUB iframe before its synthesized compatibility\n"
+              "      // click arrives. Suppress that follow-up even if the primary tap was unhandled at a reader\n"
+              "      // boundary; standalone click-only input remains valid because it has no preceding touch tap.\n"
+              "      if (performance.now() - this.lastTouchTapAt < COMPATIBILITY_CLICK_DEDUPE_MS) {\n"
+              "        event.preventDefault();\n"
+              "        event.stopImmediatePropagation();\n"
+              "        return;\n"
+              "      }\n\n"
+          )
+          if prefix != expected_prefix:
+              raise SystemExit('handleClick touch prefix did not match expected recovery head')
+          text = text[:start] + old_start + text[end:]
+
+          insertion_marker = "    const handleClick = (event: MouseEvent) => {\n"
+          capture_handler = (
+              "    const handleCompatibilityClickCapture = (event: MouseEvent) => {\n"
+              "      // Compatibility clicks must be stopped before EPUB.js link handlers run, but only when\n"
+              "      // they spatially and temporally match a reader-owned touch/pointer gesture. The class-level\n"
+              "      // touch record survives an EPUB iframe replacement between touchend and synthesized click.\n"
+              "      const duplicateOfOwnedTouch = Boolean(\n"
+              "        this.lastTouchTap\n"
+              "        && performance.now() - this.lastTouchTap.time < COMPATIBILITY_CLICK_DEDUPE_MS\n"
+              "        && Math.hypot(event.clientX - this.lastTouchTap.x, event.clientY - this.lastTouchTap.y) <= COMPATIBILITY_CLICK_DEDUPE_DISTANCE\n"
+              "      );\n"
+              "      const duplicateOfHandledPointer = Boolean(\n"
+              "        lastHandledPointer\n"
+              "        && performance.now() - lastHandledPointer.time < COMPATIBILITY_CLICK_DEDUPE_MS\n"
+              "        && Math.hypot(event.clientX - lastHandledPointer.x, event.clientY - lastHandledPointer.y) <= COMPATIBILITY_CLICK_DEDUPE_DISTANCE\n"
+              "      );\n"
+              "      if (!duplicateOfOwnedTouch && !duplicateOfHandledPointer) return;\n"
+              "      event.preventDefault();\n"
+              "      event.stopImmediatePropagation();\n"
+              "    };\n\n"
+          )
+          if text.count(insertion_marker) != 1:
+              raise SystemExit(f'handleClick insertion marker: expected one match, found {text.count(insertion_marker)}')
+          text = text.replace(insertion_marker, capture_handler + insertion_marker, 1)
+
+          old_pointer_block = (
+              "      if (duplicateOfHandledPointer) {\n"
+              "        event.preventDefault();\n"
+              "        event.stopImmediatePropagation();\n"
+              "        return;\n"
+              "      }"
+          )
+          new_pointer_block = (
+              "      if (duplicateOfHandledPointer) {\n"
+              "        event.preventDefault();\n"
+              "        return;\n"
+              "      }"
+          )
+          if text.count(old_pointer_block) != 1:
+              raise SystemExit(f'bubble pointer dedupe block: expected one match, found {text.count(old_pointer_block)}')
+          text = text.replace(old_pointer_block, new_pointer_block, 1)
+
+          old_listener = (
+              "    // A compatibility click gives WebKit/Safari and assistive input a browser-agnostic tap\n"
+              "    // path when a touchscreen gesture does not surface through the iframe pointer/touch path.\n"
+              "    // Capture reader-owned compatibility clicks before EPUB.js link handlers can act on a hidden-column target.\n"
+              "    doc.addEventListener('click', handleClick, { capture: true });"
+          )
+          new_listener = (
+              "    // A compatibility click gives WebKit/Safari and assistive input a browser-agnostic tap\n"
+              "    // path when a touchscreen gesture does not surface through the iframe pointer/touch path.\n"
+              "    // Capture only reader-owned compatibility clicks before EPUB.js link handlers can act on a\n"
+              "    // hidden-column target; ordinary click-only input remains on the established bubble path.\n"
+              "    doc.addEventListener('click', handleCompatibilityClickCapture, { capture: true });\n"
+              "    doc.addEventListener('click', handleClick);"
+          )
+          if text.count(old_listener) != 1:
+              raise SystemExit(f'click listener block: expected one match, found {text.count(old_listener)}')
+          text = text.replace(old_listener, new_listener, 1)
+
+          path.write_text(text, encoding='utf-8')
+          PY
+          git diff --check
+
+      - name: Commit repair and self-remove helper
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/recover-rr6-spatial-click-35282266128.yml
+          git add src/lib/reader/engines/epubjs.ts
+          git commit -m 'Keep RR6 compatibility-click dedupe spatial'
+          git fetch origin "$GITHUB_REF_NAME"
+          git rebase "origin/$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
