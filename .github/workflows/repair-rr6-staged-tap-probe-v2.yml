@@ -1,0 +1,29 @@
+name: Repair RR6 tap probe v2
+
+on:
+  push:
+    branches:
+      - autopilot/deploy-recovery-35232272270
+    paths:
+      - .github/workflows/repair-rr6-staged-tap-probe-v2.yml
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          fetch-depth: 0
+      - name: Apply recovery
+        run: python3 scripts/repair-rr6-staged-tap-probe.py
+      - name: Commit recovery
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git rm .github/workflows/repair-rr6-staged-tap-probe-v2.yml scripts/repair-rr6-staged-tap-probe.py
+          git add tests/e2e/reader-tap-zones.spec.ts
+          git commit -m 'test: probe the visible staged EPUB strip'
+          git push origin HEAD:$GITHUB_REF_NAME
