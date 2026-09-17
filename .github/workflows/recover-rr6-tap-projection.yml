@@ -80,10 +80,70 @@ jobs:
       - name: Install browser engines and system dependencies
         run: pnpm exec playwright install --with-deps chromium firefox webkit
 
-      - name: Re-run exact staged RR6 acceptance
+      - name: Diagnose hosted EPUB tap zones on Chromium phone
+        id: targeted
+        continue-on-error: true
         env:
           RR6_STAGED_HOSTED_MEDIA: '1'
-        run: pnpm test:accessibility
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p .build/rr6-diagnostics
+          set +e
+          pnpm exec playwright test tests/e2e/reader-tap-zones.spec.ts --project=chromium-phone --reporter=line --trace=on 2>&1 | tee .build/rr6-diagnostics/targeted.log
+          status=${PIPESTATUS[0]}
+          set -e
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit "$status"
+
+      - name: Re-run exact staged RR6 acceptance
+        id: full
+        if: steps.targeted.outcome == 'success'
+        continue-on-error: true
+        env:
+          RR6_STAGED_HOSTED_MEDIA: '1'
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p .build/rr6-diagnostics
+          set +e
+          pnpm test:accessibility 2>&1 | tee .build/rr6-diagnostics/full.log
+          status=${PIPESTATUS[0]}
+          set -e
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit "$status"
+
+      - name: Collect RR6 diagnostic evidence
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .build/rr6-diagnostics
+          printf 'targeted_outcome=%s\ntargeted_status=%s\nfull_outcome=%s\nfull_status=%s\n' \
+            '${{ steps.targeted.outcome }}' '${{ steps.targeted.outputs.status }}' \
+            '${{ steps.full.outcome }}' '${{ steps.full.outputs.status }}' \
+            > .build/rr6-diagnostics/status.txt
+          if [ -d test-results ]; then cp -R test-results .build/rr6-diagnostics/test-results; fi
+          if [ -d playwright-report ]; then cp -R playwright-report .build/rr6-diagnostics/playwright-report; fi
+          git diff -- src/lib/reader/engines/epubjs.ts > .build/rr6-diagnostics/repair.diff
+
+      - name: Upload RR6 diagnostic evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: rr6-tap-recovery-${{ github.run_id }}
+          path: .build/rr6-diagnostics
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Require complete staged RR6 success
+        shell: bash
+        run: |
+          set -euo pipefail
+          test '${{ steps.targeted.outcome }}' = 'success'
+          test '${{ steps.full.outcome }}' = 'success'
+          test '${{ steps.targeted.outputs.status }}' = '0'
+          test '${{ steps.full.outputs.status }}' = '0'
 
       - name: Commit certified repair and remove helper workflow
         shell: bash
