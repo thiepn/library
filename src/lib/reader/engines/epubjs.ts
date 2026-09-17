@@ -244,6 +244,20 @@ function physicalTapXRatio(
         return visibleRatio(clientX);
       }
 
+      // Hosted Gutenberg chapters can expose an iframe-local viewport that is an exact
+      // integer strip of the visible reader width without declaring a numeric viewport
+      // meta width. Chromium touch events can then report strip-local clientX. Only wrap
+      // against the parent reader width when an exact integer-page strip proves that
+      // geometry, avoiding guesses when EPUB column gaps make page stride ambiguous.
+      if (Number.isFinite(clientX)) {
+        const pageCount = localWidth / visibleWidth;
+        const roundedPageCount = Math.round(pageCount);
+        if (roundedPageCount >= 2 && Math.abs(pageCount - roundedPageCount) <= 0.02) {
+          const wrappedX = ((clientX % visibleWidth) + visibleWidth) % visibleWidth;
+          return visibleRatio(wrappedX);
+        }
+      }
+
       // Only after exact frame projection and an already-visible clientX have failed,
       // try EPUB.js' overflow-container scroll state. offsetLeft/scrollLeft live in layout
       // coordinates and can disagree with transformed frame rectangles, so this is a
