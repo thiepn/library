@@ -398,6 +398,86 @@ export class EpubJsEngine implements ReaderEngine {
     let lastHandledPointer: HandledPointerInteraction | null = null;
     const hasSelection = () => Boolean(win.getSelection()?.toString().trim());
 
+    const isInteractiveVisibleTarget = (x: number, y: number, target: EventTarget | null): boolean => {
+      const targetInteractive = isInteractiveTarget(target);
+      const displayedPage = this.currentLocation?.displayedPage;
+      if (!displayedPage || displayedPage < 1) return targetInteractive;
+
+      const localWidth = Math.max(1, win.innerWidth || doc.documentElement?.clientWidth || 1);
+      const candidatePageWidths: number[] = [];
+      const viewportMeta = doc.querySelector<HTMLMetaElement>('meta[name="viewport"]')?.getAttribute('content') ?? '';
+      const viewportWidthMatch = viewportMeta.match(/(?:^|[,\s])width\s*=\s*(\d+(?:\.\d+)?)/i);
+      const declaredViewportWidth = viewportWidthMatch?.[1]
+        ? Number.parseFloat(viewportWidthMatch[1])
+        : Number.NaN;
+      if (Number.isFinite(declaredViewportWidth) && declaredViewportWidth > 1) {
+        candidatePageWidths.push(declaredViewportWidth);
+      }
+
+      let frameRect: DOMRect | undefined;
+      try {
+        const frame = win.frameElement as HTMLElement | null;
+        frameRect = frame?.getBoundingClientRect();
+        if (frameRect && Number.isFinite(frameRect.width) && frameRect.width > 1) {
+          candidatePageWidths.push(frameRect.width);
+        }
+      } catch {
+        // Same-origin parent geometry can disappear while an EPUB view is being replaced.
+      }
+
+      if (doc.body) {
+        const computedBodyWidth = Number.parseFloat(win.getComputedStyle(doc.body).width);
+        if (Number.isFinite(computedBodyWidth) && computedBodyWidth > 1) {
+          candidatePageWidths.push(computedBodyWidth);
+        }
+        if (doc.body.clientWidth > 1) candidatePageWidths.push(doc.body.clientWidth);
+      }
+
+      const publicationPageWidth = candidatePageWidths.find((candidate) => {
+        if (localWidth <= candidate * 1.25) return false;
+        const pageCount = localWidth / candidate;
+        const roundedPageCount = Math.round(pageCount);
+        return roundedPageCount >= 2 && Math.abs(pageCount - roundedPageCount) <= 0.02;
+      });
+      if (publicationPageWidth === undefined) return targetInteractive;
+
+      const pageCount = Math.round(localWidth / publicationPageWidth);
+      if (displayedPage > pageCount) return targetInteractive;
+
+      const tolerance = Math.max(3, publicationPageWidth * 0.03);
+      const currentPageStart = (displayedPage - 1) * publicationPageWidth;
+      let visibleColumnX: number;
+      if (
+        x >= currentPageStart - tolerance
+        && x <= currentPageStart + publicationPageWidth + tolerance
+      ) {
+        visibleColumnX = x;
+      } else if (x >= -tolerance && x <= publicationPageWidth + tolerance) {
+        visibleColumnX = currentPageStart + Math.max(0, Math.min(publicationPageWidth, x));
+      } else {
+        const wrappedX = ((x % publicationPageWidth) + publicationPageWidth) % publicationPageWidth;
+        visibleColumnX = currentPageStart + wrappedX;
+      }
+
+      const yCandidates = [y];
+      if (frameRect && Number.isFinite(frameRect.top)) {
+        const frameLocalY = y - frameRect.top;
+        if (Number.isFinite(frameLocalY) && Math.abs(frameLocalY - y) > 1) yCandidates.push(frameLocalY);
+      }
+
+      // Chromium can report event.target from an underlying column when EPUB.js exposes a
+      // multi-page iframe viewport. In that proven geometry, rendered client rectangles in
+      // the currently displayed column are authoritative: a hidden-column link must not
+      // steal a center/edge reader gesture, while a link actually under the visible tap must.
+      return Array.from(doc.querySelectorAll<HTMLElement>(INTERACTIVE_SELECTOR)).some((candidate) =>
+        Array.from(candidate.getClientRects()).some((rect) =>
+          visibleColumnX >= rect.left - 1
+          && visibleColumnX <= rect.right + 1
+          && yCandidates.some((candidateY) => candidateY >= rect.top - 1 && candidateY <= rect.bottom + 1),
+        ),
+      );
+    };
+
     const beginInteraction = (
       x: number,
       y: number,
@@ -412,7 +492,7 @@ export class EpubJsEngine implements ReaderEngine {
         y,
         time: performance.now(),
         pointerType,
-        interactive: isInteractiveTarget(target),
+        interactive: isInteractiveVisibleTarget(x, y, target),
       };
     };
 
@@ -437,7 +517,7 @@ export class EpubJsEngine implements ReaderEngine {
       const absX = Math.abs(deltaX);
       const absY = Math.abs(deltaY);
       const duration = performance.now() - start.time;
-      const interactive = start.interactive || isInteractiveTarget(target);
+      const interactive = start.interactive || isInteractiveVisibleTarget(x, y, target);
       const selected = hasSelection();
       let interaction: ReaderContentInteraction | null = null;
 
