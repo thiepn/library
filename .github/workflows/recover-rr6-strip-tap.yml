@@ -40,41 +40,33 @@ jobs:
 
           path = Path('src/lib/reader/engines/epubjs.ts')
           text = path.read_text()
-          old = """      if (Number.isFinite(clientX) && inVisibleRange(clientX)) {
-                return visibleRatio(clientX);
-              }
-
-              // Only after exact frame projection and an already-visible clientX have failed,
-              // try EPUB.js' overflow-container scroll state. offsetLeft/scrollLeft live in layout
-          """
-          new = """      if (Number.isFinite(clientX) && inVisibleRange(clientX)) {
-                return visibleRatio(clientX);
-              }
-
-              // Hosted Gutenberg chapters can expose an iframe-local viewport that is an exact
-              // integer strip of the visible reader width without declaring a numeric viewport
-              // meta width. In Chromium touch events, clientX can then be strip-local (for
-              // example 1295px inside a 1480px four-page strip for a physical 185px center tap).
-              // Only wrap against the parent reader width when the child viewport proves that
-              // exact integer-page geometry; this preserves ordinary visible coordinates and
-              // avoids guessing when EPUB column gaps make the page stride ambiguous.
-              if (Number.isFinite(clientX)) {
-                const pageCount = localWidth / visibleWidth;
-                const roundedPageCount = Math.round(pageCount);
-                if (roundedPageCount >= 2 && Math.abs(pageCount - roundedPageCount) <= 0.02) {
-                  const wrappedX = ((clientX % visibleWidth) + visibleWidth) % visibleWidth;
-                  return visibleRatio(wrappedX);
-                }
-              }
-
-              // Only after exact frame projection, an already-visible clientX, and a proven
-              // integer-page strip have failed, try EPUB.js' overflow-container scroll state.
-              // offsetLeft/scrollLeft live in layout
-          """
-          count = text.count(old)
-          if count != 1:
-              raise SystemExit(f'Expected exactly one tap-geometry anchor, found {count}')
-          path.write_text(text.replace(old, new))
+          lines = text.splitlines()
+          s6 = ' ' * 6
+          s8 = ' ' * 8
+          s10 = ' ' * 10
+          needle = s6 + "// Only after exact frame projection and an already-visible clientX have failed,"
+          matches = [i for i, line in enumerate(lines) if line == needle]
+          if len(matches) != 1:
+              raise SystemExit(f'Expected exactly one tap-geometry insertion point, found {len(matches)}')
+          i = matches[0]
+          insertion = [
+              s6 + "// Hosted Gutenberg chapters can expose an iframe-local viewport that is an exact",
+              s6 + "// integer strip of the visible reader width without declaring a numeric viewport",
+              s6 + "// meta width. Chromium touch events can then report strip-local clientX. Only wrap",
+              s6 + "// against the parent reader width when an exact integer-page strip proves that",
+              s6 + "// geometry, avoiding guesses when EPUB column gaps make page stride ambiguous.",
+              s6 + "if (Number.isFinite(clientX)) {",
+              s8 + "const pageCount = localWidth / visibleWidth;",
+              s8 + "const roundedPageCount = Math.round(pageCount);",
+              s8 + "if (roundedPageCount >= 2 && Math.abs(pageCount - roundedPageCount) <= 0.02) {",
+              s10 + "const wrappedX = ((clientX % visibleWidth) + visibleWidth) % visibleWidth;",
+              s10 + "return visibleRatio(wrappedX);",
+              s8 + "}",
+              s6 + "}",
+              "",
+          ]
+          lines[i:i] = insertion
+          path.write_text('\n'.join(lines) + '\n')
           PY
           git diff --check
           git diff -- src/lib/reader/engines/epubjs.ts
