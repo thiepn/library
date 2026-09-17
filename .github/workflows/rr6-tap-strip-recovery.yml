@@ -35,60 +35,11 @@ jobs:
           set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
-
+          import base64
           path = Path('src/lib/reader/engines/epubjs.ts')
           text = path.read_text()
-          old = '''// Last-resort fallback for engines that expose a one-page publication body width but
-// cannot provide usable parent-frame or physical-screen geometry. Keep this behind
-// exact viewport projection: in translated EPUB.js multi-page iframes, clientX is
-// strip-local and dividing it by the publication width can turn a physical center
-// tap into an edge-navigation tap.
-const computedBodyWidth = doc.body ? Number.parseFloat(win.getComputedStyle(doc.body).width) : Number.NaN;
-const publicationPageWidth = Number.isFinite(computedBodyWidth) && computedBodyWidth > 1
-  ? computedBodyWidth
-  : Number(doc.body?.clientWidth || 0);
-if (
-  Number.isFinite(publicationPageWidth)
-  && publicationPageWidth > 1
-  && localWidth > publicationPageWidth * 1.25
-  && Number.isFinite(clientX)
-) {
-  const pageTolerance = Math.max(3, publicationPageWidth * 0.03);
-  if (clientX >= -pageTolerance && clientX <= publicationPageWidth + pageTolerance) {
-    return clampRatio(clientX / publicationPageWidth);
-  }
-}
-'''
-          new = '''  // Last-resort fallback for engines that expose a one-page publication body width but
-  // cannot provide usable parent-frame or physical-screen geometry. A real EPUB.js
-  // paginated strip can be an exact integer number of page widths (for example a
-  // 1480px iframe containing four 370px pages). In that proven geometry, wrap the
-  // iframe-local coordinate back onto its physical page before falling back to the
-  // full-strip ratio. Do not wrap approximate page strides: column gaps can otherwise
-  // turn a real right-edge tap into a false left-edge tap.
-  const computedBodyWidth = doc.body ? Number.parseFloat(win.getComputedStyle(doc.body).width) : Number.NaN;
-  const publicationPageWidth = Number.isFinite(computedBodyWidth) && computedBodyWidth > 1
-    ? computedBodyWidth
-    : Number(doc.body?.clientWidth || 0);
-  if (
-    Number.isFinite(publicationPageWidth)
-    && publicationPageWidth > 1
-    && localWidth > publicationPageWidth * 1.25
-    && Number.isFinite(clientX)
-  ) {
-    const pageTolerance = Math.max(3, publicationPageWidth * 0.03);
-    if (clientX >= -pageTolerance && clientX <= publicationPageWidth + pageTolerance) {
-      return clampRatio(clientX / publicationPageWidth);
-    }
-
-    const pageCount = localWidth / publicationPageWidth;
-    const roundedPageCount = Math.round(pageCount);
-    if (roundedPageCount >= 2 && Math.abs(pageCount - roundedPageCount) <= 0.02) {
-      const wrappedX = ((clientX % publicationPageWidth) + publicationPageWidth) % publicationPageWidth;
-      return clampRatio(wrappedX / publicationPageWidth);
-    }
-  }
-'''
+          old = base64.b64decode('Ly8gTGFzdC1yZXNvcnQgZmFsbGJhY2sgZm9yIGVuZ2luZXMgdGhhdCBleHBvc2UgYSBvbmUtcGFnZSBwdWJsaWNhdGlvbiBib2R5IHdpZHRoIGJ1dAovLyBjYW5ub3QgcHJvdmlkZSB1c2FibGUgcGFyZW50LWZyYW1lIG9yIHBoeXNpY2FsLXNjcmVlbiBnZW9tZXRyeS4gS2VlcCB0aGlzIGJlaGluZAovLyBleGFjdCB2aWV3cG9ydCBwcm9qZWN0aW9uOiBpbiB0cmFuc2xhdGVkIEVQVUIuanMgbXVsdGktcGFnZSBpZnJhbWVzLCBjbGllbnRYIGlzCi8vIHN0cmlwLWxvY2FsIGFuZCBkaXZpZGluZyBpdCBieSB0aGUgcHVibGljYXRpb24gd2lkdGggY2FuIHR1cm4gYSBwaHlzaWNhbCBjZW50ZXIKLy8gdGFwIGludG8gYW4gZWRnZS1uYXZpZ2F0aW9uIHRhcC4KY29uc3QgY29tcHV0ZWRCb2R5V2lkdGggPSBkb2MuYm9keSA/IE51bWJlci5wYXJzZUZsb2F0KHdpbi5nZXRDb21wdXRlZFN0eWxlKGRvYy5ib2R5KS53aWR0aCkgOiBOdW1iZXIuTmFOOwpjb25zdCBwdWJsaWNhdGlvblBhZ2VXaWR0aCA9IE51bWJlci5pc0Zpbml0ZShjb21wdXRlZEJvZHlXaWR0aCkgJiYgY29tcHV0ZWRCb2R5V2lkdGggPiAxCiAgPyBjb21wdXRlZEJvZHlXaWR0aAogIDogTnVtYmVyKGRvYy5ib2R5Py5jbGllbnRXaWR0aCB8fCAwKTsKaWYgKAogIE51bWJlci5pc0Zpbml0ZShwdWJsaWNhdGlvblBhZ2VXaWR0aCkKICAmJiBwdWJsaWNhdGlvblBhZ2VXaWR0aCA+IDEKICAmJiBsb2NhbFdpZHRoID4gcHVibGljYXRpb25QYWdlV2lkdGggKiAxLjI1CiAgJiYgTnVtYmVyLmlzRmluaXRlKGNsaWVudFgpCikgewogIGNvbnN0IHBhZ2VUb2xlcmFuY2UgPSBNYXRoLm1heCgzLCBwdWJsaWNhdGlvblBhZ2VXaWR0aCAqIDAuMDMpOwogIGlmIChjbGllbnRYID49IC1wYWdlVG9sZXJhbmNlICYmIGNsaWVudFggPD0gcHVibGljYXRpb25QYWdlV2lkdGggKyBwYWdlVG9sZXJhbmNlKSB7CiAgICByZXR1cm4gY2xhbXBSYXRpbyhjbGllbnRYIC8gcHVibGljYXRpb25QYWdlV2lkdGgpOwogIH0KfQo=').decode()
+          new = base64.b64decode('ICAvLyBMYXN0LXJlc29ydCBmYWxsYmFjayBmb3IgZW5naW5lcyB0aGF0IGV4cG9zZSBhIG9uZS1wYWdlIHB1YmxpY2F0aW9uIGJvZHkgd2lkdGggYnV0CiAgLy8gY2Fubm90IHByb3ZpZGUgdXNhYmxlIHBhcmVudC1mcmFtZSBvciBwaHlzaWNhbC1zY3JlZW4gZ2VvbWV0cnkuIEEgcmVhbCBFUFVCLmpzCiAgLy8gcGFnaW5hdGVkIHN0cmlwIGNhbiBiZSBhbiBleGFjdCBpbnRlZ2VyIG51bWJlciBvZiBwYWdlIHdpZHRocyAoZm9yIGV4YW1wbGUgYQogIC8vIDE0ODBweCBpZnJhbWUgY29udGFpbmluZyBmb3VyIDM3MHB4IHBhZ2VzKS4gSW4gdGhhdCBwcm92ZW4gZ2VvbWV0cnksIHdyYXAgdGhlCiAgLy8gaWZyYW1lLWxvY2FsIGNvb3JkaW5hdGUgYmFjayBvbnRvIGl0cyBwaHlzaWNhbCBwYWdlIGJlZm9yZSBmYWxsaW5nIGJhY2sgdG8gdGhlCiAgLy8gZnVsbC1zdHJpcCByYXRpby4gRG8gbm90IHdyYXAgYXBwcm94aW1hdGUgcGFnZSBzdHJpZGVzOiBjb2x1bW4gZ2FwcyBjYW4gb3RoZXJ3aXNlCiAgLy8gdHVybiBhIHJlYWwgcmlnaHQtZWRnZSB0YXAgaW50byBhIGZhbHNlIGxlZnQtZWRnZSB0YXAuCiAgY29uc3QgY29tcHV0ZWRCb2R5V2lkdGggPSBkb2MuYm9keSA/IE51bWJlci5wYXJzZUZsb2F0KHdpbi5nZXRDb21wdXRlZFN0eWxlKGRvYy5ib2R5KS53aWR0aCkgOiBOdW1iZXIuTmFOOwogIGNvbnN0IHB1YmxpY2F0aW9uUGFnZVdpZHRoID0gTnVtYmVyLmlzRmluaXRlKGNvbXB1dGVkQm9keVdpZHRoKSAmJiBjb21wdXRlZEJvZHlXaWR0aCA+IDEKICAgID8gY29tcHV0ZWRCb2R5V2lkdGgKICAgIDogTnVtYmVyKGRvYy5ib2R5Py5jbGllbnRXaWR0aCB8fCAwKTsKICBpZiAoCiAgICBOdW1iZXIuaXNGaW5pdGUocHVibGljYXRpb25QYWdlV2lkdGgpCiAgICAmJiBwdWJsaWNhdGlvblBhZ2VXaWR0aCA+IDEKICAgICYmIGxvY2FsV2lkdGggPiBwdWJsaWNhdGlvblBhZ2VXaWR0aCAqIDEuMjUKICAgICYmIE51bWJlci5pc0Zpbml0ZShjbGllbnRYKQogICkgewogICAgY29uc3QgcGFnZVRvbGVyYW5jZSA9IE1hdGgubWF4KDMsIHB1YmxpY2F0aW9uUGFnZVdpZHRoICogMC4wMyk7CiAgICBpZiAoY2xpZW50WCA+PSAtcGFnZVRvbGVyYW5jZSAmJiBjbGllbnRYIDw9IHB1YmxpY2F0aW9uUGFnZVdpZHRoICsgcGFnZVRvbGVyYW5jZSkgewogICAgICByZXR1cm4gY2xhbXBSYXRpbyhjbGllbnRYIC8gcHVibGljYXRpb25QYWdlV2lkdGgpOwogICAgfQoKICAgIGNvbnN0IHBhZ2VDb3VudCA9IGxvY2FsV2lkdGggLyBwdWJsaWNhdGlvblBhZ2VXaWR0aDsKICAgIGNvbnN0IHJvdW5kZWRQYWdlQ291bnQgPSBNYXRoLnJvdW5kKHBhZ2VDb3VudCk7CiAgICBpZiAocm91bmRlZFBhZ2VDb3VudCA+PSAyICYmIE1hdGguYWJzKHBhZ2VDb3VudCAtIHJvdW5kZWRQYWdlQ291bnQpIDw9IDAuMDIpIHsKICAgICAgY29uc3Qgd3JhcHBlZFggPSAoKGNsaWVudFggJSBwdWJsaWNhdGlvblBhZ2VXaWR0aCkgKyBwdWJsaWNhdGlvblBhZ2VXaWR0aCkgJSBwdWJsaWNhdGlvblBhZ2VXaWR0aDsKICAgICAgcmV0dXJuIGNsYW1wUmF0aW8od3JhcHBlZFggLyBwdWJsaWNhdGlvblBhZ2VXaWR0aCk7CiAgICB9CiAgfQo=').decode()
           if old not in text:
               raise SystemExit('expected RR6 fallback block not found; refusing to patch')
           path.write_text(text.replace(old, new, 1))
