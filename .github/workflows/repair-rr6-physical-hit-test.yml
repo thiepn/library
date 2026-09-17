@@ -27,18 +27,14 @@ jobs:
           from pathlib import Path
 
           path = Path('tests/e2e/reader-tap-zones.spec.ts')
-          text = path.read_text()
-          old = '''        const element = document.elementFromPoint(input.x, input.y) ?? document.documentElement;
-          const interactive = Boolean(element.closest(input.interactiveSelector));
-          const id = element.id ? `#${element.id}` : '';
-          const className = typeof element.className === 'string' && element.className.trim()
-            ? `.${element.className.trim().split(/\\s+/).join('.')}`
-            : '';
-          return {
-            interactive,
-            description: `${element.tagName.toLowerCase()}${id}${className}`,
-          };'''
-          new = '''        const element = document.elementFromPoint(input.x, input.y) ?? document.documentElement;
+          lines = path.read_text().splitlines(keepends=True)
+          element_line = '        const element = document.elementFromPoint(input.x, input.y) ?? document.documentElement;\n'
+          interactive_line = '        const interactive = Boolean(element.closest(input.interactiveSelector));\n'
+          matches = [i for i, line in enumerate(lines) if line == element_line and i + 1 < len(lines) and lines[i + 1] == interactive_line]
+          if len(matches) != 1:
+              raise SystemExit(f'expected exactly one RR6 hit-test start, found {len(matches)}')
+          i = matches[0]
+          replacement = '''        const element = document.elementFromPoint(input.x, input.y) ?? document.documentElement;
           const directInteractive = element.closest(input.interactiveSelector);
           // Chromium can visually paginate one wide EPUB iframe inside a scrolled/clipped parent.
           // In that geometry elementFromPoint() may report the underlying publication surface even
@@ -55,17 +51,16 @@ jobs:
           );
           const targetElement = rectInteractive ?? element;
           const interactive = Boolean(rectInteractive);
-          const id = targetElement.id ? `#${targetElement.id}` : '';
-          const className = typeof targetElement.className === 'string' && targetElement.className.trim()
-            ? `.${targetElement.className.trim().split(/\\s+/).join('.')}`
-            : '';
-          return {
-            interactive,
-            description: `${targetElement.tagName.toLowerCase()}${id}${className}`,
-          };'''
-          if text.count(old) != 1:
-              raise SystemExit(f'expected exactly one RR6 hit-test block, found {text.count(old)}')
-          path.write_text(text.replace(old, new))
+'''.splitlines(keepends=True)
+          lines[i:i + 2] = replacement
+          for j in range(i + len(replacement), min(i + len(replacement) + 12, len(lines))):
+              lines[j] = lines[j].replace('element.id', 'targetElement.id')
+              lines[j] = lines[j].replace('element.className', 'targetElement.className')
+              lines[j] = lines[j].replace('element.tagName', 'targetElement.tagName')
+          result = ''.join(lines)
+          if result.count('const rectInteractive = directInteractive ?? Array.from(document.querySelectorAll(input.interactiveSelector))') != 1:
+              raise SystemExit('RR6 rectangle fallback was not installed exactly once')
+          path.write_text(result)
           PY
           git diff --check
           grep -F 'const rectInteractive = directInteractive ?? Array.from(document.querySelectorAll(input.interactiveSelector))' tests/e2e/reader-tap-zones.spec.ts
