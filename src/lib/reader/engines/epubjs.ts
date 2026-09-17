@@ -253,35 +253,39 @@ function physicalTapXRatio(
     // Same-origin frame geometry can be unavailable during teardown; use local CSS.
   }
 
-    // Last-resort fallback for engines that expose a one-page publication body width but
-  // cannot provide usable parent-frame or physical-screen geometry. A real EPUB.js
-  // paginated strip can be an exact integer number of page widths (for example a
-  // 1480px iframe containing four 370px pages). In that proven geometry, wrap the
-  // iframe-local coordinate back onto its physical page before falling back to the
-  // full-strip ratio. Do not wrap approximate page strides: column gaps can otherwise
-  // turn a real right-edge tap into a false left-edge tap.
-  const computedBodyWidth = doc.body ? Number.parseFloat(win.getComputedStyle(doc.body).width) : Number.NaN;
-  const publicationPageWidth = Number.isFinite(computedBodyWidth) && computedBodyWidth > 1
-    ? computedBodyWidth
-    : Number(doc.body?.clientWidth || 0);
-  if (
-    Number.isFinite(publicationPageWidth)
-    && publicationPageWidth > 1
-    && localWidth > publicationPageWidth * 1.25
-    && Number.isFinite(clientX)
-  ) {
-    const pageTolerance = Math.max(3, publicationPageWidth * 0.03);
-    if (clientX >= -pageTolerance && clientX <= publicationPageWidth + pageTolerance) {
-      return clampRatio(clientX / publicationPageWidth);
-    }
+  // Last-resort fallback for sandboxed EPUB.js frames whose parent geometry is unavailable.
+// EPUB.js injects a numeric viewport width matching one visible rendition page. Hosted
+// Gutenberg chapters can then expose an iframe window many exact page widths wide (the
+// staged RR6 failure was 5920px for sixteen 370px pages), while touch clientX remains
+// strip-local. Only wrap when a candidate page width proves an exact integer strip so
+// publisher viewport metadata or approximate column gaps cannot invert edge taps.
+const viewportMeta = doc.querySelector<HTMLMetaElement>('meta[name="viewport"]')?.getAttribute('content') ?? '';
+const viewportWidthMatch = viewportMeta.match(/(?:^|[,\s])width\s*=\s*(\d+(?:\.\d+)?)/i);
+const declaredViewportWidth = viewportWidthMatch?.[1]
+  ? Number.parseFloat(viewportWidthMatch[1])
+  : Number.NaN;
+const computedBodyWidth = doc.body ? Number.parseFloat(win.getComputedStyle(doc.body).width) : Number.NaN;
+const candidatePageWidths = [
+  declaredViewportWidth,
+  computedBodyWidth,
+  Number(doc.body?.clientWidth || 0),
+];
+const publicationPageWidth = candidatePageWidths.find((candidate) => {
+  if (!Number.isFinite(candidate) || candidate <= 1 || localWidth <= candidate * 1.25) return false;
+  const pageCount = localWidth / candidate;
+  const roundedPageCount = Math.round(pageCount);
+  return roundedPageCount >= 2 && Math.abs(pageCount - roundedPageCount) <= 0.02;
+});
 
-    const pageCount = localWidth / publicationPageWidth;
-    const roundedPageCount = Math.round(pageCount);
-    if (roundedPageCount >= 2 && Math.abs(pageCount - roundedPageCount) <= 0.02) {
-      const wrappedX = ((clientX % publicationPageWidth) + publicationPageWidth) % publicationPageWidth;
-      return clampRatio(wrappedX / publicationPageWidth);
-    }
+if (publicationPageWidth !== undefined && Number.isFinite(clientX)) {
+  const pageTolerance = Math.max(3, publicationPageWidth * 0.03);
+  if (clientX >= -pageTolerance && clientX <= publicationPageWidth + pageTolerance) {
+    return clampRatio(clientX / publicationPageWidth);
   }
+
+  const wrappedX = ((clientX % publicationPageWidth) + publicationPageWidth) % publicationPageWidth;
+  return clampRatio(wrappedX / publicationPageWidth);
+}
 
   return localRatio;
 }
