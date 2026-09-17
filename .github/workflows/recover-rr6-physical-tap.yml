@@ -1,0 +1,92 @@
+name: Recover RR6 physical tap projection
+
+on:
+  push:
+    branches:
+      - 'autopilot/deploy-recovery-35148883218'
+    paths:
+      - '.github/workflows/recover-rr6-physical-tap.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: recover-rr6-physical-tap-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout recovery branch
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+
+      - name: Move publication-width interpretation behind physical geometry
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('src/lib/reader/engines/epubjs.ts')
+          text = path.read_text()
+
+          start_marker = "  // In EPUB.js paginated mode the iframe viewport can span the entire multi-page strip\n"
+          end_marker = "  // For a real touch gesture, screenX is anchored to the physical visible screen rather\n"
+          start = text.find(start_marker)
+          end = text.find(end_marker, start)
+          if start < 0 or end < 0:
+              raise SystemExit('expected publication-width block markers not found')
+
+          old_section = text[start:end]
+          if "const publicationPageWidth" not in old_section or "return clampRatio(clientX / publicationPageWidth);" not in old_section:
+              raise SystemExit('publication-width block shape changed; refusing unsafe rewrite')
+
+          text = text[:start] + text[end:]
+
+          fallback = '''  // Last-resort fallback for engines that expose a one-page publication body width but
+          // cannot provide usable parent-frame or physical-screen geometry. Keep this behind
+          // exact viewport projection: in translated EPUB.js multi-page iframes, clientX is
+          // strip-local and dividing it by the publication width can turn a physical center
+          // tap into an edge-navigation tap.
+          const computedBodyWidth = doc.body ? Number.parseFloat(win.getComputedStyle(doc.body).width) : Number.NaN;
+          const publicationPageWidth = Number.isFinite(computedBodyWidth) && computedBodyWidth > 1
+            ? computedBodyWidth
+            : Number(doc.body?.clientWidth || 0);
+          if (
+            Number.isFinite(publicationPageWidth)
+            && publicationPageWidth > 1
+            && localWidth > publicationPageWidth * 1.25
+            && Number.isFinite(clientX)
+          ) {
+            const pageTolerance = Math.max(3, publicationPageWidth * 0.03);
+            if (clientX >= -pageTolerance && clientX <= publicationPageWidth + pageTolerance) {
+              return clampRatio(clientX / publicationPageWidth);
+            }
+          }
+
+          '''
+
+          return_marker = "  return localRatio;\n}\nfunction mapLocation"
+          if text.count(return_marker) != 1:
+              raise SystemExit('physicalTapXRatio return marker changed; refusing unsafe rewrite')
+          text = text.replace(return_marker, fallback + return_marker, 1)
+          path.write_text(text)
+          PY
+          git diff --check
+
+      - name: Commit repair and remove helper workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/recover-rr6-physical-tap.yml
+          git add src/lib/reader/engines/epubjs.ts
+          git diff --cached --check
+          git commit -m 'fix(rr6): prioritize physical EPUB tap geometry'
+          git fetch origin "$GITHUB_REF_NAME"
+          git rebase "origin/$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
