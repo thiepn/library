@@ -29,77 +29,72 @@ jobs:
           path = Path('src/lib/reader/engines/epubjs.ts')
           text = path.read_text(encoding='utf-8')
 
-          old_y = '''      const yCandidates = [y];
-          if (frameRect && Number.isFinite(frameRect.top)) {
-            const frameLocalY = y - frameRect.top;
-            if (Number.isFinite(frameLocalY) && Math.abs(frameLocalY - y) > 1) yCandidates.push(frameLocalY);
-          }
+          y_start_marker = "      const yCandidates = [y];"
+          y_end_marker = "\n\n      // Chromium can report event.target from an underlying column"
+          if text.count(y_start_marker) != 1:
+              raise SystemExit(f'iframe-local Y start: expected one match, found {text.count(y_start_marker)}')
+          y_start = text.index(y_start_marker)
+          y_end = text.index(y_end_marker, y_start)
+          new_y = (
+              "      // DOM client coordinates delivered inside the EPUB iframe are already local to that\n"
+              "      // document. Mixing in the parent-frame top offset can falsely project the same tap onto\n"
+              "      // an unrelated link in another vertical position, which makes a reader-owned center tap\n"
+              "      // look interactive. Keep hit testing in the iframe's own coordinate space.\n"
+              "      const visibleColumnY = y;"
+          )
+          text = text[:y_start] + new_y + text[y_end:]
 
-          // Chromium can report event.target from an underlying column when EPUB.js exposes a
-          // multi-page iframe viewport. In that proven geometry, rendered client rectangles in
-          // the currently displayed column are authoritative: a hidden-column link must not
-          // steal a center/edge reader gesture, while a link actually under the visible tap must.
-          return Array.from(doc.querySelectorAll<HTMLElement>(INTERACTIVE_SELECTOR)).some((candidate) =>
-            Array.from(candidate.getClientRects()).some((rect) =>
-              visibleColumnX >= rect.left - 1
-              && visibleColumnX <= rect.right + 1
-              && yCandidates.some((candidateY) => candidateY >= rect.top - 1 && candidateY <= rect.bottom + 1),
-            ),
-          );'''
-          new_y = '''      // DOM client coordinates delivered inside the EPUB iframe are already local to that
-          // document. Mixing in the parent-frame top offset can falsely project the same tap onto
-          // an unrelated link in another vertical position, which makes a reader-owned center tap
-          // look interactive. Keep hit testing in the iframe's own coordinate space.
-          const visibleColumnY = y;
+          old_rect_y = "              && yCandidates.some((candidateY) => candidateY >= rect.top - 1 && candidateY <= rect.bottom + 1),"
+          new_rect_y = (
+              "              && visibleColumnY >= rect.top - 1\n"
+              "              && visibleColumnY <= rect.bottom + 1,"
+          )
+          if text.count(old_rect_y) != 1:
+              raise SystemExit(f'visible-column rect Y: expected one match, found {text.count(old_rect_y)}')
+          text = text.replace(old_rect_y, new_rect_y, 1)
 
-          // Chromium can report event.target from an underlying column when EPUB.js exposes a
-          // multi-page iframe viewport. In that proven geometry, rendered client rectangles in
-          // the currently displayed column are authoritative: a hidden-column link must not
-          // steal a center/edge reader gesture, while a link actually under the visible tap must.
-          return Array.from(doc.querySelectorAll<HTMLElement>(INTERACTIVE_SELECTOR)).some((candidate) =>
-            Array.from(candidate.getClientRects()).some((rect) =>
-              visibleColumnX >= rect.left - 1
-              && visibleColumnX <= rect.right + 1
-              && visibleColumnY >= rect.top - 1
-              && visibleColumnY <= rect.bottom + 1,
-            ),
-          );'''
+          old_touch_dedupe = (
+              "      if (performance.now() - this.lastTouchTapAt < COMPATIBILITY_CLICK_DEDUPE_MS) {\n"
+              "        event.preventDefault();\n"
+              "        return;\n"
+              "      }"
+          )
+          new_touch_dedupe = (
+              "      if (performance.now() - this.lastTouchTapAt < COMPATIBILITY_CLICK_DEDUPE_MS) {\n"
+              "        event.preventDefault();\n"
+              "        event.stopImmediatePropagation();\n"
+              "        return;\n"
+              "      }"
+          )
+          if text.count(old_touch_dedupe) != 1:
+              raise SystemExit(f'touch compatibility click: expected one match, found {text.count(old_touch_dedupe)}')
+          text = text.replace(old_touch_dedupe, new_touch_dedupe, 1)
 
-          old_touch_dedupe = '''      if (performance.now() - this.lastTouchTapAt < COMPATIBILITY_CLICK_DEDUPE_MS) {
-            event.preventDefault();
-            return;
-          }'''
-          new_touch_dedupe = '''      if (performance.now() - this.lastTouchTapAt < COMPATIBILITY_CLICK_DEDUPE_MS) {
-            event.preventDefault();
-            event.stopImmediatePropagation();
-            return;
-          }'''
-
-          old_pointer_dedupe = '''      if (duplicateOfHandledPointer) {
-            event.preventDefault();
-            return;
-          }'''
-          new_pointer_dedupe = '''      if (duplicateOfHandledPointer) {
-            event.preventDefault();
-            event.stopImmediatePropagation();
-            return;
-          }'''
+          old_pointer_dedupe = (
+              "      if (duplicateOfHandledPointer) {\n"
+              "        event.preventDefault();\n"
+              "        return;\n"
+              "      }"
+          )
+          new_pointer_dedupe = (
+              "      if (duplicateOfHandledPointer) {\n"
+              "        event.preventDefault();\n"
+              "        event.stopImmediatePropagation();\n"
+              "        return;\n"
+              "      }"
+          )
+          if text.count(old_pointer_dedupe) != 1:
+              raise SystemExit(f'pointer compatibility click: expected one match, found {text.count(old_pointer_dedupe)}')
+          text = text.replace(old_pointer_dedupe, new_pointer_dedupe, 1)
 
           old_listener = "    doc.addEventListener('click', handleClick);"
-          new_listener = "    // Capture reader-owned compatibility clicks before EPUB.js link handlers can act on a hidden-column target.\n    doc.addEventListener('click', handleClick, { capture: true });"
-
-          replacements = [
-              (old_y, new_y, 'iframe-local interactive hit testing'),
-              (old_touch_dedupe, new_touch_dedupe, 'touch compatibility click propagation'),
-              (old_pointer_dedupe, new_pointer_dedupe, 'pointer compatibility click propagation'),
-              (old_listener, new_listener, 'capture-phase click ownership'),
-          ]
-
-          for old, new, label in replacements:
-              count = text.count(old)
-              if count != 1:
-                  raise SystemExit(f'{label}: expected exactly one match, found {count}')
-              text = text.replace(old, new, 1)
+          new_listener = (
+              "    // Capture reader-owned compatibility clicks before EPUB.js link handlers can act on a hidden-column target.\n"
+              "    doc.addEventListener('click', handleClick, { capture: true });"
+          )
+          if text.count(old_listener) != 1:
+              raise SystemExit(f'capture click listener: expected one match, found {text.count(old_listener)}')
+          text = text.replace(old_listener, new_listener, 1)
 
           path.write_text(text, encoding='utf-8')
           PY
