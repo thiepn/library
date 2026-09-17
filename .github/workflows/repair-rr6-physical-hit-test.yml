@@ -34,24 +34,25 @@ jobs:
           if len(matches) != 1:
               raise SystemExit(f'expected exactly one RR6 hit-test start, found {len(matches)}')
           i = matches[0]
-          replacement = '''        const element = document.elementFromPoint(input.x, input.y) ?? document.documentElement;
-          const directInteractive = element.closest(input.interactiveSelector);
-          // Chromium can visually paginate one wide EPUB iframe inside a scrolled/clipped parent.
-          // In that geometry elementFromPoint() may report the underlying publication surface even
-          // though the physical touchscreen target is an anchor in the visible CSS column. Treat an
-          // interactive element whose rendered client rect contains the physical frame coordinate as
-          // authoritative too, so the acceptance helper never steals a real publication interaction.
-          const rectInteractive = directInteractive ?? Array.from(document.querySelectorAll(input.interactiveSelector)).find((candidate) =>
-            Array.from(candidate.getClientRects()).some((rect) =>
-              input.x >= rect.left
-              && input.x <= rect.right
-              && input.y >= rect.top
-              && input.y <= rect.bottom,
-            ),
-          );
-          const targetElement = rectInteractive ?? element;
-          const interactive = Boolean(rectInteractive);
-'''.splitlines(keepends=True)
+          replacement = [
+              '        const element = document.elementFromPoint(input.x, input.y) ?? document.documentElement;\n',
+              '        const directInteractive = element.closest(input.interactiveSelector);\n',
+              '        // Chromium can visually paginate one wide EPUB iframe inside a scrolled/clipped parent.\n',
+              '        // In that geometry elementFromPoint() may report the underlying publication surface even\n',
+              '        // though the physical touchscreen target is an anchor in the visible CSS column. Treat an\n',
+              '        // interactive element whose rendered client rect contains the physical frame coordinate as\n',
+              '        // authoritative too, so the acceptance helper never steals a real publication interaction.\n',
+              '        const rectInteractive = directInteractive ?? Array.from(document.querySelectorAll(input.interactiveSelector)).find((candidate) =>\n',
+              '          Array.from(candidate.getClientRects()).some((rect) =>\n',
+              '            input.x >= rect.left\n',
+              '            && input.x <= rect.right\n',
+              '            && input.y >= rect.top\n',
+              '            && input.y <= rect.bottom,\n',
+              '          ),\n',
+              '        );\n',
+              '        const targetElement = rectInteractive ?? element;\n',
+              '        const interactive = Boolean(rectInteractive);\n',
+          ]
           lines[i:i + 2] = replacement
           for j in range(i + len(replacement), min(i + len(replacement) + 12, len(lines))):
               lines[j] = lines[j].replace('element.id', 'targetElement.id')
