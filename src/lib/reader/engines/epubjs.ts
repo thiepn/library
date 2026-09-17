@@ -184,6 +184,32 @@ function physicalTapXRatio(
   const localWidth = Math.max(1, win.innerWidth || doc.documentElement?.clientWidth || 1);
   const localRatio = clampRatio(clientX / localWidth);
 
+  // EPUB.js injects a numeric viewport width for one visible rendition page. When the
+  // child viewport is an exact integer strip of those pages, that geometry is stronger
+  // than parent/screen heuristics: retained staged RR6 evidence shows a 1480px child
+  // viewport containing four 370px pages, translated exactly three page widths behind
+  // the visible reader. Normalize against that proven page width before consulting
+  // coordinate-space fallbacks so a physical center tap cannot be mistaken for an edge.
+  {
+    const viewportMeta = doc.querySelector<HTMLMetaElement>('meta[name=\"viewport\"]')?.getAttribute('content') ?? '';
+    const viewportWidthMatch = viewportMeta.match(/(?:^|[,\s])width\s*=\s*(\d+(?:\.\d+)?)/i);
+    const declaredViewportWidth = viewportWidthMatch?.[1]
+      ? Number.parseFloat(viewportWidthMatch[1])
+      : Number.NaN;
+    if (Number.isFinite(declaredViewportWidth) && declaredViewportWidth > 1 && Number.isFinite(clientX)) {
+      const pageCount = localWidth / declaredViewportWidth;
+      const roundedPageCount = Math.round(pageCount);
+      if (roundedPageCount >= 2 && Math.abs(pageCount - roundedPageCount) <= 0.02) {
+        const pageTolerance = Math.max(3, declaredViewportWidth * 0.03);
+        if (clientX >= -pageTolerance && clientX <= declaredViewportWidth + pageTolerance) {
+          return clampRatio(clientX / declaredViewportWidth);
+        }
+        const wrappedX = ((clientX % declaredViewportWidth) + declaredViewportWidth) % declaredViewportWidth;
+        return clampRatio(wrappedX / declaredViewportWidth);
+      }
+    }
+  }
+
   try {
     const frame = win.frameElement as HTMLElement | null;
     const viewport = frame?.closest?.('[data-reader-viewport]') as HTMLElement | null;
