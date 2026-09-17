@@ -253,26 +253,35 @@ function physicalTapXRatio(
     // Same-origin frame geometry can be unavailable during teardown; use local CSS.
   }
 
-  // Last-resort fallback for engines that expose a one-page publication body width but
-// cannot provide usable parent-frame or physical-screen geometry. Keep this behind
-// exact viewport projection: in translated EPUB.js multi-page iframes, clientX is
-// strip-local and dividing it by the publication width can turn a physical center
-// tap into an edge-navigation tap.
-const computedBodyWidth = doc.body ? Number.parseFloat(win.getComputedStyle(doc.body).width) : Number.NaN;
-const publicationPageWidth = Number.isFinite(computedBodyWidth) && computedBodyWidth > 1
-  ? computedBodyWidth
-  : Number(doc.body?.clientWidth || 0);
-if (
-  Number.isFinite(publicationPageWidth)
-  && publicationPageWidth > 1
-  && localWidth > publicationPageWidth * 1.25
-  && Number.isFinite(clientX)
-) {
-  const pageTolerance = Math.max(3, publicationPageWidth * 0.03);
-  if (clientX >= -pageTolerance && clientX <= publicationPageWidth + pageTolerance) {
-    return clampRatio(clientX / publicationPageWidth);
+    // Last-resort fallback for engines that expose a one-page publication body width but
+  // cannot provide usable parent-frame or physical-screen geometry. A real EPUB.js
+  // paginated strip can be an exact integer number of page widths (for example a
+  // 1480px iframe containing four 370px pages). In that proven geometry, wrap the
+  // iframe-local coordinate back onto its physical page before falling back to the
+  // full-strip ratio. Do not wrap approximate page strides: column gaps can otherwise
+  // turn a real right-edge tap into a false left-edge tap.
+  const computedBodyWidth = doc.body ? Number.parseFloat(win.getComputedStyle(doc.body).width) : Number.NaN;
+  const publicationPageWidth = Number.isFinite(computedBodyWidth) && computedBodyWidth > 1
+    ? computedBodyWidth
+    : Number(doc.body?.clientWidth || 0);
+  if (
+    Number.isFinite(publicationPageWidth)
+    && publicationPageWidth > 1
+    && localWidth > publicationPageWidth * 1.25
+    && Number.isFinite(clientX)
+  ) {
+    const pageTolerance = Math.max(3, publicationPageWidth * 0.03);
+    if (clientX >= -pageTolerance && clientX <= publicationPageWidth + pageTolerance) {
+      return clampRatio(clientX / publicationPageWidth);
+    }
+
+    const pageCount = localWidth / publicationPageWidth;
+    const roundedPageCount = Math.round(pageCount);
+    if (roundedPageCount >= 2 && Math.abs(pageCount - roundedPageCount) <= 0.02) {
+      const wrappedX = ((clientX % publicationPageWidth) + publicationPageWidth) % publicationPageWidth;
+      return clampRatio(wrappedX / publicationPageWidth);
+    }
   }
-}
 
   return localRatio;
 }
