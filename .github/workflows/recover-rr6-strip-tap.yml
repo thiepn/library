@@ -46,7 +46,7 @@ jobs:
 
               // Only after exact frame projection and an already-visible clientX have failed,
               // try EPUB.js' overflow-container scroll state. offsetLeft/scrollLeft live in layout
-"""
+          """
           new = """      if (Number.isFinite(clientX) && inVisibleRange(clientX)) {
                 return visibleRatio(clientX);
               }
@@ -70,7 +70,7 @@ jobs:
               // Only after exact frame projection, an already-visible clientX, and a proven
               // integer-page strip have failed, try EPUB.js' overflow-container scroll state.
               // offsetLeft/scrollLeft live in layout
-"""
+          """
           count = text.count(old)
           if count != 1:
               raise SystemExit(f'Expected exactly one tap-geometry anchor, found {count}')
