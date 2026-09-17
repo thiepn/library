@@ -955,6 +955,6 @@ export class EpubJsEngine implements ReaderEngine {
     this.book = undefined;
     this.instrumentedDocuments = new WeakSet<Document>();
     this.currentLocation = null;
-    this.lastTouchTapAt = -Infinity;
+    this.lastTouchTap = null;
   }
 }
