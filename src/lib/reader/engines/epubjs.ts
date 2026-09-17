@@ -370,7 +370,7 @@ export class EpubJsEngine implements ReaderEngine {
   private selectionListeners = new Set<(selection: ReaderSelection) => void>();
   private interactionListeners = new Set<ReaderInteractionHandler>();
   private instrumentedDocuments = new WeakSet<Document>();
-  private lastTouchTapAt = -Infinity;
+  private lastTouchTap: HandledPointerInteraction | null = null;
 
   private readonly handleRelocated = (location: EpubLocation) => {
     const mapped = mapLocation(location);
@@ -459,11 +459,11 @@ export class EpubJsEngine implements ReaderEngine {
         visibleColumnX = currentPageStart + wrappedX;
       }
 
-      const yCandidates = [y];
-      if (frameRect && Number.isFinite(frameRect.top)) {
-        const frameLocalY = y - frameRect.top;
-        if (Number.isFinite(frameLocalY) && Math.abs(frameLocalY - y) > 1) yCandidates.push(frameLocalY);
-      }
+      // DOM client coordinates delivered inside the EPUB iframe are already local to that
+      // document. Mixing in the parent-frame top offset can falsely project the same tap onto
+      // an unrelated link in another vertical position, which makes a reader-owned center tap
+      // look interactive. Keep hit testing in the iframe's own coordinate space.
+      const visibleColumnY = y;
 
       // Chromium can report event.target from an underlying column when EPUB.js exposes a
       // multi-page iframe viewport. In that proven geometry, rendered client rectangles in
@@ -473,7 +473,8 @@ export class EpubJsEngine implements ReaderEngine {
         Array.from(candidate.getClientRects()).some((rect) =>
           visibleColumnX >= rect.left - 1
           && visibleColumnX <= rect.right + 1
-          && yCandidates.some((candidateY) => candidateY >= rect.top - 1 && candidateY <= rect.bottom + 1),
+          && visibleColumnY >= rect.top - 1
+          && visibleColumnY <= rect.bottom + 1,
         ),
       );
     };
@@ -547,7 +548,7 @@ export class EpubJsEngine implements ReaderEngine {
       // even when the reader cannot advance at a publication boundary. Record ownership
       // before dispatch so an unhandled boundary tap cannot fall through to a second click.
       if (interaction?.type === 'tap' && effectivePointerType === 'touch') {
-        this.lastTouchTapAt = performance.now();
+        this.lastTouchTap = { x, y, time: performance.now() };
       }
 
       const handled = Boolean(interaction && this.emitInteraction(interaction));
@@ -623,15 +624,26 @@ export class EpubJsEngine implements ReaderEngine {
       cancelInteraction();
     };
 
-    const handleClick = (event: MouseEvent) => {
-      // A qualifying touch tap can replace the EPUB iframe before its synthesized compatibility
-      // click arrives. Suppress that follow-up even if the primary tap was unhandled at a reader
-      // boundary; standalone click-only input remains valid because it has no preceding touch tap.
-      if (performance.now() - this.lastTouchTapAt < COMPATIBILITY_CLICK_DEDUPE_MS) {
-        event.preventDefault();
-        return;
-      }
+    const handleCompatibilityClickCapture = (event: MouseEvent) => {
+      // Compatibility clicks must be stopped before EPUB.js link handlers run, but only when
+      // they spatially and temporally match a reader-owned touch/pointer gesture. The class-level
+      // touch record survives an EPUB iframe replacement between touchend and synthesized click.
+      const duplicateOfOwnedTouch = Boolean(
+        this.lastTouchTap
+        && performance.now() - this.lastTouchTap.time < COMPATIBILITY_CLICK_DEDUPE_MS
+        && Math.hypot(event.clientX - this.lastTouchTap.x, event.clientY - this.lastTouchTap.y) <= COMPATIBILITY_CLICK_DEDUPE_DISTANCE
+      );
+      const duplicateOfHandledPointer = Boolean(
+        lastHandledPointer
+        && performance.now() - lastHandledPointer.time < COMPATIBILITY_CLICK_DEDUPE_MS
+        && Math.hypot(event.clientX - lastHandledPointer.x, event.clientY - lastHandledPointer.y) <= COMPATIBILITY_CLICK_DEDUPE_DISTANCE
+      );
+      if (!duplicateOfOwnedTouch && !duplicateOfHandledPointer) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    };
 
+    const handleClick = (event: MouseEvent) => {
       // Pointer/mouse events retain spatial dedupe so rapid independent desktop clicks are valid.
       const duplicateOfHandledPointer = Boolean(
         lastHandledPointer
@@ -683,6 +695,9 @@ export class EpubJsEngine implements ReaderEngine {
     doc.addEventListener('touchcancel', handleTouchCancel, { passive: true });
     // A compatibility click gives WebKit/Safari and assistive input a browser-agnostic tap
     // path when a touchscreen gesture does not surface through the iframe pointer/touch path.
+    // Capture only reader-owned compatibility clicks before EPUB.js link handlers can act on a
+    // hidden-column target; ordinary click-only input remains on the established bubble path.
+    doc.addEventListener('click', handleCompatibilityClickCapture, { capture: true });
     doc.addEventListener('click', handleClick);
     doc.addEventListener('keydown', handleKeyDown);
   };
@@ -940,6 +955,6 @@ export class EpubJsEngine implements ReaderEngine {
     this.book = undefined;
     this.instrumentedDocuments = new WeakSet<Document>();
     this.currentLocation = null;
-    this.lastTouchTapAt = -Infinity;
+    this.lastTouchTap = null;
   }
 }
