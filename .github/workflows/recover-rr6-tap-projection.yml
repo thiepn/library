@@ -1,0 +1,99 @@
+name: Recover RR6 tap projection
+
+on:
+  push:
+    branches:
+      - 'autopilot/deploy-recovery-35166732455'
+    paths:
+      - '.github/workflows/recover-rr6-tap-projection.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: recover-rr6-tap-projection-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  repair-and-certify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      R2_BUCKET: thiepn-library-publications
+    steps:
+      - name: Checkout recovery branch
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm and Node
+        uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2
+        with:
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+          cache: true
+
+      - name: Install frozen dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Repair physical tap coordinate precedence
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('src/lib/reader/engines/epubjs.ts')
+          text = path.read_text()
+          marker = "  // For a real touch gesture, screenX is anchored to the physical visible screen rather"
+          end_marker = "\n\n\n  try {"
+          if text.count(marker) != 1:
+              raise SystemExit(f'expected exactly one early screen-coordinate block, found {text.count(marker)}')
+          start = text.index(marker)
+          end = text.index(end_marker, start)
+          block = text[start:end]
+          required = [
+              "pointerType === 'touch'",
+              'screenX <= screenWidth',
+              'return clampRatio(physicalX / visibleWidth)',
+          ]
+          missing = [needle for needle in required if needle not in block]
+          if missing:
+              raise SystemExit(f'early screen-coordinate block did not match expected implementation: {missing}')
+          updated = text[:start] + '  try {' + text[end + len(end_marker):]
+          if updated == text:
+              raise SystemExit('tap-coordinate repair produced no change')
+          path.write_text(updated)
+          PY
+          git diff --check
+          git diff -- src/lib/reader/engines/epubjs.ts
+
+      - name: Certify release and stage immutable production media
+        run: |
+          set -euo pipefail
+          pnpm release:certify
+          pnpm stage:media
+
+      - name: Install browser engines and system dependencies
+        run: pnpm exec playwright install --with-deps chromium firefox webkit
+
+      - name: Re-run exact staged RR6 acceptance
+        env:
+          RR6_STAGED_HOSTED_MEDIA: '1'
+        run: pnpm test:accessibility
+
+      - name: Commit certified repair and remove helper workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/recover-rr6-tap-projection.yml
+          git add src/lib/reader/engines/epubjs.ts
+          git commit -m 'fix: prefer EPUB viewport projection for physical taps'
+          git fetch origin "$GITHUB_REF_NAME"
+          git rebase "origin/$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
