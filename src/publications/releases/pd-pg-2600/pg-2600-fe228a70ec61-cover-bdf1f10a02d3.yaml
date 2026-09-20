@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-2600",
+  "version": "pg-2600-fe228a70ec61-cover-bdf1f10a02d3",
+  "edition": 1,
+  "releasedAt": "2026-09-20T05:41:37Z",
+  "sourceHash": "4833abce7df85451166e94db463a498f0df24941679e1875c4ce4b2144a34826",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-2600/editions/pg-2600-fe228a70ec61-cover-bdf1f10a02d3/war-and-peace-project-gutenberg.epub",
+      "filename": "war-and-peace-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 2254210,
+      "sha256": "bdf1f10a02d3b5b926ba5b4e374c7164eb1daae5f1bac4703f366ab11d87994e"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "fe228a70ec61ba713d8313acb34ff793d38763c4d7e19c020fa5b540728701a1",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-2600-fe228a70ec61",
+    "finalArtifactSha256": "bdf1f10a02d3b5b926ba5b4e374c7164eb1daae5f1bac4703f366ab11d87994e",
+    "releaseVersioning": "content-addressed"
+  }
+}

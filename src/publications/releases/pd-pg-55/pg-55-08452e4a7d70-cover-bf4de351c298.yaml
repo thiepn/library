@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-55",
+  "version": "pg-55-08452e4a7d70-cover-bf4de351c298",
+  "edition": 1,
+  "releasedAt": "2026-09-20T05:41:40Z",
+  "sourceHash": "077c380d371d9571eae5b993ef5eede3a65b0d31207219f726e6d7c15ff2222f",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-55/editions/pg-55-08452e4a7d70-cover-bf4de351c298/the-wonderful-wizard-of-oz-project-gutenberg.epub",
+      "filename": "the-wonderful-wizard-of-oz-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 648461,
+      "sha256": "bf4de351c298070a4a53d81fc148f7707674e90cbff4895030d242affcc45ec5"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "08452e4a7d700e2ae9104534aa56eecfbc225740d034c033eae1ddfb6b217275",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-55-08452e4a7d70",
+    "finalArtifactSha256": "bf4de351c298070a4a53d81fc148f7707674e90cbff4895030d242affcc45ec5",
+    "releaseVersioning": "content-addressed"
+  }
+}

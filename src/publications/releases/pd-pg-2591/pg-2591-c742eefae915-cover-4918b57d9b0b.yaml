@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-2591",
+  "version": "pg-2591-c742eefae915-cover-4918b57d9b0b",
+  "edition": 1,
+  "releasedAt": "2026-09-20T05:41:38Z",
+  "sourceHash": "131dffb2f989af35a692f95ba511fedc9d0db9bcd727d7901bb3060f00cfeffe",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-2591/editions/pg-2591-c742eefae915-cover-4918b57d9b0b/grimms-fairy-tales-project-gutenberg.epub",
+      "filename": "grimms-fairy-tales-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 740136,
+      "sha256": "4918b57d9b0b3b087b47e9a1b027d614307d338bbe1e016f678b4ab3f879b6ed"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "c742eefae9154c58eed22f0649f63e01fb4a357d82b46477ab8018b2aa295ae8",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-2591-c742eefae915",
+    "finalArtifactSha256": "4918b57d9b0b3b087b47e9a1b027d614307d338bbe1e016f678b4ab3f879b6ed",
+    "releaseVersioning": "content-addressed"
+  }
+}

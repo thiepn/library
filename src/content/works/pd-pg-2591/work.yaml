@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-2591",
+  "slug": "pd-pg-2591",
+  "title": "Grimms' Fairy Tales",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Jacob Grimm",
+      "role": "creator",
+      "birthYear": 1785,
+      "deathYear": 1863
+    },
+    {
+      "name": "Wilhelm Grimm",
+      "role": "creator",
+      "birthYear": 1786,
+      "deathYear": 1859
+    }
+  ],
+  "description": "A public-domain edition of Grimms' Fairy Tales by Jacob Grimm, Wilhelm Grimm. Project Gutenberg classifies it under Fairy tales -- Germany, PT.",
+  "shortDescription": "A public-domain edition of Grimms' Fairy Tales by Jacob Grimm, Wilhelm Grimm. Project Gutenberg classifies it under Fairy tales -- Germany, PT.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2001-04-01",
+    "lastUpdated": "2026-09-20",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-2591-c742eefae915-cover-4918b57d9b0b",
+    "activeRelease": "pg-2591-c742eefae915-cover-4918b57d9b0b"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-2591.webp",
+    "alt": "Cover for Grimms' Fairy Tales by Jacob Grimm, Wilhelm Grimm"
+  },
+  "classification": {
+    "subjects": [
+      "fairy-tales",
+      "pt"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/2591",
+      "gutenbergId": 2591
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/2591/pg2591.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #2591. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

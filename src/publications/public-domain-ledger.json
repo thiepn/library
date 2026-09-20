@@ -5365,6 +5365,469 @@
         "releaseVersion": "pg-560-0f8eabf580cf-cover-b7961a3443d5",
         "artifactSha256": "b7961a3443d5fdb0346d79841d65d1fd347028a3aae6ac32d0b777e7d40d79bd"
       }
+    },
+    {
+      "gutenbergId": 4085,
+      "workId": "pd-pg-4085",
+      "title": "The Adventures of Roderick Random",
+      "author": "T. (Tobias) Smollett",
+      "score": 271.308,
+      "downloadCountAtSelection": 40954,
+      "bookshelves": [
+        "Historical Fiction",
+        "Best Books Ever Listings",
+        "Category: Novels",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/4085",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/4085/pg4085.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/4085/pg4085.epub",
+      "sourceRdfSha256": "5cddb221418288fbd77929301301c83dc2c8b765712fb987415623a186215087",
+      "sourceEpubSha256": "303ca892a5baa07954d36de08ccfcc811414798a00a8bf18ddefbdfaa41f9e0b",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "T. (Tobias) Smollett",
+          "role": "creator",
+          "birthYear": 1721,
+          "deathYear": 1771
+        }
+      ],
+      "selectedAt": "2026-09-20T05:41:36Z",
+      "releaseVersion": "pg-4085-303ca892a5ba-cover-b9f6f308d9d7",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 49,
+        "downloadCount": 40954
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-20T05:42:22Z",
+        "webCoverSha256": "afc5ec47d7734b6c23b07ca2aa911a9da5e26164add85f14e464662a20f82f98",
+        "epubCoverSha256": "f945295446c109c3b6c2d9a3c729f6f06c2a875f8353003f6a972638c19e7fb5",
+        "releaseVersion": "pg-4085-303ca892a5ba-cover-b9f6f308d9d7",
+        "artifactSha256": "b9f6f308d9d700c8d97449116cb3014ae158ac3bc377231db1543e87ec4fc170"
+      }
+    },
+    {
+      "gutenbergId": 2600,
+      "workId": "pd-pg-2600",
+      "title": "War and Peace",
+      "author": "graf Tolstoy Leo",
+      "score": 280.661,
+      "downloadCountAtSelection": 38587,
+      "bookshelves": [
+        "Napoleonic(Bookshelf)",
+        "Opera",
+        "Historical Fiction",
+        "Best Books Ever Listings",
+        "Movie Books",
+        "Category: Historical Novels",
+        "Category: Novels",
+        "Category: Classics of Literature",
+        "Category: Russian Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/2600",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/2600/pg2600.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/2600/pg2600.epub",
+      "sourceRdfSha256": "4833abce7df85451166e94db463a498f0df24941679e1875c4ce4b2144a34826",
+      "sourceEpubSha256": "fe228a70ec61ba713d8313acb34ff793d38763c4d7e19c020fa5b540728701a1",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Leo, graf Tolstoy",
+          "role": "creator",
+          "birthYear": 1828,
+          "deathYear": 1910
+        },
+        {
+          "name": "Aylmer Maude",
+          "role": "trl",
+          "birthYear": 1858,
+          "deathYear": 1938
+        },
+        {
+          "name": "Louise Maude",
+          "role": "trl",
+          "birthYear": 1855,
+          "deathYear": 1939
+        }
+      ],
+      "selectedAt": "2026-09-20T05:41:37Z",
+      "releaseVersion": "pg-2600-fe228a70ec61-cover-bdf1f10a02d3",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 56,
+        "downloadCount": 38587
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-20T05:42:57Z",
+        "webCoverSha256": "b79c0daa98885a7446266b2c1e4c2876ed04ff8f47df1de5b04c40e545f3c4ed",
+        "epubCoverSha256": "e413bd84fd7418b6dbb111601233ec33ce2b9d9da15d900caddc0a75f4d4ba0d",
+        "releaseVersion": "pg-2600-fe228a70ec61-cover-bdf1f10a02d3",
+        "artifactSha256": "bdf1f10a02d3b5b926ba5b4e374c7164eb1daae5f1bac4703f366ab11d87994e"
+      }
+    },
+    {
+      "gutenbergId": 2591,
+      "workId": "pd-pg-2591",
+      "title": "Grimms' Fairy Tales",
+      "author": "Jacob Grimm, Wilhelm Grimm",
+      "score": 122.552,
+      "downloadCountAtSelection": 38202,
+      "bookshelves": [
+        "Category: Short Stories",
+        "Category: Children & Young Adult Reading",
+        "Category: Mythology, Legends & Folklore",
+        "Category: German Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/2591",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/2591/pg2591.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/2591/pg2591.epub",
+      "sourceRdfSha256": "131dffb2f989af35a692f95ba511fedc9d0db9bcd727d7901bb3060f00cfeffe",
+      "sourceEpubSha256": "c742eefae9154c58eed22f0649f63e01fb4a357d82b46477ab8018b2aa295ae8",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Jacob Grimm",
+          "role": "creator",
+          "birthYear": 1785,
+          "deathYear": 1863
+        },
+        {
+          "name": "Wilhelm Grimm",
+          "role": "creator",
+          "birthYear": 1786,
+          "deathYear": 1859
+        }
+      ],
+      "selectedAt": "2026-09-20T05:41:38Z",
+      "releaseVersion": "pg-2591-c742eefae915-cover-4918b57d9b0b",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 57,
+        "downloadCount": 38202
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-20T05:43:36Z",
+        "webCoverSha256": "262d95ae9e6c8f8f1acc202acf210d8f2af76c6e79f4074480f2f2919552c724",
+        "epubCoverSha256": "d62079dd0f5910c242594322b7248bc4628253345e00debb7179dd32473d9745",
+        "releaseVersion": "pg-2591-c742eefae915-cover-4918b57d9b0b",
+        "artifactSha256": "4918b57d9b0b3b087b47e9a1b027d614307d338bbe1e016f678b4ab3f879b6ed"
+      }
+    },
+    {
+      "gutenbergId": 768,
+      "workId": "pd-pg-768",
+      "title": "Wuthering Heights",
+      "author": "Emily Brontë",
+      "score": 275.349,
+      "downloadCountAtSelection": 37492,
+      "bookshelves": [
+        "Best Books Ever Listings",
+        "Gothic Fiction",
+        "Movie Books",
+        "Category: Novels",
+        "Category: Classics of Literature",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/768",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/768/pg768.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/768/pg768.epub",
+      "sourceRdfSha256": "db7d41c6a3d0bffdab153c30094858e1d28e0a5c6f8f6d793699b049b938a3b3",
+      "sourceEpubSha256": "d70e520827466e041cbad0ce6673aa36af7b4ba68925366ad3dc6964e1ec4390",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Emily Brontë",
+          "role": "creator",
+          "birthYear": 1818,
+          "deathYear": 1848
+        }
+      ],
+      "selectedAt": "2026-09-20T05:41:38Z",
+      "releaseVersion": "pg-768-d70e52082746-cover-e3fdd82ffccb",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 61,
+        "downloadCount": 37492
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-20T05:44:11Z",
+        "webCoverSha256": "978991ba40c2db11c4ae0e8ea79098b8108406b366ad019d8882e181a27e9504",
+        "epubCoverSha256": "a3896654bb86f1c9b13a084d375bda1eff765b9470717b63b03f18924beaa1f1",
+        "releaseVersion": "pg-768-d70e52082746-cover-e3fdd82ffccb",
+        "artifactSha256": "e3fdd82ffccb611b210dd241a3095f1b386b2d2a841473ae1a0f49975ebb4a5a"
+      }
+    },
+    {
+      "gutenbergId": 1952,
+      "workId": "pd-pg-1952",
+      "title": "The Yellow Wallpaper",
+      "author": "Charlotte Perkins Gilman",
+      "score": 155.29,
+      "downloadCountAtSelection": 37289,
+      "bookshelves": [
+        "Gothic Fiction",
+        "Category: Short Stories",
+        "Category: American Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/1952",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/1952/pg1952.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/1952/pg1952.epub",
+      "sourceRdfSha256": "4ac05ad049d2401aeacb9375ac24708241249978bb2c5dcf200ea774fe0f1441",
+      "sourceEpubSha256": "71752e26bf1b862601f6ed4d15cbae0cf2e174eb493111090c188e7634578133",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Charlotte Perkins Gilman",
+          "role": "creator",
+          "birthYear": 1860,
+          "deathYear": 1935
+        }
+      ],
+      "selectedAt": "2026-09-20T05:41:38Z",
+      "releaseVersion": "pg-1952-71752e26bf1b-cover-bd86c38c8fdd",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 63,
+        "downloadCount": 37289
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-20T05:44:42Z",
+        "webCoverSha256": "f5571daf8077794bd938fe8aea65624bbccae743f6e2b2f8e7e404ca52a5d026",
+        "epubCoverSha256": "7ff43f5f6db48a5ad655c009c90f9eff93148964e3fced495aa86bc60e3f26f3",
+        "releaseVersion": "pg-1952-71752e26bf1b-cover-bd86c38c8fdd",
+        "artifactSha256": "bd86c38c8fdd8930b7565448a9579cfd36dbca6efdc53d2a3214922a0202911b"
+      }
+    },
+    {
+      "gutenbergId": 1232,
+      "workId": "pd-pg-1232",
+      "title": "The Prince",
+      "author": "Niccolò Machiavelli",
+      "score": 237.111,
+      "downloadCountAtSelection": 36679,
+      "bookshelves": [
+        "Politics",
+        "Harvard Classics",
+        "Philosophy",
+        "Banned Books from Anne Haight's list",
+        "Category: History - Early Modern (c. 1450-1750)",
+        "Category: Philosophy & Ethics",
+        "Category: Politics"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/1232",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/1232/pg1232.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/1232/pg1232.epub",
+      "sourceRdfSha256": "a2d2be04db7899b89ba735ada057f299c28fa44cf90800f318bce2e2fff706b0",
+      "sourceEpubSha256": "91b8f5c8af434ca258d933f7ab481d319091d8b61bb9ea3a165fe8ae77396576",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Niccolò Machiavelli",
+          "role": "creator",
+          "birthYear": 1469,
+          "deathYear": 1527
+        },
+        {
+          "name": "W. K. (William Kenaz) Marriott",
+          "role": "trl",
+          "birthYear": null,
+          "deathYear": 1927
+        }
+      ],
+      "selectedAt": "2026-09-20T05:41:39Z",
+      "releaseVersion": "pg-1232-91b8f5c8af43-cover-a16ba98ec778",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 68,
+        "downloadCount": 36679
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-20T05:45:15Z",
+        "webCoverSha256": "45f80e94e729516c1b5199950c50296474b9b34e8b4e88e820cabdc0e85f19a7",
+        "epubCoverSha256": "968771a8c0e6a61a1d77c34953f5220bc00949f14e74b133723cee128f5ce06d",
+        "releaseVersion": "pg-1232-91b8f5c8af43-cover-a16ba98ec778",
+        "artifactSha256": "a16ba98ec778edcc72c83466203151b94f87b2311c54fa95b78c7f88c3527813"
+      }
+    },
+    {
+      "gutenbergId": 74,
+      "workId": "pd-pg-74",
+      "title": "The Adventures of Tom Sawyer, Complete",
+      "author": "Mark Twain",
+      "score": 129.415,
+      "downloadCountAtSelection": 34401,
+      "bookshelves": [
+        "Banned Books from Anne Haight's list",
+        "Banned Books List from the American Library Association",
+        "Category: Adventure",
+        "Category: Novels",
+        "Category: Classics of Literature",
+        "Category: American Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/74",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/74/pg74.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/74/pg74.epub",
+      "sourceRdfSha256": "5f5d388250f3fa206290c803d9f2da920382f0b49c57313218c38de5123f192b",
+      "sourceEpubSha256": "92a0e03b2335fa3a5088f966425caa90e788a483d32ce608429d232d0495472f",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Mark Twain",
+          "role": "creator",
+          "birthYear": 1835,
+          "deathYear": 1910
+        }
+      ],
+      "selectedAt": "2026-09-20T05:41:40Z",
+      "releaseVersion": "pg-74-92a0e03b2335-cover-2cf88dbb9488",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 80,
+        "downloadCount": 34401
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-20T05:45:49Z",
+        "webCoverSha256": "c7bf1f3b85226b3b3cfd7b1b9cea2eadc88f31e6210f351aaefd409e76d8f67d",
+        "epubCoverSha256": "24ed24f6d0289508e6b5b2b45842543509f6f8043d91dc640969b7775a0df645",
+        "releaseVersion": "pg-74-92a0e03b2335-cover-2cf88dbb9488",
+        "artifactSha256": "2cf88dbb94886dc90dc13a0ca79b10cfea1c408d3a920862bc673d33a9218692"
+      }
+    },
+    {
+      "gutenbergId": 55,
+      "workId": "pd-pg-55",
+      "title": "The Wonderful Wizard of Oz",
+      "author": "L. Frank (Lyman Frank) Baum",
+      "score": 164.325,
+      "downloadCountAtSelection": 34117,
+      "bookshelves": [
+        "Children's Literature",
+        "Fantasy",
+        "Category: Children & Young Adult Reading",
+        "Category: Science-Fiction & Fantasy",
+        "Category: Adventure",
+        "Category: American Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/55",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/55/pg55.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/55/pg55.epub",
+      "sourceRdfSha256": "077c380d371d9571eae5b993ef5eede3a65b0d31207219f726e6d7c15ff2222f",
+      "sourceEpubSha256": "08452e4a7d700e2ae9104534aa56eecfbc225740d034c033eae1ddfb6b217275",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "L. Frank (Lyman Frank) Baum",
+          "role": "creator",
+          "birthYear": 1856,
+          "deathYear": 1919
+        }
+      ],
+      "selectedAt": "2026-09-20T05:41:40Z",
+      "releaseVersion": "pg-55-08452e4a7d70-cover-bf4de351c298",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 81,
+        "downloadCount": 34117
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-20T05:46:23Z",
+        "webCoverSha256": "85532b470caa5056442f7ac395c6e37021546bb34c65daa21c3ab8edc3d2e82b",
+        "epubCoverSha256": "4fb7867982a9e58ba22e23be113b84f188993d52b266999026aa3676480207c0",
+        "releaseVersion": "pg-55-08452e4a7d70-cover-bf4de351c298",
+        "artifactSha256": "bf4de351c298070a4a53d81fc148f7707674e90cbff4895030d242affcc45ec5"
+      }
+    },
+    {
+      "gutenbergId": 4300,
+      "workId": "pd-pg-4300",
+      "title": "Ulysses",
+      "author": "James Joyce",
+      "score": 249.243,
+      "downloadCountAtSelection": 33861,
+      "bookshelves": [
+        "Best Books Ever Listings",
+        "Erotic Fiction",
+        "Banned Books from Anne Haight's list",
+        "Banned Books List from the American Library Association",
+        "Category: Novels",
+        "Category: Classics of Literature",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/4300",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/4300/pg4300.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/4300/pg4300.epub",
+      "sourceRdfSha256": "63b49dbcbdc125174d34bc2a8fdfd7d6ddedab5577077a9bb721f9c14823403b",
+      "sourceEpubSha256": "8cc747be2faa46813798aa6c28d778d9354e46230ff887d285f8bf8292c7e063",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "James Joyce",
+          "role": "creator",
+          "birthYear": 1882,
+          "deathYear": 1941
+        }
+      ],
+      "selectedAt": "2026-09-20T05:41:40Z",
+      "releaseVersion": "pg-4300-8cc747be2faa-cover-971b523621bb",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 82,
+        "downloadCount": 33861
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-09-20T05:46:59Z",
+        "webCoverSha256": "90c7e955b38e0b1edb5d648ceac989a5df523dc068f8241bc2b97b940e7f4df6",
+        "epubCoverSha256": "f0ecbf6fa96c71f147d02bc64f647a88940045c7b1a98728e8ecaf8303052ece",
+        "releaseVersion": "pg-4300-8cc747be2faa-cover-971b523621bb",
+        "artifactSha256": "971b523621bb4866c113785bcddbe4bb6116df994edbfc5561e1ffe25ccf98d6"
+      }
     }
   ],
   "rejections": {
@@ -5543,92 +6006,56 @@
       "reason": "creator Agatha Christie died 1976, after automatic German cutoff 1955",
       "checkedAt": "2026-09-13T08:32:16Z",
       "copyrightCutoffYear": 1955
+    },
+    "5200": {
+      "gutenbergId": 5200,
+      "title": "Metamorphosis",
+      "popularityRank": 45,
+      "downloadCount30d": 41503,
+      "reason": "unknown death year for trl David (Translator) Wyllie",
+      "checkedAt": "2026-09-20T05:41:36Z",
+      "copyrightCutoffYear": 1955
     }
   },
   "lastRun": {
-    "at": "2026-09-13T08:32:17Z",
+    "at": "2026-09-20T05:41:41Z",
     "rankingMode": "official-project-gutenberg-top100-30d",
     "rankingSource": "https://www.gutenberg.org/browse/scores/top",
     "rankingWindow": "last 30 days",
     "rankingRowsVerified": 100,
     "copyrightCutoffYear": 1955,
     "candidateCount": 97,
-    "checkedCount": 29,
+    "checkedCount": 13,
     "candidateCheckLimit": 100,
-    "addedCount": 20,
-    "skippedCount": 9,
+    "addedCount": 9,
+    "skippedCount": 4,
     "recentSkips": [
       {
         "gutenbergId": 45839,
         "title": "Dracula",
-        "popularityRank": 26,
+        "popularityRank": 34,
         "reason": "logical work already represented in Library: Dracula — Bram Stoker"
+      },
+      {
+        "gutenbergId": 5200,
+        "title": "Metamorphosis",
+        "popularityRank": 45,
+        "downloadCount30d": 41503,
+        "reason": "unknown death year for trl David (Translator) Wyllie",
+        "checkedAt": "2026-09-20T05:41:36Z",
+        "copyrightCutoffYear": 1955
       },
       {
         "gutenbergId": 42,
         "title": "The strange case of Dr. Jekyll and Mr. Hyde",
-        "popularityRank": 34,
+        "popularityRank": 48,
         "reason": "logical work already represented in Library: The strange case of Dr. Jekyll and Mr. Hyde — Robert Louis Stevenson"
       },
       {
         "gutenbergId": 48320,
         "title": "Adventures of Sherlock Holmes",
-        "popularityRank": 65,
+        "popularityRank": 77,
         "reason": "logical work already represented in Library: Adventures of Sherlock Holmes — Arthur Conan Doyle"
-      },
-      {
-        "gutenbergId": 22541,
-        "title": "The Misplaced Battleship",
-        "popularityRank": 66,
-        "downloadCount30d": 44044,
-        "reason": "creator Harry Harrison died 2012, after automatic German cutoff 1955",
-        "checkedAt": "2026-09-13T08:32:09Z",
-        "copyrightCutoffYear": 1955
-      },
-      {
-        "gutenbergId": 1155,
-        "title": "The Secret Adversary",
-        "popularityRank": 73,
-        "downloadCount30d": 43198,
-        "reason": "creator Agatha Christie died 1976, after automatic German cutoff 1955",
-        "checkedAt": "2026-09-13T08:32:11Z",
-        "copyrightCutoffYear": 1955
-      },
-      {
-        "gutenbergId": 53419,
-        "title": "Twenty-Five Ghost Stories",
-        "popularityRank": 74,
-        "downloadCount30d": 43137,
-        "reason": "no identifiable creator in official RDF",
-        "checkedAt": "2026-09-13T08:32:11Z",
-        "copyrightCutoffYear": 1955
-      },
-      {
-        "gutenbergId": 61262,
-        "title": "Poirot Investigates",
-        "popularityRank": 78,
-        "downloadCount30d": 42604,
-        "reason": "creator Agatha Christie died 1976, after automatic German cutoff 1955",
-        "checkedAt": "2026-09-13T08:32:12Z",
-        "copyrightCutoffYear": 1955
-      },
-      {
-        "gutenbergId": 58866,
-        "title": "The Murder on the Links",
-        "popularityRank": 85,
-        "downloadCount30d": 42333,
-        "reason": "creator Agatha Christie died 1976, after automatic German cutoff 1955",
-        "checkedAt": "2026-09-13T08:32:14Z",
-        "copyrightCutoffYear": 1955
-      },
-      {
-        "gutenbergId": 61168,
-        "title": "The Man in the Brown Suit",
-        "popularityRank": 89,
-        "downloadCount30d": 41863,
-        "reason": "creator Agatha Christie died 1976, after automatic German cutoff 1955",
-        "checkedAt": "2026-09-13T08:32:16Z",
-        "copyrightCutoffYear": 1955
       }
     ]
   }

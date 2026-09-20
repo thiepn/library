@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-2600",
+  "slug": "pd-pg-2600",
+  "title": "War and Peace",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Leo, graf Tolstoy",
+      "role": "creator",
+      "birthYear": 1828,
+      "deathYear": 1910
+    },
+    {
+      "name": "Aylmer Maude",
+      "role": "trl",
+      "birthYear": 1858,
+      "deathYear": 1938
+    },
+    {
+      "name": "Louise Maude",
+      "role": "trl",
+      "birthYear": 1855,
+      "deathYear": 1939
+    }
+  ],
+  "description": "A public-domain edition of War and Peace by graf Tolstoy Leo. Project Gutenberg classifies it under Historical fiction, War stories, Napoleonic Wars, 1800-1815 -- Campaigns -- Russia -- Fiction.",
+  "shortDescription": "A public-domain edition of War and Peace by graf Tolstoy Leo. Project Gutenberg classifies it under Historical fiction, War stories, Napoleonic Wars, 1800-1815 -- Campaigns -- R…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2001-04-01",
+    "lastUpdated": "2026-09-20",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-2600-fe228a70ec61-cover-bdf1f10a02d3",
+    "activeRelease": "pg-2600-fe228a70ec61-cover-bdf1f10a02d3"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-2600.webp",
+    "alt": "Cover for War and Peace by Leo, graf Tolstoy"
+  },
+  "classification": {
+    "subjects": [
+      "historical-fiction",
+      "war-stories",
+      "napoleonic-wars-1800-1815",
+      "russia",
+      "aristocracy-social-class"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "historical-fiction",
+      "best-books-ever-listings"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/2600",
+      "gutenbergId": 2600
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/2600/pg2600.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #2600. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

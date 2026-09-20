@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-4085",
+  "version": "pg-4085-303ca892a5ba-cover-b9f6f308d9d7",
+  "edition": 1,
+  "releasedAt": "2026-09-20T05:41:36Z",
+  "sourceHash": "5cddb221418288fbd77929301301c83dc2c8b765712fb987415623a186215087",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-4085/editions/pg-4085-303ca892a5ba-cover-b9f6f308d9d7/the-adventures-of-roderick-random-project-gutenberg.epub",
+      "filename": "the-adventures-of-roderick-random-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 1029547,
+      "sha256": "b9f6f308d9d700c8d97449116cb3014ae158ac3bc377231db1543e87ec4fc170"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "303ca892a5baa07954d36de08ccfcc811414798a00a8bf18ddefbdfaa41f9e0b",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-4085-303ca892a5ba",
+    "finalArtifactSha256": "b9f6f308d9d700c8d97449116cb3014ae158ac3bc377231db1543e87ec4fc170",
+    "releaseVersioning": "content-addressed"
+  }
+}

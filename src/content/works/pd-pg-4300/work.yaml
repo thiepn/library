@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-4300",
+  "slug": "pd-pg-4300",
+  "title": "Ulysses",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "James Joyce",
+      "role": "creator",
+      "birthYear": 1882,
+      "deathYear": 1941
+    }
+  ],
+  "description": "A public-domain edition of Ulysses by James Joyce. Project Gutenberg classifies it under City and town life -- Fiction, Psychological fiction, Domestic fiction.",
+  "shortDescription": "A public-domain edition of Ulysses by James Joyce. Project Gutenberg classifies it under City and town life -- Fiction, Psychological fiction, Domestic fiction.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2003-07-01",
+    "lastUpdated": "2026-09-20",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-4300-8cc747be2faa-cover-971b523621bb",
+    "activeRelease": "pg-4300-8cc747be2faa-cover-971b523621bb"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-4300.webp",
+    "alt": "Cover for Ulysses by James Joyce"
+  },
+  "classification": {
+    "subjects": [
+      "city-and-town-life",
+      "psychological-fiction",
+      "domestic-fiction",
+      "married-people",
+      "male-friendship"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "best-books-ever-listings"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/4300",
+      "gutenbergId": 4300
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/4300/pg4300.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #4300. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

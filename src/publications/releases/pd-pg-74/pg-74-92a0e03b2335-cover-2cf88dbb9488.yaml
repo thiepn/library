@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-74",
+  "version": "pg-74-92a0e03b2335-cover-2cf88dbb9488",
+  "edition": 1,
+  "releasedAt": "2026-09-20T05:41:40Z",
+  "sourceHash": "5f5d388250f3fa206290c803d9f2da920382f0b49c57313218c38de5123f192b",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-74/editions/pg-74-92a0e03b2335-cover-2cf88dbb9488/the-adventures-of-tom-sawyer-complete-project-gutenberg.epub",
+      "filename": "the-adventures-of-tom-sawyer-complete-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 787214,
+      "sha256": "2cf88dbb94886dc90dc13a0ca79b10cfea1c408d3a920862bc673d33a9218692"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "92a0e03b2335fa3a5088f966425caa90e788a483d32ce608429d232d0495472f",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-74-92a0e03b2335",
+    "finalArtifactSha256": "2cf88dbb94886dc90dc13a0ca79b10cfea1c408d3a920862bc673d33a9218692",
+    "releaseVersioning": "content-addressed"
+  }
+}
