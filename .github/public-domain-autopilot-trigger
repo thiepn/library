@@ -7,5 +7,6 @@ continuation-run-2: 2026-09-09T00:14+02:00
 continuation-run-3: 2026-09-09T01:50+02:00
 continuation-run-4: 2026-09-09T01:58+02:00
 recovery-run: 2026-09-13T07:32+02:00
+recovery-run-2: 2026-09-20T07:39+02:00
 mode: official-project-gutenberg-top100-30d
-purpose: recover the missed 2026-09-13 scheduled Public Domain Autopilot invocation using the normal official Project Gutenberg Top 100 acquisition path
+purpose: recover the missed 2026-09-20 scheduled Public Domain Autopilot invocation using the normal official Project Gutenberg Top 100 acquisition path
