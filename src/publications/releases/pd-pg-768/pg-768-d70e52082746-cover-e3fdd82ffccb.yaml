@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-768",
+  "version": "pg-768-d70e52082746-cover-e3fdd82ffccb",
+  "edition": 1,
+  "releasedAt": "2026-09-20T05:41:38Z",
+  "sourceHash": "db7d41c6a3d0bffdab153c30094858e1d28e0a5c6f8f6d793699b049b938a3b3",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-768/editions/pg-768-d70e52082746-cover-e3fdd82ffccb/wuthering-heights-project-gutenberg.epub",
+      "filename": "wuthering-heights-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 795494,
+      "sha256": "e3fdd82ffccb611b210dd241a3095f1b386b2d2a841473ae1a0f49975ebb4a5a"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "d70e520827466e041cbad0ce6673aa36af7b4ba68925366ad3dc6964e1ec4390",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-768-d70e52082746",
+    "finalArtifactSha256": "e3fdd82ffccb611b210dd241a3095f1b386b2d2a841473ae1a0f49975ebb4a5a",
+    "releaseVersioning": "content-addressed"
+  }
+}

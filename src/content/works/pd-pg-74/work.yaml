@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-74",
+  "slug": "pd-pg-74",
+  "title": "The Adventures of Tom Sawyer, Complete",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Mark Twain",
+      "role": "creator",
+      "birthYear": 1835,
+      "deathYear": 1910
+    }
+  ],
+  "description": "A public-domain edition of The Adventures of Tom Sawyer, Complete by Mark Twain. Project Gutenberg classifies it under Humorous stories, Bildungsromans, Boys -- Fiction.",
+  "shortDescription": "A public-domain edition of The Adventures of Tom Sawyer, Complete by Mark Twain. Project Gutenberg classifies it under Humorous stories, Bildungsromans, Boys -- Fiction.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2004-07-01",
+    "lastUpdated": "2026-09-20",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-74-92a0e03b2335-cover-2cf88dbb9488",
+    "activeRelease": "pg-74-92a0e03b2335-cover-2cf88dbb9488"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-74.webp",
+    "alt": "Cover for The Adventures of Tom Sawyer, Complete by Mark Twain"
+  },
+  "classification": {
+    "subjects": [
+      "humorous-stories",
+      "bildungsromans",
+      "boys",
+      "male-friendship",
+      "adventure-stories"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/74",
+      "gutenbergId": 74
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/74/pg74.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #74. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

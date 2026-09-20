@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-4300",
+  "version": "pg-4300-8cc747be2faa-cover-971b523621bb",
+  "edition": 1,
+  "releasedAt": "2026-09-20T05:41:40Z",
+  "sourceHash": "63b49dbcbdc125174d34bc2a8fdfd7d6ddedab5577077a9bb721f9c14823403b",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-4300/editions/pg-4300-8cc747be2faa-cover-971b523621bb/ulysses-project-gutenberg.epub",
+      "filename": "ulysses-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 1093674,
+      "sha256": "971b523621bb4866c113785bcddbe4bb6116df994edbfc5561e1ffe25ccf98d6"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "8cc747be2faa46813798aa6c28d778d9354e46230ff887d285f8bf8292c7e063",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-4300-8cc747be2faa",
+    "finalArtifactSha256": "971b523621bb4866c113785bcddbe4bb6116df994edbfc5561e1ffe25ccf98d6",
+    "releaseVersioning": "content-addressed"
+  }
+}

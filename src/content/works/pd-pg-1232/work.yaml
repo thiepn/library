@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-1232",
+  "slug": "pd-pg-1232",
+  "title": "The Prince",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Niccolò Machiavelli",
+      "role": "creator",
+      "birthYear": 1469,
+      "deathYear": 1527
+    },
+    {
+      "name": "W. K. (William Kenaz) Marriott",
+      "role": "trl",
+      "deathYear": 1927
+    }
+  ],
+  "description": "A public-domain edition of The Prince by Niccolò Machiavelli. Project Gutenberg classifies it under State, The -- Early works to 1800, Political science -- Philosophy -- Early works to 1800, Political ethics -- Early works to 1800.",
+  "shortDescription": "A public-domain edition of The Prince by Niccolò Machiavelli. Project Gutenberg classifies it under State, The -- Early works to 1800, Political science -- Philosophy -- Early w…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2006-02-11",
+    "lastUpdated": "2026-09-20",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-1232-91b8f5c8af43-cover-a16ba98ec778",
+    "activeRelease": "pg-1232-91b8f5c8af43-cover-a16ba98ec778"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-1232.webp",
+    "alt": "Cover for The Prince by Niccolò Machiavelli"
+  },
+  "classification": {
+    "subjects": [
+      "state-the",
+      "political-science",
+      "political-ethics",
+      "jc"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "harvard-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/1232",
+      "gutenbergId": 1232
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/1232/pg1232.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #1232. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

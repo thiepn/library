@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-1232",
+  "version": "pg-1232-91b8f5c8af43-cover-a16ba98ec778",
+  "edition": 1,
+  "releasedAt": "2026-09-20T05:41:39Z",
+  "sourceHash": "a2d2be04db7899b89ba735ada057f299c28fa44cf90800f318bce2e2fff706b0",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-1232/editions/pg-1232-91b8f5c8af43-cover-a16ba98ec778/the-prince-project-gutenberg.epub",
+      "filename": "the-prince-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 510196,
+      "sha256": "a16ba98ec778edcc72c83466203151b94f87b2311c54fa95b78c7f88c3527813"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "91b8f5c8af434ca258d933f7ab481d319091d8b61bb9ea3a165fe8ae77396576",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-1232-91b8f5c8af43",
+    "finalArtifactSha256": "a16ba98ec778edcc72c83466203151b94f87b2311c54fa95b78c7f88c3527813",
+    "releaseVersioning": "content-addressed"
+  }
+}

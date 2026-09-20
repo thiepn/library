@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-1952",
+  "version": "pg-1952-71752e26bf1b-cover-bd86c38c8fdd",
+  "edition": 1,
+  "releasedAt": "2026-09-20T05:41:38Z",
+  "sourceHash": "4ac05ad049d2401aeacb9375ac24708241249978bb2c5dcf200ea774fe0f1441",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-1952/editions/pg-1952-71752e26bf1b-cover-bd86c38c8fdd/the-yellow-wallpaper-project-gutenberg.epub",
+      "filename": "the-yellow-wallpaper-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 580993,
+      "sha256": "bd86c38c8fdd8930b7565448a9579cfd36dbca6efdc53d2a3214922a0202911b"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "71752e26bf1b862601f6ed4d15cbae0cf2e174eb493111090c188e7634578133",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-1952-71752e26bf1b",
+    "finalArtifactSha256": "bd86c38c8fdd8930b7565448a9579cfd36dbca6efdc53d2a3214922a0202911b",
+    "releaseVersioning": "content-addressed"
+  }
+}
