@@ -1,3 +1,4 @@
+import { updatePersonalIndex } from '../hub/storage';
 import ePub from 'epubjs';
 import {
   inspectPublication,
@@ -301,6 +302,7 @@ export async function importPersonalBook(file: File): Promise<{ record: Personal
   const existing = await getPersonalBook(id);
   if (existing?.sha256 === digest) {
     clearPendingMetadata(digest);
+    updatePersonalIndex(existing);
     return { record: existing, duplicate: true };
   }
 
@@ -333,6 +335,7 @@ export async function importPersonalBook(file: File): Promise<{ record: Personal
     throw storageError(error);
   }
   clearPendingMetadata(digest);
+  updatePersonalIndex(record);
   broadcast('imported', id);
   return { record, duplicate: false };
 }
@@ -355,6 +358,7 @@ export async function getPersonalBooks(): Promise<PersonalBookSummary[]> {
 
 export async function deletePersonalBook(id: string): Promise<void> {
   await withStore('readwrite', async (store) => { await request(store.delete(id)); });
+  updatePersonalIndex(id);
   broadcast('deleted', id);
 }
 

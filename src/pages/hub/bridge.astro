@@ -1,0 +1,9 @@
+---
+import { hubCatalogue } from '../../lib/hub/catalogue';
+const catalogue = await hubCatalogue();
+---
+<!doctype html><html lang="en"><head><meta charset="utf-8"/><meta name="robots" content="noindex,nofollow"/><meta name="referrer" content="no-referrer"/><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; base-uri 'none'; object-src 'none'"/><title>Library consent bridge</title></head><body>
+  <p>This metadata bridge is used by THIEPN Home after you connect this browser.</p>
+  <div id="hub-catalogue" data-books={JSON.stringify(catalogue)} hidden></div>
+  <script>import { installBridge } from '../../lib/hub/bridge'; installBridge(JSON.parse(document.getElementById('hub-catalogue')!.dataset.books!));</script>
+</body></html>
