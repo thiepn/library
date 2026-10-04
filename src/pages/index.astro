@@ -6,6 +6,15 @@ import '../styles/library-home.css';
 
 const works = await getLibraryWorks();
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+function authorLabel(work: (typeof works)[number]): string {
+  return (work.contributors ?? [])
+    .filter((contributor): contributor is Record<string, unknown> => Boolean(contributor) && typeof contributor === 'object')
+    .filter((contributor) => ['author', 'creator', 'aut'].includes(String(contributor.role ?? '').toLowerCase()))
+    .map((contributor) => String(contributor.name ?? '').trim())
+    .filter(Boolean)
+    .join(', ') || 'Unknown author';
+}
 const catalog = works.map((work) => {
   const coverUrl = /^https?:\/\//i.test(work.cover.src)
     ? work.cover.src
@@ -143,6 +152,7 @@ const catalog = works.map((work) => {
                   <span class="catalog-saved-badge" data-saved-badge hidden>In My Library</span>
                 </div>
                 <h3><a href={`${base}/works/${work.slug}`}>{work.title}</a></h3>
+                <p class="catalog-author">by {authorLabel(work)}</p>
                 {work.subtitle && <p class="catalog-subtitle">{work.subtitle}</p>}
                 <p class="catalog-description">{work.shortDescription}</p>
                 <p class="micro catalog-activity" data-catalog-activity hidden></p>
