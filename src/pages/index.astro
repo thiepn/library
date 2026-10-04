@@ -10,6 +10,7 @@ const catalog = works.map((work) => {
   const coverUrl = /^https?:\/\//i.test(work.cover.src)
     ? work.cover.src
     : `${base}${work.cover.src.startsWith('/') ? work.cover.src : `/${work.cover.src}`}`;
+  const stableGeneratedCover = work.cover.src.startsWith('/covers/');
   const release = work.release;
   const pdf = release?.artifacts.pdf;
   const epub = release?.artifacts.epub;
@@ -27,7 +28,7 @@ const catalog = works.map((work) => {
       : pdfHref
         ? { href: pdfHref, label: 'Read PDF', kind: 'pdf' as const }
         : undefined;
-  return { work, coverUrl, release, readHref, pdfHref, epub, formats, primary };
+  return { work, coverUrl, stableGeneratedCover, release, readHref, pdfHref, epub, formats, primary };
 });
 ---
 <BaseLayout title="Library" description="A personal digital library for reading books online, offline, in EPUB, or in PDF.">
@@ -109,7 +110,7 @@ const catalog = works.map((work) => {
 
       {catalog.length ? (
         <div class="catalog-grid">
-          {catalog.map(({ work, coverUrl, release, readHref, epub, formats, primary }) => (
+          {catalog.map(({ work, coverUrl, stableGeneratedCover, release, readHref, epub, formats, primary }) => (
             <article
               class="catalog-book"
               data-pagefind-ignore="all"
@@ -120,7 +121,14 @@ const catalog = works.map((work) => {
               data-saved="false"
             >
               <a class="catalog-cover" href={`${base}/works/${work.slug}`} aria-label={`Open ${work.title}`}>
-                <img src={coverUrl} alt={work.cover.alt} loading="lazy" decoding="async" />
+                <img
+                  src={coverUrl}
+                  alt={work.cover.alt}
+                  loading="lazy"
+                  decoding="async"
+                  width={stableGeneratedCover ? 192 : undefined}
+                  height={stableGeneratedCover ? 288 : undefined}
+                />
               </a>
               <div class="catalog-copy">
                 <div class="catalog-kicker">

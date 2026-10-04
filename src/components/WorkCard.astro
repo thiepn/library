@@ -8,6 +8,7 @@ const workUrl = `${base}/works/${work.slug}`;
 const coverUrl = /^https?:\/\//i.test(work.cover.src)
   ? work.cover.src
   : `${base}${work.cover.src.startsWith('/') ? work.cover.src : `/${work.cover.src}`}`;
+const stableGeneratedCover = work.cover.src.startsWith('/covers/');
 const formats = [
   work.webMaterialized ? 'Reader' : null,
   work.release?.artifacts.epub ? 'EPUB' : null,
@@ -16,7 +17,15 @@ const formats = [
 ---
 <article class="work-card" data-pagefind-ignore="all">
   <a class="publication-cover-link" href={workUrl} aria-label={`Open ${work.title}`}>
-    <img class="publication-cover" src={coverUrl} alt={work.cover.alt} loading="lazy" decoding="async" />
+    <img
+      class="publication-cover"
+      src={coverUrl}
+      alt={work.cover.alt}
+      loading="lazy"
+      decoding="async"
+      width={stableGeneratedCover ? 192 : undefined}
+      height={stableGeneratedCover ? 288 : undefined}
+    />
   </a>
   <div class="work-card-copy">
     <p class="eyebrow taxonomy-inline">{work.classification.subjects.slice(0, 3).map((subject, subjectIndex) => <><a href={`${base}/subjects/${subject}`}>{taxonomyLabel(subject)}</a>{subjectIndex < Math.min(3, work.classification.subjects.length) - 1 && <span> · </span>}</>)}</p>

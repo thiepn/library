@@ -20,8 +20,8 @@ shortDescription: >
   A theological, missiological, and practical framework for stewarding artificial
   intelligence in Christian mission.
 
-status: draft
-visibility: private
+status: published
+visibility: public
 
 publication:
   firstPublished: 2026-08-22
@@ -32,7 +32,7 @@ publication:
   activeRelease: 1.0.0-rc4
 
 cover:
-  src: /covers/ai-for-the-kingdom.webp
+  src: /covers/ai-for-the-kingdom-v2.webp
   alt: Cover of AI for the Kingdom by Thiepn
 
 classification:

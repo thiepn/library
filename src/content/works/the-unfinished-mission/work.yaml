@@ -14,8 +14,8 @@ description: A theological, historical, demographic, and practical examination o
   mission requires now.
 shortDescription: Why gospel access remains unequal—and how the whole church can pursue
   faithful mission with theological clarity, strategic honesty, and local ownership.
-status: draft
-visibility: private
+status: published
+visibility: public
 publication:
   firstPublished: '2026-08-22'
   lastUpdated: '2026-08-23'
@@ -24,7 +24,7 @@ publication:
   version: 1.0.0-rc1
   activeRelease: 1.0.0-rc1
 cover:
-  src: /covers/the-unfinished-mission.webp
+  src: /covers/the-unfinished-mission-v2.webp
   alt: Cover of The Unfinished Mission by Thiepn
 classification:
   subjects:
