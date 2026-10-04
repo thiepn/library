@@ -10,6 +10,7 @@ export const workSchema = z.object({
   subtitle: z.string().min(1).optional(),
   type: z.string().min(1),
   language: z.string().min(2),
+  authorship: z.enum(['human', 'ai-generated']).default('human'),
   contributors: z.array(z.unknown()),
   description: z.string().min(1),
   shortDescription: z.string().min(1),
