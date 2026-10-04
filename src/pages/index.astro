@@ -1,10 +1,10 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { getWorks } from '../lib/content/repository';
+import { getLibraryWorks } from '../lib/content/repository';
 import { taxonomyLabel } from '../lib/content/taxonomy';
 import '../styles/library-home.css';
 
-const works = await getWorks();
+const works = await getLibraryWorks();
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const catalog = works.map((work) => {
   const coverUrl = /^https?:\/\//i.test(work.cover.src)
