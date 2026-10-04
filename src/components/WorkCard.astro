@@ -9,6 +9,12 @@ const coverUrl = /^https?:\/\//i.test(work.cover.src)
   ? work.cover.src
   : `${base}${work.cover.src.startsWith('/') ? work.cover.src : `/${work.cover.src}`}`;
 const stableGeneratedCover = work.cover.src.startsWith('/covers/');
+const authorLabel = (work.contributors ?? [])
+  .filter((contributor): contributor is Record<string, unknown> => Boolean(contributor) && typeof contributor === 'object')
+  .filter((contributor) => ['author', 'creator', 'aut'].includes(String(contributor.role ?? '').toLowerCase()))
+  .map((contributor) => String(contributor.name ?? '').trim())
+  .filter(Boolean)
+  .join(', ') || 'Unknown author';
 const formats = [
   work.webMaterialized ? 'Reader' : null,
   work.release?.artifacts.epub ? 'EPUB' : null,
@@ -30,6 +36,7 @@ const formats = [
   <div class="work-card-copy">
     <p class="eyebrow taxonomy-inline">{work.classification.subjects.slice(0, 3).map((subject, subjectIndex) => <><a href={`${base}/subjects/${subject}`}>{taxonomyLabel(subject)}</a>{subjectIndex < Math.min(3, work.classification.subjects.length) - 1 && <span> · </span>}</>)}</p>
     <h2><a href={workUrl}>{work.title}</a></h2>
+    <p class="work-author">by {authorLabel}</p>
     {work.subtitle && <p class="work-subtitle">{work.subtitle}</p>}
     <p class="muted">{work.shortDescription}</p>
     <p class="micro">{formats.length ? formats.join(' · ') : 'Book details'}</p>
@@ -52,6 +59,11 @@ const formats = [
     display: block;
     width: 100%;
     height: auto;
+  }
+  .work-author {
+    margin: -2px 0 8px;
+    color: var(--muted);
+    font-size: .78rem;
   }
   @media (max-width: 800px) {
     .publication-cover-link { width: min(260px, 72vw); }
