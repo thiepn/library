@@ -7,7 +7,7 @@ type: book
 language: en-US
 authorship: ai-generated
 contributors:
-- name: Jonathan
+- name: Thiepn
   role: author
 description: A theological, historical, demographic, and practical examination of
   why meaningful gospel access remains profoundly unequal and what faithful Christian
@@ -24,8 +24,8 @@ publication:
   version: 1.0.0-rc1
   activeRelease: 1.0.0-rc1
 cover:
-  src: /media/works/the-unfinished-mission/editions/1.0.0-rc1/the-unfinished-mission.jpg
-  alt: Cover of The Unfinished Mission
+  src: /covers/the-unfinished-mission.webp
+  alt: Cover of The Unfinished Mission by Thiepn
 classification:
   subjects:
   - missions
@@ -71,5 +71,5 @@ relationships:
 resources: []
 rights:
   status: copyright
-  notice: Copyright © 2026 Jonathan. All rights reserved. Scripture quotations are
+  notice: Copyright © 2026 Thiepn. All rights reserved. Scripture quotations are
     from the ESV® Bible, ESV Text Edition 2025, used by permission.
