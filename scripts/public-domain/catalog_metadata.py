@@ -66,6 +66,16 @@ def author_surname(value: str) -> str:
     return ""
 
 
+def clean_display_title(value: str) -> str:
+    raw = str(value or "").strip()
+    if "\n" in raw:
+        raw = raw.split("\n", 1)[0].strip()
+    raw = raw.replace(" : $b ", ": ").replace(": $b ", ": ").replace(" $b ", " ")
+    raw = re.sub(r",\s*Complete\s*$", "", raw, flags=re.I)
+    raw = re.sub(r"\s+", " ", raw).strip()
+    return raw
+
+
 def author_names(work: dict[str, Any]) -> list[str]:
     result: list[str] = []
     for contributor in work.get("contributors") or []:
@@ -181,6 +191,8 @@ def update_work(
 
     if preferred_title:
         work["title"] = preferred_title.strip()
+    else:
+        work["title"] = clean_display_title(str(work.get("title") or ""))
     normalize_contributors(work, preferred_author)
 
     authors = author_names(work)
@@ -193,6 +205,24 @@ def update_work(
             bibliographic = openlibrary_match(title, author)
         except Exception as exc:
             print(f"[metadata:openlibrary:error] {work_id}: {exc}", flush=True)
+
+    if preferred_author is None and isinstance(bibliographic, dict):
+        canonical_authors = [
+            str(value).strip()
+            for value in (bibliographic.get("author_name") or [])
+            if str(value).strip()
+        ]
+        current_authors = author_names(work)
+        if len(current_authors) == 1 and canonical_authors:
+            current_norm = normalize(current_authors[0])
+            canonical_norm = normalize(canonical_authors[0])
+            if author_surname(current_authors[0]) == author_surname(canonical_authors[0]) and (
+                "," in current_authors[0]
+                or any(token in current_norm for token in (" graf ", " emperor ", " abbé ", " abbe "))
+                or len(canonical_norm) < len(current_norm)
+            ):
+                normalize_contributors(work, canonical_authors[0])
+                author = canonical_authors[0]
 
     first_year = bibliographic.get("first_publish_year") if isinstance(bibliographic, dict) else None
     if isinstance(first_year, int) and -4000 < first_year <= date.today().year:
