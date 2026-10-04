@@ -497,8 +497,8 @@ def clean_summary(candidate: Candidate, meta: dict[str, Any], author: str) -> st
     subjects = [s for s in (meta.get("subjects") or candidate.subjects) if s][:3]
     if subjects:
         subject_text = ", ".join(subjects)
-        return f"A public-domain edition of {candidate.title} by {author}. Project Gutenberg classifies it under {subject_text}."
-    return f"A public-domain edition of {candidate.title} by {author}, sourced from Project Gutenberg."
+        return f"{candidate.title} by {author} is a classic work associated with {subject_text}."
+    return f"{candidate.title} by {author} is a classic work available in the THIEPN Library."
 
 
 def make_cover_svg(title: str, author: str) -> str:
@@ -537,12 +537,12 @@ def make_cover_svg(title: str, author: str) -> str:
   <desc id="desc">Library cover for the public-domain edition.</desc>
   <rect width="800" height="1200" fill="#171714"/>
   <rect x="44" y="44" width="712" height="1112" rx="8" fill="none" stroke="#e9e4d4" stroke-width="2"/>
-  <text x="80" y="120" class="kicker">THIEPN LIBRARY · PUBLIC DOMAIN</text>
+  <text x="80" y="120" class="kicker">THIEPN LIBRARY · CLASSICS</text>
   <line x1="80" x2="720" y1="164" y2="164" stroke="#e9e4d4" stroke-width="2"/>
   {title_markup}
   <line x1="80" x2="220" y1="742" y2="742" stroke="#e9e4d4" stroke-width="2"/>
   {author_markup}
-  <text x="80" y="1090" class="source">PROJECT GUTENBERG SOURCE EDITION</text>
+  <text x="80" y="1090" class="source">THIEPN LIBRARY EDITION</text>
   <style>
     .kicker,.source{{fill:#b9b3a1;font:600 20px system-ui,sans-serif;letter-spacing:3px}}
     .title{{fill:#f5f0df;font:700 56px Georgia,serif}}
@@ -633,7 +633,7 @@ def materialize(candidate: Candidate, meta: dict[str, Any], rdf_raw: bytes, epub
     title = str(meta.get("title") or candidate.title).strip() or candidate.title
     epub_hash = sha256_bytes(epub_raw)
     version = f"pg-{gid}-{epub_hash[:12]}"
-    filename = f"{slugify(title)}-project-gutenberg.epub"
+    filename = f"{slugify(title)}.epub"
     released_at = utc_now()
     source_issued = source_issue_date(meta)
     description = clean_summary(candidate, meta, author)
@@ -669,7 +669,7 @@ def materialize(candidate: Candidate, meta: dict[str, Any], rdf_raw: bytes, epub
             "firstPublished": source_issued,
             "lastUpdated": date.today().isoformat(),
             "edition": 1,
-            "editionLabel": "Project Gutenberg public-domain edition",
+            "editionLabel": "THIEPN Library Edition",
             "version": version,
             "activeRelease": version,
         },
@@ -679,7 +679,7 @@ def materialize(candidate: Candidate, meta: dict[str, Any], rdf_raw: bytes, epub
         },
         "classification": {
             "subjects": taxonomy_subjects(meta.get("subjects") or candidate.subjects),
-            "tags": ["public-domain", "project-gutenberg", "classic"],
+            "tags": ["public-domain", "classic"],
             "collections": collection_slugs(meta.get("bookshelves") or candidate.bookshelves),
         },
         "parts": [],
@@ -689,28 +689,12 @@ def materialize(candidate: Candidate, meta: dict[str, Any], rdf_raw: bytes, epub
             "epub": {"enabled": True},
         },
         "relationships": {"relatedWorks": [], "prerequisites": []},
-        "resources": [
-            {
-                "type": "source",
-                "label": "Project Gutenberg",
-                "url": f"{PG_EBOOK_ROOT}/{gid}",
-                "gutenbergId": gid,
-            },
-            {
-                "type": "provenance",
-                "label": "Official Project Gutenberg RDF metadata",
-                "url": meta.get("rdf_url"),
-            },
-        ],
+        "resources": [],
         "rights": {
-            "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+            "status": "Public domain in Germany",
             "notice": (
-                f"Source edition: Project Gutenberg #{gid}. The Library's automated rights gate "
-                f"found all detected creative contributors in the official Project Gutenberg RDF "
-                f"to have died in {COPYRIGHT_CUTOFF_YEAR} or earlier, satisfying the ordinary "
-                f"German 70-year post-mortem term for calendar year {date.today().year}. "
-                f"Uncertain candidates are not published automatically. The EPUB is retained as "
-                f"a Project Gutenberg source edition, including its embedded notices and terms."
+                "This Library edition is offered as a public-domain work under German copyright law. "
+                "Copyright status can differ in other jurisdictions."
             ),
         },
     }
