@@ -1,3 +1,4 @@
-run: 2026-10-04-r2
+run: 2026-10-04-r3
 mode: full-catalog-overhaul
 catalog: src/publications/curated-canon.tsv
+storefront-author-pass: complete
