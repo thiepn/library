@@ -16,6 +16,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const coverUrl = /^https?:\/\//i.test(work.cover.src)
   ? work.cover.src
   : `${base}${work.cover.src.startsWith('/') ? work.cover.src : `/${work.cover.src}`}`;
+const stableGeneratedCover = work.cover.src.startsWith('/covers/');
 const release = work.release;
 const pdf = release?.artifacts.pdf;
 const epub = release?.artifacts.epub;
@@ -66,7 +67,14 @@ const primaryAction = readHref
     <section class="book-detail__hero">
       <div class="book-detail__cover-column">
         <div class="book-detail__cover-frame">
-          <img class="book-detail__cover" src={coverUrl} alt={work.cover.alt} decoding="async" />
+          <img
+            class="book-detail__cover"
+            src={coverUrl}
+            alt={work.cover.alt}
+            decoding="async"
+            width={stableGeneratedCover ? 192 : undefined}
+            height={stableGeneratedCover ? 288 : undefined}
+          />
         </div>
         <p class="book-detail__cover-caption">{editionLabel}</p>
       </div>
