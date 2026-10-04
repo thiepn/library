@@ -6,7 +6,9 @@ subtitle: A Christian Guide to Agencies, Teams, Trust, and Faithful Sending
 type: book
 language: en-US
 authorship: ai-generated
-contributors: []
+contributors:
+  - name: Thiepn
+    role: author
 description: >
   A research-informed Christian practical guide to evaluating mission organizations,
   sending structures, governance, finances, safeguarding, training, field teams,
