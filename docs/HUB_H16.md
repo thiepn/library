@@ -43,13 +43,17 @@ Real personal browser/profile testing and public activation remain H20 work.
 Production Hub keeps `PUBLIC_HUB_LIBRARY_PRIVATE` unset. This change does not
 represent cloud synchronization, reading uploads, or permission activation.
 
-## Dependency qualification blocker
+## Dependency remediation
 
-H16 CI exposed seven high advisories already present in the base lock.
-Narrow security overrides pin devalue 5.9.3 and only vulnerable Undici 8.x to
-8.10.2; unrelated Undici 7.x and Astro remain unchanged. Frozen installs still
-respect the 24-hour minimum release age. The production audit then reports one
-high advisory: GHSA-ch52-4w7c-c8xp in http-cache-semantics 4.2.0. Its declared fix
-4.2.1 is not published in the registry available to this build (latest 4.2.0).
-The security audit is not exempted or bypassed. Library merge/deployment remains
-blocked until an installable audited fix exists and all release gates pass.
+Initial CI found seven high advisories inherited from the base lock. Narrow
+security overrides pin devalue 5.9.3, vulnerable Undici 8.x to 8.10.2, and
+http-cache-semantics 4.3.0. Astro and unrelated Undici 7.x remain unchanged.
+
+The cache fix was initially unavailable, then published on 2026-10-04 at
+02:56:05 UTC from upstream git head b1d4bd682fbab0252985de45219f4e7497c0067c.
+The general 24-hour release-age policy remains. Its sole explicit exception is
+this exact security release, whose npm integrity is frozen in the lockfile.
+No audit advisory is ignored. Frozen install, full production audit, licenses,
+source certification, reader regressions, build and owner browser gates must
+pass before merge/deploy. Human/device qualification and private activation
+remain H20.
