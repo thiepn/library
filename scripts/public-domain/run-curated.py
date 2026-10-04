@@ -12,6 +12,7 @@ from typing import Any
 
 import sync as engine
 import run as standard
+import catalog_metadata
 
 
 CURATION_MODE = "curated-christian-classics"
@@ -227,6 +228,10 @@ def main() -> int:
 
             epub_raw, epub_url = engine.download_epub(candidate)
             artifact = engine.materialize(candidate, meta, rdf_raw, epub_raw, epub_url, ledger)
+            catalog_metadata.update_work(
+                artifact["workId"],
+                gutenberg_id=gid,
+            )
             mark_christian_classic(artifact["workId"])
             annotate_curation(ledger, gid, position)
             artifact["curatedPosition"] = position
