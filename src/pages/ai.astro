@@ -1,0 +1,31 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import WorkCard from '../components/WorkCard.astro';
+import { getAiWorks } from '../lib/content/repository';
+
+const works = await getAiWorks();
+---
+<BaseLayout title="AI" description="AI-written books kept separate from the main Library catalog.">
+  <div class="page">
+    <section class="section">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Library / AI</p>
+          <h1>AI</h1>
+        </div>
+        <p class="micro">{works.length} book{works.length === 1 ? '' : 's'}</p>
+      </div>
+
+      {works.length ? (
+        <div class="work-list">
+          {works.map((work, index) => <WorkCard work={work} index={index + 1} />)}
+        </div>
+      ) : (
+        <div class="empty">
+          <h2>No AI books are public yet.</h2>
+          <p>AI-written books will appear here when they are published.</p>
+        </div>
+      )}
+    </section>
+  </div>
+</BaseLayout>

@@ -1,10 +1,10 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import WorkCard from '../../components/WorkCard.astro';
-import { getWorks, type ResolvedWork } from '../../lib/content/repository';
+import { getLibraryWorks, type ResolvedWork } from '../../lib/content/repository';
 import { getTaxonomyItems, taxonomyLabel } from '../../lib/content/taxonomy';
 export async function getStaticPaths() {
-  const works = await getWorks();
+  const works = await getLibraryWorks();
   return getTaxonomyItems(works, 'subjects').map((subject) => ({ params: { slug: subject.slug }, props: { subject: subject.slug, works: works.filter((work) => work.classification.subjects.includes(subject.slug)) } }));
 }
 interface Props { subject: string; works: ResolvedWork[]; }
