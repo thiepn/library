@@ -1,0 +1,145 @@
+name: Curated Canon Overhaul
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/curated-canon-trigger'
+  workflow_dispatch:
+    inputs:
+      max_books:
+        description: Maximum new globally eligible books to add in this run
+        required: false
+        default: '300'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: curated-canon-overhaul
+  cancel-in-progress: false
+
+jobs:
+  overhaul:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      R2_BUCKET: thiepn-library-publications
+      COVER_IMAGE_MODEL: gpt-image-2
+      COVER_IMAGE_QUALITY: medium
+      COVER_IMAGE_SIZE: 1024x1536
+
+    steps:
+      - name: Checkout Library
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm and Node
+        uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2
+        with:
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+          cache: true
+
+      - name: Install dependencies
+        run: |
+          pnpm install --frozen-lockfile
+          python3 -m pip install --disable-pip-version-check 'Pillow==11.3.0'
+
+      - name: Require publication credentials
+        run: |
+          set -euo pipefail
+          test -n "${OPENAI_API_KEY:-}"
+          test -n "${CLOUDFLARE_API_TOKEN:-}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID:-}"
+          test -n "${R2_BUCKET:-}"
+
+      - name: Compile catalog tooling
+        run: |
+          python3 -m py_compile             scripts/public-domain/catalog_metadata.py             scripts/public-domain/clean-existing-catalog.py             scripts/public-domain/run-canon.py             scripts/public-domain/cover_pipeline.py             scripts/public-domain/cover_job.py             scripts/public-domain/finalize-cover-release.py
+
+      - name: Normalize all existing public-domain catalog metadata
+        run: python3 scripts/public-domain/clean-existing-catalog.py
+
+      - name: Ingest every resolvable globally eligible curated classic
+        id: ingest
+        env:
+          MAX_BOOKS: ${{ github.event.inputs.max_books || '300' }}
+        run: |
+          set -euo pipefail
+          python3 scripts/public-domain/run-canon.py             --max-books "$MAX_BOOKS"             --max-candidate-checks 650
+
+      - name: Generate book-specific covers and embed them into new EPUBs
+        if: steps.ingest.outputs.added_count != '0'
+        run: python3 scripts/public-domain/cover_job.py --new-staging
+
+      - name: Finalize content-addressed cover releases
+        if: steps.ingest.outputs.added_count != '0'
+        run: python3 scripts/public-domain/finalize-cover-release.py --mode new
+
+      - name: Certify the complete Library
+        run: pnpm release:certify
+
+      - name: Upload new immutable EPUBs to R2 and verify readback
+        if: steps.ingest.outputs.added_count != '0'
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/canon-readback
+          python3 - <<'PY' > /tmp/canon-artifacts.tsv
+          import json
+          from pathlib import Path
+          items = json.loads(Path('.public-domain-staging/artifacts.json').read_text())
+          for item in items:
+              print('\t'.join([
+                  item['localPath'],
+                  item['r2Key'],
+                  str(item['sizeBytes']),
+                  item['sha256'],
+              ]))
+          PY
+
+          while IFS=$'\t' read -r local_path key bytes hash; do
+            test -f "$local_path"
+            filename="$(basename "$local_path")"
+            readback="/tmp/canon-readback/$filename"
+            pnpm exec wrangler r2 object put "$R2_BUCKET/$key" --file="$local_path" --remote
+            pnpm exec wrangler r2 object get "$R2_BUCKET/$key" --file="$readback" --remote
+            test "$(stat -c %s "$readback")" = "$bytes"
+            printf '%s  %s\n' "$hash" "$readback" | sha256sum -c -
+            echo "R2_VERIFIED $key"
+          done < /tmp/canon-artifacts.tsv
+
+      - name: Commit completed catalog overhaul to main
+        run: |
+          set -euo pipefail
+          rm -rf .public-domain-staging .catalog-metadata-failures.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add             src/content/works             src/publications/releases             src/publications/public-domain-ledger.json             public/covers/public-domain
+          if git diff --cached --quiet; then
+            echo "No catalog changes to commit."
+            exit 0
+          fi
+          git commit -m "Library: curate canon metadata, descriptions, and covers"
+          git push origin HEAD:main
+
+      - name: Write run summary
+        if: always()
+        run: |
+          {
+            echo "### Curated canon overhaul"
+            echo
+            echo "- Curated backlog: `src/publications/curated-canon.tsv`"
+            echo "- Existing public-domain manifests normalized"
+            echo "- Gutenberg branding removed from reader-facing metadata"
+            echo "- Original first-publication years enriched from Open Library"
+            echo "- Book summaries enriched from Gutendex where available"
+            echo "- New globally eligible editions rights-screened before publication"
+            echo "- New covers generated per book and embedded into EPUBs"
+            echo "- Germany-only, translation-review, and protected titles remain non-published"
+          } >> "$GITHUB_STEP_SUMMARY"
