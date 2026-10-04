@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+<BaseLayout title="Share reading with Hub" noindex>
+  <section class="page section" aria-labelledby="sharing-heading">
+    <p class="eyebrow">Device-local sharing</p><h1 id="sharing-heading">Library in Hub</h1>
+    <p>Share saved reading progress from this browser profile with THIEPN Home. This is browser data, not an account connection. A shared browser may contain another person’s reading history.</p>
+    <p>Only book titles, format, edition, release, update time, and current/furthest progress are shared. Book files, reader positions, highlights, notes and annotations stay in Library.</p>
+    <form data-hub-consent>
+      <fieldset><legend>Choose what Home may read</legend>
+        <p><label><input type="checkbox" name="permission" value="summary"/> Reading summary</label></p>
+        <p><label><input type="checkbox" name="permission" value="continue"/> Continue reading</label></p>
+        <p><label><input type="checkbox" name="permission" value="search"/> Search titles with saved progress</label></p>
+        <p><label><input type="checkbox" name="personal"/> Include titles of imported EPUB/PDF books</label></p>
+      </fieldset>
+      <p>Imported titles are excluded unless you select them. Sharing applies only to this browser profile; it is not restored by a Library backup.</p>
+      <button type="submit">Save choices</button> <button type="button" data-hub-revoke>Revoke all sharing</button>
+      <p role="status" aria-live="polite" data-hub-status></p>
+    </form>
+    <p><a href="/home/" rel="noreferrer">Back to Home</a> · <a href="/library/saved">My Library</a></p>
+  </section>
+  <script>
+    import { CONSENT_KEY, PERSONAL_INDEX_KEY, OPERATIONS, readConsent, type Operation, type Consent } from '../../lib/hub/contract';
+    import { getPersonalBooks } from '../../lib/client/personal-books';
+    import { personalMetadata } from '../../lib/hub/storage';
+    const form = document.querySelector<HTMLFormElement>('[data-hub-consent]')!;
+    const status = document.querySelector<HTMLElement>('[data-hub-status]')!;
+    const personal = form.elements.namedItem('personal') as HTMLInputElement;
+    const checks = [...form.querySelectorAll<HTMLInputElement>('[name="permission"]')];
+    const controls = [...form.querySelectorAll<HTMLInputElement | HTMLButtonElement>('input,button')];
+    function render() { const consent = readConsent(); checks.forEach(c => { c.checked = !!consent?.permissions.includes(c.value as Operation); }); personal.checked = !!consent?.includePersonal; }
+    render();
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      const previous = readConsent();
+      const permissions = checks.filter(c => c.checked && OPERATIONS.includes(c.value as Operation)).map(c => c.value as Operation);
+      const includePersonal = personal.checked && permissions.length > 0;
+      controls.forEach(c => { c.disabled = true; }); status.textContent = 'Saving your choices…';
+      void (async () => {
+        const index = includePersonal ? (await getPersonalBooks()).map(personalMetadata) : [];
+        if (index.length > 1024) throw new Error('Too many imported books for bounded Hub sharing.');
+        if (readConsent()?.revision !== previous?.revision) throw new Error('Sharing changed in another tab. Review your choices again.');
+        // Revoke previous authorization before changing the consent-owned index.
+        localStorage.removeItem(CONSENT_KEY);
+        if (includePersonal) localStorage.setItem(PERSONAL_INDEX_KEY, JSON.stringify(index)); else localStorage.removeItem(PERSONAL_INDEX_KEY);
+        const consent: Consent = { schemaVersion: 1, deviceId: previous?.deviceId ?? crypto.randomUUID(), revision: crypto.randomUUID(), permissions, includePersonal };
+        localStorage.setItem(CONSENT_KEY, JSON.stringify(consent));
+        status.textContent = permissions.length ? 'Choices saved. In Home, choose Connect this browser.' : 'No reading data is shared.';
+      })().catch(error => { status.textContent = error instanceof Error ? error.message : 'Choices could not be saved.'; render(); }).finally(() => controls.forEach(c => { c.disabled = false; }));
+    });
+    document.querySelector('[data-hub-revoke]')!.addEventListener('click', () => {
+      try { localStorage.removeItem(CONSENT_KEY); localStorage.removeItem(PERSONAL_INDEX_KEY); render(); status.textContent = 'All Library sharing is revoked in this browser.'; }
+      catch { status.textContent = 'Browser storage could not be changed. Close Home and check browser storage settings.'; }
+    });
+    window.addEventListener('storage', event => { if (event.key === CONSENT_KEY || event.key === null) { render(); status.textContent = 'Sharing choices changed in another tab.'; } });
+  </script>
+</BaseLayout>

@@ -1,0 +1,25 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { hubCatalogue } from '../../lib/hub/catalogue';
+const catalogue = await hubCatalogue();
+---
+<BaseLayout title="Continue reading" noindex>
+  <section class="page section"><h1>Continue reading</h1><p role="status" data-hub-continue>Checking this book’s edition and release…</p><p><a href="/library/saved">Open My Library</a> · <a href="/home/">Back to Home</a></p></section>
+  <div id="hub-catalogue" data-books={JSON.stringify(catalogue)} hidden></div>
+  <script>
+    import { continuation, token, type Book } from '../../lib/hub/contract';
+    import { availableBooks } from '../../lib/hub/storage';
+    const status = document.querySelector('[data-hub-continue]')!;
+    const query = new URLSearchParams(location.search);
+    history.replaceState(null, '', location.pathname);
+    void (async () => {
+      if ([...query.keys()].sort().join(',') !== 'edition,release,resource' || !token(query.get('resource')) || !token(query.get('release')) || !/^[1-9][0-9]{0,5}$/.test(query.get('edition') ?? '')) throw new Error('Invalid book identity. Open the book in My Library.');
+      const books: Book[] = JSON.parse(document.getElementById('hub-catalogue')!.dataset.books!);
+      const resource = query.get('resource')!;
+      const available = await availableBooks(books, resource.startsWith('personal:'));
+      const url = continuation(available, resource, Number(query.get('edition')), query.get('release')!);
+      if (!url) throw new Error('This edition or release is no longer available. Open My Library to choose the current book; old progress will not be applied to a different release.');
+      location.replace(url);
+    })().catch(error => { status.textContent = error instanceof Error ? error.message : 'Device storage is unavailable. Open My Library.'; });
+  </script>
+</BaseLayout>

@@ -7,6 +7,9 @@ overrides:
   sharp: 0.35.4
   js-yaml: 4.3.2
   svgo: 4.1.0
+  # H16: patch the existing production audit blockers without changing Astro.
+  devalue: 5.9.3
+  'undici@>=8.0.0 <8.10.2': 8.10.2
 
 allowBuilds:
   'esbuild@0.27.7 || 0.28.1 || 0.28.2': true
