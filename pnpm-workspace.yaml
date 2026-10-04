@@ -1,6 +1,10 @@
 # Keep newly published packages out of automated dependency resolution for 24 hours.
 minimumReleaseAge: 1440
 
+# Exact upstream security release for GHSA-ch52-4w7c-c8xp; no blanket age bypass.
+minimumReleaseAgeExclude:
+  - http-cache-semantics@4.3.0
+
 # Security pins are centralized here so frozen CI installs resolve the audited graph consistently.
 overrides:
   '@xmldom/xmldom': 0.8.15
@@ -8,6 +12,7 @@ overrides:
   js-yaml: 4.3.2
   svgo: 4.1.0
   # H16: patch the existing production audit blockers without changing Astro.
+  http-cache-semantics: 4.3.0
   devalue: 5.9.3
   'undici@>=8.0.0 <8.10.2': 8.10.2
 
