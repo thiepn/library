@@ -65,6 +65,18 @@ export async function getWorks(): Promise<ResolvedWork[]> {
   return works.sort((a, b) => new Date(String(b.publication.lastUpdated)).getTime() - new Date(String(a.publication.lastUpdated)).getTime() || a.title.localeCompare(b.title));
 }
 
+export function isAiGeneratedWork(work: Pick<WorkManifest, 'authorship'>): boolean {
+  return work.authorship === 'ai-generated';
+}
+
+export async function getLibraryWorks(): Promise<ResolvedWork[]> {
+  return (await getWorks()).filter((work) => !isAiGeneratedWork(work));
+}
+
+export async function getAiWorks(): Promise<ResolvedWork[]> {
+  return (await getWorks()).filter(isAiGeneratedWork);
+}
+
 export async function getWorkBySlug(slug: string) {
   return (await getWorks()).find((work) => work.slug === slug);
 }
