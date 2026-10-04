@@ -26,6 +26,12 @@ const pdfHref = pdf ? `${base}/works/${work.slug}/pdf` : undefined;
 const availableFormats = [canRead ? 'Reader' : null, epub ? 'EPUB' : null, pdf ? 'PDF' : null]
   .filter((value): value is string => Boolean(value));
 const editionLabel = work.publication.editionLabel;
+const authorNames = (work.contributors ?? [])
+  .filter((contributor): contributor is Record<string, unknown> => Boolean(contributor) && typeof contributor === 'object')
+  .filter((contributor) => ['author', 'creator', 'aut'].includes(String(contributor.role ?? '').toLowerCase()))
+  .map((contributor) => String(contributor.name ?? '').trim())
+  .filter(Boolean);
+const authorLabel = authorNames.length ? authorNames.join(', ') : 'Unknown author';
 
 function formatBytes(bytes: number): string {
   if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
@@ -34,6 +40,7 @@ function formatBytes(bytes: number): string {
 }
 
 function formatDate(value: string | Date): string {
+  if (typeof value === 'string' && /^\d{4}$/.test(value)) return value;
   const date = value instanceof Date ? value : new Date(value);
   return Number.isNaN(date.getTime())
     ? String(value)
@@ -88,6 +95,7 @@ const primaryAction = readHref
         </div>
 
         <h1 data-pagefind-weight="10">{work.title}</h1>
+        <p class="book-detail__author">by {authorLabel}</p>
         {work.subtitle && <p class="book-detail__deck">{work.subtitle}</p>}
         <p class="book-detail__description">{work.description}</p>
 
@@ -179,6 +187,7 @@ const primaryAction = readHref
       </div>
 
       <dl class="book-detail__metadata-grid">
+        <div><dt>Author</dt><dd>{authorLabel}</dd></div>
         <div><dt>First published</dt><dd><time datetime={String(work.publication.firstPublished)}>{formatDate(work.publication.firstPublished)}</time></dd></div>
         <div><dt>Edition</dt><dd>{editionLabel}</dd></div>
         <div><dt>Last updated</dt><dd><time datetime={String(work.publication.lastUpdated)}>{formatDate(work.publication.lastUpdated)}</time></dd></div>
