@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-1400",
+  "version": "pg-1400-51d9687f436c-cover-10b6971a3a0c",
+  "edition": 1,
+  "releasedAt": "2026-10-04T10:04:38Z",
+  "sourceHash": "4d1e738eca4be54f87019f5fe8de647b94a05cbc1d7d42968c6ed4b23ce137ef",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-1400/editions/pg-1400-51d9687f436c-cover-10b6971a3a0c/great-expectations-project-gutenberg.epub",
+      "filename": "great-expectations-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 893893,
+      "sha256": "10b6971a3a0c7950f525d04dab5a1bf9ff43665446b5c0b71870f69e1d80527d"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "51d9687f436c00787383fab830890cd3a8c1f51224f29e7b7e3350f2b1284886",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-1400-51d9687f436c",
+    "finalArtifactSha256": "10b6971a3a0c7950f525d04dab5a1bf9ff43665446b5c0b71870f69e1d80527d",
+    "releaseVersioning": "content-addressed"
+  }
+}

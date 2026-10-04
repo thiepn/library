@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-35",
+  "version": "pg-35-9b453c2a14fe-cover-6c7723e67558",
+  "edition": 1,
+  "releasedAt": "2026-10-04T10:04:52Z",
+  "sourceHash": "db575f729781f2ad9ce771529a900b78530e70a13f822b722fb5438959b61f8f",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-35/editions/pg-35-9b453c2a14fe-cover-6c7723e67558/the-time-machine-project-gutenberg.epub",
+      "filename": "the-time-machine-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 530717,
+      "sha256": "6c7723e6755840e8a384ae620161ba108818b142466df10e92ef8b2501aaadb0"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "9b453c2a14fe9490b866105dd9ef8a1e475911c4e83218cbe62ec648c9ef82de",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-35-9b453c2a14fe",
+    "finalArtifactSha256": "6c7723e6755840e8a384ae620161ba108818b142466df10e92ef8b2501aaadb0",
+    "releaseVersioning": "content-addressed"
+  }
+}

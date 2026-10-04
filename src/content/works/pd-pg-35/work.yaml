@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-35",
+  "slug": "pd-pg-35",
+  "title": "The Time Machine",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "H. G. (Herbert George) Wells",
+      "role": "creator",
+      "birthYear": 1866,
+      "deathYear": 1946
+    }
+  ],
+  "description": "A public-domain edition of The Time Machine by H. G. (Herbert George) Wells. Project Gutenberg classifies it under Science fiction, Time travel -- Fiction, Dystopias -- Fiction.",
+  "shortDescription": "A public-domain edition of The Time Machine by H. G. (Herbert George) Wells. Project Gutenberg classifies it under Science fiction, Time travel -- Fiction, Dystopias -- Fiction.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2004-10-02",
+    "lastUpdated": "2026-10-04",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-35-9b453c2a14fe-cover-6c7723e67558",
+    "activeRelease": "pg-35-9b453c2a14fe-cover-6c7723e67558"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-35.webp",
+    "alt": "Cover for The Time Machine by H. G. (Herbert George) Wells"
+  },
+  "classification": {
+    "subjects": [
+      "science-fiction",
+      "time-travel",
+      "dystopias",
+      "pr"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "science-fiction"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/35",
+      "gutenbergId": 35
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/35/pg35.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #35. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-41",
+  "version": "pg-41-b7f4b22dae1e-cover-2a138862eca9",
+  "edition": 1,
+  "releasedAt": "2026-10-04T10:04:48Z",
+  "sourceHash": "a16269b69cb1bd62597e0ed5e6f3e7329c2d9344f4c8251c2f32947c0f2b59e5",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-41/editions/pg-41-b7f4b22dae1e-cover-2a138862eca9/the-legend-of-sleepy-hollow-project-gutenberg.epub",
+      "filename": "the-legend-of-sleepy-hollow-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 416208,
+      "sha256": "2a138862eca991b9a386f6a2541bca0f9f1f25625e057b2c4cfeb16435d0c8fd"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "b7f4b22dae1e9f0b010990a6271b7d8cca062b5b9830c2c9a570fcc010e808da",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-41-b7f4b22dae1e",
+    "finalArtifactSha256": "2a138862eca991b9a386f6a2541bca0f9f1f25625e057b2c4cfeb16435d0c8fd",
+    "releaseVersioning": "content-addressed"
+  }
+}

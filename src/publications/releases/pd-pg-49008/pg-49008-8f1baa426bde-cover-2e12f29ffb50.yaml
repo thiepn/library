@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-49008",
+  "version": "pg-49008-8f1baa426bde-cover-2e12f29ffb50",
+  "edition": 1,
+  "releasedAt": "2026-10-04T10:04:36Z",
+  "sourceHash": "f2f2b77a80e8e1f62a4d13a86cd7dbea8107d4d3d450ca73b7ccde35606704d2",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-49008/editions/pg-49008-8f1baa426bde-cover-2e12f29ffb50/the-works-of-william-shakespeare-cambridge-edition-vol-8-of-9-project-gutenberg.epub",
+      "filename": "the-works-of-william-shakespeare-cambridge-edition-vol-8-of-9-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 1423121,
+      "sha256": "2e12f29ffb50522ed695a9bc4813b482d8d1c1f1f493ba0787dd5e9891229c43"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "8f1baa426bdeab872246ba2f46c101cc4780bc9cdf79173b20ad5d66e8bf40a2",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-49008-8f1baa426bde",
+    "finalArtifactSha256": "2e12f29ffb50522ed695a9bc4813b482d8d1c1f1f493ba0787dd5e9891229c43",
+    "releaseVersioning": "content-addressed"
+  }
+}

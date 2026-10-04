@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-16",
+  "version": "pg-16-7a2c1afe1871-cover-8e5d7da91cda",
+  "edition": 1,
+  "releasedAt": "2026-10-04T10:04:57Z",
+  "sourceHash": "611c44272c17c73d6a50f84b5396dfd35945734db8462c82d6e31cad35a702fe",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-16/editions/pg-16-7a2c1afe1871-cover-8e5d7da91cda/peter-pan-b-peter-and-wendy-project-gutenberg.epub",
+      "filename": "peter-pan-b-peter-and-wendy-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 1003895,
+      "sha256": "8e5d7da91cda35675838cb2e19765395b7f60987708b734a398f9bd55c317e65"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "7a2c1afe187121a0a3782538b95c54e298a25a920c588e3fa3be7ac92a451046",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-16-7a2c1afe1871",
+    "finalArtifactSha256": "8e5d7da91cda35675838cb2e19765395b7f60987708b734a398f9bd55c317e65",
+    "releaseVersioning": "content-addressed"
+  }
+}

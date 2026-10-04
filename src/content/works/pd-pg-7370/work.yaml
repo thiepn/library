@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-7370",
+  "slug": "pd-pg-7370",
+  "title": "Second Treatise of Government",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "John Locke",
+      "role": "creator",
+      "birthYear": 1632,
+      "deathYear": 1704
+    }
+  ],
+  "description": "A public-domain edition of Second Treatise of Government by John Locke. Project Gutenberg classifies it under Political science -- Early works to 1800, Toleration -- Early works to 1800, Liberty -- Early works to 1800.",
+  "shortDescription": "A public-domain edition of Second Treatise of Government by John Locke. Project Gutenberg classifies it under Political science -- Early works to 1800, Toleration -- Early works…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2005-01-01",
+    "lastUpdated": "2026-10-04",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-7370-310dcefca55c-cover-7856ee5a5020",
+    "activeRelease": "pg-7370-310dcefca55c-cover-7856ee5a5020"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-7370.webp",
+    "alt": "Cover for Second Treatise of Government by John Locke"
+  },
+  "classification": {
+    "subjects": [
+      "political-science",
+      "toleration",
+      "liberty",
+      "jc"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/7370",
+      "gutenbergId": 7370
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/7370/pg7370.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #7370. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-46",
+  "slug": "pd-pg-46",
+  "title": "A Christmas Carol in Prose; Being a Ghost Story of Christmas",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Charles Dickens",
+      "role": "creator",
+      "birthYear": 1812,
+      "deathYear": 1870
+    },
+    {
+      "name": "John Leech",
+      "role": "ill",
+      "birthYear": 1817,
+      "deathYear": 1864
+    }
+  ],
+  "description": "A public-domain edition of A Christmas Carol in Prose; Being a Ghost Story of Christmas by Charles Dickens. Project Gutenberg classifies it under Christmas stories, London (England) -- Fiction, Poor families -- Fiction.",
+  "shortDescription": "A public-domain edition of A Christmas Carol in Prose; Being a Ghost Story of Christmas by Charles Dickens. Project Gutenberg classifies it under Christmas stories, London (Engl…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2004-08-11",
+    "lastUpdated": "2026-10-04",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-46-86b33cf1a573-cover-4cc0fb3ca77b",
+    "activeRelease": "pg-46-86b33cf1a573-cover-4cc0fb3ca77b"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-46.webp",
+    "alt": "Cover for A Christmas Carol in Prose; Being a Ghost Story of Christmas by Charles Dickens"
+  },
+  "classification": {
+    "subjects": [
+      "christmas-stories",
+      "london-england",
+      "poor-families",
+      "ghost-stories",
+      "misers"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "childrens-literature"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/46",
+      "gutenbergId": 46
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/46/pg46.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #46. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-1080",
+  "slug": "pd-pg-1080",
+  "title": "A Modest Proposal",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Jonathan Swift",
+      "role": "creator",
+      "birthYear": 1667,
+      "deathYear": 1745
+    }
+  ],
+  "description": "A public-domain edition of A Modest Proposal by Jonathan Swift. Project Gutenberg classifies it under Political satire, English, Religious satire, English, Ireland -- Politics and government -- 18th century -- Humor.",
+  "shortDescription": "A public-domain edition of A Modest Proposal by Jonathan Swift. Project Gutenberg classifies it under Political satire, English, Religious satire, English, Ireland -- Politics a…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "1997-10-01",
+    "lastUpdated": "2026-10-04",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-1080-60fc6ac9208d-cover-232d94cbfbaa",
+    "activeRelease": "pg-1080-60fc6ac9208d-cover-232d94cbfbaa"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-1080.webp",
+    "alt": "Cover for A Modest Proposal by Jonathan Swift"
+  },
+  "classification": {
+    "subjects": [
+      "political-satire-english",
+      "religious-satire-english",
+      "ireland",
+      "pr"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/1080",
+      "gutenbergId": 1080
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/1080/pg1080.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #1080. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

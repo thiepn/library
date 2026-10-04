@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-4363",
+  "slug": "pd-pg-4363",
+  "title": "Beyond Good and Evil",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Friedrich Wilhelm Nietzsche",
+      "role": "creator",
+      "birthYear": 1844,
+      "deathYear": 1900
+    },
+    {
+      "name": "Helen Zimmern",
+      "role": "trl",
+      "birthYear": 1846,
+      "deathYear": 1934
+    }
+  ],
+  "description": "A public-domain edition of Beyond Good and Evil by Friedrich Wilhelm Nietzsche. Project Gutenberg classifies it under Ethics, Philosophy, German, B.",
+  "shortDescription": "A public-domain edition of Beyond Good and Evil by Friedrich Wilhelm Nietzsche. Project Gutenberg classifies it under Ethics, Philosophy, German, B.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2003-08-01",
+    "lastUpdated": "2026-10-04",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-4363-28312b674389-cover-218e67be6967",
+    "activeRelease": "pg-4363-28312b674389-cover-218e67be6967"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-4363.webp",
+    "alt": "Cover for Beyond Good and Evil by Friedrich Wilhelm Nietzsche"
+  },
+  "classification": {
+    "subjects": [
+      "ethics",
+      "philosophy-german",
+      "b"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/4363",
+      "gutenbergId": 4363
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/4363/pg4363.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #4363. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-4363",
+  "version": "pg-4363-28312b674389-cover-218e67be6967",
+  "edition": 1,
+  "releasedAt": "2026-10-04T10:04:54Z",
+  "sourceHash": "14cb77967ba6e693666352e9a58db105d245534bd03f40c31f12e43bf0e86d21",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-4363/editions/pg-4363-28312b674389-cover-218e67be6967/beyond-good-and-evil-project-gutenberg.epub",
+      "filename": "beyond-good-and-evil-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 618945,
+      "sha256": "218e67be69675d7be752be6e9791ffed865d3013b9c6740e98a9b70fa8132a27"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "28312b674389f89fb6d38fd97f4eb7d016f1af2616f3ab21eadc6db7f928398d",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-4363-28312b674389",
+    "finalArtifactSha256": "218e67be69675d7be752be6e9791ffed865d3013b9c6740e98a9b70fa8132a27",
+    "releaseVersioning": "content-addressed"
+  }
+}

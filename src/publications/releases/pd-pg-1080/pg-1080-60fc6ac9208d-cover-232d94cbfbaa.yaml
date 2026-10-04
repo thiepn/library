@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-1080",
+  "version": "pg-1080-60fc6ac9208d-cover-232d94cbfbaa",
+  "edition": 1,
+  "releasedAt": "2026-10-04T10:04:39Z",
+  "sourceHash": "2e5b18ebb575d6cab11c1ae2613bd3d671827af7d995db23dd5794014085fe3b",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-1080/editions/pg-1080-60fc6ac9208d-cover-232d94cbfbaa/a-modest-proposal-project-gutenberg.epub",
+      "filename": "a-modest-proposal-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 454255,
+      "sha256": "232d94cbfbaa7adeeff64e9e7065e6a01b8fa08d2e20efd7b847066f440a98c0"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "60fc6ac9208d8bdb8dd63b7082b7702f31fc32d9f6920fd01150b07ceebded7d",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-1080-60fc6ac9208d",
+    "finalArtifactSha256": "232d94cbfbaa7adeeff64e9e7065e6a01b8fa08d2e20efd7b847066f440a98c0",
+    "releaseVersioning": "content-addressed"
+  }
+}

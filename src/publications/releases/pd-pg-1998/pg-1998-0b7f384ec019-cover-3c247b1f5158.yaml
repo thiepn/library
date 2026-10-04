@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-1998",
+  "version": "pg-1998-0b7f384ec019-cover-3c247b1f5158",
+  "edition": 1,
+  "releasedAt": "2026-10-04T10:04:51Z",
+  "sourceHash": "f9266d3788306270ec8bf4148ef0534f5a54a43b6ea67fc13e17fef0c61be9ba",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-1998/editions/pg-1998-0b7f384ec019-cover-3c247b1f5158/thus-spake-zarathustra-a-book-for-all-and-none-project-gutenberg.epub",
+      "filename": "thus-spake-zarathustra-a-book-for-all-and-none-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 873196,
+      "sha256": "3c247b1f5158f08a69fc1998fea484cdb39a61e1918d303e2f73a39da7f4eebb"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "0b7f384ec019d4b8118e20c9ffcd200b05d7ffc16084cf89623dea9a91f14d7a",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-1998-0b7f384ec019",
+    "finalArtifactSha256": "3c247b1f5158f08a69fc1998fea484cdb39a61e1918d303e2f73a39da7f4eebb",
+    "releaseVersioning": "content-addressed"
+  }
+}

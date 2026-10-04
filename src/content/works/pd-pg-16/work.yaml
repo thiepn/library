@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-16",
+  "slug": "pd-pg-16",
+  "title": "Peter Pan : $b [Peter and Wendy]",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "J. M. (James Matthew) Barrie",
+      "role": "creator",
+      "birthYear": 1860,
+      "deathYear": 1937
+    }
+  ],
+  "description": "A public-domain edition of Peter Pan : $b [Peter and Wendy] by J. M. (James Matthew) Barrie. Project Gutenberg classifies it under Fantasy literature, Peter Pan (Fictitious character) -- Fiction, Never-Never Land (Imaginary place) -- Fiction.",
+  "shortDescription": "A public-domain edition of Peter Pan : $b [Peter and Wendy] by J. M. (James Matthew) Barrie. Project Gutenberg classifies it under Fantasy literature, Peter Pan (Fictitious char…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2008-06-25",
+    "lastUpdated": "2026-10-04",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-16-7a2c1afe1871-cover-8e5d7da91cda",
+    "activeRelease": "pg-16-7a2c1afe1871-cover-8e5d7da91cda"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-16.webp",
+    "alt": "Cover for Peter Pan : $b [Peter and Wendy] by J. M. (James Matthew) Barrie"
+  },
+  "classification": {
+    "subjects": [
+      "fantasy-literature",
+      "peter-pan-fictitious-character",
+      "never-never-land-imaginary-place",
+      "pirates",
+      "fairies"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "childrens-literature"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/16",
+      "gutenbergId": 16
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/16/pg16.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #16. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

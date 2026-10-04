@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-49008",
+  "slug": "pd-pg-49008",
+  "title": "The Works of William Shakespeare [Cambridge Edition] [Vol. 8 of 9]",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "William Shakespeare",
+      "role": "creator",
+      "birthYear": 1564,
+      "deathYear": 1616
+    },
+    {
+      "name": "William George Clark",
+      "role": "edt",
+      "birthYear": 1821,
+      "deathYear": 1878
+    },
+    {
+      "name": "William Aldis Wright",
+      "role": "edt",
+      "birthYear": 1831,
+      "deathYear": 1914
+    }
+  ],
+  "description": "A public-domain edition of The Works of William Shakespeare [Cambridge Edition] [Vol. 8 of 9] by William Shakespeare. Project Gutenberg classifies it under English drama, PR.",
+  "shortDescription": "A public-domain edition of The Works of William Shakespeare [Cambridge Edition] [Vol. 8 of 9] by William Shakespeare. Project Gutenberg classifies it under English drama, PR.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2015-05-21",
+    "lastUpdated": "2026-10-04",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-49008-8f1baa426bde-cover-2e12f29ffb50",
+    "activeRelease": "pg-49008-8f1baa426bde-cover-2e12f29ffb50"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-49008.webp",
+    "alt": "Cover for The Works of William Shakespeare [Cambridge Edition] [Vol. 8 of 9] by William Shakespeare"
+  },
+  "classification": {
+    "subjects": [
+      "english-drama",
+      "pr"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/49008",
+      "gutenbergId": 49008
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/49008/pg49008.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #49008. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

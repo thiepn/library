@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-1497",
+  "version": "pg-1497-ee25669d6f01-cover-9968cdeab52a",
+  "edition": 1,
+  "releasedAt": "2026-10-04T10:04:55Z",
+  "sourceHash": "68a1d214406f8cec9b646e0498a8f3364e7597813cb9a8aa298e781f36d2c66b",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-1497/editions/pg-1497-ee25669d6f01-cover-9968cdeab52a/the-republic-project-gutenberg.epub",
+      "filename": "the-republic-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 808722,
+      "sha256": "9968cdeab52a2759570909fbbb049e38fd9797f37bba7ae5b33f0c6d36ed0f1d"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "ee25669d6f01d3b3da12da32bd05500222fafaf29e5aec1fdc4c66a743dd621a",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-1497-ee25669d6f01",
+    "finalArtifactSha256": "9968cdeab52a2759570909fbbb049e38fd9797f37bba7ae5b33f0c6d36ed0f1d",
+    "releaseVersioning": "content-addressed"
+  }
+}
