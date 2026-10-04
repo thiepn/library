@@ -15,6 +15,7 @@ from html.parser import HTMLParser
 from typing import Any
 
 import sync as engine
+import catalog_metadata
 
 POPULARITY_URL = "https://www.gutenberg.org/browse/scores/top"
 POPULARITY_WINDOW = "last 30 days"
@@ -416,6 +417,10 @@ def main() -> int:
 
             epub_raw, epub_url = engine.download_epub(candidate)
             artifact = engine.materialize(candidate, meta, rdf_raw, epub_raw, epub_url, ledger)
+            catalog_metadata.update_work(
+                artifact["workId"],
+                gutenberg_id=gid,
+            )
             annotate_popularity(ledger, gid, popularity)
             artifact["popularityRank"] = popularity.rank
             artifact["downloadCount30d"] = popularity.downloads
