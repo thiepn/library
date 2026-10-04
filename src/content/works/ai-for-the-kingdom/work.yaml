@@ -7,7 +7,9 @@ type: book
 language: en-US
 authorship: ai-generated
 
-contributors: []
+contributors:
+  - name: Thiepn
+    role: author
 
 description: >
   Artificial intelligence is rapidly changing translation, research, teaching,
@@ -30,8 +32,8 @@ publication:
   activeRelease: 1.0.0-rc4
 
 cover:
-  src: /media/works/ai-for-the-kingdom/editions/1.0.0-rc4/ai-for-the-kingdom.webp
-  alt: Cover of AI for the Kingdom
+  src: /covers/ai-for-the-kingdom.webp
+  alt: Cover of AI for the Kingdom by Thiepn
 
 classification:
   subjects: [theology, missions, technology]
@@ -86,4 +88,4 @@ resources: []
 
 rights:
   status: copyright
-  notice: Copyright © 2026. All rights reserved.
+  notice: Copyright © 2026 Thiepn. All rights reserved.
