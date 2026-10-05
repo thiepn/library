@@ -127,9 +127,13 @@ A failed transaction inside either IndexedDB database remains natively atomic. T
 - The page states that personal files are excluded and reports how many must be re-imported.
 - The site footer links to Backup so the capability is discoverable.
 
-## Cloud-sync boundary
+## Account-sync boundary
 
-RR8 is manual portability, not account sync. Thiepn Library does not automatically upload or synchronize reading state or personal books. Any future cloud sync would need its own identity, merge, conflict, privacy, authentication, and encryption design.
+Manual backup remains independent of optional THIEPN Account sync. RR8 still defines the portable JSON format, restore validation, rollback semantics, and personal-binary boundary; the account layer reuses that validated state envelope rather than replacing it.
+
+Account sync is guest-first and opt-in per device. Signing in alone does not upload reading state. When the user explicitly enables sync, portable reading state can synchronize through the shared THIEPN Account identity with revision compare-and-swap conflict protection. Personal EPUB/PDF bytes and cover blobs remain device-local and are never included in the account snapshot.
+
+The manual backup path remains fully usable without an account and remains the explicit portable recovery/export mechanism.
 
 ## Automated acceptance
 
