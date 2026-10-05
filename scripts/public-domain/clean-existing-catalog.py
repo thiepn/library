@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 import catalog_metadata as metadata
@@ -25,20 +26,30 @@ def main() -> int:
 
     changed = 0
     failures: list[dict[str, str]] = []
-    for entry in entries:
+
+    def process(entry: dict) -> str:
         work_id = str(entry.get("workId") or "").strip()
         if not work_id:
-            continue
+            return ""
         gid = entry.get("gutenbergId")
-        try:
-            metadata.update_work(
-                work_id,
-                gutenberg_id=int(gid) if gid is not None else None,
-            )
-            changed += 1
-        except Exception as exc:
-            failures.append({"workId": work_id, "error": f"{type(exc).__name__}: {exc}"})
-            print(f"[metadata:error] {work_id}: {exc}", flush=True)
+        metadata.update_work(
+            work_id,
+            gutenberg_id=int(gid) if gid is not None else None,
+        )
+        return work_id
+
+    with ThreadPoolExecutor(max_workers=6) as pool:
+        futures = {pool.submit(process, entry): entry for entry in entries}
+        for future in as_completed(futures):
+            entry = futures[future]
+            work_id = str(entry.get("workId") or "").strip()
+            try:
+                completed = future.result()
+                if completed:
+                    changed += 1
+            except Exception as exc:
+                failures.append({"workId": work_id, "error": f"{type(exc).__name__}: {exc}"})
+                print(f"[metadata:error] {work_id}: {exc}", flush=True)
 
     print(f"CATALOG_METADATA_CLEANUP changed={changed} failures={len(failures)}", flush=True)
     if failures:
