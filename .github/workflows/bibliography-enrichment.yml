@@ -1,0 +1,68 @@
+name: Bibliography Enrichment
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/bibliography-enrichment-trigger'
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: Maximum unresolved works to enrich
+        required: false
+        default: '80'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bibliography-enrichment
+  cancel-in-progress: true
+
+jobs:
+  enrich:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - name: Checkout Library
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm and Node
+        uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2
+        with:
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+          cache: true
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate enrichment tooling
+        run: |
+          python3 -m py_compile \
+            scripts/public-domain/catalog_metadata.py \
+            scripts/public-domain/enrich-bibliography.py
+
+      - name: Resolve unresolved original publication dates
+        env:
+          LIMIT: ${{ github.event.inputs.limit || '80' }}
+        run: python3 scripts/public-domain/enrich-bibliography.py --limit "$LIMIT" --workers 4
+
+      - name: Validate complete content model
+        run: pnpm validate:content
+
+      - name: Commit verified bibliography
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/content/works
+          if git diff --cached --quiet; then
+            echo "No bibliography changes."
+            exit 0
+          fi
+          git commit -m "Library: enrich verified original publication dates"
+          git push origin HEAD:main
