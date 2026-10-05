@@ -47,6 +47,11 @@ function formatDate(value: string | Date): string {
     : new Intl.DateTimeFormat('en', { year: 'numeric', month: 'short', day: 'numeric' }).format(date);
 }
 
+function isPublicationDate(value: string | Date): boolean {
+  if (value instanceof Date) return !Number.isNaN(value.getTime());
+  return /^\d{4}(?:-\d{2}-\d{2})?$/.test(String(value));
+}
+
 function languageLabel(code: string): string {
   try { return new Intl.DisplayNames(['en'], { type: 'language' }).of(code) ?? code; }
   catch { return code; }
@@ -188,7 +193,9 @@ const primaryAction = readHref
 
       <dl class="book-detail__metadata-grid">
         <div><dt>Author</dt><dd>{authorLabel}</dd></div>
-        <div><dt>First published</dt><dd><time datetime={String(work.publication.firstPublished)}>{formatDate(work.publication.firstPublished)}</time></dd></div>
+        <div><dt>First published</dt><dd>{isPublicationDate(work.publication.firstPublished)
+          ? <time datetime={String(work.publication.firstPublished)}>{formatDate(work.publication.firstPublished)}</time>
+          : formatDate(work.publication.firstPublished)}</dd></div>
         <div><dt>Edition</dt><dd>{editionLabel}</dd></div>
         <div><dt>Last updated</dt><dd><time datetime={String(work.publication.lastUpdated)}>{formatDate(work.publication.lastUpdated)}</time></dd></div>
         <div><dt>Rights</dt><dd>{work.rights.status}</dd></div>
