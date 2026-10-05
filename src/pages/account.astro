@@ -1,0 +1,88 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import '../styles/account.css';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+<BaseLayout
+  title="Account"
+  description="Connect Thiepn Library to your THIEPN Account and synchronize private reading state across devices."
+  noindex
+>
+  <div class="page account-page">
+    <section class="section account-shell" aria-labelledby="account-title">
+      <header class="account-heading">
+        <p class="eyebrow">THIEPN Account</p>
+        <h1 id="account-title">Account & sync</h1>
+        <p data-account-summary>Checking account status…</p>
+      </header>
+
+      <div class="account-card" data-account-signed-out>
+        <h2>Keep reading without an account</h2>
+        <p>Library remains fully usable as a local-first reader. Sign in only if you want your portable reading state synchronized between devices.</p>
+        <button type="button" class="account-primary" data-account-action data-sign-in>Continue with Google</button>
+      </div>
+
+      <div class="account-card" data-account-signed-in hidden>
+        <div>
+          <p class="eyebrow">Signed in</p>
+          <h2 data-account-name>THIEPN Account</h2>
+          <p data-account-email></p>
+        </div>
+        <div class="account-actions">
+          <a href="https://account.thiepn.dev/" rel="noopener">Manage THIEPN Account</a>
+          <button type="button" data-account-action data-sign-out>Sign out on this device</button>
+        </div>
+      </div>
+
+      <section class="account-card sync-card" data-sync-panel hidden aria-labelledby="sync-title">
+        <div class="sync-card__heading">
+          <div>
+            <p class="eyebrow">Private cloud sync</p>
+            <h2 id="sync-title">Library reading state</h2>
+          </div>
+          <strong data-sync-mode>Local-only on this device</strong>
+        </div>
+
+        <p data-sync-status>Your local reading data will not be uploaded until you enable sync.</p>
+        <p class="micro" data-sync-meta>No cloud sync enabled.</p>
+
+        <div class="account-actions">
+          <button type="button" class="account-primary" data-account-action data-sync-enable>Sync this device</button>
+          <div data-sync-enabled-actions hidden>
+            <button type="button" class="account-primary" data-account-action data-sync-now>Sync now</button>
+            <button type="button" data-account-action data-sync-pause>Pause sync</button>
+          </div>
+        </div>
+
+        <aside class="sync-conflict" data-sync-conflict hidden>
+          <h3>Choose the source of truth</h3>
+          <p>Library will never silently merge two independently changed snapshots. Choose which copy should become authoritative.</p>
+          <div class="account-actions">
+            <button type="button" class="account-primary" data-account-action data-use-device>Use this device</button>
+            <button type="button" data-account-action data-use-cloud>Use cloud</button>
+          </div>
+        </aside>
+
+        <div class="sync-boundary">
+          <h3>What sync includes</h3>
+          <p>Saved books, EPUB/PDF progress, bookmarks, highlights, notes, reading activity, reader settings, and portable personal-book metadata.</p>
+          <p><strong>Personal EPUB/PDF file bytes and local cover blobs are never uploaded.</strong></p>
+        </div>
+
+        <div class="danger-zone">
+          <h3>Cloud copy</h3>
+          <p>Deleting the cloud copy does not delete anything stored locally in this browser.</p>
+          <button type="button" data-account-action data-delete-cloud>Delete Library cloud copy</button>
+        </div>
+      </section>
+
+      <p><a href={`${base}/backup`}>Manual backup & restore</a> remains available independently of Account sync.</p>
+    </section>
+  </div>
+
+  <script>
+    import { mountLibraryAccountPage } from '../lib/account/account-dom';
+    const unmount = mountLibraryAccountPage();
+    window.addEventListener('pagehide', unmount, { once: true });
+  </script>
+</BaseLayout>
