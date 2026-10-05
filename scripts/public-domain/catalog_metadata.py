@@ -341,22 +341,17 @@ def verified_first_publication_year(
     author: str,
 ) -> str:
     births = author_birth_years(work)
-    if births and min(births) < 0:
-        return "Ancient work"
-    if not isinstance(bibliographic, dict):
-        return "Not verified"
-
-    years = [
-        year
-        for year in (bibliographic.get("_matched_years") or [])
-        if isinstance(year, int) and 1000 <= year <= date.today().year
-    ]
-    if not years:
-        first = bibliographic.get("first_publish_year")
-        if isinstance(first, int) and 1000 <= first <= date.today().year:
-            years = [first]
-    if not years:
-        return "Not verified"
+    years: list[int] = []
+    if isinstance(bibliographic, dict):
+        years = [
+            year
+            for year in (bibliographic.get("_matched_years") or [])
+            if isinstance(year, int) and 1000 <= year <= date.today().year
+        ]
+        if not years:
+            first = bibliographic.get("first_publish_year")
+            if isinstance(first, int) and 1000 <= first <= date.today().year:
+                years = [first]
 
     death_years = author_death_years(work)
     if death_years:
@@ -372,11 +367,12 @@ def verified_first_publication_year(
     if wikidata_label:
         if re.fullmatch(r"\d{4}", wikidata_label):
             year = int(wikidata_label)
-            death_years = author_death_years(work)
             if death_years and year > max(death_years) + 20:
                 return "Not verified"
         return wikidata_label
 
+    if births and min(births) < 0:
+        return "Ancient work"
     return "Not verified"
 
 
