@@ -28,7 +28,7 @@ ROLE_MAP = {
 }
 
 
-def request_json(url: str, *, timeout: int = 45) -> Any:
+def request_json(url: str, *, timeout: int = 20) -> Any:
     req = urllib.request.Request(
         url,
         headers={
@@ -38,13 +38,13 @@ def request_json(url: str, *, timeout: int = 45) -> Any:
         },
     )
     last: Exception | None = None
-    for attempt in range(4):
+    for attempt in range(3):
         try:
             with urllib.request.urlopen(req, timeout=timeout) as response:
                 return json.loads(response.read().decode("utf-8"))
         except Exception as exc:
             last = exc
-            if attempt == 3:
+            if attempt == 2:
                 raise
             time.sleep(1.5 * (attempt + 1))
     raise RuntimeError(f"request failed: {last}")
@@ -116,7 +116,7 @@ def openlibrary_match(title: str, author: str) -> dict[str, Any] | None:
             "title": title,
             "author": author,
             "fields": "key,title,author_name,first_publish_year",
-            "limit": "24",
+            "limit": "12",
         }
     )
     payload = request_json(f"https://openlibrary.org/search.json?{params}")
@@ -436,11 +436,17 @@ def update_work(
     )
 
     description = ""
-    if gutenberg_id is not None:
-        description = gutendex_summary(gutenberg_id) or ""
     current = clean_public_description(str(work.get("description") or ""))
-    if not description and current and "public-domain edition of" not in current.casefold():
+    current_generic = (
+        not current
+        or "public-domain edition of" in current.casefold()
+        or "sourced from" in current.casefold()
+        or "the source edition classifies" in current.casefold()
+    )
+    if current and not current_generic:
         description = current
+    elif gutenberg_id is not None:
+        description = gutendex_summary(gutenberg_id) or ""
     if not description:
         subject_labels = [
             str(item).replace("-", " ")
