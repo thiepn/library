@@ -15,7 +15,7 @@ const contentSecurityPolicy = [
   "font-src 'self' https://fonts.gstatic.com",
   "img-src 'self' data: blob: https://media.library.thiepn.dev",
   "media-src 'self' data: blob: https://media.library.thiepn.dev",
-  "connect-src 'self' https://media.library.thiepn.dev",
+  "connect-src 'self' https://media.library.thiepn.dev https://hycegznamzjhwinegaai.supabase.co",
   "frame-src 'self' blob:",
   "worker-src 'self' blob:",
   "form-action 'self'",
@@ -62,6 +62,7 @@ const contentSecurityPolicy = [
         <a href={href('/saved')}>My Library</a>
         <a href={href('/downloads')}>Offline</a>
         <a href={href('/search')}>Search</a>
+        <a href={href('/account')}>Account</a>
         <a href={href('/about')}>About</a>
       </nav>
       <button class="appearance-toggle" type="button" data-appearance-toggle aria-label="Change appearance">Theme</button>
@@ -87,6 +88,25 @@ const contentSecurityPolicy = [
       import { mountReadingActivityLibraryState } from '../lib/reading-activity/library-dom';
       const unmountReadingActivityLibraryState = mountReadingActivityLibraryState();
       window.addEventListener('pagehide', unmountReadingActivityLibraryState, { once: true });
+    </script>
+    <script>
+      const accountSessionKeyPrefix = 'sb-hycegznamzjhwinegaai-auth-token';
+      const accountSyncKey = 'thiepn.library.account-sync.v1';
+      let shouldStartAccountRuntime = false;
+      try {
+        const hasSession = Object.keys(localStorage).some((key) => key.startsWith(accountSessionKeyPrefix));
+        const syncState = JSON.parse(localStorage.getItem(accountSyncKey) ?? 'null') as { enabled?: boolean } | null;
+        shouldStartAccountRuntime = hasSession || syncState?.enabled === true;
+      } catch {
+        shouldStartAccountRuntime = false;
+      }
+      const normalizedPath = window.location.pathname.replace(/\/$/, '');
+      if (shouldStartAccountRuntime && !normalizedPath.endsWith('/account')) {
+        void import('../lib/account/runtime').then(({ mountLibraryAccountRuntime }) => {
+          const unmount = mountLibraryAccountRuntime();
+          window.addEventListener('pagehide', unmount, { once: true });
+        });
+      }
     </script>
     <script>
       type Appearance = 'system' | 'light' | 'dark';

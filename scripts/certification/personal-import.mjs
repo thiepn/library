@@ -145,7 +145,7 @@ if (present) {
   pass(
     'PERSONAL_IMPORT_ER2_PRIVACY_COPY',
     privacy.includes('stored locally in this browser’s IndexedDB storage')
-      && privacy.includes('The personal book is not uploaded to Thiepn Library')
+      && privacy.includes('Personal EPUB/PDF file bytes and local cover blobs are not uploaded by Account sync')
       && privacy.includes('do not contain the bytes of your personal EPUB/PDF files')
       && privacy.includes('Clearing browser site data, browser storage eviction, device loss, or browser-profile removal can delete local state and personal imports'),
     'Privacy documentation explains local inspection/storage, no upload, backup byte exclusion, and browser/device data-loss boundaries',
