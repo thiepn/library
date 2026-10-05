@@ -22,6 +22,8 @@ Signing in does not upload reading data by itself.
 
 Pausing sync or signing out never deletes browser-local data. Disconnecting Library from THIEPN Account revokes its cloud read/write data path; reconnecting requires an explicit **Sync this device** action.
 
+Cloud-data deletion is owned by THIEPN Account rather than a second Library-specific deletion authority. Account shows the Library namespace in its data inventory, creates an expiring deletion plan, requires recent authentication, and deletes only when the planned cloud revision still matches. After deletion, a stale Library device with an earlier baseline sees the missing cloud snapshot as a conflict instead of silently recreating it.
+
 ## Synced state
 
 The cloud snapshot reuses Library's validated backup/restore contract:
@@ -52,6 +54,6 @@ Reconciliation rules:
 
 ## Security
 
-`public.library_sync_state` has RLS enabled. Authenticated users can select only their own row and only while the Library Account connection and read grant are active. Anonymous identities and delegated OAuth clients are denied raw state access. Mutations occur only through an owner-scoped revision-CAS RPC deriving the user from `auth.uid()` and checking the Library connection plus write grant.
+`public.library_sync_state` has RLS enabled. Authenticated users can select only their own row and only while the Library Account connection and read grant are active. Anonymous identities and delegated OAuth clients are denied raw state access. Sync mutations occur only through an owner-scoped revision-CAS RPC deriving the user from `auth.uid()` and checking the Library connection plus write grant. Destructive cloud-data deletion is routed through the audited THIEPN Account lifecycle and requires a recent authenticated session.
 
 The browser contains only the Supabase publishable key. No service-role or secret key is shipped.
