@@ -138,10 +138,59 @@ CRITICAL: artwork only. Absolutely no words, letters, numbers, pseudo-writing, s
 """
 
 
-def generate_art(prompt: str) -> bytes:
-    api_key = os.getenv("OPENAI_API_KEY", "").strip()
-    if not api_key:
-        raise RuntimeError("OPENAI_API_KEY is required for AI cover generation")
+def _safe_retry_prompt(prompt: str) -> str:
+    categories = ""
+    match = re.search(r"Catalog categories:\s*(.+)", prompt)
+    if match:
+        categories = match.group(1).strip()
+    return f"""Create artwork for a premium classic-literature book cover.
+
+Catalog context: {categories or "classic literature"}
+
+Use an abstract, symbolic editorial concept appropriate to a serious literary classic. Prefer architecture, landscape, still-life objects, paper ephemera, botanical motifs, geometric forms, or period printmaking textures. Avoid depicting people, bodies, sensuality, romance, nudity, gore, weapons, or disturbing imagery.
+
+Composition requirements:
+- portrait 2:3 book-cover artwork
+- full bleed
+- one dominant symbolic motif
+- sophisticated independent literary-press aesthetic
+- restrained detail and strong thumbnail readability
+- keep the lower 38% relatively calm and darker for deterministic typography
+
+CRITICAL: artwork only. No words, letters, numbers, pseudo-writing, signatures, captions, logos, title, or author name.
+"""
+
+
+def _deterministic_fallback_art(prompt: str) -> bytes:
+    digest = hashlib.sha256(prompt.encode("utf-8")).digest()
+    width, height = 1024, 1536
+    base = Image.new("RGB", (width, height), (26 + digest[0] % 28, 27 + digest[1] % 26, 29 + digest[2] % 24))
+    draw = ImageDraw.Draw(base, "RGBA")
+
+    for index in range(14):
+        seed = digest[index % len(digest)]
+        seed2 = digest[(index + 7) % len(digest)]
+        x0 = int((seed / 255) * width) - 220
+        y0 = int((seed2 / 255) * height) - 220
+        size = 160 + digest[(index + 13) % len(digest)] * 3
+        alpha = 18 + digest[(index + 19) % len(digest)] % 42
+        if index % 3 == 0:
+            draw.ellipse((x0, y0, x0 + size, y0 + size), outline=(235, 227, 205, alpha), width=3)
+        elif index % 3 == 1:
+            draw.rectangle((x0, y0, x0 + size, y0 + int(size * 0.7)), outline=(235, 227, 205, alpha), width=3)
+        else:
+            draw.line((x0, y0, x0 + size, y0 + size), fill=(235, 227, 205, alpha), width=4)
+
+    for y in range(height):
+        alpha = int(8 + 100 * (y / max(1, height - 1)) ** 1.7)
+        draw.line((0, y, width, y), fill=(0, 0, 0, alpha))
+
+    output = io.BytesIO()
+    base.save(output, format="PNG", optimize=True)
+    return output.getvalue()
+
+
+def _generate_art_once(prompt: str, api_key: str) -> bytes:
     payload = json.dumps(
         {
             "model": COVER_MODEL,
@@ -160,18 +209,36 @@ def generate_art(prompt: str) -> bytes:
             "User-Agent": USER_AGENT,
         },
     )
+    with urllib.request.urlopen(request, timeout=240) as response:
+        data = json.loads(response.read().decode("utf-8"))
+    encoded = (((data.get("data") or [{}])[0]).get("b64_json") or "").strip()
+    if not encoded:
+        raise RuntimeError(f"Image API returned no b64_json payload: {data}")
+    return base64.b64decode(encoded)
+
+
+def generate_art(prompt: str) -> bytes:
+    api_key = os.getenv("OPENAI_API_KEY", "").strip()
+    if not api_key:
+        raise RuntimeError("OPENAI_API_KEY is required for AI cover generation")
     last_error: Exception | None = None
     for attempt in range(5):
         try:
-            with urllib.request.urlopen(request, timeout=240) as response:
-                data = json.loads(response.read().decode("utf-8"))
-            encoded = (((data.get("data") or [{}])[0]).get("b64_json") or "").strip()
-            if not encoded:
-                raise RuntimeError(f"Image API returned no b64_json payload: {data}")
-            return base64.b64decode(encoded)
+            return _generate_art_once(prompt, api_key)
         except urllib.error.HTTPError as exc:
             body = exc.read().decode("utf-8", errors="replace")
             last_error = RuntimeError(f"OpenAI image generation failed with HTTP {exc.code}: {body[:800]}")
+            safety_rejection = exc.code == 400 and (
+                "safety" in body.casefold() or "image_generation_user_error" in body.casefold()
+            )
+            if safety_rejection:
+                safe_prompt = _safe_retry_prompt(prompt)
+                print("[cover] primary prompt rejected by image safety; retrying with safe symbolic prompt", flush=True)
+                try:
+                    return _generate_art_once(safe_prompt, api_key)
+                except Exception as safe_exc:
+                    print(f"[cover] safe image retry failed; using deterministic artwork: {safe_exc}", flush=True)
+                    return _deterministic_fallback_art(prompt)
             if exc.code not in {429, 500, 502, 503, 504} or attempt == 4:
                 raise last_error
         except (urllib.error.URLError, TimeoutError, RuntimeError, ValueError) as exc:
@@ -584,7 +651,7 @@ def process_backfill(*, limit: int, force: bool) -> int:
         refreshed_work["publication"]["lastUpdated"] = date.today().isoformat()
         refreshed_work["publication"]["version"] = new_version
         refreshed_work["publication"]["activeRelease"] = new_version
-        refreshed_work["publication"]["editionLabel"] = "THIEPN Library public-domain edition (Project Gutenberg source)"
+        refreshed_work["publication"]["editionLabel"] = "THIEPN Library Edition"
         dump_json(work_path(work_id), refreshed_work)
 
         stage_dir = BACKFILL_STAGING_ROOT / work_id
