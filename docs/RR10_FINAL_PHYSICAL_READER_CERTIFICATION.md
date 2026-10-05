@@ -6,20 +6,22 @@ RR10 is the final reader release phase. No broad reader feature work belongs her
 
 ## Current baseline
 
-- RR10 Stage A is merged on `main` as source `b4789ace73b0c3dd5cf6b435f0692f3ea9273ea2`.
-- Deploy Library run `33409963085` production-certified that source through staged Browser Acceptance, RR4 performance, RR5 offline/PWA, RR6 accessibility, RR7 ergonomics, RR8 durability, RR9 security, GitHub Pages deployment, and live custom-domain/source-artifact verification.
-- Physical-device evidence remains **0/12**.
-- `main` remains unprotected and therefore cannot yet receive the final source-freeze merge.
-- `rr10-v1-source-freeze` prepares package/changelog metadata as `1.0.0`; this is pre-tag release preparation, not a final release claim.
+- The previous RR10 source freeze is obsolete because application source changed after that candidate, including THIEPN Account synchronization and subsequent production fixes.
+- The latest production-verified Account-enabled baseline before this P0 hardening phase is `b4cbd8970e083f84f3cea9d76136b43cb95f6d5b`, certified by Deploy Library run `37298496036`.
+- That deployment passed release certification, immutable R2 media staging, browser acceptance, RR4 performance, RR5 offline/PWA, RR6 accessibility, RR7 ergonomics, RR8 durability, RR9 security, GitHub Pages deployment, and live production verification.
+- Physical-device evidence remains **0/12**; therefore no genuine physical evidence is being discarded by this rebaseline.
+- `main` remains unprotected, so a new final RR10 source SHA must not be frozen for physical certification yet.
+- P0 Release & Account Hardening adds fail-closed THIEPN Account production configuration and live auth-readiness verification. Its eventual merged, production-verified source becomes the next eligible release candidate only after branch protection is enabled.
+- Package/changelog version `1.0.0` remains pre-tag preparation; it is not a claim that RR10 physical certification or final release is complete.
 - Issue #36 remains the physical-device release blocker and RR10 execution checklist.
-- The final release gate uses two immutable identities: the tested application source SHA and a descendant physical-evidence commit SHA containing record-only changes.
+- The final release gate continues to use two immutable identities: the tested application source SHA and a descendant physical-evidence commit SHA containing record-only changes.
 
 ## RR10 progress
 
-- **Stage A — complete:** release/evidence architecture merged and production-verified.
+- **Stage A — complete and rebaselined:** release/evidence architecture is merged; the Account-enabled production baseline is verified and P0 hardening is in progress.
 - **Stage B — blocked:** enable GitHub protection on `main`.
-- **Stage C — prepared:** final `1.0.0` metadata branch exists; do not merge it until Stage B is satisfied.
-- **Stages D–K — pending:** exact source freeze, evidence branch, 12-device campaign, exact evidence certification, and final tag.
+- **Stage C — must be re-frozen:** after P0 is merged, production-verified, and Stage B is satisfied, freeze the exact current `main` SHA as the new `expected_source_sha`.
+- **Stages D–K — pending:** exact source freeze, evidence branch reset to that source, 12-device campaign, exact evidence certification, and final tag.
 
 ## RR10 invariants
 
@@ -46,7 +48,7 @@ Before freezing the source:
 
 Exit: one clean `main` commit exists with the final release-gate architecture and no known automated reader regression.
 
-**Status: complete.** Source `b4789ace73b0c3dd5cf6b435f0692f3ea9273ea2` passed the complete production pipeline in run `33409963085`.
+**Status: complete, then superseded by later product work.** The latest Account-enabled baseline before P0 is `b4cbd8970e083f84f3cea9d76136b43cb95f6d5b`, production-verified in run `37298496036`. A final RR10 source freeze must be created again after P0 hardening and protected-main configuration.
 
 ## Stage B — Protect main
 
@@ -79,7 +81,7 @@ On protected `main`:
 6. Verify `/library/release-identity.json` equals the exact source SHA.
 7. Freeze that SHA as `expected_source_sha`.
 
-The metadata portion is prepared on `rr10-v1-source-freeze`. That branch may be tested before Stage B completes, but it must not be merged to `main` until branch protection is active. The exact merge commit—not the preparation branch head—becomes eligible for production verification and final source freeze.
+Earlier source-freeze preparation predates the Account-enabled baseline and must not be reused as final evidence. After Stage B is satisfied, prepare the final source from current `main`; the exact protected-main commit—not any historical preparation branch head—becomes eligible for production verification and final source freeze.
 
 After freeze, do not modify application source unless a physical-device defect requires a fix. If a fix is required, produce a new source SHA, redeploy/reverify it, and restart final physical certification against the new SHA.
 
