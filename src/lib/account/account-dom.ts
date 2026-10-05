@@ -9,7 +9,6 @@ import {
 import {
   chooseCloudForLibrarySync,
   chooseThisDeviceForLibrarySync,
-  deleteLibraryCloudCopy,
   enableLibraryAccountSync,
   isLibrarySyncEnabledForUser,
   pauseLibrarySync,
@@ -145,14 +144,6 @@ export function mountLibraryAccountPage(): () => void {
   });
   document.querySelector('[data-use-device]')?.addEventListener('click', () => void act(chooseThisDeviceForLibrarySync));
   document.querySelector('[data-use-cloud]')?.addEventListener('click', () => void act(chooseCloudForLibrarySync));
-  document.querySelector('[data-delete-cloud]')?.addEventListener('click', () => {
-    if (!user) return;
-    const confirmed = window.confirm(
-      'Delete your Library cloud copy? Local reading data and personal book files on this device will remain.',
-    );
-    if (confirmed) void act(deleteLibraryCloudCopy);
-  });
-
   const onSync = (event: Event) => {
     const detail = (event as CustomEvent<LibrarySyncResult>).detail;
     if (detail) renderResult(detail);
