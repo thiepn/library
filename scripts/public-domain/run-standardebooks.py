@@ -33,6 +33,22 @@ STANDARD_EBOOKS = "https://standardebooks.org"
 USER_AGENT = "THIEPN-Library-StandardEbooks/1.0 (+https://thiepn.dev/library/)"
 COPYRIGHT_CUTOFF_YEAR = 1955
 
+# Canonical detail-page hints for important works whose public display title,
+# translator-specific edition slug, or original-language title prevents reliable
+# discovery through the Standard Ebooks search UI. Hints are still subjected to
+# EPUB contributor parsing and the same German rights gate as discovered works.
+SOURCE_HINTS: dict[tuple[str, str], str] = {
+    ("the hunchback of notre dame", "hugo"): "https://standardebooks.org/ebooks/victor-hugo/notre-dame-de-paris/isabel-f-hapgood",
+    ("to the lighthouse", "woolf"): "https://standardebooks.org/ebooks/virginia-woolf/to-the-lighthouse",
+    ("orlando", "woolf"): "https://standardebooks.org/ebooks/virginia-woolf/orlando",
+    ("the portrait of a lady", "james"): "https://standardebooks.org/ebooks/henry-james/the-portrait-of-a-lady",
+    ("notes from underground", "dostoevsky"): "https://standardebooks.org/ebooks/fyodor-dostoevsky/notes-from-underground/constance-garnett",
+    ("the idiot", "dostoevsky"): "https://standardebooks.org/ebooks/fyodor-dostoevsky/the-idiot/eva-m-martin",
+    ("demons", "dostoevsky"): "https://standardebooks.org/ebooks/fyodor-dostoevsky/demons/constance-garnett",
+    ("the cherry orchard", "chekhov"): "https://standardebooks.org/ebooks/anton-chekhov/the-cherry-orchard/constance-garnett",
+    ("on the origin of species", "darwin"): "https://standardebooks.org/ebooks/charles-darwin/the-origin-of-species",
+}
+
 CREATIVE_ROLES = {"author", "creator", "aut", "translator", "trl", "illustrator", "ill", "editor", "edt"}
 ROLE_MAP = {
     "aut": "author",
@@ -199,6 +215,14 @@ def title_score(wanted: str, candidate: str, href: str) -> float:
 
 
 def discover_detail_page(item: CanonItem) -> tuple[str, str] | None:
+    hinted = SOURCE_HINTS.get((normalize(item.title), primary_surname(item.author)))
+    if hinted:
+        try:
+            request_text(hinted, timeout=45)
+            return hinted, "standard-ebooks-explicit-hint"
+        except Exception:
+            pass
+
     query = urllib.parse.urlencode(
         {
             "query": f"{item.title} {item.author}",
