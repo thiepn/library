@@ -295,8 +295,8 @@ export async function reconcileLibraryAccountSync(user: User): Promise<LibrarySy
         : undefined;
 
     const decision = decideLibrarySync({
-      baseline,
-      cloud: cloud && cloudHash ? { revision: cloud.revision, hash: cloudHash } : undefined,
+      ...(baseline ? { baseline } : {}),
+      ...(cloud && cloudHash ? { cloud: { revision: cloud.revision, hash: cloudHash } } : {}),
       localHash,
       localMeaningful: backupHasMeaningfulLibraryState(local),
     });
