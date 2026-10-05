@@ -339,6 +339,7 @@ def verified_first_publication_year(
     *,
     title: str,
     author: str,
+    deep_bibliography: bool = False,
 ) -> str:
     births = author_birth_years(work)
     years: list[int] = []
@@ -360,16 +361,17 @@ def verified_first_publication_year(
     if years:
         return str(min(years))
 
-    try:
-        wikidata_label = wikidata_publication_label(title, author)
-    except Exception:
-        wikidata_label = None
-    if wikidata_label:
-        if re.fullmatch(r"\d{4}", wikidata_label):
-            year = int(wikidata_label)
-            if death_years and year > max(death_years) + 20:
-                return "Not verified"
-        return wikidata_label
+    if deep_bibliography:
+        try:
+            wikidata_label = wikidata_publication_label(title, author)
+        except Exception:
+            wikidata_label = None
+        if wikidata_label:
+            if re.fullmatch(r"\d{4}", wikidata_label):
+                year = int(wikidata_label)
+                if death_years and year > max(death_years) + 20:
+                    return "Not verified"
+            return wikidata_label
 
     if births and min(births) < 0:
         return "Ancient work"
@@ -383,6 +385,7 @@ def update_work(
     preferred_title: str | None = None,
     preferred_author: str | None = None,
     collections: list[str] | None = None,
+    deep_bibliography: bool = False,
 ) -> dict[str, Any]:
     path = WORKS_ROOT / work_id / "work.yaml"
     work = json.loads(path.read_text(encoding="utf-8"))
@@ -429,6 +432,7 @@ def update_work(
         bibliographic,
         title=title,
         author=author,
+        deep_bibliography=deep_bibliography,
     )
 
     description = ""
