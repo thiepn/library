@@ -1,5 +1,5 @@
-run: 2026-10-05-r4
+run: 2026-10-05-r5
 mode: full-catalog-overhaul
 catalog: src/publications/curated-canon.tsv
 checkpointed: true
-metadata-policy: verified-or-unverified
+metadata-policy: fast-verified-or-unverified
