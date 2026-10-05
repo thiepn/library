@@ -7,12 +7,18 @@ const origin = 'https://thiepn.dev/library';
 const worksRoot = path.join(process.cwd(), 'src/content/works');
 const releasesRoot = path.join(process.cwd(), 'src/publications/releases');
 const expectedSourceSha = process.env.EXPECTED_SOURCE_SHA ?? process.env.GITHUB_SHA ?? '';
+const accountPublishableKey = process.env.PUBLIC_THIEPN_ACCOUNT_PUBLISHABLE_KEY ?? '';
+const accountProjectUrl = 'https://hycegznamzjhwinegaai.supabase.co';
 
-async function fetchResponse(url) {
+if (!accountPublishableKey.trim()) {
+  throw new Error('THIEPN Account publishable key is missing from production verification');
+}
+
+async function fetchResponse(url, init = {}) {
   let last;
   for (let attempt = 1; attempt <= 8; attempt++) {
     try {
-      const response = await fetch(url, { redirect: 'follow', cache: 'no-store' });
+      const response = await fetch(url, { redirect: 'follow', cache: 'no-store', ...init });
       if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
       return response;
     } catch (error) {
@@ -80,6 +86,23 @@ console.log(headerCsp ? 'LIVE_SECURITY CSP_HEADER_PRESENT' : 'LIVE_SECURITY CSP_
 for (const route of ['search', 'subjects', 'collections', 'privacy', 'security', 'support', 'backup']) {
   await requireRoute(`${origin}/${route}/`);
 }
+
+const account = (await requireRoute(`${origin}/account/`)).toString('utf8');
+if (!account.includes('THIEPN Account') || !account.includes('Sync this device')) {
+  throw new Error('Production THIEPN Account page is missing its sign-in/sync contract');
+}
+
+const authSettingsResponse = await fetchResponse(`${accountProjectUrl}/auth/v1/settings`, {
+  headers: { apikey: accountPublishableKey },
+});
+const authSettings = await authSettingsResponse.json();
+if (!authSettings || typeof authSettings !== 'object' || typeof authSettings.external !== 'object') {
+  throw new Error('THIEPN Account auth settings response is invalid');
+}
+if (authSettings.external.google !== true) {
+  throw new Error('THIEPN Account Google OAuth is not enabled');
+}
+console.log('LIVE_ACCOUNT THIEPN_ACCOUNT_AUTH_READY');
 const downloads = (await requireRoute(`${origin}/downloads/`)).toString('utf8');
 if (!downloads.includes('Offline downloads') || !downloads.includes('data-offline-library')) {
   throw new Error('Production RR5 offline-download manager mismatch');
