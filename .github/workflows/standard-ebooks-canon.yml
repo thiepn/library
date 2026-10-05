@@ -79,6 +79,7 @@ jobs:
             src/content/works \
             src/publications/releases \
             src/publications/public-domain-ledger.json \
+            src/publications/curated-canon-status.json \
             public/covers/public-domain
           if ! git diff --cached --quiet; then
             git commit -m "Standard Ebooks checkpoint: stage curated public-domain works"
@@ -154,6 +155,9 @@ jobs:
       - name: Finalize immutable release versions
         if: env.ADDED_COUNT != '0'
         run: python3 scripts/public-domain/finalize-cover-release.py --mode new
+
+      - name: Audit curated canon coverage
+        run: python3 scripts/public-domain/audit-canon.py
 
       - name: Certify Library
         run: pnpm release:certify
