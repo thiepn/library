@@ -5,6 +5,7 @@ import argparse
 import csv
 import hashlib
 import html
+from functools import lru_cache
 import io
 import json
 import re
@@ -144,6 +145,11 @@ def load_catalog() -> list[CanonItem]:
     return result
 
 
+def primary_surname(value: str) -> str:
+    primary = re.split(r",|\band\b", value, maxsplit=1, flags=re.I)[0].strip()
+    return catalog_metadata.author_surname(primary)
+
+
 def existing_keys() -> set[str]:
     result: set[str] = set()
     for path in engine.WORKS_ROOT.glob("*/work.yaml"):
@@ -154,12 +160,12 @@ def existing_keys() -> set[str]:
         title = normalize(str(work.get("title") or ""))
         authors = catalog_metadata.author_names(work)
         if title and authors:
-            result.add(f"{title}::{normalize(authors[0])}")
+            result.add(f"{title}::{primary_surname(authors[0])}")
     return result
 
 
 def item_key(item: CanonItem) -> str:
-    return f"{normalize(item.title)}::{normalize(item.author.split(',')[0])}"
+    return f"{normalize(item.title)}::{primary_surname(item.author)}"
 
 
 def author_slug_score(wanted: str, href: str) -> float:
@@ -315,6 +321,7 @@ def parse_epub_metadata(epub_raw: bytes) -> dict[str, Any]:
     }
 
 
+@lru_cache(maxsize=512)
 def wikidata_person_lifespan(name: str) -> tuple[int | None, int | None]:
     if normalize(name) in {"anonymous", "various"}:
         return None, -1000
