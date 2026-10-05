@@ -1,4 +1,5 @@
-run: 2026-10-04-r3
+run: 2026-10-05-r4
 mode: full-catalog-overhaul
 catalog: src/publications/curated-canon.tsv
-storefront-author-pass: complete
+checkpointed: true
+metadata-policy: verified-or-unverified
