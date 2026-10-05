@@ -403,7 +403,7 @@ def update_work(
     title = str(work.get("title") or "").strip()
 
     bibliographic = None
-    if title and author:
+    if deep_bibliography and title and author:
         try:
             bibliographic = openlibrary_match(title, author)
         except Exception as exc:
@@ -445,7 +445,7 @@ def update_work(
     )
     if current and not current_generic:
         description = current
-    elif gutenberg_id is not None:
+    elif deep_bibliography and gutenberg_id is not None:
         description = gutendex_summary(gutenberg_id) or ""
     if not description:
         subject_labels = [
