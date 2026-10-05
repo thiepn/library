@@ -116,7 +116,7 @@ def openlibrary_match(title: str, author: str) -> dict[str, Any] | None:
             "title": title,
             "author": author,
             "fields": "key,title,author_name,first_publish_year",
-            "limit": "8",
+            "limit": "24",
         }
     )
     payload = request_json(f"https://openlibrary.org/search.json?{params}")
@@ -127,6 +127,7 @@ def openlibrary_match(title: str, author: str) -> dict[str, Any] | None:
     want_title = normalize(title)
     want_surname = author_surname(author)
     best: tuple[float, dict[str, Any]] | None = None
+    matched_years: list[int] = []
     for doc in docs:
         if not isinstance(doc, dict):
             continue
@@ -146,11 +147,17 @@ def openlibrary_match(title: str, author: str) -> dict[str, Any] | None:
         if want_surname and any(want_surname == author_surname(name) for name in authors):
             author_score = 1.0
         score = 0.78 * title_score + 0.22 * author_score
+        first_year = doc.get("first_publish_year")
+        if title_score >= 0.90 and author_score == 1.0 and isinstance(first_year, int):
+            matched_years.append(first_year)
         if best is None or score > best[0]:
             best = (score, doc)
     if best is None or best[0] < 0.72:
         return None
-    return best[1]
+    result = dict(best[1])
+    result["_matched_years"] = sorted(set(matched_years))
+    result["_match_score"] = best[0]
+    return result
 
 
 def gutendex_summary(gutenberg_id: int) -> str | None:
@@ -174,6 +181,59 @@ def clean_public_description(text: str) -> str:
     value = re.sub(r"\bProject Gutenberg(?:-tm)?\b", "the source edition", value, flags=re.I)
     value = re.sub(r"\bGutenberg\b", "the source edition", value, flags=re.I)
     return value
+
+
+def author_death_years(work: dict[str, Any]) -> list[int]:
+    years: list[int] = []
+    for contributor in work.get("contributors") or []:
+        if not isinstance(contributor, dict):
+            continue
+        role = ROLE_MAP.get(str(contributor.get("role") or "").casefold(), "")
+        year = contributor.get("deathYear")
+        if role == "author" and isinstance(year, int):
+            years.append(year)
+    return years
+
+
+def author_birth_years(work: dict[str, Any]) -> list[int]:
+    years: list[int] = []
+    for contributor in work.get("contributors") or []:
+        if not isinstance(contributor, dict):
+            continue
+        role = ROLE_MAP.get(str(contributor.get("role") or "").casefold(), "")
+        year = contributor.get("birthYear")
+        if role == "author" and isinstance(year, int):
+            years.append(year)
+    return years
+
+
+def verified_first_publication_year(work: dict[str, Any], bibliographic: dict[str, Any] | None) -> str:
+    births = author_birth_years(work)
+    if births and min(births) < 0:
+        return "Ancient work"
+    if not isinstance(bibliographic, dict):
+        return "Not verified"
+
+    years = [
+        year
+        for year in (bibliographic.get("_matched_years") or [])
+        if isinstance(year, int) and 1000 <= year <= date.today().year
+    ]
+    if not years:
+        first = bibliographic.get("first_publish_year")
+        if isinstance(first, int) and 1000 <= first <= date.today().year:
+            years = [first]
+    if not years:
+        return "Not verified"
+
+    death_years = author_death_years(work)
+    if death_years:
+        latest_plausible = max(death_years) + 20
+        years = [year for year in years if year <= latest_plausible]
+    if not years:
+        return "Not verified"
+
+    return str(min(years))
 
 
 def update_work(
@@ -224,9 +284,7 @@ def update_work(
                 normalize_contributors(work, canonical_authors[0])
                 author = canonical_authors[0]
 
-    first_year = bibliographic.get("first_publish_year") if isinstance(bibliographic, dict) else None
-    if isinstance(first_year, int) and -4000 < first_year <= date.today().year:
-        work.setdefault("publication", {})["firstPublished"] = str(first_year)
+    work.setdefault("publication", {})["firstPublished"] = verified_first_publication_year(work, bibliographic)
 
     description = ""
     if gutenberg_id is not None:
