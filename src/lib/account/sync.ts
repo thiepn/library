@@ -22,7 +22,6 @@ export type LibrarySyncStatus =
   | 'pulled'
   | 'conflict'
   | 'offline'
-  | 'deleted'
   | 'error';
 
 export interface LibrarySyncResult {
@@ -360,32 +359,6 @@ export async function chooseCloudForLibrarySync(user: User): Promise<LibrarySync
       return result;
     }
     return await applyCloud(user.id, cloud);
-  } catch (error) {
-    const result: LibrarySyncResult = { status: 'error', message: describeError(error) };
-    emitSync(result);
-    return result;
-  }
-}
-
-export async function deleteLibraryCloudCopy(user: User): Promise<LibrarySyncResult> {
-  try {
-    const { error } = await getThiepnAccountClient().rpc('delete_thiepn_library_state');
-    if (error) throw error;
-
-    const current = metaForUser(user.id);
-    writeLibrarySyncMeta({
-      schemaVersion: 1,
-      userId: user.id,
-      enabled: false,
-      deviceId: current.deviceId,
-    });
-
-    const result: LibrarySyncResult = {
-      status: 'deleted',
-      message: 'Your Library cloud copy was deleted. Local reading data remains on this device.',
-    };
-    emitSync(result);
-    return result;
   } catch (error) {
     const result: LibrarySyncResult = { status: 'error', message: describeError(error) };
     emitSync(result);
