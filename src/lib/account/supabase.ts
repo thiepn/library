@@ -2,13 +2,20 @@ import { createClient, type SupabaseClient, type User } from '@supabase/supabase
 
 export const THIEPN_ACCOUNT_PROJECT_REF = 'hycegznamzjhwinegaai';
 export const THIEPN_ACCOUNT_URL = 'https://hycegznamzjhwinegaai.supabase.co';
-export const THIEPN_ACCOUNT_PUBLISHABLE_KEY = 'sb_publishable_1rZzRPzfLMaAH5pIgCwIjA_19UPMIsR';
 
 let client: SupabaseClient | undefined;
 
+function configuredPublishableKey(): string {
+  const key = import.meta.env.PUBLIC_THIEPN_ACCOUNT_PUBLISHABLE_KEY as string | undefined;
+  if (!key) {
+    throw new Error('THIEPN Account sync is not configured for this Library build.');
+  }
+  return key;
+}
+
 export function getThiepnAccountClient(): SupabaseClient {
   if (client) return client;
-  client = createClient(THIEPN_ACCOUNT_URL, THIEPN_ACCOUNT_PUBLISHABLE_KEY, {
+  client = createClient(THIEPN_ACCOUNT_URL, configuredPublishableKey(), {
     auth: {
       flowType: 'pkce',
       persistSession: true,
