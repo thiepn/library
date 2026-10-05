@@ -150,10 +150,12 @@ if (present) {
       && pagesIndex > durabilityIndex,
     'Production Pages upload is gated on RR8 after RR7 and records the durability outcome');
 
-  pass('RR8_NO_CLOUD_SYNC_PRETENSE',
-    doc.includes('manual portability, not account sync')
-      && page.includes('does not automatically sync your reading data or personal books'),
-    'RR8 documents manual local portability without implying automatic cloud sync');
+  pass('RR8_ACCOUNT_SYNC_SEPARATION',
+    doc.includes('Manual backup remains independent of optional THIEPN Account sync')
+      && doc.includes('never includes personal EPUB/PDF bytes or cover blobs')
+      && page.includes('manual backup remains available whether or not you use THIEPN Account sync')
+      && page.includes('personal EPUB/PDF file bytes remain local'),
+    'RR8 manual portability remains independently usable while optional account sync preserves the personal-binary boundary');
 }
 
 const failed = checks.filter((check) => !check.ok);
