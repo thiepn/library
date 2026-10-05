@@ -78,13 +78,17 @@ if (present) {
     'Browser acceptance proves EPUB network/script isolation and PDF.js evaluation remains disabled');
 
   pass('RR9_PUBLIC_PRIVACY_SUPPORT',
-    privacy.includes('no account system, behavioral analytics, advertising, or automatic cloud synchronization')
+    privacy.includes('guest-first: no account is required')
+      && privacy.includes('If you explicitly sign in with THIEPN Account and enable sync for this device')
+      && privacy.includes('Personal EPUB/PDF file bytes and local cover blobs are not uploaded by Account sync')
+      && privacy.includes('There is no advertising or behavioral analytics path in the reader')
       && privacy.includes('do not contain the bytes of your personal EPUB/PDF files')
+      && securityPage.includes('THIEPN Account uses Supabase Auth with Google OAuth and PKCE')
       && securityPage.includes('Publication content is treated as untrusted')
       && supportPage.includes('exact release SHA')
       && layout.includes("href('/security')")
       && layout.includes("href('/support')"),
-    'Privacy, security, support, backup, network, and physical-evidence boundaries are publicly discoverable and explicit');
+    'Privacy, account sync, personal-file, security, support, network, and physical-evidence boundaries are publicly discoverable and explicit');
 
   pass('RR9_DEPENDENCY_POLICY',
     workspace.includes('minimumReleaseAge: 1440')
