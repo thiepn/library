@@ -77,6 +77,7 @@ jobs:
             src/content/works \
             src/publications/releases \
             src/publications/public-domain-ledger.json \
+            src/publications/curated-canon-status.json \
             public/covers/public-domain
           if ! git diff --cached --quiet; then
             git commit -m "Canon checkpoint: normalize metadata and stage curated works"
@@ -166,6 +167,9 @@ jobs:
       - name: Finalize content-addressed cover releases
         if: env.ADDED_COUNT != '0'
         run: python3 scripts/public-domain/finalize-cover-release.py --mode new
+
+      - name: Audit curated canon coverage
+        run: python3 scripts/public-domain/audit-canon.py
 
       - name: Certify the complete Library
         run: pnpm release:certify
