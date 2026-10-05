@@ -160,6 +160,132 @@ def openlibrary_match(title: str, author: str) -> dict[str, Any] | None:
     return result
 
 
+def _year_label_from_wikidata_time(value: str, precision: int | None = None) -> str | None:
+    match = re.match(r"^([+-])(\d{1,16})-", str(value or ""))
+    if not match:
+        return None
+    sign, raw_year = match.groups()
+    year = int(raw_year)
+    if sign == "-":
+        if year <= 0:
+            return None
+        if precision is not None and precision <= 7:
+            century = (year + 99) // 100
+            return f"c. {century}th century BC"
+        return f"{year} BC"
+    if year <= 0 or year > date.today().year:
+        return None
+    if precision is not None and precision <= 7:
+        century = (year + 99) // 100
+        suffix = "th"
+        if century % 10 == 1 and century % 100 != 11:
+            suffix = "st"
+        elif century % 10 == 2 and century % 100 != 12:
+            suffix = "nd"
+        elif century % 10 == 3 and century % 100 != 13:
+            suffix = "rd"
+        return f"{century}{suffix} century"
+    return str(year)
+
+
+def wikidata_publication_label(title: str, author: str) -> str | None:
+    surname = author_surname(author)
+    query = f"{title} {surname}".strip()
+    params = urllib.parse.urlencode(
+        {
+            "action": "wbsearchentities",
+            "search": query,
+            "language": "en",
+            "format": "json",
+            "limit": "8",
+            "type": "item",
+        }
+    )
+    payload = request_json(f"https://www.wikidata.org/w/api.php?{params}")
+    results = payload.get("search") if isinstance(payload, dict) else None
+    if not isinstance(results, list):
+        return None
+
+    want_title = normalize(title)
+    scored: list[tuple[float, str]] = []
+    for result in results:
+        if not isinstance(result, dict):
+            continue
+        qid = str(result.get("id") or "")
+        label = normalize(str(result.get("label") or ""))
+        description = normalize(str(result.get("description") or ""))
+        if not qid.startswith("Q") or not label:
+            continue
+
+        if label == want_title:
+            title_score = 1.0
+        elif label.startswith(want_title) or want_title.startswith(label):
+            title_score = 0.88
+        else:
+            wanted = set(want_title.split())
+            got = set(label.split())
+            title_score = len(wanted & got) / len(wanted | got) if wanted and got else 0.0
+
+        author_score = 0.25 if surname and re.search(rf"\b{re.escape(surname)}\b", description) else 0.0
+        type_score = 0.10 if any(
+            token in description
+            for token in ("novel", "book", "play", "poem", "treatise", "work", "essay", "dialogue", "scripture")
+        ) else 0.0
+        score = 0.70 * title_score + author_score + type_score
+        if score >= 0.70:
+            scored.append((score, qid))
+
+    if not scored:
+        return None
+    scored.sort(reverse=True)
+    ids = [qid for _, qid in scored[:3]]
+    params = urllib.parse.urlencode(
+        {
+            "action": "wbgetentities",
+            "ids": "|".join(ids),
+            "props": "claims|descriptions",
+            "languages": "en",
+            "format": "json",
+        }
+    )
+    payload = request_json(f"https://www.wikidata.org/w/api.php?{params}")
+    entities = payload.get("entities") if isinstance(payload, dict) else {}
+    if not isinstance(entities, dict):
+        return None
+
+    for score, qid in scored[:3]:
+        entity = entities.get(qid)
+        if not isinstance(entity, dict):
+            continue
+        claims = entity.get("claims") if isinstance(entity.get("claims"), dict) else {}
+        dates = claims.get("P577") if isinstance(claims, dict) else None
+        if not isinstance(dates, list):
+            continue
+        labels: list[tuple[int, str]] = []
+        for claim in dates:
+            try:
+                value = claim["mainsnak"]["datavalue"]["value"]
+                time_value = str(value.get("time") or "")
+                precision = int(value.get("precision")) if value.get("precision") is not None else None
+            except Exception:
+                continue
+            label = _year_label_from_wikidata_time(time_value, precision)
+            if not label:
+                continue
+            sortable = 10**9
+            year_match = re.fullmatch(r"(\d{1,4})", label)
+            bc_match = re.fullmatch(r"(\d{1,4}) BC", label)
+            if year_match:
+                sortable = int(year_match.group(1))
+            elif bc_match:
+                sortable = -int(bc_match.group(1))
+            labels.append((sortable, label))
+        if labels:
+            labels.sort(key=lambda item: item[0])
+            return labels[0][1]
+    return None
+
+
 def gutendex_summary(gutenberg_id: int) -> str | None:
     try:
         data = request_json(f"https://gutendex.com/books/{gutenberg_id}/")
@@ -207,7 +333,13 @@ def author_birth_years(work: dict[str, Any]) -> list[int]:
     return years
 
 
-def verified_first_publication_year(work: dict[str, Any], bibliographic: dict[str, Any] | None) -> str:
+def verified_first_publication_year(
+    work: dict[str, Any],
+    bibliographic: dict[str, Any] | None,
+    *,
+    title: str,
+    author: str,
+) -> str:
     births = author_birth_years(work)
     if births and min(births) < 0:
         return "Ancient work"
@@ -230,10 +362,22 @@ def verified_first_publication_year(work: dict[str, Any], bibliographic: dict[st
     if death_years:
         latest_plausible = max(death_years) + 20
         years = [year for year in years if year <= latest_plausible]
-    if not years:
-        return "Not verified"
+    if years:
+        return str(min(years))
 
-    return str(min(years))
+    try:
+        wikidata_label = wikidata_publication_label(title, author)
+    except Exception:
+        wikidata_label = None
+    if wikidata_label:
+        if re.fullmatch(r"\d{4}", wikidata_label):
+            year = int(wikidata_label)
+            death_years = author_death_years(work)
+            if death_years and year > max(death_years) + 20:
+                return "Not verified"
+        return wikidata_label
+
+    return "Not verified"
 
 
 def update_work(
@@ -284,7 +428,12 @@ def update_work(
                 normalize_contributors(work, canonical_authors[0])
                 author = canonical_authors[0]
 
-    work.setdefault("publication", {})["firstPublished"] = verified_first_publication_year(work, bibliographic)
+    work.setdefault("publication", {})["firstPublished"] = verified_first_publication_year(
+        work,
+        bibliographic,
+        title=title,
+        author=author,
+    )
 
     description = ""
     if gutenberg_id is not None:
