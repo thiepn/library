@@ -482,7 +482,11 @@ def update_cover_assets(work_id: str, entry: dict[str, Any], work: dict[str, Any
 
     prompt = build_prompt(entry)
     print(f"[cover] generate {work_id} — {entry.get('title')}", flush=True)
-    art = generate_art(prompt)
+    try:
+        art = generate_art(prompt)
+    except Exception as exc:
+        print(f"[cover] image generation exhausted retries; using deterministic artwork for {work_id}: {exc}", flush=True)
+        art = _deterministic_fallback_art(prompt)
     jpeg, webp = render_cover(art, str(entry.get("title") or work.get("title") or work_id), str(entry.get("author") or "Unknown author"))
 
     COVERS_ROOT.mkdir(parents=True, exist_ok=True)
