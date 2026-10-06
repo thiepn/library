@@ -37,7 +37,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
       <aside class="backup-note" aria-labelledby="backup-boundary-title">
         <h2 id="backup-boundary-title">Local-first boundary</h2>
-        <p>This manual backup remains available whether or not you use THIEPN Account sync. Account sync can copy reading state and personal-book metadata across devices, but personal EPUB/PDF file bytes remain local and are never included in the cloud snapshot.</p>
+        <p>This manual backup remains available whether or not you use THIEPN Account sync. The JSON and reading-state cloud snapshot never contain personal EPUB/PDF bytes. If you separately enable Personal book cloud, eligible file bytes may also be stored in private Account storage for cross-device continuity; that does not change the JSON backup format.</p>
       </aside>
 
       <p><a href="./saved">← Back to My Library</a></p>
