@@ -1,14 +1,27 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { parseConsent, project, continuation, validBook, type Book } from '../../src/lib/hub/contract';
+import { legacyConsent, parseConsent, project, continuation, validBook, type Book } from '../../src/lib/hub/contract';
 import { personalMetadata } from '../../src/lib/hub/storage';
 const now = Date.parse('2026-10-04T00:00:00.000Z');
 const book: Book = { workId: 'fictional', title: '<A fictional title>', format: 'epub', edition: 2, releaseVersion: 'r2', slug: 'fictional' };
 const row = { schemaVersion: 2, workId: 'fictional', edition: 2, releaseVersion: 'r2', percentage: .2, furthestPercentage: .8, updatedAt: '2026-10-03T23:00:00.000Z', cfi: 'PRIVATE-CFI', chapterLabel: 'PRIVATE-CHAPTER', annotation: 'PRIVATE-NOTE' };
-const grant = { schemaVersion: 1, deviceId: '11111111-1111-4111-8111-111111111111', revision: '22222222-2222-4222-8222-222222222222', permissions: ['summary'], includePersonal: false };
-test('consent accepts explicit purpose and rejects missing, unknown, duplicate and malformed fields', () => {
+const legacyGrant = { schemaVersion: 1, deviceId: '11111111-1111-4111-8111-111111111111', revision: '22222222-2222-4222-8222-222222222222', permissions: ['summary'], includePersonal: false };
+const grant = { ...legacyGrant, schemaVersion: 2, includeAccount: true };
+test('legacy consent remains local-only and v2 requires explicit Account sharing', () => {
+  const normalized = parseConsent(legacyGrant);
+  assert.deepEqual(normalized, { ...legacyGrant, schemaVersion: 2, includeAccount: false });
   assert.deepEqual(parseConsent(grant), grant);
-  for (const value of [null, {}, { ...grant, accountId: 'owner' }, { ...grant, permissions: ['summary','summary'] }, { ...grant, permissions: ['capture'] }, { ...grant, deviceId: 'not-a-device' }, { ...grant, includePersonal: 'true' }]) assert.equal(parseConsent(value), null);
+  assert.deepEqual(legacyConsent(parseConsent(grant)!), legacyGrant);
+  for (const value of [
+    null,
+    {},
+    { ...grant, accountId: 'owner' },
+    { ...grant, permissions: ['summary','summary'] },
+    { ...grant, permissions: ['capture'] },
+    { ...grant, deviceId: 'not-a-device' },
+    { ...grant, includePersonal: 'true' },
+    { ...grant, includeAccount: 'true' },
+  ]) assert.equal(parseConsent(value), null);
 });
 test('backtracking keeps current and furthest distinct and exports exact metadata only', () => {
   const [item] = project([book], [row], [], 'continue', '', now);
