@@ -1,4 +1,4 @@
-import { reconcileLibraryForHubAccount } from './account';
+import { readLibraryHubAccountSnapshot } from './account';
 import {
   CONSENT_KEY,
   OPERATIONS,
@@ -112,11 +112,17 @@ export function installBridge(catalogue: Book[]) {
 
       if (authorized()) {
         try {
+          let cloudEpub: unknown[] = [];
+          let cloudPdf: unknown[] = [];
           if (accountAwareConnection && consent!.includeAccount) {
             reconcilingAccount = true;
             try {
-              const account = await reconcileLibraryForHubAccount(true, hubAccountId);
-              if (account.accountSynced) coverage = 'account-synced';
+              const account = await readLibraryHubAccountSnapshot(true, hubAccountId);
+              if (account.status === 'available' && account.snapshot) {
+                cloudEpub = account.snapshot.state.main?.epubProgress?.records ?? [];
+                cloudPdf = account.snapshot.state.pdf?.progress?.records ?? [];
+                coverage = 'account-synced';
+              }
             } finally {
               reconcilingAccount = false;
             }
@@ -131,7 +137,7 @@ export function installBridge(catalogue: Book[]) {
           ]);
 
           if (authorized()) {
-            items = project(books, epub, pdf, operation, request.query as string);
+            items = project(books, [...epub, ...cloudEpub], [...pdf, ...cloudPdf], operation, request.query as string);
             status = items.length ? 'ready' : 'empty';
           }
         } catch {
