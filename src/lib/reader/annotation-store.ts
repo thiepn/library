@@ -104,6 +104,14 @@ function sanitizeAnnotation(record: ReaderAnnotationRecordV2): ReaderAnnotationR
   };
 }
 
+export async function getReaderAnnotationById(id: string): Promise<ReaderAnnotationRecordV2 | undefined> {
+  if (!id) return undefined;
+  return withAnnotationStore('readonly', async (store) => {
+    const value = await request<unknown>(store.get(id));
+    return isReaderAnnotationRecordV2(value) ? sanitizeAnnotation(value) : undefined;
+  });
+}
+
 export async function getReaderAnnotationsForWork(workId: string): Promise<ReaderAnnotationRecordV2[]> {
   const records = await withAnnotationStore('readonly', async (store) => request<unknown[]>(store.getAll()));
   return records

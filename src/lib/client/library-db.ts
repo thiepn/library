@@ -416,6 +416,23 @@ export async function getAnnotations(): Promise<AnnotationRecord[]> {
   });
 }
 
+export async function getAllAnnotationRecords(): Promise<unknown[]> {
+  return withStore('annotations', 'readonly', async (store) => {
+    const values = await request<unknown[]>(store.getAll());
+    return values.sort((a, b) => {
+      const aUpdated = typeof a === 'object' && a !== null && 'updatedAt' in a && typeof a.updatedAt === 'string' ? a.updatedAt : '';
+      const bUpdated = typeof b === 'object' && b !== null && 'updatedAt' in b && typeof b.updatedAt === 'string' ? b.updatedAt : '';
+      return bUpdated.localeCompare(aUpdated);
+    });
+  });
+}
+
+export async function putLegacyAnnotation(record: AnnotationRecord): Promise<void> {
+  if (!record.id || !record.workId || typeof record.note !== 'string') throw new Error('Invalid legacy annotation record.');
+  await withStore('annotations', 'readwrite', async (store) => { await request(store.put(record)); });
+  broadcast('annotations', record.workId);
+}
+
 export async function deleteAnnotation(id: string): Promise<void> {
   await withStore('annotations', 'readwrite', async (store) => { await request(store.delete(id)); });
   broadcast('annotations');

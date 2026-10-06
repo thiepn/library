@@ -135,7 +135,7 @@ if (present) {
 
   pass(
     'EPUB_READER_PERFORMANCE_P26_PRESERVED',
-    launcher.includes('mountReaderPublicationWithFallbackHarness(root, publication)')
+    launcher.includes('mountReaderPublicationWithFallbackHarness(root, publication')
       && fallbackHarness.includes('mountCanonicalEpubReader(')
       && canonical.includes('mountReaderShellWithCompatibilityHarness')
       && launcher.includes('showBootstrapFailure')

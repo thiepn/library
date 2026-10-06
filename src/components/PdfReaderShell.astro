@@ -28,6 +28,7 @@ const {
     <nav class="pdf-reader__tools" aria-label="PDF tools">
       <button type="button" data-pdf-search-toggle aria-haspopup="dialog" aria-controls="pdf-search-panel" aria-expanded="false">Search</button>
       <button type="button" data-pdf-bookmark-toggle aria-haspopup="dialog" aria-controls="pdf-bookmarks-panel" aria-expanded="false">Saved</button>
+      <button type="button" data-pdf-annotation-toggle aria-haspopup="dialog" aria-controls="pdf-annotations-panel" aria-expanded="false">Notes</button>
       <a data-pdf-fallback href={fallbackHref ?? '#'} target="_blank" rel="noopener noreferrer" hidden={!fallbackHref}>Open original</a>
     </nav>
   </header>
@@ -84,6 +85,7 @@ const {
 
     <div class="pdf-reader__page" data-pdf-page>
       <canvas data-pdf-canvas aria-hidden="true"></canvas>
+      <div class="pdf-reader__annotation-layer" data-pdf-annotation-layer aria-hidden="true"></div>
       <div class="textLayer" data-pdf-text-layer aria-label="Selectable PDF text"></div>
     </div>
     <div class="pdf-reader__status" data-pdf-status role="status" aria-live="polite">Opening PDF…</div>
@@ -125,4 +127,44 @@ const {
     </header>
     <div class="pdf-reader__results" data-pdf-bookmark-list></div>
   </aside>
+
+  <aside id="pdf-annotations-panel" class="pdf-reader__panel" data-pdf-annotation-panel role="dialog" aria-labelledby="pdf-annotations-title" aria-hidden="true" hidden>
+    <header>
+      <div>
+        <p class="pdf-reader__eyebrow">Knowledge</p>
+        <h2 id="pdf-annotations-title">Highlights & notes</h2>
+      </div>
+      <button type="button" data-pdf-annotation-close aria-label="Close highlights and notes">×</button>
+    </header>
+    <div class="pdf-reader__search-form">
+      <input type="search" data-pdf-annotation-filter placeholder="Filter highlights and notes" autocomplete="off" />
+    </div>
+    <p data-pdf-annotation-status role="status" aria-live="polite">Select text in the PDF to create a highlight.</p>
+    <div class="pdf-reader__results" data-pdf-annotation-list></div>
+  </aside>
+
+  <section class="pdf-reader__selection-actions" data-pdf-selection-actions role="toolbar" aria-label="Selected PDF text actions" hidden>
+    <p data-pdf-selection-quote></p>
+    <div>
+      <button type="button" data-pdf-selection-highlight>Highlight</button>
+      <button type="button" data-pdf-selection-note>Add note</button>
+      <button type="button" data-pdf-selection-dismiss aria-label="Dismiss selected text actions">×</button>
+    </div>
+  </section>
+
+  <dialog class="pdf-reader__note-dialog" data-pdf-note-dialog aria-labelledby="pdf-note-dialog-title">
+    <form method="dialog">
+      <p class="pdf-reader__eyebrow">Annotation</p>
+      <h2 id="pdf-note-dialog-title">Add note</h2>
+      <blockquote data-pdf-note-quote></blockquote>
+      <label>
+        <span>Note</span>
+        <textarea rows="5" maxlength="5000" data-pdf-note-input placeholder="What matters about this passage?"></textarea>
+      </label>
+      <div class="pdf-reader__note-actions">
+        <button type="button" data-pdf-note-save>Save note</button>
+        <button type="button" data-pdf-note-cancel>Cancel</button>
+      </div>
+    </form>
+  </dialog>
 </main>
