@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-15399",
+  "version": "pg-15399-26e856b7bbed-cover-aaaebc51daba",
+  "edition": 1,
+  "releasedAt": "2026-09-27T09:31:06Z",
+  "sourceHash": "44c97673275af8754b9ddbae7fafe44a748e4adb70b8578df23edb5be7e7cc66",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-15399/editions/pg-15399-26e856b7bbed-cover-aaaebc51daba/the-interesting-narrative-of-the-life-of-olaudah-equiano-or-gustavus-vassa-the-a-project-gutenberg.epub",
+      "filename": "the-interesting-narrative-of-the-life-of-olaudah-equiano-or-gustavus-vassa-the-a-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 604072,
+      "sha256": "aaaebc51daba4bfd43feedbda10fb5c54c75f11589f5b3eee99f2aed4faa3ee3"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "26e856b7bbed3f30960f12d3aff4989e0e89611ed73daceddee07602c99b1c29",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-15399-26e856b7bbed",
+    "finalArtifactSha256": "aaaebc51daba4bfd43feedbda10fb5c54c75f11589f5b3eee99f2aed4faa3ee3",
+    "releaseVersioning": "content-addressed"
+  }
+}

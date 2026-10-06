@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-76",
+  "version": "pg-76-fb47de0fdb1f-cover-ed4beea87f6a",
+  "edition": 1,
+  "releasedAt": "2026-09-27T09:31:02Z",
+  "sourceHash": "b70e94b8b5f786cdd7489436749b663f197b4c22eba8c50d70e94a6a22e1610a",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-76/editions/pg-76-fb47de0fdb1f-cover-ed4beea87f6a/adventures-of-huckleberry-finn-project-gutenberg.epub",
+      "filename": "adventures-of-huckleberry-finn-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 841610,
+      "sha256": "ed4beea87f6a23107b0d7725c0eb308c2baaa9066a523b67ab345e7b93d50d01"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "fb47de0fdb1fa9ad7ad68e6c586beeb07d8ea72082f833cf0aa8220153edc0bc",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-76-fb47de0fdb1f",
+    "finalArtifactSha256": "ed4beea87f6a23107b0d7725c0eb308c2baaa9066a523b67ab345e7b93d50d01",
+    "releaseVersioning": "content-addressed"
+  }
+}

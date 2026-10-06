@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-120",
+  "version": "pg-120-5f6027f3ca25-cover-9b67b711f2b7",
+  "edition": 1,
+  "releasedAt": "2026-09-27T09:31:08Z",
+  "sourceHash": "9220d2f9d7aafd21615c50b7a3827e4d395e4234e127ace25756f14043b415fc",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-120/editions/pg-120-5f6027f3ca25-cover-9b67b711f2b7/treasure-island-project-gutenberg.epub",
+      "filename": "treasure-island-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 685071,
+      "sha256": "9b67b711f2b7fc1a5ff6b8bf806d50cdfc566775028eabc6cf6b2dcabba996e4"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "5f6027f3ca2597990d117c28e0acaf855daae8a3059b3088f727cbfc8a00fe67",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-120-5f6027f3ca25",
+    "finalArtifactSha256": "9b67b711f2b7fc1a5ff6b8bf806d50cdfc566775028eabc6cf6b2dcabba996e4",
+    "releaseVersioning": "content-addressed"
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-15399",
+  "slug": "pd-pg-15399",
+  "title": "The Interesting Narrative of the Life of Olaudah Equiano, Or Gustavus Vassa, The African",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Olaudah Equiano",
+      "role": "creator",
+      "birthYear": 1745,
+      "deathYear": 1797
+    }
+  ],
+  "description": "A public-domain edition of The Interesting Narrative of the Life of Olaudah Equiano, Or Gustavus Vassa, The African by Olaudah Equiano. Project Gutenberg classifies it under Enslaved persons -- United States -- Biography, Equiano, Olaudah, 1745-1797, Enslaved persons -- Great Britain -- Biography.",
+  "shortDescription": "A public-domain edition of The Interesting Narrative of the Life of Olaudah Equiano, Or Gustavus Vassa, The African by Olaudah Equiano. Project Gutenberg classifies it under Ens…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2005-03-17",
+    "lastUpdated": "2026-09-27",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-15399-26e856b7bbed-cover-aaaebc51daba",
+    "activeRelease": "pg-15399-26e856b7bbed-cover-aaaebc51daba"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-15399.webp",
+    "alt": "Cover for The Interesting Narrative of the Life of Olaudah Equiano, Or Gustavus Vassa, The African by Olaudah Equiano"
+  },
+  "classification": {
+    "subjects": [
+      "enslaved-persons",
+      "equiano-olaudah-1745-1797",
+      "ht"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/15399",
+      "gutenbergId": 15399
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/15399/pg15399.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #15399. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}
