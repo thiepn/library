@@ -170,7 +170,7 @@ if (present) {
     'Production Pages upload is gated on RR9 after RR8');
 
   pass('RR9_ACCOUNT_PRODUCTION_GATE',
-    deploy.includes('PUBLIC_THIEPN_ACCOUNT_PUBLISHABLE_KEY: ${{ vars.THIEPN_ACCOUNT_PUBLISHABLE_KEY }}')
+    deploy.includes('PUBLIC_THIEPN_ACCOUNT_PUBLISHABLE_KEY: sb_publishable_1rZzRPzfLMaAH5pIgCwIjA_19UPMIsR')
       && deploy.includes('thiepn-account-publishable-key')
       && deploy.includes('PUBLIC_THIEPN_ACCOUNT_PUBLISHABLE_KEY:-')
       && verifyProduction.includes('THIEPN Account publishable key is missing from production verification')
@@ -178,7 +178,7 @@ if (present) {
       && verifyProduction.includes('/auth/v1/settings')
       && verifyProduction.includes('THIEPN_ACCOUNT_AUTH_READY')
       && verifyProduction.includes('authSettings.external.google !== true'),
-    'Production fails closed when THIEPN Account configuration is absent and live verification proves the Account surface plus Google OAuth readiness');
+    'Production pins the canonical public THIEPN Account publishable key, retains readiness validation, and live-verifies the Account surface plus Google OAuth readiness');
 
   pass('RR9_V1_FAIL_CLOSED',
     pkg.scripts?.['release:v1:gate'] === 'node scripts/release/v1-gate.mjs'
