@@ -13,9 +13,9 @@ import {
   type StoredLegacyProgressRecordV1,
 } from './library-db';
 import {
+  applyPersonalBookPortableMetadata,
   getPendingPersonalBookMetadata,
   getPersonalBookPortableMetadata,
-  getPersonalBooks,
   isPersonalBookPortableMetadataV1,
   replacePendingPersonalBookMetadata,
   type PersonalBookPortableMetadataV1,
@@ -425,10 +425,10 @@ function categoryNames(backup: LibraryBackupV1): string[] {
 export async function restoreLibraryBackupJson(raw: string): Promise<LibraryRestoreResult> {
   // Full validation happens before the first mutation.
   const backup = parseLibraryBackupJson(raw);
-  const [beforeMain, beforePdf, currentPersonalBooks] = await Promise.all([
+  const [beforeMain, beforePdf, beforePersonalMetadata] = await Promise.all([
     getLibraryDbPortabilitySnapshot(),
     getPdfReaderStateSnapshot(),
-    getPersonalBooks(),
+    getPersonalBookPortableMetadata(),
   ]);
   const beforePending = getPendingPersonalBookMetadata();
   const rawSettings = {
@@ -437,8 +437,7 @@ export async function restoreLibraryBackupJson(raw: string): Promise<LibraryRest
     legacyReader: localStorage.getItem(LEGACY_READER_SETTINGS_KEY),
   };
 
-  const existingHashes = new Set(currentPersonalBooks.map((book) => book.sha256));
-  const pending = backup.state.personalBooks?.records.filter((record) => !existingHashes.has(record.sha256)) ?? [];
+  let personalBooksNeedingFiles = 0;
 
   try {
     if (backup.state.main) await replaceLibraryDbPortabilitySnapshot(mainPatch(backup.state.main));
@@ -456,7 +455,11 @@ export async function restoreLibraryBackupJson(raw: string): Promise<LibraryRest
       const { scale, measure } = backup.state.settings.legacyReader;
       writeJsonSetting(LEGACY_READER_SETTINGS_KEY, { scale, measure });
     }
-    if (backup.state.personalBooks) replacePendingPersonalBookMetadata(pending);
+    if (backup.state.personalBooks) {
+      const personalRestore = await applyPersonalBookPortableMetadata(backup.state.personalBooks.records);
+      replacePendingPersonalBookMetadata(personalRestore.missing);
+      personalBooksNeedingFiles = personalRestore.missing.length;
+    }
   } catch (error) {
     let rollbackError: unknown;
     try {
@@ -465,6 +468,7 @@ export async function restoreLibraryBackupJson(raw: string): Promise<LibraryRest
       restoreRawSetting(READER_SETTINGS_KEY, rawSettings.reader);
       restoreRawSetting(SITE_SETTINGS_KEY, rawSettings.site);
       restoreRawSetting(LEGACY_READER_SETTINGS_KEY, rawSettings.legacyReader);
+      await applyPersonalBookPortableMetadata(beforePersonalMetadata);
       replacePendingPersonalBookMetadata(beforePending);
     } catch (rollbackFailure) {
       rollbackError = rollbackFailure;
@@ -481,7 +485,7 @@ export async function restoreLibraryBackupJson(raw: string): Promise<LibraryRest
   return {
     schemaVersion: 1,
     restoredCategories: categoryNames(backup),
-    personalBooksNeedingFiles: pending.length,
+    personalBooksNeedingFiles,
   };
 }
 
