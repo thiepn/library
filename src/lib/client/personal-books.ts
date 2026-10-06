@@ -14,8 +14,22 @@ const PENDING_METADATA_KEY = 'thiepn.library.personal-books.relink.v1';
 const MAX_IMPORT_BYTES = 250 * 1024 * 1024;
 export const PERSONAL_BOOK_SCHEMA_VERSION = 1 as const;
 export const PERSONAL_BOOK_PORTABLE_METADATA_SCHEMA_VERSION = 1 as const;
+export const PERSONAL_BOOK_MAX_SHELVES = 12;
+export const PERSONAL_BOOK_MAX_TAGS = 24;
+export const PERSONAL_BOOK_LABEL_MAX_LENGTH = 48;
 
 export type PersonalBookFormat = 'epub' | 'pdf';
+
+export interface PersonalBookOrganization {
+  shelves?: string[];
+  tags?: string[];
+}
+
+export interface PersonalBookMetadataPatch extends PersonalBookOrganization {
+  title: string;
+  creator?: string;
+  language?: string;
+}
 
 export interface PersonalBookRecord {
   schemaVersion: typeof PERSONAL_BOOK_SCHEMA_VERSION;
@@ -30,6 +44,8 @@ export interface PersonalBookRecord {
   sha256: string;
   importedAt: string;
   updatedAt: string;
+  shelves?: string[];
+  tags?: string[];
   file: Blob;
   cover?: Blob;
   compatibility?: PublicationCompatibilityReport;
@@ -56,10 +72,50 @@ export interface PersonalBookPortableMetadataV1 {
   sha256: string;
   importedAt: string;
   updatedAt: string;
+  shelves?: string[];
+  tags?: string[];
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function normalizeLabelList(
+  values: readonly string[] | undefined,
+  limit: number,
+): string[] | undefined {
+  if (!values?.length) return undefined;
+  const seen = new Set<string>();
+  const output: string[] = [];
+  for (const raw of values) {
+    const label = raw.trim().replace(/\s+/g, ' ').slice(0, PERSONAL_BOOK_LABEL_MAX_LENGTH);
+    if (!label) continue;
+    const key = label.toLocaleLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    output.push(label);
+    if (output.length >= limit) break;
+  }
+  return output.length ? output : undefined;
+}
+
+function isLabelList(value: unknown, limit: number): value is string[] {
+  return Array.isArray(value)
+    && value.length <= limit
+    && value.every((label) => typeof label === 'string'
+      && label.trim().length > 0
+      && label.length <= PERSONAL_BOOK_LABEL_MAX_LENGTH);
+}
+
+export function normalizePersonalBookOrganization(
+  organization: PersonalBookOrganization,
+): PersonalBookOrganization {
+  const shelves = normalizeLabelList(organization.shelves, PERSONAL_BOOK_MAX_SHELVES);
+  const tags = normalizeLabelList(organization.tags, PERSONAL_BOOK_MAX_TAGS);
+  return {
+    ...(shelves ? { shelves } : {}),
+    ...(tags ? { tags } : {}),
+  };
 }
 
 export function isPersonalBookPortableMetadataV1(value: unknown): value is PersonalBookPortableMetadataV1 {
@@ -74,7 +130,9 @@ export function isPersonalBookPortableMetadataV1(value: unknown): value is Perso
     && typeof value.size === 'number' && Number.isFinite(value.size) && value.size > 0
     && typeof value.sha256 === 'string' && /^[a-f0-9]{64}$/i.test(value.sha256)
     && typeof value.importedAt === 'string'
-    && typeof value.updatedAt === 'string';
+    && typeof value.updatedAt === 'string'
+    && (value.shelves === undefined || isLabelList(value.shelves, PERSONAL_BOOK_MAX_SHELVES))
+    && (value.tags === undefined || isLabelList(value.tags, PERSONAL_BOOK_MAX_TAGS));
 }
 
 function portableMetadata(book: Pick<PersonalBookRecord, 'id' | 'format' | 'title' | 'creator' | 'language' | 'fileName' | 'mimeType' | 'size' | 'sha256' | 'importedAt' | 'updatedAt'>): PersonalBookPortableMetadataV1 {
@@ -91,6 +149,7 @@ function portableMetadata(book: Pick<PersonalBookRecord, 'id' | 'format' | 'titl
     sha256: book.sha256,
     importedAt: book.importedAt,
     updatedAt: book.updatedAt,
+    ...normalizePersonalBookOrganization(book),
   };
 }
 
@@ -235,7 +294,11 @@ async function extractEpubMetadata(buffer: ArrayBuffer): Promise<Pick<PersonalBo
 
 function normalizeStoredRecord(record: StoredPersonalBookRecord | (Omit<StoredPersonalBookRecord, 'schemaVersion'> & { schemaVersion?: number })): PersonalBookRecord {
   const file = record.file instanceof Blob ? record.file : new Blob([record.file], { type: record.mimeType });
-  return { ...record, schemaVersion: PERSONAL_BOOK_SCHEMA_VERSION, file } as PersonalBookRecord;
+  const organization = normalizePersonalBookOrganization({
+    shelves: Array.isArray(record.shelves) ? record.shelves.filter((value): value is string => typeof value === 'string') : undefined,
+    tags: Array.isArray(record.tags) ? record.tags.filter((value): value is string => typeof value === 'string') : undefined,
+  });
+  return { ...record, ...organization, schemaVersion: PERSONAL_BOOK_SCHEMA_VERSION, file } as PersonalBookRecord;
 }
 
 function storageError(error: unknown): Error {
@@ -323,6 +386,7 @@ export async function importPersonalBook(file: File): Promise<{ record: Personal
     sha256: digest,
     importedAt: restored?.importedAt ?? now,
     updatedAt: restored?.updatedAt ?? now,
+    ...normalizePersonalBookOrganization(restored ?? {}),
     file: new Blob([buffer], { type: mimeType }),
     ...('cover' in metadata && metadata.cover ? { cover: metadata.cover } : {}),
     compatibility,
@@ -354,6 +418,72 @@ export async function getPersonalBooks(): Promise<PersonalBookSummary[]> {
       .map(({ file: _file, ...summary }) => summary)
       .sort((a, b) => b.importedAt.localeCompare(a.importedAt));
   });
+}
+
+export async function updatePersonalBookMetadata(
+  id: string,
+  patch: PersonalBookMetadataPatch,
+): Promise<PersonalBookRecord> {
+  const title = patch.title.trim().replace(/\s+/g, ' ').slice(0, 240);
+  if (!title) throw new Error('Book title cannot be empty.');
+  const creator = patch.creator?.trim().replace(/\s+/g, ' ').slice(0, 180) || undefined;
+  const language = patch.language?.trim().replace(/\s+/g, ' ').slice(0, 64) || undefined;
+  const organization = normalizePersonalBookOrganization(patch);
+  const current = await getPersonalBook(id);
+  if (!current) throw new Error('This personal book is no longer stored on this device.');
+
+  const next: PersonalBookRecord = {
+    ...current,
+    title,
+    ...(creator ? { creator } : { creator: undefined }),
+    ...(language ? { language } : { language: undefined }),
+    shelves: organization.shelves,
+    tags: organization.tags,
+    updatedAt: new Date().toISOString(),
+  };
+  const stored: StoredPersonalBookRecord = { ...next, file: await next.file.arrayBuffer() };
+  await withStore('readwrite', async (store) => { await request(store.put(stored)); });
+  updatePersonalIndex(next);
+  broadcast('metadata', id);
+  return next;
+}
+
+export async function applyPersonalBookPortableMetadata(
+  records: readonly PersonalBookPortableMetadataV1[],
+): Promise<{ updated: number; missing: PersonalBookPortableMetadataV1[] }> {
+  if (!records.every(isPersonalBookPortableMetadataV1)) throw new Error('Invalid personal-book metadata restore records.');
+  const incomingBySha = new Map(records.map((record) => [record.sha256, record]));
+  let updated = 0;
+  const matched = new Set<string>();
+
+  await withStore('readwrite', async (store) => {
+    const stored = await request<StoredPersonalBookRecord[]>(store.getAll());
+    for (const raw of stored) {
+      const current = normalizeStoredRecord(raw);
+      const metadata = incomingBySha.get(current.sha256);
+      if (!metadata || metadata.format !== current.format || metadata.id !== current.id) continue;
+      matched.add(metadata.sha256);
+      const organization = normalizePersonalBookOrganization(metadata);
+      const next: PersonalBookRecord = {
+        ...current,
+        title: metadata.title,
+        ...(metadata.creator ? { creator: metadata.creator } : { creator: undefined }),
+        ...(metadata.language ? { language: metadata.language } : { language: undefined }),
+        shelves: organization.shelves,
+        tags: organization.tags,
+        updatedAt: metadata.updatedAt,
+      };
+      await request(store.put({ ...next, file: await next.file.arrayBuffer() }));
+      updatePersonalIndex(next);
+      updated += 1;
+    }
+  });
+
+  if (updated) broadcast('metadata-restored');
+  return {
+    updated,
+    missing: records.filter((record) => !matched.has(record.sha256)),
+  };
 }
 
 export async function deletePersonalBook(id: string): Promise<void> {
