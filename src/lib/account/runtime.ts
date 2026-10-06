@@ -1,6 +1,7 @@
 import {
   beginLibraryAccountSso,
   getVerifiedLibraryAccountUser,
+  hasThiepnAccountConfiguration,
   subscribeLibraryAccountAuth,
 } from './supabase';
 import { probeExistingThiepnAccountSession } from './sso-probe';
@@ -13,6 +14,8 @@ import { reconcileLibraryPersonalFiles } from './personal-files';
 const AUTO_SSO_PROBE_COOLDOWN_MS = 30_000;
 
 export function mountLibraryAccountRuntime(): () => void {
+  if (!hasThiepnAccountConfiguration()) return () => {};
+
   let timer: number | undefined;
   let running = false;
   let disposed = false;
