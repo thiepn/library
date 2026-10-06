@@ -97,6 +97,7 @@ export async function isLibraryAccountConnectionActive(): Promise<boolean> {
 }
 
 export async function getVerifiedLibraryAccountUser(): Promise<LibraryAccountUser | null> {
+  if (!hasThiepnAccountConfiguration()) return null;
   const user = identityToUser(await getThiepnAccountSession().verify());
   if (!user) return null;
   if (!(await isLibraryAccountConnectionActive())) {
@@ -132,5 +133,6 @@ export function signOutLibraryAppSession(): void {
 }
 
 export function subscribeLibraryAccountAuth(listener: () => void): () => void {
+  if (!hasThiepnAccountConfiguration()) return () => {};
   return getThiepnAccountSession().subscribe(() => listener());
 }
