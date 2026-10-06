@@ -86,8 +86,24 @@ function identityToUser(identity: ThiepnIdentity): LibraryAccountUser | null {
   return null;
 }
 
+export async function isLibraryAccountConnectionActive(): Promise<boolean> {
+  const { data, error } = await getThiepnAccountClient()
+    .from('account_app_connections')
+    .select('status')
+    .eq('app_slug', 'library')
+    .maybeSingle();
+  if (error) throw error;
+  return data?.status === 'connected' || data?.status === 'limited';
+}
+
 export async function getVerifiedLibraryAccountUser(): Promise<LibraryAccountUser | null> {
-  return identityToUser(await getThiepnAccountSession().verify());
+  const user = identityToUser(await getThiepnAccountSession().verify());
+  if (!user) return null;
+  if (!(await isLibraryAccountConnectionActive())) {
+    getThiepnAccountSession().signOutLocal();
+    return null;
+  }
+  return user;
 }
 
 export async function beginLibraryAccountSso(returnTo = window.location.href): Promise<void> {
