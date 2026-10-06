@@ -1,9 +1,10 @@
 import { pdfReaderIdentityKey, type PdfReaderIdentity } from './canonical';
 
 const DB_NAME = 'thiepn-library-pdf-reader';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const PROGRESS_STORE = 'progress';
 const BOOKMARK_STORE = 'bookmarks';
+const ANNOTATION_STORE = 'annotations';
 const CHANNEL = 'thiepn-library-pdf-reader';
 const SETTINGS_KEY = 'thiepn-library-pdf-settings-v1';
 
@@ -35,10 +36,31 @@ export interface PdfBookmarkRecord {
   createdAt: string;
 }
 
+export interface PdfAnnotationRect {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+export interface PdfAnnotationRecord {
+  schemaVersion: 1;
+  id: string;
+  publicationKey: string;
+  identity: PdfReaderIdentity;
+  page: number;
+  quote: string;
+  note: string;
+  rects: PdfAnnotationRect[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface PdfReaderStateSnapshotV1 {
   schemaVersion: 1;
   progress: PdfProgressRecord[];
   bookmarks: PdfBookmarkRecord[];
+  annotations: PdfAnnotationRecord[];
   settings: PdfReaderSettings;
 }
 
@@ -75,6 +97,10 @@ function openDb(): Promise<IDBDatabase> {
         const store = db.createObjectStore(BOOKMARK_STORE, { keyPath: 'id' });
         store.createIndex('publicationKey', 'publicationKey', { unique: false });
       }
+      if (!db.objectStoreNames.contains(ANNOTATION_STORE)) {
+        const store = db.createObjectStore(ANNOTATION_STORE, { keyPath: 'id' });
+        store.createIndex('publicationKey', 'publicationKey', { unique: false });
+      }
     });
     open.addEventListener('success', () => resolve(open.result));
     open.addEventListener('error', () => reject(open.error ?? new Error('Unable to open PDF reader storage.')));
@@ -83,7 +109,7 @@ function openDb(): Promise<IDBDatabase> {
 }
 
 async function withStore<T>(
-  storeName: typeof PROGRESS_STORE | typeof BOOKMARK_STORE,
+  storeName: typeof PROGRESS_STORE | typeof BOOKMARK_STORE | typeof ANNOTATION_STORE,
   mode: IDBTransactionMode,
   operation: (store: IDBObjectStore) => Promise<T>,
 ): Promise<T> {
@@ -167,6 +193,26 @@ export function isPdfBookmarkRecord(value: unknown): value is PdfBookmarkRecord 
     && typeof record.createdAt === 'string';
 }
 
+export function isPdfAnnotationRecord(value: unknown): value is PdfAnnotationRecord {
+  if (typeof value !== 'object' || value === null) return false;
+  const record = value as Partial<PdfAnnotationRecord>;
+  return record.schemaVersion === 1
+    && typeof record.id === 'string' && record.id.length > 0
+    && typeof record.publicationKey === 'string' && record.publicationKey.length > 0
+    && isPdfIdentity(record.identity)
+    && typeof record.page === 'number' && Number.isFinite(record.page) && record.page >= 1
+    && typeof record.quote === 'string' && record.quote.trim().length > 0 && record.quote.length <= 2400
+    && typeof record.note === 'string' && record.note.length <= 5000
+    && Array.isArray(record.rects) && record.rects.length <= 64
+    && record.rects.every((rect) => typeof rect === 'object' && rect !== null
+      && typeof rect.x === 'number' && Number.isFinite(rect.x) && rect.x >= 0 && rect.x <= 1
+      && typeof rect.y === 'number' && Number.isFinite(rect.y) && rect.y >= 0 && rect.y <= 1
+      && typeof rect.width === 'number' && Number.isFinite(rect.width) && rect.width > 0 && rect.width <= 1
+      && typeof rect.height === 'number' && Number.isFinite(rect.height) && rect.height > 0 && rect.height <= 1)
+    && typeof record.createdAt === 'string'
+    && typeof record.updatedAt === 'string';
+}
+
 export async function getPdfProgress(identity: PdfReaderIdentity): Promise<PdfProgressRecord | undefined> {
   const id = pdfReaderIdentityKey(identity);
   return withStore(PROGRESS_STORE, 'readonly', async (store) => {
@@ -244,6 +290,39 @@ export async function togglePdfBookmark(
   return { bookmarked, bookmarks: await getPdfBookmarks(identity) };
 }
 
+export async function getPdfAnnotations(identity?: PdfReaderIdentity): Promise<PdfAnnotationRecord[]> {
+  if (identity) {
+    const publicationKey = pdfReaderIdentityKey(identity);
+    return withStore(ANNOTATION_STORE, 'readonly', async (store) => {
+      const index = store.index('publicationKey');
+      const values = await request<unknown[]>(index.getAll(publicationKey));
+      return values.filter(isPdfAnnotationRecord)
+        .filter((value) => sameIdentity(value.identity, identity))
+        .sort((a, b) => a.page - b.page || a.createdAt.localeCompare(b.createdAt));
+    });
+  }
+  return withStore(ANNOTATION_STORE, 'readonly', async (store) => {
+    const values = await request<unknown[]>(store.getAll());
+    return values.filter(isPdfAnnotationRecord).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+  });
+}
+
+export async function putPdfAnnotation(record: PdfAnnotationRecord): Promise<void> {
+  if (!isPdfAnnotationRecord(record)) throw new Error('Invalid PDF annotation record.');
+  if (record.publicationKey !== pdfReaderIdentityKey(record.identity)) throw new Error('PDF annotation identity mismatch.');
+  await withStore(ANNOTATION_STORE, 'readwrite', async (store) => {
+    await request(store.put(record));
+  });
+  broadcast('annotations', record.identity);
+}
+
+export async function deletePdfAnnotation(id: string, identity: PdfReaderIdentity): Promise<void> {
+  await withStore(ANNOTATION_STORE, 'readwrite', async (store) => {
+    await request(store.delete(id));
+  });
+  broadcast('annotations', identity);
+}
+
 export function getPdfReaderSettings(): PdfReaderSettings {
   try {
     const parsed = JSON.parse(localStorage.getItem(SETTINGS_KEY) ?? 'null') as unknown;
@@ -271,17 +350,19 @@ export function replacePdfReaderSettings(settings: PdfReaderSettings): void {
 export async function getPdfReaderStateSnapshot(): Promise<PdfReaderStateSnapshotV1> {
   const db = await openDb();
   try {
-    const transaction = db.transaction([PROGRESS_STORE, BOOKMARK_STORE], 'readonly');
+    const transaction = db.transaction([PROGRESS_STORE, BOOKMARK_STORE, ANNOTATION_STORE], 'readonly');
     const completion = transactionCompletion(transaction);
-    const [progressValues, bookmarkValues] = await Promise.all([
+    const [progressValues, bookmarkValues, annotationValues] = await Promise.all([
       request<unknown[]>(transaction.objectStore(PROGRESS_STORE).getAll()),
       request<unknown[]>(transaction.objectStore(BOOKMARK_STORE).getAll()),
+      request<unknown[]>(transaction.objectStore(ANNOTATION_STORE).getAll()),
     ]);
     await completion;
     return {
       schemaVersion: 1,
       progress: progressValues.filter(isPdfProgressRecord).sort((a, b) => a.id.localeCompare(b.id)),
       bookmarks: bookmarkValues.filter(isPdfBookmarkRecord).sort((a, b) => a.id.localeCompare(b.id)),
+      annotations: annotationValues.filter(isPdfAnnotationRecord).sort((a, b) => a.id.localeCompare(b.id)),
       settings: getPdfReaderSettings(),
     };
   } finally {
@@ -293,12 +374,14 @@ export async function getPdfReaderStateSnapshot(): Promise<PdfReaderStateSnapsho
 export async function replacePdfReaderStateSnapshot(patch: PdfReaderStatePatchV1): Promise<void> {
   if (patch.progress && !patch.progress.every(isPdfProgressRecord)) throw new Error('Invalid PDF progress backup records.');
   if (patch.bookmarks && !patch.bookmarks.every(isPdfBookmarkRecord)) throw new Error('Invalid PDF bookmark backup records.');
+  if (patch.annotations && !patch.annotations.every(isPdfAnnotationRecord)) throw new Error('Invalid PDF annotation backup records.');
   if (patch.settings && !isPdfReaderSettings(patch.settings)) throw new Error('Invalid PDF settings backup record.');
 
-  if (patch.progress || patch.bookmarks) {
+  if (patch.progress || patch.bookmarks || patch.annotations) {
     const stores = [
       ...(patch.progress ? [PROGRESS_STORE] : []),
       ...(patch.bookmarks ? [BOOKMARK_STORE] : []),
+      ...(patch.annotations ? [ANNOTATION_STORE] : []),
     ];
     const db = await openDb();
     try {
@@ -314,6 +397,11 @@ export async function replacePdfReaderStateSnapshot(patch: PdfReaderStatePatchV1
         const store = transaction.objectStore(BOOKMARK_STORE);
         operations.push(request(store.clear()));
         for (const record of patch.bookmarks) operations.push(request(store.put(record)));
+      }
+      if (patch.annotations) {
+        const store = transaction.objectStore(ANNOTATION_STORE);
+        operations.push(request(store.clear()));
+        for (const record of patch.annotations) operations.push(request(store.put(record)));
       }
       try {
         await Promise.all(operations);
