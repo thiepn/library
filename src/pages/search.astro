@@ -1,16 +1,19 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 ---
-<BaseLayout title="Search" description="Full-text search across published Library works.">
+<BaseLayout title="Search" description="Search published Library works and your personal-book metadata.">
   <div class="page">
     <section class="section">
       <div class="section-heading"><div><p class="eyebrow">02 / Search</p><h1>Search</h1></div></div>
-      <form class="search-form" role="search" data-search-form><input type="search" name="q" aria-label="Search Library" placeholder="Search titles, chapters, topics…" autocomplete="off" /><button type="submit">Search</button></form>
-      <p class="micro" data-search-status aria-live="polite">Search loads only when you use it.</p>
+      <form class="search-form" role="search" data-search-form><input type="search" name="q" aria-label="Search Library" placeholder="Search titles, chapters, authors, shelves, tags…" autocomplete="off" /><button type="submit">Search</button></form>
+      <p class="micro" data-search-status aria-live="polite">Search loads only when you use it. Personal-book search uses local metadata only, never file contents.</p>
       <div class="search-results" data-search-results></div>
     </section>
   </div>
   <script>
+    import { getPersonalBooks, type PersonalBookSummary } from '../lib/client/personal-books';
+    import { filterAndSortPersonalBooks } from '../lib/client/personal-library-organization';
+
     interface PagefindData { url: string; excerpt?: string; meta?: { title?: string }; }
     interface PagefindResult { data: () => Promise<PagefindData>; }
     interface PagefindSearch { results: PagefindResult[]; }
@@ -30,27 +33,100 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       return `${base}${value.startsWith('/') ? value : `/${value}`}`;
     };
 
-    async function run(rawQuery: string) {
-      const query = rawQuery.trim();
-      if (!results || !status) return;
-      if (!query) {
-        results.replaceChildren();
-        status.textContent = 'Enter a title, chapter, or topic.';
-        return;
+    function personalBookUrl(book: PersonalBookSummary): string {
+      return book.format === 'epub'
+        ? `${base}/personal/read?id=${encodeURIComponent(book.id)}`
+        : `${base}/personal/pdf?id=${encodeURIComponent(book.id)}`;
+    }
+
+    function renderPersonalResult(book: PersonalBookSummary): HTMLElement {
+      const article = document.createElement('article');
+      article.dataset.searchPersonal = book.id;
+      const eyebrow = document.createElement('p');
+      eyebrow.className = 'eyebrow';
+      eyebrow.textContent = `Personal ${book.format.toUpperCase()}`;
+      const heading = document.createElement('h2');
+      const link = document.createElement('a');
+      link.href = personalBookUrl(book);
+      link.textContent = book.title;
+      heading.append(link);
+      const metadata = document.createElement('p');
+      metadata.className = 'muted';
+      metadata.textContent = [
+        book.creator ?? '',
+        book.language ?? '',
+        ...(book.shelves ?? []).map((value) => `Shelf: ${value}`),
+        ...(book.tags ?? []).map((value) => `#${value}`),
+      ].filter(Boolean).join(' · ');
+      article.append(eyebrow, heading);
+      if (metadata.textContent) article.append(metadata);
+      return article;
+    }
+
+    async function searchPersonalBooks(query: string): Promise<PersonalBookSummary[]> {
+      try {
+        const books = await getPersonalBooks();
+        return filterAndSortPersonalBooks(books, {
+          query,
+          format: 'all',
+          shelf: '',
+          tag: '',
+          sort: 'title',
+        }).slice(0, 20);
+      } catch {
+        return [];
       }
-      status.textContent = 'Searching…';
-      results.replaceChildren();
+    }
+
+    async function searchPublished(query: string): Promise<{ total: number; items: PagefindData[]; available: boolean }> {
       try {
         const modulePath = `${base}/pagefind/pagefind.js`;
         const pagefind = await import(/* @vite-ignore */ modulePath) as PagefindModule;
         await pagefind.init();
         await pagefind.options({ baseUrl: `${base}/` });
         const search = await pagefind.search(query);
-        const items = await Promise.all(search.results.slice(0, 20).map((item) => item.data()));
-        status.textContent = `${search.results.length} result${search.results.length === 1 ? '' : 's'}`;
-        for (const item of items) {
+        return {
+          total: search.results.length,
+          items: await Promise.all(search.results.slice(0, 20).map((item) => item.data())),
+          available: true,
+        };
+      } catch {
+        return { total: 0, items: [], available: false };
+      }
+    }
+
+    async function run(rawQuery: string) {
+      const query = rawQuery.trim();
+      if (!results || !status) return;
+      if (!query) {
+        results.replaceChildren();
+        status.textContent = 'Enter a title, chapter, author, shelf, tag, or topic.';
+        return;
+      }
+      status.textContent = 'Searching…';
+      results.replaceChildren();
+
+      const [personal, published] = await Promise.all([
+        searchPersonalBooks(query),
+        searchPublished(query),
+      ]);
+
+      if (personal.length) {
+        const heading = document.createElement('h2');
+        heading.className = 'search-results__group';
+        heading.textContent = 'Your books';
+        results.append(heading);
+        for (const book of personal) results.append(renderPersonalResult(book));
+      }
+
+      if (published.items.length) {
+        const group = document.createElement('h2');
+        group.className = 'search-results__group';
+        group.textContent = 'Published Library';
+        results.append(group);
+        for (const item of published.items) {
           const article = document.createElement('article');
-          const heading = document.createElement('h2');
+          const heading = document.createElement('h3');
           const link = document.createElement('a');
           link.href = libraryResultUrl(item.url);
           link.textContent = item.meta?.title ?? item.url;
@@ -61,8 +137,16 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           article.append(heading, excerpt);
           results.append(article);
         }
-      } catch {
-        status.textContent = 'Search index unavailable. Ordinary Library navigation still works.';
+      }
+
+      const total = personal.length + published.total;
+      if (total === 0) {
+        status.textContent = published.available
+          ? 'No matching books or published pages.'
+          : 'No matching personal books. The published search index is unavailable.';
+      } else {
+        const publicSuffix = published.available ? '' : ' · published search unavailable';
+        status.textContent = `${total} result${total === 1 ? '' : 's'} · ${personal.length} personal · ${published.total} published${publicSuffix}`;
       }
     }
 
