@@ -63,18 +63,19 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       return article;
     }
 
-    async function searchPersonalBooks(query: string): Promise<PersonalBookSummary[]> {
+    async function searchPersonalBooks(query: string): Promise<{ total: number; items: PersonalBookSummary[] }> {
       try {
         const books = await getPersonalBooks();
-        return filterAndSortPersonalBooks(books, {
+        const matches = filterAndSortPersonalBooks(books, {
           query,
           format: 'all',
           shelf: '',
           tag: '',
           sort: 'title',
-        }).slice(0, 20);
+        });
+        return { total: matches.length, items: matches.slice(0, 20) };
       } catch {
-        return [];
+        return { total: 0, items: [] };
       }
     }
 
@@ -111,12 +112,12 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         searchPublished(query),
       ]);
 
-      if (personal.length) {
+      if (personal.items.length) {
         const heading = document.createElement('h2');
         heading.className = 'search-results__group';
         heading.textContent = 'Your books';
         results.append(heading);
-        for (const book of personal) results.append(renderPersonalResult(book));
+        for (const book of personal.items) results.append(renderPersonalResult(book));
       }
 
       if (published.items.length) {
@@ -139,14 +140,14 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         }
       }
 
-      const total = personal.length + published.total;
+      const total = personal.total + published.total;
       if (total === 0) {
         status.textContent = published.available
           ? 'No matching books or published pages.'
           : 'No matching personal books. The published search index is unavailable.';
       } else {
         const publicSuffix = published.available ? '' : ' · published search unavailable';
-        status.textContent = `${total} result${total === 1 ? '' : 's'} · ${personal.length} personal · ${published.total} published${publicSuffix}`;
+        status.textContent = `${total} result${total === 1 ? '' : 's'} · ${personal.total} personal · ${published.total} published${publicSuffix}`;
       }
     }
 
