@@ -432,13 +432,19 @@ export async function updatePersonalBookMetadata(
   const current = await getPersonalBook(id);
   if (!current) throw new Error('This personal book is no longer stored on this device.');
 
+  const {
+    creator: _currentCreator,
+    language: _currentLanguage,
+    shelves: _currentShelves,
+    tags: _currentTags,
+    ...base
+  } = current;
   const next: PersonalBookRecord = {
-    ...current,
+    ...base,
     title,
-    ...(creator ? { creator } : { creator: undefined }),
-    ...(language ? { language } : { language: undefined }),
-    shelves: organization.shelves,
-    tags: organization.tags,
+    ...(creator ? { creator } : {}),
+    ...(language ? { language } : {}),
+    ...organization,
     updatedAt: new Date().toISOString(),
   };
   const stored: StoredPersonalBookRecord = { ...next, file: await next.file.arrayBuffer() };
@@ -464,13 +470,19 @@ export async function applyPersonalBookPortableMetadata(
       if (!metadata || metadata.format !== current.format || metadata.id !== current.id) continue;
       matched.add(metadata.sha256);
       const organization = normalizePersonalBookOrganization(metadata);
+      const {
+        creator: _currentCreator,
+        language: _currentLanguage,
+        shelves: _currentShelves,
+        tags: _currentTags,
+        ...base
+      } = current;
       const next: PersonalBookRecord = {
-        ...current,
+        ...base,
         title: metadata.title,
-        ...(metadata.creator ? { creator: metadata.creator } : { creator: undefined }),
-        ...(metadata.language ? { language: metadata.language } : { language: undefined }),
-        shelves: organization.shelves,
-        tags: organization.tags,
+        ...(metadata.creator ? { creator: metadata.creator } : {}),
+        ...(metadata.language ? { language: metadata.language } : {}),
+        ...organization,
         updatedAt: metadata.updatedAt,
       };
       await request(store.put({ ...next, file: await next.file.arrayBuffer() }));
