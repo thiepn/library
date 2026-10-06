@@ -23,10 +23,12 @@ import {
 import { pdfReaderIdentityKey } from '../pdf-reader/canonical';
 import {
   getPdfReaderStateSnapshot,
+  isPdfAnnotationRecord,
   isPdfBookmarkRecord,
   isPdfProgressRecord,
   isPdfReaderSettings,
   replacePdfReaderStateSnapshot,
+  type PdfAnnotationRecord,
   type PdfBookmarkRecord,
   type PdfProgressRecord,
   type PdfReaderSettings,
@@ -67,6 +69,7 @@ export interface PortablePdfStateV1 {
   schemaVersion: 1;
   progress?: CollectionV1<PdfProgressRecord>;
   bookmarks?: CollectionV1<PdfBookmarkRecord>;
+  annotations?: CollectionV1<PdfAnnotationRecord>;
   settings?: PdfReaderSettings;
 }
 
@@ -247,6 +250,7 @@ export async function createLibraryBackup(): Promise<LibraryBackupV1> {
         schemaVersion: 1,
         progress: category(sortBy(pdf.progress.filter(isPdfProgressRecord), (record) => record.id)),
         bookmarks: category(sortBy(pdf.bookmarks.filter(isPdfBookmarkRecord), (record) => record.id)),
+        annotations: category(sortBy(pdf.annotations.filter(isPdfAnnotationRecord), (record) => record.id)),
         settings: pdf.settings,
       },
       settings: {
@@ -325,6 +329,15 @@ function validatePdf(value: unknown): asserts value is PortablePdfStateV1 {
     }
     assertUniqueRecords(collection.records, (record) => record.id, 'PDF bookmark');
   }
+  if (value.annotations !== undefined) {
+    const collection = value.annotations;
+    if (!isCollection(collection, isPdfAnnotationRecord)) throw new Error('Invalid PDF annotation backup records.');
+    for (const record of collection.records) {
+      const publicationKey = pdfReaderIdentityKey(record.identity);
+      if (record.publicationKey !== publicationKey) throw new Error('Invalid PDF annotation identity. No Library data was changed.');
+    }
+    assertUniqueRecords(collection.records, (record) => record.id, 'PDF annotation');
+  }
   if (value.settings !== undefined && !isPdfReaderSettings(value.settings)) throw new Error('Invalid PDF settings backup record.');
 }
 
@@ -399,6 +412,7 @@ function categoryNames(backup: LibraryBackupV1): string[] {
   const pdf = backup.state.pdf;
   if (pdf?.progress) names.push('PDF progress');
   if (pdf?.bookmarks) names.push('PDF bookmarks');
+  if (pdf?.annotations) names.push('PDF annotations');
   if (pdf?.settings) names.push('PDF settings');
   const settings = backup.state.settings;
   if (settings?.reader) names.push('reader settings');
@@ -432,6 +446,7 @@ export async function restoreLibraryBackupJson(raw: string): Promise<LibraryRest
       await replacePdfReaderStateSnapshot({
         ...(backup.state.pdf.progress ? { progress: backup.state.pdf.progress.records } : {}),
         ...(backup.state.pdf.bookmarks ? { bookmarks: backup.state.pdf.bookmarks.records } : {}),
+        ...(backup.state.pdf.annotations ? { annotations: backup.state.pdf.annotations.records } : {}),
         ...(backup.state.pdf.settings ? { settings: backup.state.pdf.settings } : {}),
       });
     }
