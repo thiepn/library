@@ -1,6 +1,6 @@
 # H16 — device-local Library continuity
 
-> **P4 compatibility note:** H16 remains the legacy/local-only contract. P4 adds an explicit consent-v2 Account-reconciliation option while preserving H16 for old Hub clients and for users who do not opt into Account-synced sharing. See `P4_THIEPN_ECOSYSTEM_INTEGRATION.md`.
+> **P4 compatibility note:** H16 remains the legacy/local-only contract. P4 adds an explicit consent-v2 Account-read option while preserving H16 for old Hub clients and for users who do not opt into Account-synced sharing. See `P4_THIEPN_ECOSYSTEM_INTEGRATION.md`.
 
 Library owns `/library/hub` consent, `/library/hub/bridge` metadata reads and
 `/library/hub/continue` identity-qualified handoffs. There is no Account or
