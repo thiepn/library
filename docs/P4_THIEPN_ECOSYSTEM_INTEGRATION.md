@@ -27,8 +27,9 @@ When a P4-capable Hub connection supplies its verified Account ID and `includeAc
 3. Library requires Account sync to be enabled on this device.
 4. Library performs a read-only fetch of its existing owner-scoped cloud snapshot.
 5. Signed-out, disabled-sync, account-mismatch, missing, invalid, or unavailable cloud state does not unlock Account coverage.
-6. Library combines eligible local and cloud progress only for publications actually available on this device, choosing the newest valid progress record per exact edition/release.
-7. The Hub request never invokes Library sync writes, restores local state, resolves conflicts, or accesses personal-file Storage.
+6. Library compares the cloud projection with the current device's exact reader progress, including the underlying EPUB/PDF resume record.
+7. `account-synced` is reported only when the projected cloud state and local reader state already match for the exact edition/release. If another device is newer, Hub falls back to truthful device-local progress until Library performs its normal sync.
+8. The Hub request never invokes Library sync writes, restores local state, resolves conflicts, or accesses personal-file Storage.
 
 Hub never receives or presents a Supabase access token and never reads `library_sync_state` directly.
 
@@ -59,7 +60,7 @@ Explicitly excluded:
 - reading history;
 - raw Library backup/account snapshot.
 
-The bridge reports `coverage: device-local` when Account reconciliation is not used and `coverage: account-synced` only after a successful same-account Library cloud-snapshot read.
+The bridge reports `coverage: device-local` unless the same-account cloud snapshot is already identical to the current device's projected reader progress. Only that exact-parity case reports `coverage: account-synced`.
 
 ## Compatibility
 
@@ -82,8 +83,8 @@ Automated qualification must cover both historical device-only consent and P4 ac
 
 - no automatic Library owner load;
 - no cloud read without explicit v2 consent;
-- account mismatch/signed-out/disabled sync/missing cloud state fail closed to device-local coverage;
-- positive same-account cloud-snapshot read through the real Library Account code path;
+- account mismatch/signed-out/disabled sync/missing or divergent cloud state fail closed to device-local coverage;
+- positive same-account cloud-snapshot verification through the real Library Account code path;
 - no raw token, CFI, annotation, or file leakage;
 - exact release return flow;
 - PDF DB v2 compatibility;
