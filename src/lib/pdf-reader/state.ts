@@ -144,6 +144,17 @@ function broadcastRestore(): void {
   }
 }
 
+export function subscribePdfReaderState(listener: () => void): () => void {
+  let channel: BroadcastChannel | undefined;
+  try {
+    channel = new BroadcastChannel(CHANNEL);
+    channel.addEventListener('message', listener);
+  } catch {
+    // Same-tab updates still render through direct callers.
+  }
+  return () => channel?.close();
+}
+
 function sameIdentity(a: PdfReaderIdentity, b: PdfReaderIdentity): boolean {
   return a.workId === b.workId && a.edition === b.edition && a.releaseVersion === b.releaseVersion;
 }
