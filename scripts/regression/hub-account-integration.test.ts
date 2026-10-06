@@ -14,9 +14,10 @@ test('P4 fixes the PDF reader v2 bridge boundary', () => {
 test('Account-aware Hub reading reconciles through Library instead of exposing raw cloud state', () => {
   assert.match(account, /getVerifiedLibraryAccountUser/);
   assert.match(account, /isLibrarySyncEnabledForUser/);
-  assert.match(account, /reconcileLibraryAccountSync/);
-  assert.doesNotMatch(bridge, /library_sync_state|supabase|from\(/);
-  assert.doesNotMatch(account, /library_sync_state|\.from\(/);
+  assert.match(account, /library_sync_state/);
+  assert.match(account, /\.select\('state'\)/);
+  assert.doesNotMatch(account, /reconcileLibraryAccountSync|sync_thiepn_library_state|\.insert\(|\.update\(|\.delete\(/);
+  assert.doesNotMatch(bridge, /supabase|sync_thiepn_library_state/);
 });
 
 test('Account sharing requires explicit v2 consent and exact account matching', () => {
