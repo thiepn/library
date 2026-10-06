@@ -65,7 +65,7 @@ if (present) {
       && source.includes('edition: publication.edition')
       && source.includes('releaseVersion: publication.version')
       && fallback.includes('readerCanonicalCandidateFromPublication(publication)')
-      && hosted.includes('mountReaderPublicationWithFallbackHarness(root, publication)'),
+      && hosted.includes('mountReaderPublicationWithFallbackHarness(root, publication'),
     'Hosted immutable publications adapt into the canonical source contract without changing exact release identity',
   );
 
