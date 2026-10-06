@@ -17,6 +17,11 @@ export interface LibraryAccountUser {
 let client: SupabaseClient | undefined;
 let session: ReturnType<typeof createThiepnAccountSession> | undefined;
 
+export function hasThiepnAccountConfiguration(): boolean {
+  const key = import.meta.env.PUBLIC_THIEPN_ACCOUNT_PUBLISHABLE_KEY as string | undefined;
+  return typeof key === 'string' && key.trim().length > 0;
+}
+
 function configuredPublishableKey(): string {
   const key = import.meta.env.PUBLIC_THIEPN_ACCOUNT_PUBLISHABLE_KEY as string | undefined;
   if (!key) {
@@ -51,7 +56,7 @@ export function getThiepnAccountSession() {
     publishableKey: configuredPublishableKey(),
     clientId: THIEPN_LIBRARY_OAUTH_CLIENT_ID,
     redirectUri: getLibraryAccountCallbackUrl(),
-    scopes: ['email', 'profile', 'offline_access'],
+    scopes: ['openid', 'email', 'profile', 'offline_access'],
     storageKey: LIBRARY_SSO_STORAGE_KEY,
     authPolicy: 'guest-first',
   });
