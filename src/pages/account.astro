@@ -18,8 +18,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
       <div class="account-card" data-account-signed-out>
         <h2>Keep reading without an account</h2>
-        <p>Library remains fully usable as a local-first reader. Sign in only if you want your portable reading state synchronized between devices.</p>
-        <button type="button" class="account-primary" data-account-action data-sign-in>Continue with Google</button>
+        <p>Library remains fully usable as a local-first reader. If THIEPN Account is already signed in, Library connects automatically. You can also connect manually without signing into Library separately.</p>
+        <button type="button" class="account-primary" data-account-action data-sign-in>Connect THIEPN Account</button>
       </div>
 
       <div class="account-card" data-account-signed-in hidden>
@@ -30,7 +30,6 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         </div>
         <div class="account-actions">
           <a href="https://account.thiepn.dev/" rel="noopener">Manage THIEPN Account</a>
-          <button type="button" data-account-action data-sign-out>Sign out on this device</button>
         </div>
       </div>
 

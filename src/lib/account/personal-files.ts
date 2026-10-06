@@ -1,4 +1,3 @@
-import type { User } from '@supabase/supabase-js';
 import {
   getPendingPersonalBookMetadata,
   getPersonalBook,
@@ -7,7 +6,7 @@ import {
   type PersonalBookPortableMetadataV1,
   type PersonalBookSummary,
 } from '../client/personal-books';
-import { getThiepnAccountClient } from './supabase';
+import { getThiepnAccountClient, type LibraryAccountUser } from './supabase';
 
 export const LIBRARY_PERSONAL_FILES_BUCKET = 'library-personal-books';
 export const LIBRARY_PERSONAL_FILES_PERMISSION = 'personal_files.sync';
@@ -99,7 +98,7 @@ async function sha256(blob: Blob): Promise<string> {
 }
 
 async function uploadBook(
-  user: User,
+  user: LibraryAccountUser,
   book: PersonalBookSummary,
   cloudObjects: Set<string>,
 ): Promise<'uploaded' | 'present' | 'too-large'> {
@@ -132,7 +131,7 @@ async function uploadBook(
 }
 
 async function downloadPendingBook(
-  user: User,
+  user: LibraryAccountUser,
   metadata: PersonalBookPortableMetadataV1,
   cloudObjects: Set<string>,
 ): Promise<'downloaded' | 'present' | 'missing'> {
@@ -167,7 +166,7 @@ async function downloadPendingBook(
   return 'downloaded';
 }
 
-export async function reconcileLibraryPersonalFiles(user: User): Promise<PersonalFileCloudResult> {
+export async function reconcileLibraryPersonalFiles(user: LibraryAccountUser): Promise<PersonalFileCloudResult> {
   if (!navigator.onLine) {
     return emptyResult('offline', 'Offline. Personal books already stored on this device remain available.');
   }

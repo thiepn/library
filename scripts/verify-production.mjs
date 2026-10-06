@@ -9,6 +9,10 @@ const releasesRoot = path.join(process.cwd(), 'src/publications/releases');
 const expectedSourceSha = process.env.EXPECTED_SOURCE_SHA ?? process.env.GITHUB_SHA ?? '';
 const accountPublishableKey = process.env.PUBLIC_THIEPN_ACCOUNT_PUBLISHABLE_KEY ?? '';
 const accountProjectUrl = 'https://hycegznamzjhwinegaai.supabase.co';
+const accountIssuer = `${accountProjectUrl}/auth/v1`;
+const accountDiscoveryUrl = `${accountProjectUrl}/.well-known/oauth-authorization-server/auth/v1`;
+const libraryOAuthClientId = '76e41661-f8a9-4181-b8b9-4084f2e2acbf';
+const libraryOAuthCallback = 'https://thiepn.dev/library/auth/callback/';
 
 if (!accountPublishableKey.trim()) {
   throw new Error('THIEPN Account publishable key is missing from production verification');
@@ -91,6 +95,61 @@ const account = (await requireRoute(`${origin}/account/`)).toString('utf8');
 if (!account.includes('THIEPN Account') || !account.includes('Sync this device')) {
   throw new Error('Production THIEPN Account page is missing its sign-in/sync contract');
 }
+await requireRoute(`${origin}/auth/callback/`);
+
+const discoveryResponse = await fetchResponse(accountDiscoveryUrl);
+const discovery = await discoveryResponse.json();
+if (!discovery || typeof discovery !== 'object') {
+  throw new Error('THIEPN Account OAuth discovery response is invalid');
+}
+if (discovery.issuer !== accountIssuer
+  || discovery.authorization_endpoint !== `${accountIssuer}/oauth/authorize`
+  || discovery.token_endpoint !== `${accountIssuer}/oauth/token`
+  || !Array.isArray(discovery.code_challenge_methods_supported)
+  || !discovery.code_challenge_methods_supported.includes('S256')
+  || !Array.isArray(discovery.grant_types_supported)
+  || !discovery.grant_types_supported.includes('authorization_code')
+  || !discovery.grant_types_supported.includes('refresh_token')
+  || !Array.isArray(discovery.token_endpoint_auth_methods_supported)
+  || !discovery.token_endpoint_auth_methods_supported.includes('none')) {
+  throw new Error('THIEPN Account OAuth server does not satisfy the Library public-client contract');
+}
+
+const authorizeUrl = new URL(discovery.authorization_endpoint);
+authorizeUrl.searchParams.set('response_type', 'code');
+authorizeUrl.searchParams.set('client_id', libraryOAuthClientId);
+authorizeUrl.searchParams.set('redirect_uri', libraryOAuthCallback);
+authorizeUrl.searchParams.set('scope', 'email profile offline_access');
+authorizeUrl.searchParams.set('state', 'B'.repeat(43));
+authorizeUrl.searchParams.set('code_challenge', 'A'.repeat(43));
+authorizeUrl.searchParams.set('code_challenge_method', 'S256');
+
+let authorizationResponse;
+let authorizationError;
+for (let attempt = 1; attempt <= 8; attempt++) {
+  try {
+    authorizationResponse = await fetch(authorizeUrl, {
+      redirect: 'manual',
+      cache: 'no-store',
+    });
+    if ([301, 302, 303, 307, 308].includes(authorizationResponse.status)) break;
+    throw new Error(`unexpected authorization status ${authorizationResponse.status}`);
+  } catch (error) {
+    authorizationError = error;
+    authorizationResponse = undefined;
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+  }
+}
+if (!authorizationResponse) throw authorizationError ?? new Error('THIEPN Account authorization request failed');
+const authorizationLocation = authorizationResponse.headers.get('location');
+if (!authorizationLocation) throw new Error('THIEPN Account authorization response is missing its redirect');
+const consentUrl = new URL(authorizationLocation);
+if (consentUrl.origin !== 'https://account.thiepn.dev'
+  || consentUrl.pathname.replace(/\/$/, '') !== '/oauth/consent'
+  || !consentUrl.searchParams.get('authorization_id')) {
+  throw new Error(`THIEPN Account authorization redirect mismatch: ${authorizationLocation}`);
+}
+console.log('LIVE_ACCOUNT THIEPN_ACCOUNT_SSO_READY');
 
 const authSettingsResponse = await fetchResponse(`${accountProjectUrl}/auth/v1/settings`, {
   headers: { apikey: accountPublishableKey },

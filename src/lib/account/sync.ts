@@ -1,10 +1,9 @@
-import type { User } from '@supabase/supabase-js';
 import {
   createLibraryBackup,
   restoreLibraryBackupJson,
   type LibraryBackupV1,
 } from '../client/library-portability';
-import { getThiepnAccountClient } from './supabase';
+import { getThiepnAccountClient, type LibraryAccountUser } from './supabase';
 import {
   backupHasMeaningfulLibraryState,
   decideLibrarySync,
@@ -173,11 +172,6 @@ async function readCloudState(): Promise<CloudState | undefined> {
   return data ? normalizeCloudState(data) : undefined;
 }
 
-async function connectLibraryApp(): Promise<void> {
-  const { error } = await getThiepnAccountClient().rpc('connect_thiepn_app', { p_app_slug: 'library' });
-  if (error) throw error;
-}
-
 async function writeCloudState(
   expectedRevision: number | null,
   state: LibraryBackupV1,
@@ -251,8 +245,13 @@ async function pushLocal(
   return result;
 }
 
-export async function enableLibraryAccountSync(user: User): Promise<LibrarySyncResult> {
-  await connectLibraryApp();
+export async function enableLibraryAccountSync(user: LibraryAccountUser): Promise<LibrarySyncResult> {
+  if (!(await readLibraryConnectionActive())) {
+    return {
+      status: 'disabled',
+      message: 'Library is not connected in THIEPN Account.',
+    };
+  }
   const current = metaForUser(user.id);
   writeLibrarySyncMeta({
     ...current,
@@ -263,7 +262,7 @@ export async function enableLibraryAccountSync(user: User): Promise<LibrarySyncR
   return reconcileLibraryAccountSync(user);
 }
 
-export async function reconcileLibraryAccountSync(user: User): Promise<LibrarySyncResult> {
+export async function reconcileLibraryAccountSync(user: LibraryAccountUser): Promise<LibrarySyncResult> {
   const meta = metaForUser(user.id);
   if (!meta.enabled) return { status: 'disabled', message: 'Cloud sync is not enabled on this device.' };
   if (!navigator.onLine) {
@@ -279,7 +278,7 @@ export async function reconcileLibraryAccountSync(user: User): Promise<LibrarySy
       writeLibrarySyncMeta({ ...meta, enabled: false });
       const result: LibrarySyncResult = {
         status: 'disabled',
-        message: 'Library is disconnected in THIEPN Account. Choose “Sync this device” to reconnect it.',
+        message: 'Library is disconnected in THIEPN Account. Reconnect it from THIEPN Account before resuming sync.',
       };
       emitSync(result);
       return result;
@@ -339,7 +338,7 @@ export async function reconcileLibraryAccountSync(user: User): Promise<LibrarySy
   }
 }
 
-export async function chooseThisDeviceForLibrarySync(user: User): Promise<LibrarySyncResult> {
+export async function chooseThisDeviceForLibrarySync(user: LibraryAccountUser): Promise<LibrarySyncResult> {
   try {
     const [local, cloud] = await Promise.all([createLibraryBackup(), readCloudState()]);
     return await pushLocal(user.id, cloud, local);
@@ -350,7 +349,7 @@ export async function chooseThisDeviceForLibrarySync(user: User): Promise<Librar
   }
 }
 
-export async function chooseCloudForLibrarySync(user: User): Promise<LibrarySyncResult> {
+export async function chooseCloudForLibrarySync(user: LibraryAccountUser): Promise<LibrarySyncResult> {
   try {
     const cloud = await readCloudState();
     if (!cloud) {

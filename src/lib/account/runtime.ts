@@ -1,31 +1,54 @@
 import {
+  beginLibraryAccountSso,
   getVerifiedLibraryAccountUser,
   subscribeLibraryAccountAuth,
 } from './supabase';
+import { probeExistingThiepnAccountSession } from './sso-probe';
 import {
   isLibrarySyncEnabledForUser,
   reconcileLibraryAccountSync,
 } from './sync';
 import { reconcileLibraryPersonalFiles } from './personal-files';
 
+const AUTO_SSO_PROBE_COOLDOWN_MS = 30_000;
+
 export function mountLibraryAccountRuntime(): () => void {
   let timer: number | undefined;
   let running = false;
   let disposed = false;
+  let lastProbeAt = 0;
 
   const run = async () => {
     if (disposed || running) return;
     running = true;
     try {
       const user = await getVerifiedLibraryAccountUser();
-      if (user && isLibrarySyncEnabledForUser(user.id)) {
+
+      if (!user) {
+        const normalizedPath = window.location.pathname.replace(/\/$/, '');
+        if (
+          navigator.onLine
+          && !normalizedPath.endsWith('/auth/callback')
+          && Date.now() - lastProbeAt >= AUTO_SSO_PROBE_COOLDOWN_MS
+        ) {
+          lastProbeAt = Date.now();
+          const probe = await probeExistingThiepnAccountSession();
+          if (probe === 'signed-in') {
+            await beginLibraryAccountSso(window.location.href);
+            return;
+          }
+        }
+        return;
+      }
+
+      if (isLibrarySyncEnabledForUser(user.id)) {
         const result = await reconcileLibraryAccountSync(user);
         if (result.status === 'synced' || result.status === 'pushed' || result.status === 'pulled') {
           await reconcileLibraryPersonalFiles(user);
         }
       }
     } catch {
-      // Account sync is optional and must never block local reading.
+      // SSO and Account sync are optional and must never block local reading.
     } finally {
       running = false;
     }
@@ -47,7 +70,7 @@ export function mountLibraryAccountRuntime(): () => void {
       channel.addEventListener('message', () => schedule());
       channels.push(channel);
     } catch {
-      // Focus, online, visibility and auth events still drive reconciliation.
+      // Focus, online, visibility and account events still drive reconciliation.
     }
   }
 
@@ -58,7 +81,9 @@ export function mountLibraryAccountRuntime(): () => void {
     else schedule(100);
   };
   const onStorage = (event: StorageEvent) => {
-    if (event.key?.startsWith('thiepn.library.')) schedule(750);
+    if (event.key?.startsWith('thiepn.library.') || event.key?.startsWith('thiepn:library-sso:')) {
+      schedule(750);
+    }
   };
 
   window.addEventListener('online', onOnline);

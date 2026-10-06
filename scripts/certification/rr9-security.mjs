@@ -80,13 +80,16 @@ if (present) {
 
   pass('RR9_PUBLIC_PRIVACY_SUPPORT',
     privacy.includes('guest-first: no account is required')
-      && privacy.includes('If you explicitly sign in with THIEPN Account and enable sync for this device')
+      && privacy.includes('If THIEPN Account is already signed in, Library can attach that existing account automatically through first-party SSO')
+      && privacy.includes('Reading-state upload still does not begin until sync is enabled for this device')
       && privacy.includes('Personal book cloud is a separate, sensitive, opt-in Account permission')
       && privacy.includes('owner-scoped private Supabase Storage bucket')
       && privacy.includes('Revoking the permission stops Library access but does not itself delete retained cloud files')
       && privacy.includes('There is no advertising or behavioral analytics path in the reader')
       && privacy.includes('do not contain the bytes of your personal EPUB/PDF files')
-      && securityPage.includes('THIEPN Account uses Supabase Auth with Google OAuth and PKCE')
+      && securityPage.includes('Library never signs into Google directly')
+      && securityPage.includes('registered first-party OAuth 2.1 public client')
+      && securityPage.includes('silent Account-origin probe exposes only signed-in eligibility')
       && securityPage.includes('Publication content is treated as untrusted')
       && supportPage.includes('exact release SHA')
       && layout.includes("href('/security')")
@@ -175,10 +178,13 @@ if (present) {
       && deploy.includes('PUBLIC_THIEPN_ACCOUNT_PUBLISHABLE_KEY:-')
       && verifyProduction.includes('THIEPN Account publishable key is missing from production verification')
       && verifyProduction.includes('/account/')
+      && verifyProduction.includes('/auth/callback/')
+      && verifyProduction.includes('/.well-known/oauth-authorization-server/auth/v1')
+      && verifyProduction.includes('THIEPN_ACCOUNT_SSO_READY')
       && verifyProduction.includes('/auth/v1/settings')
       && verifyProduction.includes('THIEPN_ACCOUNT_AUTH_READY')
       && verifyProduction.includes('authSettings.external.google !== true'),
-    'Production pins the canonical public THIEPN Account publishable key, retains readiness validation, and live-verifies the Account surface plus Google OAuth readiness');
+    'Production pins the canonical public THIEPN Account publishable key, retains readiness validation, and live-verifies first-party SSO, the Library callback, the Account surface, and upstream Google OAuth readiness');
 
   pass('RR9_V1_FAIL_CLOSED',
     pkg.scripts?.['release:v1:gate'] === 'node scripts/release/v1-gate.mjs'
