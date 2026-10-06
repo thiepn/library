@@ -113,7 +113,7 @@ const workCatalog = (await getWorks()).map((work) => ({
       note: string;
       createdAt: string;
       updatedAt: string;
-      href?: string;
+      href: string | undefined;
       record: ReaderAnnotationRecordV2 | PdfAnnotationRecord | AnnotationRecord;
     }
 
