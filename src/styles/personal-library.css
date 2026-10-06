@@ -138,3 +138,154 @@
   .personal-book__action,
   .reading-state-filters button { border: 1px solid ButtonText; }
 }
+
+
+.personal-organizer {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.7fr) repeat(4, minmax(120px, .8fr)) auto;
+  gap: .75rem;
+  align-items: end;
+  margin: 0 0 1rem;
+  padding: 1rem;
+  border: 1px solid var(--line, #d7d2c8);
+  background: var(--surface, #faf8f3);
+}
+.personal-organizer label {
+  display: grid;
+  gap: .35rem;
+  min-width: 0;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.personal-organizer input,
+.personal-organizer select {
+  width: 100%;
+  min-height: 2.55rem;
+  padding: .45rem .55rem;
+  border: 1px solid var(--line-strong, #aaa399);
+  border-radius: 0;
+  background: var(--paper, #fff);
+  color: inherit;
+  font: inherit;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.personal-organizer__clear {
+  min-height: 2.55rem;
+  padding: .45rem .7rem;
+  border: 1px solid var(--line-strong, #aaa399);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.personal-organizer__summary {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+.personal-organizer input:focus-visible,
+.personal-organizer select:focus-visible,
+.personal-organizer__clear:focus-visible {
+  outline: 3px solid currentColor;
+  outline-offset: 2px;
+}
+
+.personal-book__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .35rem;
+  margin-top: .65rem;
+}
+.personal-book__chip {
+  appearance: none;
+  max-width: 100%;
+  padding: .2rem .45rem;
+  overflow: hidden;
+  border: 1px solid var(--line, #d7d2c8);
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: .7rem;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.personal-book__chip--tag { opacity: .72; }
+.personal-book__chip:hover { text-decoration: underline; text-underline-offset: .12em; }
+.personal-book__chip:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+.personal-books__empty { margin-top: 1rem; }
+
+.personal-metadata-dialog {
+  width: min(620px, calc(100vw - 2rem));
+  max-height: min(84dvh, 760px);
+  padding: 0;
+  border: 1px solid var(--line-strong, #aaa399);
+  border-radius: 0;
+  background: var(--surface, #faf8f3);
+  color: inherit;
+}
+.personal-metadata-dialog::backdrop { background: rgb(0 0 0 / .42); }
+.personal-metadata-dialog form {
+  display: grid;
+  gap: .9rem;
+  padding: 1.25rem;
+}
+.personal-metadata-dialog__heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+}
+.personal-metadata-dialog__heading h2 { margin: .1rem 0 0; }
+.personal-metadata-dialog__close {
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+  border: 1px solid var(--line-strong, #aaa399);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+.personal-metadata-dialog label {
+  display: grid;
+  gap: .35rem;
+  font-size: .82rem;
+  font-weight: 700;
+}
+.personal-metadata-dialog label input {
+  min-height: 2.65rem;
+  padding: .5rem .6rem;
+  border: 1px solid var(--line-strong, #aaa399);
+  border-radius: 0;
+  background: var(--paper, #fff);
+  color: inherit;
+  font: inherit;
+  font-weight: 400;
+}
+.personal-metadata-dialog label small { font-weight: 400; opacity: .7; }
+.personal-metadata-dialog__status { min-height: 1.4em; margin: 0; font-size: .85rem; }
+.personal-metadata-dialog__actions { display: flex; flex-wrap: wrap; gap: .55rem; }
+.personal-metadata-dialog input:focus-visible,
+.personal-metadata-dialog button:focus-visible { outline: 3px solid currentColor; outline-offset: 2px; }
+
+@media (max-width: 980px) {
+  .personal-organizer { grid-template-columns: 1fr 1fr 1fr; }
+  .personal-organizer__search { grid-column: 1 / -1; }
+}
+@media (max-width: 640px) {
+  .personal-organizer { grid-template-columns: 1fr; padding: .8rem; }
+  .personal-organizer__search,
+  .personal-organizer__summary { grid-column: auto; }
+}
+@media (forced-colors: active) {
+  .personal-organizer,
+  .personal-book__chip,
+  .personal-metadata-dialog,
+  .personal-metadata-dialog__close { border-color: CanvasText; }
+}
