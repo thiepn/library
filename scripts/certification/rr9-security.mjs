@@ -13,6 +13,7 @@ const required = [
   'src/pages/security.astro',
   'src/pages/support.astro',
   'src/layouts/BaseLayout.astro',
+  'src/lib/account/personal-files.ts',
   'src/lib/reader/epub-security.ts',
   'src/lib/publication-compatibility.ts',
   'src/lib/pdf-reader/runtime.ts',
@@ -34,7 +35,7 @@ const present = (await Promise.all(required.map(exists))).every(Boolean);
 pass('RR9_FILES', present, 'RR9 security, privacy, dependency, release, documentation, workflow, and executable acceptance owners are present');
 
 if (present) {
-  const [doc, ops, securityDoc, changelog, privacy, securityPage, supportPage, layout, epubSecurity, inspector, pdfRuntime, tests, sbom, licenses, v1Gate, prepareDeploy, verifyProduction, securityWorkflow, v1Workflow, publicationIngest, dependabot, deploy, workspace, packageText] = await Promise.all(required.map((file) => readFile(file, 'utf8')));
+  const [doc, ops, securityDoc, changelog, privacy, securityPage, supportPage, layout, personalFiles, epubSecurity, inspector, pdfRuntime, tests, sbom, licenses, v1Gate, prepareDeploy, verifyProduction, securityWorkflow, v1Workflow, publicationIngest, dependabot, deploy, workspace, packageText] = await Promise.all(required.map((file) => readFile(file, 'utf8')));
   const pkg = JSON.parse(packageText);
 
   pass('RR9_APP_CSP',
@@ -80,7 +81,9 @@ if (present) {
   pass('RR9_PUBLIC_PRIVACY_SUPPORT',
     privacy.includes('guest-first: no account is required')
       && privacy.includes('If you explicitly sign in with THIEPN Account and enable sync for this device')
-      && privacy.includes('Personal EPUB/PDF file bytes and local cover blobs are not uploaded by Account sync')
+      && privacy.includes('Personal book cloud is a separate, sensitive, opt-in Account permission')
+      && privacy.includes('owner-scoped private Supabase Storage bucket')
+      && privacy.includes('Revoking the permission stops Library access but does not itself delete retained cloud files')
       && privacy.includes('There is no advertising or behavioral analytics path in the reader')
       && privacy.includes('do not contain the bytes of your personal EPUB/PDF files')
       && securityPage.includes('THIEPN Account uses Supabase Auth with Google OAuth and PKCE')
@@ -89,6 +92,18 @@ if (present) {
       && layout.includes("href('/security')")
       && layout.includes("href('/support')"),
     'Privacy, account sync, personal-file, security, support, network, and physical-evidence boundaries are publicly discoverable and explicit');
+
+  pass('RR9_PERSONAL_FILE_CLOUD',
+    personalFiles.includes("LIBRARY_PERSONAL_FILES_BUCKET = 'library-personal-books'")
+      && personalFiles.includes("LIBRARY_PERSONAL_FILES_PERMISSION = 'personal_files.sync'")
+      && personalFiles.includes('LIBRARY_PERSONAL_FILE_MAX_BYTES = 50 * 1024 * 1024')
+      && personalFiles.includes('.upload(personalFileCloudPath')
+      && personalFiles.includes('.download(personalFileCloudPath')
+      && personalFiles.includes("crypto.subtle.digest('SHA-256'")
+      && !personalFiles.includes('.remove(')
+      && securityPage.includes('content-addressed SHA-256 object names')
+      && securityPage.includes('no public object URLs'),
+    'Personal-file continuity is separately consented, private, content-addressed, integrity checked, size bounded, and gives the Library browser no ordinary delete path');
 
   pass('RR9_DEPENDENCY_POLICY',
     workspace.includes('minimumReleaseAge: 1440')
