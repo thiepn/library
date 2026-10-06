@@ -119,7 +119,7 @@ const authorizeUrl = new URL(discovery.authorization_endpoint);
 authorizeUrl.searchParams.set('response_type', 'code');
 authorizeUrl.searchParams.set('client_id', libraryOAuthClientId);
 authorizeUrl.searchParams.set('redirect_uri', libraryOAuthCallback);
-authorizeUrl.searchParams.set('scope', 'email profile offline_access');
+authorizeUrl.searchParams.set('scope', 'openid email profile offline_access');
 authorizeUrl.searchParams.set('state', 'B'.repeat(43));
 authorizeUrl.searchParams.set('code_challenge', 'A'.repeat(43));
 authorizeUrl.searchParams.set('code_challenge_method', 'S256');
