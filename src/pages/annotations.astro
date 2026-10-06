@@ -1,53 +1,515 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { getWorks } from '../lib/content/repository';
+import '../styles/annotation-center.css';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const workCatalog = (await getWorks()).map((work) => ({
+  id: work.id,
+  slug: work.slug,
+  title: work.title,
+}));
 ---
-<BaseLayout title="Annotations" description="Browser-local Library annotations." noindex>
-  <div class="page">
-    <section class="section">
-      <div class="section-heading"><div><p class="eyebrow">Local / Notes</p><h1>Annotations</h1></div><p class="micro" data-annotation-count>Loading local state…</p></div>
-      <div class="annotation-list" data-annotation-list></div>
-      <div class="empty" data-annotation-empty hidden><h2>No annotations yet.</h2><p>Highlights and notes created in the reader will appear here. They remain browser-local unless you explicitly export them.</p></div>
+<BaseLayout title="Annotations" description="Search, edit, export, and reopen Library highlights and notes." noindex>
+  <div class="page annotation-center" data-annotation-center data-base={base}>
+    <section class="section annotation-center__hero">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Knowledge / Annotations</p>
+          <h1>Annotations</h1>
+          <p class="annotation-center__intro">Highlights and notes from EPUBs, PDFs, hosted books, and personal books in one searchable workspace.</p>
+        </div>
+        <p class="micro" data-annotation-count>Loading annotations…</p>
+      </div>
+
+      <div class="annotation-center__toolbar" aria-label="Annotation tools">
+        <label class="annotation-center__search">
+          <span>Search</span>
+          <input type="search" data-annotation-search autocomplete="off" placeholder="Search quotes, notes, books, or chapters" />
+        </label>
+        <label>
+          <span>Format</span>
+          <select data-annotation-format>
+            <option value="all">All formats</option>
+            <option value="epub">EPUB</option>
+            <option value="pdf">PDF</option>
+            <option value="web">Legacy web</option>
+          </select>
+        </label>
+        <label>
+          <span>Type</span>
+          <select data-annotation-type>
+            <option value="all">Highlights + notes</option>
+            <option value="notes">With notes</option>
+            <option value="highlights">Highlights only</option>
+          </select>
+        </label>
+        <label>
+          <span>Sort</span>
+          <select data-annotation-sort>
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
+            <option value="book">Book title</option>
+          </select>
+        </label>
+        <div class="annotation-center__export">
+          <button type="button" class="secondary-action" data-annotation-copy>Copy Markdown</button>
+          <button type="button" class="secondary-action" data-annotation-export>Export Markdown</button>
+        </div>
+      </div>
+
+      <p class="annotation-center__status micro" data-annotation-status role="status" aria-live="polite"></p>
+      <div class="annotation-list annotation-center__list" data-annotation-list></div>
+      <div class="empty" data-annotation-empty hidden>
+        <h2>No annotations here.</h2>
+        <p data-annotation-empty-copy>Highlights and notes created in the readers will appear here.</p>
+      </div>
     </section>
   </div>
+  <div hidden data-annotation-work-catalog={JSON.stringify(workCatalog)}></div>
+
   <script>
-    import { deleteAnnotation, getAnnotations, subscribeLibraryState } from '../lib/client/library-db';
-    const list = document.querySelector<HTMLElement>('[data-annotation-list]');
-    const empty = document.querySelector<HTMLElement>('[data-annotation-empty]');
-    const count = document.querySelector<HTMLElement>('[data-annotation-count]');
-    async function render() {
-      if (!list) return;
-      try {
-        const annotations = await getAnnotations();
-        list.replaceChildren();
-        if (count) count.textContent = `${annotations.length} annotation${annotations.length === 1 ? '' : 's'}`;
-        if (empty) empty.hidden = annotations.length !== 0;
-        for (const annotation of annotations) {
-          const article = document.createElement('article');
-          article.className = 'annotation-item';
-          const meta = document.createElement('p');
-          meta.className = 'eyebrow';
-          meta.textContent = annotation.chapterId ? `${annotation.workId} · ${annotation.chapterId}` : annotation.workId;
-          if (annotation.quote) {
-            const quote = document.createElement('blockquote');
-            quote.textContent = annotation.quote;
-            article.append(meta, quote);
-          } else article.append(meta);
-          const note = document.createElement('p');
-          note.textContent = annotation.note;
-          const remove = document.createElement('button');
-          remove.type = 'button';
-          remove.className = 'text-action';
-          remove.textContent = 'Delete';
-          remove.addEventListener('click', async () => { await deleteAnnotation(annotation.id); await render(); });
-          article.append(note, remove);
-          list.append(article);
+    import {
+      deleteAnnotation,
+      getAllAnnotationRecords,
+      putLegacyAnnotation,
+      subscribeLibraryState,
+      type AnnotationRecord,
+    } from '../lib/client/library-db';
+    import { getPersonalBooks } from '../lib/client/personal-books';
+    import {
+      deletePdfAnnotation,
+      getPdfAnnotations,
+      isPdfAnnotationRecord,
+      putPdfAnnotation,
+      subscribePdfReaderState,
+      type PdfAnnotationRecord,
+    } from '../lib/pdf-reader/state';
+    import {
+      deleteReaderAnnotation,
+      isReaderAnnotationRecordV2,
+      putReaderAnnotation,
+      type ReaderAnnotationRecordV2,
+    } from '../lib/reader/annotation-store';
+
+    type AnnotationFormat = 'epub' | 'pdf' | 'web';
+    type AnnotationKind = 'epub' | 'pdf' | 'legacy';
+
+    interface HostedWork {
+      id: string;
+      slug: string;
+      title: string;
+    }
+
+    interface KnowledgeAnnotation {
+      key: string;
+      kind: AnnotationKind;
+      format: AnnotationFormat;
+      id: string;
+      workId: string;
+      title: string;
+      location: string;
+      quote: string;
+      note: string;
+      createdAt: string;
+      updatedAt: string;
+      href?: string;
+      record: ReaderAnnotationRecordV2 | PdfAnnotationRecord | AnnotationRecord;
+    }
+
+    const root = document.querySelector<HTMLElement>('[data-annotation-center]');
+    const list = root?.querySelector<HTMLElement>('[data-annotation-list]');
+    const empty = root?.querySelector<HTMLElement>('[data-annotation-empty]');
+    const emptyCopy = root?.querySelector<HTMLElement>('[data-annotation-empty-copy]');
+    const count = root?.querySelector<HTMLElement>('[data-annotation-count]');
+    const status = root?.querySelector<HTMLElement>('[data-annotation-status]');
+    const search = root?.querySelector<HTMLInputElement>('[data-annotation-search]');
+    const format = root?.querySelector<HTMLSelectElement>('[data-annotation-format]');
+    const type = root?.querySelector<HTMLSelectElement>('[data-annotation-type]');
+    const sort = root?.querySelector<HTMLSelectElement>('[data-annotation-sort]');
+    const copy = root?.querySelector<HTMLButtonElement>('[data-annotation-copy]');
+    const exportButton = root?.querySelector<HTMLButtonElement>('[data-annotation-export]');
+    const base = root?.dataset.base ?? '/library';
+    const catalogNode = document.querySelector<HTMLElement>('[data-annotation-work-catalog]');
+    const hostedWorks = new Map<string, HostedWork>();
+    const personalTitles = new Map<string, string>();
+    let annotations: KnowledgeAnnotation[] = [];
+    let renderRevision = 0;
+
+    try {
+      const parsed = JSON.parse(catalogNode?.dataset.annotationWorkCatalog ?? '[]') as HostedWork[];
+      for (const work of parsed) hostedWorks.set(work.id, work);
+    } catch {}
+
+    function isLegacyAnnotation(value: unknown): value is AnnotationRecord {
+      if (typeof value !== 'object' || value === null || 'schemaVersion' in value) return false;
+      const record = value as Partial<AnnotationRecord>;
+      return typeof record.id === 'string' && Boolean(record.id)
+        && typeof record.workId === 'string' && Boolean(record.workId)
+        && typeof record.note === 'string'
+        && typeof record.createdAt === 'string'
+        && typeof record.updatedAt === 'string';
+    }
+
+    function personalBookId(workId: string): string | undefined {
+      return workId.startsWith('personal:') ? workId.slice('personal:'.length) : undefined;
+    }
+
+    function titleFor(workId: string): string {
+      const personalId = personalBookId(workId);
+      if (personalId) return personalTitles.get(personalId) ?? 'Personal book';
+      return hostedWorks.get(workId)?.title ?? workId;
+    }
+
+    function hostedSlug(workId: string): string | undefined {
+      return hostedWorks.get(workId)?.slug;
+    }
+
+    function readerHref(record: ReaderAnnotationRecordV2): string | undefined {
+      const personalId = personalBookId(record.workId);
+      if (personalId) return `${base}/personal/read?id=${encodeURIComponent(personalId)}&annotation=${encodeURIComponent(record.id)}`;
+      const slug = hostedSlug(record.workId);
+      return slug ? `${base}/works/${encodeURIComponent(slug)}/read?annotation=${encodeURIComponent(record.id)}` : undefined;
+    }
+
+    function pdfHref(record: PdfAnnotationRecord): string | undefined {
+      const personalId = personalBookId(record.identity.workId);
+      const query = `page=${record.page}&annotation=${encodeURIComponent(record.id)}`;
+      if (personalId) return `${base}/personal/pdf?id=${encodeURIComponent(personalId)}&${query}`;
+      const slug = hostedSlug(record.identity.workId);
+      return slug ? `${base}/works/${encodeURIComponent(slug)}/pdf?${query}` : undefined;
+    }
+
+    function legacyHref(record: AnnotationRecord): string | undefined {
+      const slug = hostedSlug(record.workId);
+      if (!slug) return undefined;
+      return record.chapterId
+        ? `${base}/works/${encodeURIComponent(slug)}/read/${encodeURIComponent(record.chapterId)}`
+        : `${base}/works/${encodeURIComponent(slug)}/read?legacy=1`;
+    }
+
+    function normalizeMain(value: unknown): KnowledgeAnnotation | undefined {
+      if (isReaderAnnotationRecordV2(value)) {
+        return {
+          key: `epub:${value.id}`,
+          kind: 'epub',
+          format: 'epub',
+          id: value.id,
+          workId: value.workId,
+          title: titleFor(value.workId),
+          location: value.chapterLabel || 'EPUB location',
+          quote: value.quote,
+          note: value.note,
+          createdAt: value.createdAt,
+          updatedAt: value.updatedAt,
+          href: readerHref(value),
+          record: value,
+        };
+      }
+      if (isLegacyAnnotation(value)) {
+        return {
+          key: `legacy:${value.id}`,
+          kind: 'legacy',
+          format: 'web',
+          id: value.id,
+          workId: value.workId,
+          title: titleFor(value.workId),
+          location: value.chapterId ? `Section ${value.chapterId}` : 'Legacy reader',
+          quote: value.quote ?? '',
+          note: value.note,
+          createdAt: value.createdAt,
+          updatedAt: value.updatedAt,
+          href: legacyHref(value),
+          record: value,
+        };
+      }
+      return undefined;
+    }
+
+    function normalizePdf(value: PdfAnnotationRecord): KnowledgeAnnotation {
+      return {
+        key: `pdf:${value.id}`,
+        kind: 'pdf',
+        format: 'pdf',
+        id: value.id,
+        workId: value.identity.workId,
+        title: titleFor(value.identity.workId),
+        location: `Page ${value.page}`,
+        quote: value.quote,
+        note: value.note,
+        createdAt: value.createdAt,
+        updatedAt: value.updatedAt,
+        href: pdfHref(value),
+        record: value,
+      };
+    }
+
+    function visibleAnnotations(): KnowledgeAnnotation[] {
+      const query = search?.value.trim().toLocaleLowerCase() ?? '';
+      const formatFilter = format?.value ?? 'all';
+      const typeFilter = type?.value ?? 'all';
+      const sortMode = sort?.value ?? 'newest';
+      const filtered = annotations.filter((item) => {
+        if (formatFilter !== 'all' && item.format !== formatFilter) return false;
+        if (typeFilter === 'notes' && !item.note.trim()) return false;
+        if (typeFilter === 'highlights' && item.note.trim()) return false;
+        if (!query) return true;
+        return `${item.title}\n${item.location}\n${item.quote}\n${item.note}`.toLocaleLowerCase().includes(query);
+      });
+      return filtered.sort((a, b) => {
+        if (sortMode === 'oldest') return a.updatedAt.localeCompare(b.updatedAt);
+        if (sortMode === 'book') return a.title.localeCompare(b.title) || b.updatedAt.localeCompare(a.updatedAt);
+        return b.updatedAt.localeCompare(a.updatedAt);
+      });
+    }
+
+    function formatDate(value: string): string {
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return 'Saved';
+      try { return new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(date); }
+      catch { return 'Saved'; }
+    }
+
+    function markdown(items: KnowledgeAnnotation[]): string {
+      const lines = [
+        '# Library annotations',
+        '',
+        `Exported ${new Date().toISOString()}`,
+        '',
+      ];
+      let previous = '';
+      for (const item of items) {
+        if (item.title !== previous) {
+          lines.push(`## ${item.title}`, '');
+          previous = item.title;
         }
-      } catch {
-        if (count) count.textContent = 'Local state unavailable';
+        lines.push(`### ${item.location} · ${item.format.toUpperCase()}`, '');
+        if (item.quote.trim()) lines.push(`> ${item.quote.trim().replace(/\n+/g, '\n> ')}`, '');
+        if (item.note.trim()) lines.push(item.note.trim(), '');
+        if (item.href) lines.push(`[Open in Library](${new URL(item.href, location.href).href})`, '');
+        lines.push(`_Updated ${item.updatedAt}_`, '', '---', '');
+      }
+      return `${lines.join('\n').trim()}\n`;
+    }
+
+    function downloadText(fileName: string, text: string): void {
+      const blob = new Blob([text], { type: 'text/markdown;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = fileName;
+      anchor.click();
+      setTimeout(() => URL.revokeObjectURL(url), 0);
+    }
+
+    async function updateNote(item: KnowledgeAnnotation, note: string): Promise<void> {
+      const updatedAt = new Date().toISOString();
+      if (item.kind === 'epub' && isReaderAnnotationRecordV2(item.record)) {
+        await putReaderAnnotation({ ...item.record, note, updatedAt });
+      } else if (item.kind === 'pdf' && isPdfAnnotationRecord(item.record)) {
+        await putPdfAnnotation({ ...item.record, note, updatedAt });
+      } else if (item.kind === 'legacy' && isLegacyAnnotation(item.record)) {
+        await putLegacyAnnotation({ ...item.record, note, updatedAt });
       }
     }
-    const unsubscribe = subscribeLibraryState(() => { void render(); });
-    window.addEventListener('pagehide', unsubscribe, { once: true });
-    void render();
+
+    async function removeAnnotation(item: KnowledgeAnnotation): Promise<void> {
+      if (item.kind === 'epub' && isReaderAnnotationRecordV2(item.record)) {
+        await deleteReaderAnnotation(item.id, item.workId);
+      } else if (item.kind === 'pdf' && isPdfAnnotationRecord(item.record)) {
+        await deletePdfAnnotation(item.id, item.record.identity);
+      } else {
+        await deleteAnnotation(item.id);
+      }
+    }
+
+    function render(): void {
+      if (!list) return;
+      const items = visibleAnnotations();
+      list.replaceChildren();
+      if (count) count.textContent = `${annotations.length} annotation${annotations.length === 1 ? '' : 's'} · ${items.length} shown`;
+      if (empty) empty.hidden = items.length !== 0;
+      if (emptyCopy) emptyCopy.textContent = annotations.length === 0
+        ? 'Highlights and notes created in the EPUB and PDF readers will appear here.'
+        : 'No annotations match the current search and filters.';
+      if (copy) copy.disabled = items.length === 0;
+      if (exportButton) exportButton.disabled = items.length === 0;
+
+      for (const item of items) {
+        const article = document.createElement('article');
+        article.className = 'annotation-card';
+        article.dataset.annotationKey = item.key;
+
+        const header = document.createElement('header');
+        header.className = 'annotation-card__header';
+        const identity = document.createElement('div');
+        const book = document.createElement('h2');
+        book.textContent = item.title;
+        const meta = document.createElement('p');
+        meta.className = 'annotation-card__meta';
+        meta.textContent = `${item.location} · ${item.format.toUpperCase()} · ${formatDate(item.updatedAt)}`;
+        identity.append(book, meta);
+        const formatChip = document.createElement('span');
+        formatChip.className = 'annotation-card__format';
+        formatChip.textContent = item.note.trim() ? 'Note' : 'Highlight';
+        header.append(identity, formatChip);
+        article.append(header);
+
+        if (item.quote.trim()) {
+          const quote = document.createElement('blockquote');
+          quote.textContent = item.quote;
+          article.append(quote);
+        }
+
+        const note = document.createElement('p');
+        note.className = 'annotation-card__note';
+        note.textContent = item.note.trim() || 'No note attached.';
+        if (!item.note.trim()) note.dataset.empty = '';
+        article.append(note);
+
+        const editor = document.createElement('div');
+        editor.className = 'annotation-card__editor';
+        editor.hidden = true;
+        const textarea = document.createElement('textarea');
+        textarea.rows = 4;
+        textarea.maxLength = 5000;
+        textarea.value = item.note;
+        textarea.setAttribute('aria-label', `Note for ${item.title}, ${item.location}`);
+        const editorActions = document.createElement('div');
+        const save = document.createElement('button');
+        save.type = 'button';
+        save.className = 'primary-action';
+        save.textContent = 'Save note';
+        const cancel = document.createElement('button');
+        cancel.type = 'button';
+        cancel.className = 'secondary-action';
+        cancel.textContent = 'Cancel';
+        editorActions.append(save, cancel);
+        editor.append(textarea, editorActions);
+        article.append(editor);
+
+        const actions = document.createElement('div');
+        actions.className = 'annotation-card__actions';
+        if (item.href) {
+          const open = document.createElement('a');
+          open.className = 'primary-action';
+          open.href = item.href;
+          open.textContent = 'Open in book';
+          actions.append(open);
+        }
+        const edit = document.createElement('button');
+        edit.type = 'button';
+        edit.className = 'secondary-action';
+        edit.textContent = item.note.trim() ? 'Edit note' : 'Add note';
+        const copyOne = document.createElement('button');
+        copyOne.type = 'button';
+        copyOne.className = 'secondary-action';
+        copyOne.textContent = 'Copy';
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.className = 'text-action';
+        remove.textContent = 'Delete';
+        actions.append(edit, copyOne, remove);
+        article.append(actions);
+
+        edit.addEventListener('click', () => {
+          editor.hidden = false;
+          actions.hidden = true;
+          note.hidden = true;
+          textarea.focus();
+        });
+        cancel.addEventListener('click', () => {
+          textarea.value = item.note;
+          editor.hidden = true;
+          actions.hidden = false;
+          note.hidden = false;
+          edit.focus();
+        });
+        save.addEventListener('click', async () => {
+          save.disabled = true;
+          try {
+            await updateNote(item, textarea.value.slice(0, 5000));
+            if (status) status.textContent = 'Note saved.';
+            await load();
+          } catch {
+            if (status) status.textContent = 'Unable to save this note.';
+          } finally {
+            save.disabled = false;
+          }
+        });
+        copyOne.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(markdown([item]));
+            if (status) status.textContent = 'Annotation copied as Markdown.';
+          } catch {
+            if (status) status.textContent = 'Clipboard access is unavailable.';
+          }
+        });
+        remove.addEventListener('click', async () => {
+          remove.setAttribute('aria-busy', 'true');
+          try {
+            await removeAnnotation(item);
+            if (status) status.textContent = 'Annotation deleted.';
+            await load();
+          } catch {
+            if (status) status.textContent = 'Unable to delete this annotation.';
+          }
+        });
+        list.append(article);
+      }
+    }
+
+    async function load(): Promise<void> {
+      const revision = ++renderRevision;
+      try {
+        const [main, pdf, personal] = await Promise.all([
+          getAllAnnotationRecords(),
+          getPdfAnnotations(),
+          getPersonalBooks(),
+        ]);
+        if (revision !== renderRevision) return;
+        personalTitles.clear();
+        for (const book of personal) personalTitles.set(book.id, book.title);
+        annotations = [
+          ...main.map(normalizeMain).filter((item): item is KnowledgeAnnotation => Boolean(item)),
+          ...pdf.filter(isPdfAnnotationRecord).map(normalizePdf),
+        ];
+        if (status) status.textContent = annotations.length
+          ? 'Annotations are stored locally and included in Library backup/Account state sync.'
+          : '';
+        render();
+      } catch {
+        if (count) count.textContent = 'Annotation storage unavailable';
+        if (status) status.textContent = 'This browser could not open annotation storage.';
+      }
+    }
+
+    for (const control of [search, format, type, sort]) {
+      control?.addEventListener(control === search ? 'input' : 'change', render);
+    }
+    copy?.addEventListener('click', async () => {
+      const items = visibleAnnotations();
+      try {
+        await navigator.clipboard.writeText(markdown(items));
+        if (status) status.textContent = `Copied ${items.length} annotation${items.length === 1 ? '' : 's'} as Markdown.`;
+      } catch {
+        if (status) status.textContent = 'Clipboard access is unavailable.';
+      }
+    });
+    exportButton?.addEventListener('click', () => {
+      const items = visibleAnnotations();
+      const date = new Date().toISOString().slice(0, 10);
+      downloadText(`thiepn-library-annotations-${date}.md`, markdown(items));
+      if (status) status.textContent = `Exported ${items.length} annotation${items.length === 1 ? '' : 's'}.`;
+    });
+
+    const unsubscribeMain = subscribeLibraryState(() => { void load(); });
+    const unsubscribePdf = subscribePdfReaderState(() => { void load(); });
+    window.addEventListener('pagehide', () => {
+      unsubscribeMain();
+      unsubscribePdf();
+    }, { once: true });
+
+    void load();
   </script>
 </BaseLayout>
