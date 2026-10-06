@@ -37,7 +37,7 @@ The production runtime is:
 - deployment-time R2 staging into a hash-certified Pages artifact
 - bundled `epubjs` and `pdfjs-dist` reader engines
 - browser-local IndexedDB remains the offline authority for progress, activity, bookmarks, annotations, and personal books
-- optional THIEPN Account first-party OAuth/PKCE SSO using the shared Core account-session runtime, followed by Supabase synchronization of portable reader state with revision-CAS conflict protection; personal EPUB/PDF bytes remain local
+- optional THIEPN Account first-party OAuth/PKCE SSO using the shared Account session runtime, followed by Supabase synchronization of portable reader state with revision-CAS conflict protection; personal EPUB/PDF bytes remain local
 - optional owner-authenticated AI as a separate service, never a dependency of the static reader
 
 Large hosted PDF, EPUB, and cover binaries do not live in normal Git history. Each canonical release records filename, MIME type, byte size, and SHA-256. Deployment downloads those objects from R2, verifies them, and only then includes them in the public artifact.
