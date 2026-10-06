@@ -8,15 +8,20 @@ import {
   type RenderTask,
 } from 'pdfjs-dist';
 import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
-import type { PdfCanonicalCandidate } from './canonical';
+import { pdfReaderIdentityKey, type PdfCanonicalCandidate } from './canonical';
 import { PdfDeviceController } from './device';
 import {
+  deletePdfAnnotation,
+  getPdfAnnotations,
   getPdfBookmarks,
   getPdfProgress,
   getPdfReaderSettings,
+  putPdfAnnotation,
   setPdfProgress,
   setPdfReaderSettings,
   togglePdfBookmark,
+  type PdfAnnotationRecord,
+  type PdfAnnotationRect,
   type PdfBookmarkRecord,
   type PdfFitMode,
   type PdfReaderSettings,
@@ -42,6 +47,7 @@ export interface PdfReaderHandle {
 
 type SearchResult = { page: number; snippet: string };
 type SwipeGesture = { identifier: number; startX: number; startY: number };
+type PendingPdfSelection = { quote: string; rects: PdfAnnotationRect[] };
 
 type PdfReaderElements = {
   topbar: HTMLElement;
@@ -50,6 +56,7 @@ type PdfReaderElements = {
   viewport: HTMLElement;
   canvas: HTMLCanvasElement;
   textLayer: HTMLElement;
+  annotationLayer: HTMLElement;
   status: HTMLElement;
   error: HTMLElement;
   errorMessage: HTMLElement;
@@ -77,6 +84,22 @@ type PdfReaderElements = {
   searchResults: HTMLElement;
   searchToggle: HTMLButtonElement;
   bookmarkToggle: HTMLButtonElement;
+  annotationPanel: HTMLElement;
+  annotationList: HTMLElement;
+  annotationClose: HTMLButtonElement;
+  annotationFilter: HTMLInputElement;
+  annotationStatus: HTMLElement;
+  annotationToggle: HTMLButtonElement;
+  selectionActions: HTMLElement;
+  selectionQuote: HTMLElement;
+  selectionHighlight: HTMLButtonElement;
+  selectionNote: HTMLButtonElement;
+  selectionDismiss: HTMLButtonElement;
+  noteDialog: HTMLDialogElement;
+  noteQuote: HTMLElement;
+  noteInput: HTMLTextAreaElement;
+  noteSave: HTMLButtonElement;
+  noteCancel: HTMLButtonElement;
 };
 
 function required<T extends Element>(root: ParentNode, selector: string): T {
@@ -93,6 +116,7 @@ function collectElements(root: HTMLElement): PdfReaderElements {
     viewport: required(root, '[data-pdf-viewport]'),
     canvas: required(root, '[data-pdf-canvas]'),
     textLayer: required(root, '[data-pdf-text-layer]'),
+    annotationLayer: required(root, '[data-pdf-annotation-layer]'),
     status: required(root, '[data-pdf-status]'),
     error: required(root, '[data-pdf-error]'),
     errorMessage: required(root, '[data-pdf-error-message]'),
@@ -120,6 +144,22 @@ function collectElements(root: HTMLElement): PdfReaderElements {
     searchResults: required(root, '[data-pdf-search-results]'),
     searchToggle: required(root, '[data-pdf-search-toggle]'),
     bookmarkToggle: required(root, '[data-pdf-bookmark-toggle]'),
+    annotationPanel: required(root, '[data-pdf-annotation-panel]'),
+    annotationList: required(root, '[data-pdf-annotation-list]'),
+    annotationClose: required(root, '[data-pdf-annotation-close]'),
+    annotationFilter: required(root, '[data-pdf-annotation-filter]'),
+    annotationStatus: required(root, '[data-pdf-annotation-status]'),
+    annotationToggle: required(root, '[data-pdf-annotation-toggle]'),
+    selectionActions: required(root, '[data-pdf-selection-actions]'),
+    selectionQuote: required(root, '[data-pdf-selection-quote]'),
+    selectionHighlight: required(root, '[data-pdf-selection-highlight]'),
+    selectionNote: required(root, '[data-pdf-selection-note]'),
+    selectionDismiss: required(root, '[data-pdf-selection-dismiss]'),
+    noteDialog: required(root, '[data-pdf-note-dialog]'),
+    noteQuote: required(root, '[data-pdf-note-quote]'),
+    noteInput: required(root, '[data-pdf-note-input]'),
+    noteSave: required(root, '[data-pdf-note-save]'),
+    noteCancel: required(root, '[data-pdf-note-cancel]'),
   };
 }
 
@@ -203,6 +243,16 @@ function safeMessage(error: unknown): string {
   return 'The PDF could not be opened in the integrated reader.';
 }
 
+function createPdfAnnotationId(identityKey: string): string {
+  let token = '';
+  try { token = crypto.randomUUID(); } catch { token = `${Date.now()}-${Math.random().toString(36).slice(2)}`; }
+  return `pdf-annotation:${identityKey}:${token}`;
+}
+
+function clamp01(value: number): number {
+  return Math.min(1, Math.max(0, Number.isFinite(value) ? value : 0));
+}
+
 class PdfReaderController {
   private readonly root: HTMLElement;
   private readonly candidate: PdfCanonicalCandidate;
@@ -220,6 +270,9 @@ class PdfReaderController {
   private furthestPage = 1;
   private settings: PdfReaderSettings = getPdfReaderSettings();
   private bookmarks: PdfBookmarkRecord[] = [];
+  private annotations: PdfAnnotationRecord[] = [];
+  private pendingSelection?: PendingPdfSelection;
+  private editingAnnotationId?: string;
   private searchAbort?: AbortController;
   private searchResults: SearchResult[] = [];
   private activeQuery = '';
@@ -257,6 +310,15 @@ class PdfReaderController {
     this.elements.bookmark.addEventListener('click', () => void this.toggleCurrentBookmark(), { signal });
     this.elements.bookmarkToggle.addEventListener('click', () => this.openBookmarks(), { signal });
     this.elements.bookmarkClose.addEventListener('click', () => this.closeBookmarks(), { signal });
+    this.elements.annotationToggle.addEventListener('click', () => this.openAnnotations(), { signal });
+    this.elements.annotationClose.addEventListener('click', () => this.closeAnnotations(), { signal });
+    this.elements.annotationFilter.addEventListener('input', () => this.renderAnnotations(), { signal });
+    this.elements.selectionHighlight.addEventListener('click', () => void this.createAnnotation(''), { signal });
+    this.elements.selectionNote.addEventListener('click', () => this.openNoteForSelection(), { signal });
+    this.elements.selectionDismiss.addEventListener('click', () => this.dismissSelection(), { signal });
+    this.elements.noteSave.addEventListener('click', () => void this.saveNoteDialog(), { signal });
+    this.elements.noteCancel.addEventListener('click', () => this.closeNoteDialog(), { signal });
+    this.elements.noteDialog.addEventListener('cancel', () => this.closeNoteDialog(), { signal });
     this.elements.searchToggle.addEventListener('click', () => this.openSearch(), { signal });
     this.elements.searchClose.addEventListener('click', () => this.closeSearch(), { signal });
     this.elements.backdrop.addEventListener('click', () => this.closeActivePanel(), { signal });
@@ -266,6 +328,13 @@ class PdfReaderController {
         event.preventDefault();
         void this.search(this.elements.searchInput.value);
       }
+    }, { signal });
+
+    this.elements.textLayer.addEventListener('pointerup', () => {
+      window.setTimeout(() => this.captureSelection(), 0);
+    }, { signal });
+    this.elements.textLayer.addEventListener('keyup', () => {
+      window.setTimeout(() => this.captureSelection(), 0);
     }, { signal });
 
     this.elements.viewport.addEventListener('touchstart', (event) => {
@@ -294,7 +363,9 @@ class PdfReaderController {
         ? this.elements.searchPanel
         : !this.elements.bookmarkPanel.hidden
           ? this.elements.bookmarkPanel
-          : null;
+          : !this.elements.annotationPanel.hidden
+            ? this.elements.annotationPanel
+            : null;
       if (openPanel) {
         if (event.key === 'Escape') {
           event.preventDefault();
@@ -372,9 +443,23 @@ class PdfReaderController {
       this.root.dataset.pdfBookmarks = 'session-only';
     }
 
+    try {
+      this.annotations = await getPdfAnnotations(this.candidate.identity);
+    } catch {
+      this.root.dataset.pdfAnnotations = 'session-only';
+    }
+
+    const requested = new URL(location.href);
+    const annotationId = requested.searchParams.get('annotation');
+    const linkedAnnotation = annotationId ? this.annotations.find((item) => item.id === annotationId) : undefined;
+    const requestedPage = Number(requested.searchParams.get('page'));
+    if (linkedAnnotation) this.page = linkedAnnotation.page;
+    else if (Number.isFinite(requestedPage) && requestedPage >= 1) this.page = Math.round(requestedPage);
+
     this.elements.fit.value = this.settings.fit;
     await this.renderCurrentPage();
     this.renderBookmarks();
+    this.renderAnnotations();
     this.root.dataset.pdfReaderState = 'ready';
     this.root.removeAttribute('aria-busy');
     performance.mark('pdf-reader:first-ready');
@@ -430,6 +515,7 @@ class PdfReaderController {
     this.elements.status.hidden = false;
     this.updateBookmarkButton();
     this.highlightSearchMatches();
+    this.renderAnnotationHighlights();
     this.root.removeAttribute('aria-busy');
 
     try {
@@ -555,14 +641,197 @@ class PdfReaderController {
     }
   }
 
-  private setPanel(kind: 'search' | 'bookmarks' | null) {
+  private captureSelection(): void {
+    const selection = window.getSelection();
+    if (!selection || selection.isCollapsed || selection.rangeCount === 0 || !hasSelectionWithin(this.elements.textLayer)) {
+      this.dismissSelection(false);
+      return;
+    }
+    const quote = selection.toString().replace(/\s+/g, ' ').trim().slice(0, 2400);
+    if (!quote) {
+      this.dismissSelection(false);
+      return;
+    }
+    const bounds = this.elements.textLayer.getBoundingClientRect();
+    if (bounds.width <= 0 || bounds.height <= 0) return;
+    const rects = [...selection.getRangeAt(0).getClientRects()]
+      .filter((rect) => rect.width > 0 && rect.height > 0)
+      .slice(0, 64)
+      .map((rect) => ({
+        x: clamp01((rect.left - bounds.left) / bounds.width),
+        y: clamp01((rect.top - bounds.top) / bounds.height),
+        width: Math.min(1, Math.max(0.0001, rect.width / bounds.width)),
+        height: Math.min(1, Math.max(0.0001, rect.height / bounds.height)),
+      }));
+    if (!rects.length) return;
+    this.pendingSelection = { quote, rects };
+    this.elements.selectionQuote.textContent = quote.length > 180 ? `${quote.slice(0, 177)}…` : quote;
+    this.elements.selectionActions.hidden = false;
+  }
+
+  private dismissSelection(clearBrowserSelection = true): void {
+    this.pendingSelection = undefined;
+    this.elements.selectionActions.hidden = true;
+    this.elements.selectionQuote.textContent = '';
+    if (clearBrowserSelection) window.getSelection()?.removeAllRanges();
+  }
+
+  private async createAnnotation(note: string): Promise<void> {
+    const pending = this.pendingSelection;
+    if (!pending) return;
+    const now = new Date().toISOString();
+    const publicationKey = pdfReaderIdentityKey(this.candidate.identity);
+    const record: PdfAnnotationRecord = {
+      schemaVersion: 1,
+      id: createPdfAnnotationId(publicationKey),
+      publicationKey,
+      identity: { ...this.candidate.identity },
+      page: this.page,
+      quote: pending.quote,
+      note: note.slice(0, 5000),
+      rects: pending.rects,
+      createdAt: now,
+      updatedAt: now,
+    };
+    try {
+      await putPdfAnnotation(record);
+      this.annotations = [...this.annotations, record];
+      this.elements.annotationStatus.textContent = note.trim() ? 'Highlight and note saved.' : 'Highlight saved.';
+    } catch {
+      this.root.dataset.pdfAnnotations = 'session-only';
+      this.annotations = [...this.annotations, record];
+      this.elements.annotationStatus.textContent = 'Saved for this session only; browser annotation storage is unavailable.';
+    }
+    this.dismissSelection();
+    this.renderAnnotations();
+    this.renderAnnotationHighlights();
+  }
+
+  private openNoteForSelection(): void {
+    if (!this.pendingSelection) return;
+    this.editingAnnotationId = undefined;
+    this.elements.noteQuote.textContent = this.pendingSelection.quote;
+    this.elements.noteInput.value = '';
+    if (!this.elements.noteDialog.open) this.elements.noteDialog.showModal();
+    queueMicrotask(() => this.elements.noteInput.focus());
+  }
+
+  private openNoteForAnnotation(annotation: PdfAnnotationRecord): void {
+    this.editingAnnotationId = annotation.id;
+    this.elements.noteQuote.textContent = annotation.quote;
+    this.elements.noteInput.value = annotation.note;
+    if (!this.elements.noteDialog.open) this.elements.noteDialog.showModal();
+    queueMicrotask(() => this.elements.noteInput.focus());
+  }
+
+  private closeNoteDialog(): void {
+    this.editingAnnotationId = undefined;
+    this.elements.noteInput.value = '';
+    this.elements.noteQuote.textContent = '';
+    if (this.elements.noteDialog.open) this.elements.noteDialog.close();
+  }
+
+  private async saveNoteDialog(): Promise<void> {
+    const note = this.elements.noteInput.value.slice(0, 5000);
+    if (!this.editingAnnotationId) {
+      if (!this.pendingSelection) return this.closeNoteDialog();
+      await this.createAnnotation(note);
+      this.closeNoteDialog();
+      return;
+    }
+    const annotation = this.annotations.find((item) => item.id === this.editingAnnotationId);
+    if (!annotation) return this.closeNoteDialog();
+    const next: PdfAnnotationRecord = { ...annotation, note, updatedAt: new Date().toISOString() };
+    try { await putPdfAnnotation(next); } catch { this.root.dataset.pdfAnnotations = 'session-only'; }
+    this.annotations = this.annotations.map((item) => item.id === next.id ? next : item);
+    this.elements.annotationStatus.textContent = note.trim() ? 'Note updated.' : 'Note removed; highlight kept.';
+    this.closeNoteDialog();
+    this.renderAnnotations();
+    this.renderAnnotationHighlights();
+  }
+
+  private async removeAnnotation(annotation: PdfAnnotationRecord): Promise<void> {
+    try { await deletePdfAnnotation(annotation.id, annotation.identity); }
+    catch { this.root.dataset.pdfAnnotations = 'session-only'; }
+    this.annotations = this.annotations.filter((item) => item.id !== annotation.id);
+    this.elements.annotationStatus.textContent = 'Highlight deleted.';
+    this.renderAnnotations();
+    this.renderAnnotationHighlights();
+  }
+
+  private renderAnnotationHighlights(): void {
+    this.elements.annotationLayer.replaceChildren();
+    for (const annotation of this.annotations.filter((item) => item.page === this.page)) {
+      for (const rect of annotation.rects) {
+        const mark = document.createElement('span');
+        mark.className = 'pdf-reader__annotation-mark';
+        mark.style.left = `${rect.x * 100}%`;
+        mark.style.top = `${rect.y * 100}%`;
+        mark.style.width = `${rect.width * 100}%`;
+        mark.style.height = `${rect.height * 100}%`;
+        mark.title = annotation.note.trim() || annotation.quote;
+        this.elements.annotationLayer.append(mark);
+      }
+    }
+  }
+
+  private renderAnnotations(): void {
+    const query = normalizeSearch(this.elements.annotationFilter.value.trim());
+    const visible = this.annotations
+      .filter((annotation) => !query || normalizeSearch(`${annotation.quote}\n${annotation.note}\nPage ${annotation.page}`).includes(query))
+      .sort((a, b) => a.page - b.page || b.updatedAt.localeCompare(a.updatedAt));
+    this.elements.annotationList.replaceChildren();
+    this.elements.annotationStatus.textContent = visible.length
+      ? `${visible.length} annotation${visible.length === 1 ? '' : 's'} in this PDF.`
+      : this.annotations.length
+        ? 'No annotations match this filter.'
+        : 'Select text in the PDF to create a highlight.';
+    for (const annotation of visible) {
+      const article = document.createElement('article');
+      article.className = 'pdf-reader__annotation-result';
+      const meta = document.createElement('strong');
+      meta.textContent = `Page ${annotation.page}`;
+      const quote = document.createElement('blockquote');
+      quote.textContent = annotation.quote;
+      article.append(meta, quote);
+      if (annotation.note.trim()) {
+        const note = document.createElement('p');
+        note.textContent = annotation.note;
+        article.append(note);
+      }
+      const actions = document.createElement('div');
+      const open = document.createElement('button');
+      open.type = 'button';
+      open.textContent = 'Open';
+      open.addEventListener('click', () => {
+        this.closeAnnotations();
+        this.runSafely(this.goToPage(annotation.page));
+      }, { signal: this.abort.signal });
+      const edit = document.createElement('button');
+      edit.type = 'button';
+      edit.textContent = annotation.note.trim() ? 'Edit note' : 'Add note';
+      edit.addEventListener('click', () => this.openNoteForAnnotation(annotation), { signal: this.abort.signal });
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.textContent = 'Delete';
+      remove.addEventListener('click', () => void this.removeAnnotation(annotation), { signal: this.abort.signal });
+      actions.append(open, edit, remove);
+      article.append(actions);
+      this.elements.annotationList.append(article);
+    }
+  }
+
+  private setPanel(kind: 'search' | 'bookmarks' | 'annotations' | null) {
     const panelOpen = kind !== null;
     this.elements.searchPanel.hidden = kind !== 'search';
     this.elements.searchPanel.setAttribute('aria-hidden', String(kind !== 'search'));
     this.elements.bookmarkPanel.hidden = kind !== 'bookmarks';
     this.elements.bookmarkPanel.setAttribute('aria-hidden', String(kind !== 'bookmarks'));
+    this.elements.annotationPanel.hidden = kind !== 'annotations';
+    this.elements.annotationPanel.setAttribute('aria-hidden', String(kind !== 'annotations'));
     this.elements.searchToggle.setAttribute('aria-expanded', String(kind === 'search'));
     this.elements.bookmarkToggle.setAttribute('aria-expanded', String(kind === 'bookmarks'));
+    this.elements.annotationToggle.setAttribute('aria-expanded', String(kind === 'annotations'));
     this.elements.backdrop.hidden = !panelOpen;
     this.elements.backdrop.setAttribute('aria-hidden', String(!panelOpen));
     this.elements.topbar.inert = panelOpen;
@@ -582,7 +851,21 @@ class PdfReaderController {
     this.elements.bookmarkToggle.focus();
   }
 
+  private openAnnotations() {
+    this.dismissSelection();
+    this.setPanel('annotations');
+    this.renderAnnotations();
+    this.elements.annotationFilter.focus();
+  }
+
+  private closeAnnotations() {
+    if (this.elements.annotationPanel.hidden) return;
+    this.setPanel(null);
+    this.elements.annotationToggle.focus();
+  }
+
   private openSearch() {
+    this.dismissSelection();
     this.setPanel('search');
     this.elements.searchInput.focus();
   }
@@ -607,6 +890,7 @@ class PdfReaderController {
   private closeActivePanel() {
     if (!this.elements.searchPanel.hidden) this.closeSearch();
     else if (!this.elements.bookmarkPanel.hidden) this.closeBookmarks();
+    else if (!this.elements.annotationPanel.hidden) this.closeAnnotations();
   }
 
   private async search(rawQuery: string) {
@@ -747,6 +1031,7 @@ class PdfReaderController {
     this.elements.canvas.style.width = '';
     this.elements.canvas.style.height = '';
     this.elements.textLayer.replaceChildren();
+    this.elements.annotationLayer.replaceChildren();
     this.elements.textLayer.style.width = '';
     this.elements.textLayer.style.height = '';
     delete this.root.dataset.pdfRasterPixels;
