@@ -104,12 +104,13 @@ export function project(books: Book[], epub: unknown[], pdf: unknown[], operatio
   const rows: Item[] = [];
   for (const book of books) {
     if (!validBook(book) || (operation === 'search' && !book.title.toLocaleLowerCase().includes(query.toLocaleLowerCase()))) continue;
-    const record = (book.format === 'epub' ? epub : pdf).find(value => {
-      if (!object(value)) return false;
+    const candidates = (book.format === 'epub' ? epub : pdf).filter(value => {
+      if (!object(value) || value.schemaVersion !== (book.format === 'epub' ? 2 : 1) || !timestamp(value.updatedAt) || Date.parse(value.updatedAt) > now) return false;
       const identity = book.format === 'epub' ? value : value.identity;
       return object(identity) && identity.workId === book.workId && identity.edition === book.edition && identity.releaseVersion === book.releaseVersion;
-    });
-    if (!object(record) || record.schemaVersion !== (book.format === 'epub' ? 2 : 1) || !timestamp(record.updatedAt) || Date.parse(record.updatedAt) > now) continue;
+    }) as Record<string, unknown>[];
+    const record = candidates.sort((a, b) => String(b.updatedAt).localeCompare(String(a.updatedAt)))[0];
+    if (!record) continue;
     let current: unknown = record.percentage, furthest: unknown = record.furthestPercentage;
     if (book.format === 'pdf') {
       if (![record.page, record.furthestPage, record.pageCount].every(n => Number.isInteger(n) && Number(n) >= 1) || Number(record.pageCount) > 1000000 || Number(record.page) > Number(record.furthestPage) || Number(record.furthestPage) > Number(record.pageCount)) continue;
