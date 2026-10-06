@@ -118,7 +118,7 @@ export function project(books: Book[], epub: unknown[], pdf: unknown[], operatio
       furthest = Number(record.furthestPage) / Number(record.pageCount);
     }
     if (typeof current !== 'number' || typeof furthest !== 'number' || !Number.isFinite(current) || !Number.isFinite(furthest) || current < 0 || current > furthest || furthest > 1) continue;
-    rows.push({ resourceId: `${book.workId}:${book.format}`, title: book.title, updatedAt: record.updatedAt, format: book.format, edition: book.edition, releaseVersion: book.releaseVersion, current, furthest });
+    rows.push({ resourceId: `${book.workId}:${book.format}`, title: book.title, updatedAt: record.updatedAt as string, format: book.format, edition: book.edition, releaseVersion: book.releaseVersion, current, furthest });
   }
   return rows.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt) || a.resourceId.localeCompare(b.resourceId)).slice(0, operation === 'search' ? 20 : 10);
 }
