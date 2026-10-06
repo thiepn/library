@@ -16,7 +16,7 @@ const contentSecurityPolicy = [
   "img-src 'self' data: blob: https://media.library.thiepn.dev",
   "media-src 'self' data: blob: https://media.library.thiepn.dev",
   "connect-src 'self' https://media.library.thiepn.dev https://hycegznamzjhwinegaai.supabase.co",
-  "frame-src 'self' blob:",
+  "frame-src 'self' blob: https://account.thiepn.dev",
   "worker-src 'self' blob:",
   "form-action 'self'",
   "manifest-src 'self'",
@@ -90,18 +90,8 @@ const contentSecurityPolicy = [
       window.addEventListener('pagehide', unmountReadingActivityLibraryState, { once: true });
     </script>
     <script>
-      const accountSessionKeyPrefix = 'sb-hycegznamzjhwinegaai-auth-token';
-      const accountSyncKey = 'thiepn.library.account-sync.v1';
-      let shouldStartAccountRuntime = false;
-      try {
-        const hasSession = Object.keys(localStorage).some((key) => key.startsWith(accountSessionKeyPrefix));
-        const syncState = JSON.parse(localStorage.getItem(accountSyncKey) ?? 'null') as { enabled?: boolean } | null;
-        shouldStartAccountRuntime = hasSession || syncState?.enabled === true;
-      } catch {
-        shouldStartAccountRuntime = false;
-      }
       const normalizedPath = window.location.pathname.replace(/\/$/, '');
-      if (shouldStartAccountRuntime && !normalizedPath.endsWith('/account')) {
+      if (!normalizedPath.endsWith('/auth/callback')) {
         void import('../lib/account/runtime').then(({ mountLibraryAccountRuntime }) => {
           const unmount = mountLibraryAccountRuntime();
           window.addEventListener('pagehide', unmount, { once: true });

@@ -4,23 +4,26 @@ Library remains guest-first and local-first. No account is required to browse, i
 
 ## Identity
 
-Library uses the canonical THIEPN Account Supabase Auth project. Google OAuth uses PKCE. A persisted browser session is only a hint; authenticated Library state is used only after `auth.getUser()` verifies the user.
+Library is a registered first-party public OAuth 2.1 client of the canonical THIEPN Account Supabase Auth project. Google authentication is owned only by `account.thiepn.dev`; Library never starts Google OAuth itself.
 
-The canonical owner is `auth.users.id`. Email and provider metadata are presentation attributes only.
+Library uses Authorization Code + PKCE with client ID `76e41661-f8a9-4181-b8b9-4084f2e2acbf` and exact callback `https://thiepn.dev/library/auth/callback/`. The app stores only its own OAuth access/refresh tokens. Supabase data and Storage requests obtain the current app access token through the shared `@thiepn/account-session` runtime.
+
+The canonical owner remains `auth.users.id`. The OAuth `client_id` identifies Library as the calling first-party app and is checked separately from user ownership.
 
 ## Device adoption
 
 Signing in does not upload reading data by itself.
 
 1. Read locally as a guest.
-2. Sign in to THIEPN Account.
-3. Choose **Sync this device**.
-4. Library connects the `library` Account app and required permissions.
-5. If no cloud snapshot exists, local portable state becomes revision 1.
-6. If cloud state exists and this device has no meaningful reading state, cloud state is restored.
-7. If both contain independent state, synchronization stops and requires **Use this device** or **Use cloud**.
+2. Library silently probes `account.thiepn.dev` for one bit of state: whether an existing verified THIEPN Account session is eligible to attach Library. No token or profile data crosses the iframe boundary.
+3. If Account is already signed in and Library has not been deliberately disconnected, Library automatically starts the first-party OAuth authorization flow. Account auto-authorizes the registered basic-identity client and returns a one-time code to Library's exact callback.
+4. If Account is signed out, Library remains a guest. The Account page offers **Connect THIEPN Account**, which sends the user to Account; Google authentication, if needed, happens there.
+5. Signing in/attaching still does not upload reading data. Choose **Sync this device** separately.
+6. If no cloud snapshot exists, local portable state becomes revision 1.
+7. If cloud state exists and this device has no meaningful reading state, cloud state is restored.
+8. If both contain independent state, synchronization stops and requires **Use this device** or **Use cloud**.
 
-Pausing sync or signing out never deletes browser-local data. Disconnecting Library from THIEPN Account revokes its cloud read/write data path; reconnecting requires an explicit **Sync this device** action.
+Pausing sync never deletes browser-local data. Deliberately disconnecting Library in THIEPN Account makes the silent probe ineligible, so Library does not immediately reconnect itself.
 
 Cloud-data deletion is owned by THIEPN Account rather than a second Library-specific deletion authority. Account shows the Library namespace in its data inventory, creates an expiring deletion plan, requires recent authentication, and deletes only when the planned cloud revision still matches. After deletion, a stale Library device with an earlier baseline sees the missing cloud snapshot as a conflict instead of silently recreating it.
 
@@ -71,6 +74,6 @@ Reconciliation rules:
 
 ## Security
 
-`public.library_sync_state` has RLS enabled. Authenticated users can select only their own row and only while the Library Account connection and read grant are active. Anonymous identities and delegated OAuth clients are denied raw state access. Sync mutations occur only through an owner-scoped revision-CAS RPC deriving the user from `auth.uid()` and checking the Library connection plus write grant. Destructive cloud-data deletion is routed through the audited THIEPN Account lifecycle and requires a recent authenticated session. The file-storage deletion path is separately authorized by an expiring Account deletion plan so the Library browser has no general cloud-file delete authority.
+`public.library_sync_state` has RLS enabled. Authenticated users can select only their own row and only while the Library Account connection and read grant are active. The native Account session and the exact registered Library OAuth client are accepted; anonymous identities and unknown/delegated OAuth clients are denied raw state access. Sync mutations occur only through an owner-scoped revision-CAS RPC deriving the user from `auth.uid()` and checking the Library connection plus write grant. Destructive cloud-data deletion is routed through the audited THIEPN Account lifecycle and requires a recent authenticated session. The file-storage deletion path is separately authorized by an expiring Account deletion plan so the Library browser has no general cloud-file delete authority.
 
-The browser contains only the Supabase publishable key. No service-role or secret key is shipped.
+The browser contains only the Supabase publishable key and Library's public OAuth client ID. No OAuth client secret, service-role key, or other server secret is shipped.

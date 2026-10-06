@@ -1,0 +1,37 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+<BaseLayout
+  title="Connecting THIEPN Account"
+  description="Completing the THIEPN Account connection for Thiepn Library."
+  noindex
+>
+  <div class="page">
+    <section class="section" aria-labelledby="sso-callback-title">
+      <h1 id="sso-callback-title">Connecting THIEPN Account…</h1>
+      <p data-sso-callback-status>Verifying the secure sign-in response.</p>
+    </section>
+  </div>
+
+  <script>
+    import {
+      completeLibraryAccountSsoCallback,
+      consumeLibraryAccountSsoReturnTo,
+    } from '../../lib/account/supabase';
+
+    const status = document.querySelector<HTMLElement>('[data-sso-callback-status]');
+    void completeLibraryAccountSsoCallback()
+      .then((user) => {
+        if (!user) {
+          if (status) status.textContent = 'THIEPN Account authorization was not completed.';
+          return;
+        }
+        window.location.replace(consumeLibraryAccountSsoReturnTo());
+      })
+      .catch(() => {
+        if (status) {
+          status.textContent = 'THIEPN Account authorization could not be verified. Return to Library and try again.';
+        }
+      });
+  </script>
+</BaseLayout>

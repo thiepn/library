@@ -1,10 +1,8 @@
-import type { User } from '@supabase/supabase-js';
 import {
-  completeLibraryAccountOAuthCallback,
+  beginLibraryAccountSso,
   getVerifiedLibraryAccountUser,
-  signInLibraryAccountWithGoogle,
-  signOutLibraryAccount,
   subscribeLibraryAccountAuth,
+  type LibraryAccountUser,
 } from './supabase';
 import {
   chooseCloudForLibrarySync,
@@ -38,10 +36,8 @@ function setBusy(value: boolean): void {
   }
 }
 
-function displayName(user: User): string {
-  const metadata = user.user_metadata as Record<string, unknown> | null;
-  const name = metadata && typeof metadata.full_name === 'string' ? metadata.full_name.trim() : '';
-  return name || user.email || 'THIEPN Account';
+function displayName(user: LibraryAccountUser): string {
+  return user.email || 'THIEPN Account';
 }
 
 function renderPersonalFileResult(result: PersonalFileCloudResult): void {
@@ -54,7 +50,7 @@ function renderPersonalFileResult(result: PersonalFileCloudResult): void {
   );
 }
 
-async function renderPersonalFiles(user: User, readingSyncEnabled: boolean): Promise<void> {
+async function renderPersonalFiles(user: LibraryAccountUser, readingSyncEnabled: boolean): Promise<void> {
   const enabled = await isLibraryPersonalFileCloudEnabled(user.id);
   hidden('[data-personal-files-disabled]', enabled);
   hidden('[data-personal-files-enabled]', !enabled);
@@ -91,7 +87,7 @@ function renderResult(result: LibrarySyncResult): void {
   hidden('[data-sync-conflict]', result.status !== 'conflict');
 }
 
-async function render(userOverride?: User | null): Promise<User | null> {
+async function render(userOverride?: LibraryAccountUser | null): Promise<LibraryAccountUser | null> {
   const user = userOverride === undefined ? await getVerifiedLibraryAccountUser() : userOverride;
 
   hidden('[data-account-signed-out]', Boolean(user));
@@ -99,7 +95,7 @@ async function render(userOverride?: User | null): Promise<User | null> {
   hidden('[data-sync-panel]', !user);
 
   if (!user) {
-    text('[data-account-summary]', 'Reading stays local unless you sign in and explicitly enable sync.');
+    text('[data-account-summary]', 'Library stays guest-first. If THIEPN Account is already signed in, Library connects automatically; reading-state sync remains a separate choice.');
     hidden('[data-sync-conflict]', true);
     return null;
   }
@@ -132,7 +128,7 @@ async function render(userOverride?: User | null): Promise<User | null> {
 }
 
 export function mountLibraryAccountPage(): () => void {
-  let user: User | null = null;
+  let user: LibraryAccountUser | null = null;
   let disposed = false;
 
   const refresh = async () => {
@@ -147,7 +143,7 @@ export function mountLibraryAccountPage(): () => void {
     }
   };
 
-  const act = async (operation: (current: User) => Promise<LibrarySyncResult>) => {
+  const act = async (operation: (current: LibraryAccountUser) => Promise<LibrarySyncResult>) => {
     if (!user) return;
     setBusy(true);
     try {
@@ -161,20 +157,10 @@ export function mountLibraryAccountPage(): () => void {
 
   document.querySelector('[data-sign-in]')?.addEventListener('click', () => {
     setBusy(true);
-    void signInLibraryAccountWithGoogle().catch((error) => {
+    void beginLibraryAccountSso(window.location.href).catch((error) => {
       setBusy(false);
-      text('[data-account-summary]', error instanceof Error ? error.message : 'Sign-in failed.');
+      text('[data-account-summary]', error instanceof Error ? error.message : 'THIEPN Account connection failed.');
     });
-  });
-
-  document.querySelector('[data-sign-out]')?.addEventListener('click', () => {
-    setBusy(true);
-    void signOutLibraryAccount()
-      .then(() => {
-        user = null;
-        return render(null);
-      })
-      .finally(() => setBusy(false));
   });
 
   document.querySelector('[data-sync-enable]')?.addEventListener('click', () => void act(enableLibraryAccountSync));
@@ -206,12 +192,7 @@ export function mountLibraryAccountPage(): () => void {
   window.addEventListener('thiepn:library-personal-files', onPersonalFiles);
 
   const unsubscribeAuth = subscribeLibraryAccountAuth(() => { void refresh(); });
-
-  void completeLibraryAccountOAuthCallback()
-    .catch((error) => {
-      text('[data-account-summary]', error instanceof Error ? error.message : 'Unable to complete sign-in.');
-    })
-    .finally(() => { void refresh(); });
+  void refresh();
 
   return () => {
     disposed = true;
