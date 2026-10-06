@@ -135,7 +135,7 @@ export function isPersonalBookPortableMetadataV1(value: unknown): value is Perso
     && (value.tags === undefined || isLabelList(value.tags, PERSONAL_BOOK_MAX_TAGS));
 }
 
-function portableMetadata(book: Pick<PersonalBookRecord, 'id' | 'format' | 'title' | 'creator' | 'language' | 'fileName' | 'mimeType' | 'size' | 'sha256' | 'importedAt' | 'updatedAt'>): PersonalBookPortableMetadataV1 {
+function portableMetadata(book: Pick<PersonalBookRecord, 'id' | 'format' | 'title' | 'creator' | 'language' | 'fileName' | 'mimeType' | 'size' | 'sha256' | 'importedAt' | 'updatedAt' | 'shelves' | 'tags'>): PersonalBookPortableMetadataV1 {
   return {
     schemaVersion: PERSONAL_BOOK_PORTABLE_METADATA_SCHEMA_VERSION,
     id: book.id,
@@ -447,7 +447,7 @@ export async function updatePersonalBookMetadata(
     ...organization,
     updatedAt: new Date().toISOString(),
   };
-  const stored: StoredPersonalBookRecord = { ...next, file: await next.file.arrayBuffer() };
+  const stored: StoredPersonalBookRecord = { ...next, file: next.file };
   await withStore('readwrite', async (store) => { await request(store.put(stored)); });
   updatePersonalIndex(next);
   broadcast('metadata', id);
@@ -485,7 +485,7 @@ export async function applyPersonalBookPortableMetadata(
         ...organization,
         updatedAt: metadata.updatedAt,
       };
-      await request(store.put({ ...next, file: await next.file.arrayBuffer() }));
+      await request(store.put({ ...next, file: next.file }));
       updatePersonalIndex(next);
       updated += 1;
     }
