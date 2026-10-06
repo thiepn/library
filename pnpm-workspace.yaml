@@ -11,6 +11,7 @@ overrides:
   sharp: 0.35.4
   js-yaml: 4.3.2
   svgo: 4.1.0
+  source-map-js: 1.2.2
   # H16: patch the existing production audit blockers without changing Astro.
   http-cache-semantics: 4.3.0
   devalue: 5.9.3
