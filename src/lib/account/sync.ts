@@ -3,7 +3,11 @@ import {
   restoreLibraryBackupJson,
   type LibraryBackupV1,
 } from '../client/library-portability';
-import { getThiepnAccountClient, type LibraryAccountUser } from './supabase';
+import {
+  getThiepnAccountClient,
+  isLibraryAccountConnectionActive,
+  type LibraryAccountUser,
+} from './supabase';
 import {
   backupHasMeaningfulLibraryState,
   decideLibrarySync,
@@ -153,16 +157,6 @@ function normalizeCloudState(value: unknown): CloudState {
   };
 }
 
-async function readLibraryConnectionActive(): Promise<boolean> {
-  const { data, error } = await getThiepnAccountClient()
-    .from('account_app_connections')
-    .select('status')
-    .eq('app_slug', 'library')
-    .maybeSingle();
-  if (error) throw error;
-  return data?.status === 'connected' || data?.status === 'limited';
-}
-
 async function readCloudState(): Promise<CloudState | undefined> {
   const { data, error } = await getThiepnAccountClient()
     .from('library_sync_state')
@@ -246,7 +240,7 @@ async function pushLocal(
 }
 
 export async function enableLibraryAccountSync(user: LibraryAccountUser): Promise<LibrarySyncResult> {
-  if (!(await readLibraryConnectionActive())) {
+  if (!(await isLibraryAccountConnectionActive())) {
     return {
       status: 'disabled',
       message: 'Library is not connected in THIEPN Account.',
@@ -273,7 +267,7 @@ export async function reconcileLibraryAccountSync(user: LibraryAccountUser): Pro
   }
 
   try {
-    const connected = await readLibraryConnectionActive();
+    const connected = await isLibraryAccountConnectionActive();
     if (!connected) {
       writeLibrarySyncMeta({ ...meta, enabled: false });
       const result: LibrarySyncResult = {
