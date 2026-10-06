@@ -5,7 +5,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   <section class="page section" aria-labelledby="sharing-heading">
     <p class="eyebrow">Library-owned sharing</p><h1 id="sharing-heading">Library in Hub</h1>
     <p>Share a bounded reading summary with THIEPN Home. By default this uses saved progress in this browser profile. A shared browser may contain another person’s reading history.</p>
-    <p>If you separately allow Account-synced reading, Library may first reconcile this device through your existing THIEPN Account sync when Hub and Library are signed into the same account. A sync conflict or account mismatch never grants Hub raw cloud access.</p>
+    <p>If you separately allow Account-synced reading, Library compares this device with a read-only THIEPN Account snapshot when Hub and Library verify the same account. Hub is told “Account-synced” only when the exact reading progress matches; a mismatch never replaces this device’s Continue position or grants Hub raw cloud access.</p>
     <p>Only book title, format, edition, release, update time, and current/furthest progress may cross the bridge. Book files, covers, exact EPUB CFIs/PDF anchors, highlights, notes, annotations, shelves, tags, and the raw Account snapshot stay in Library.</p>
     <form data-hub-consent>
       <fieldset><legend>Choose what Home may read</legend>
