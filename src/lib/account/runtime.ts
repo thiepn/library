@@ -6,6 +6,7 @@ import {
   isLibrarySyncEnabledForUser,
   reconcileLibraryAccountSync,
 } from './sync';
+import { reconcileLibraryPersonalFiles } from './personal-files';
 
 export function mountLibraryAccountRuntime(): () => void {
   let timer: number | undefined;
@@ -18,7 +19,10 @@ export function mountLibraryAccountRuntime(): () => void {
     try {
       const user = await getVerifiedLibraryAccountUser();
       if (user && isLibrarySyncEnabledForUser(user.id)) {
-        await reconcileLibraryAccountSync(user);
+        const result = await reconcileLibraryAccountSync(user);
+        if (result.status === 'synced' || result.status === 'pushed' || result.status === 'pulled') {
+          await reconcileLibraryPersonalFiles(user);
+        }
       }
     } catch {
       // Account sync is optional and must never block local reading.
@@ -37,7 +41,7 @@ export function mountLibraryAccountRuntime(): () => void {
   };
 
   const channels: BroadcastChannel[] = [];
-  for (const name of ['thiepn-library', 'thiepn-library-pdf-reader']) {
+  for (const name of ['thiepn-library', 'thiepn-library-pdf-reader', 'thiepn-library-personal-books']) {
     try {
       const channel = new BroadcastChannel(name);
       channel.addEventListener('message', () => schedule());
