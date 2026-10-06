@@ -31,10 +31,10 @@ The cloud snapshot reuses Library's validated backup/restore contract:
 - saved/favorite books;
 - native EPUB and legacy reading progress;
 - EPUB bookmarks, highlights and notes;
-- PDF progress and bookmarks;
+- PDF progress, bookmarks, highlights and notes;
 - reading activity;
 - reader/site settings;
-- portable personal-book metadata.
+- portable personal-book metadata, including edited title/creator/language plus shelves and tags.
 
 Personal EPUB/PDF file bytes and local cover blobs are excluded from the revisioned reading-state snapshot.
 
