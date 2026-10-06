@@ -294,9 +294,15 @@ async function extractEpubMetadata(buffer: ArrayBuffer): Promise<Pick<PersonalBo
 
 function normalizeStoredRecord(record: StoredPersonalBookRecord | (Omit<StoredPersonalBookRecord, 'schemaVersion'> & { schemaVersion?: number })): PersonalBookRecord {
   const file = record.file instanceof Blob ? record.file : new Blob([record.file], { type: record.mimeType });
+  const shelves = Array.isArray(record.shelves)
+    ? record.shelves.filter((value): value is string => typeof value === 'string')
+    : undefined;
+  const tags = Array.isArray(record.tags)
+    ? record.tags.filter((value): value is string => typeof value === 'string')
+    : undefined;
   const organization = normalizePersonalBookOrganization({
-    shelves: Array.isArray(record.shelves) ? record.shelves.filter((value): value is string => typeof value === 'string') : undefined,
-    tags: Array.isArray(record.tags) ? record.tags.filter((value): value is string => typeof value === 'string') : undefined,
+    ...(shelves ? { shelves } : {}),
+    ...(tags ? { tags } : {}),
   });
   return { ...record, ...organization, schemaVersion: PERSONAL_BOOK_SCHEMA_VERSION, file } as PersonalBookRecord;
 }
