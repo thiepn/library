@@ -13,6 +13,69 @@ import {
 } from './contract';
 import { availableBooks, readRows } from './storage';
 
+function progressSignature(value: unknown, format: 'epub' | 'pdf'): string | null {
+  if (!object(value)) return null;
+  if (format === 'epub') {
+    return JSON.stringify([
+      value.schemaVersion,
+      value.workId,
+      value.edition,
+      value.releaseVersion,
+      value.cfi,
+      value.percentage,
+      value.furthestPercentage,
+      value.chapterHref ?? null,
+      value.chapterLabel ?? null,
+      value.updatedAt,
+    ]);
+  }
+  if (!object(value.identity)) return null;
+  return JSON.stringify([
+    value.schemaVersion,
+    value.id ?? null,
+    value.identity.workId,
+    value.identity.edition,
+    value.identity.releaseVersion,
+    value.page,
+    value.furthestPage,
+    value.pageCount,
+    value.updatedAt,
+  ]);
+}
+
+function exactProgressFor(
+  rows: unknown[],
+  item: { resourceId: string; format: 'epub' | 'pdf'; edition: number; releaseVersion: string; updatedAt: string },
+): unknown {
+  const suffix = `:${item.format}`;
+  const workId = item.resourceId.endsWith(suffix) ? item.resourceId.slice(0, -suffix.length) : '';
+  return rows.find((value) => {
+    if (!object(value) || value.updatedAt !== item.updatedAt) return false;
+    const identity = item.format === 'epub' ? value : value.identity;
+    return object(identity)
+      && identity.workId === workId
+      && identity.edition === item.edition
+      && identity.releaseVersion === item.releaseVersion;
+  });
+}
+
+function accountProjectionMatchesLocal(
+  localItems: ReturnType<typeof project>,
+  cloudItems: ReturnType<typeof project>,
+  localEpub: unknown[],
+  localPdf: unknown[],
+  cloudEpub: unknown[],
+  cloudPdf: unknown[],
+): boolean {
+  if (JSON.stringify(localItems) !== JSON.stringify(cloudItems)) return false;
+  return localItems.every((item) => {
+    const local = exactProgressFor(item.format === 'epub' ? localEpub : localPdf, item);
+    const cloud = exactProgressFor(item.format === 'epub' ? cloudEpub : cloudPdf, item);
+    const localSignature = progressSignature(local, item.format);
+    return localSignature !== null && localSignature === progressSignature(cloud, item.format);
+  });
+}
+
 export function installBridge(catalogue: Book[]) {
   if (parent === window) return;
 
@@ -114,6 +177,7 @@ export function installBridge(catalogue: Book[]) {
         try {
           let cloudEpub: unknown[] = [];
           let cloudPdf: unknown[] = [];
+          let accountSnapshotAvailable = false;
           if (accountAwareConnection && consent!.includeAccount) {
             reconcilingAccount = true;
             try {
@@ -121,7 +185,7 @@ export function installBridge(catalogue: Book[]) {
               if (account.status === 'available' && account.snapshot) {
                 cloudEpub = account.snapshot.state.main?.epubProgress?.records ?? [];
                 cloudPdf = account.snapshot.state.pdf?.progress?.records ?? [];
-                coverage = 'account-synced';
+                accountSnapshotAvailable = true;
               }
             } finally {
               reconcilingAccount = false;
@@ -137,7 +201,15 @@ export function installBridge(catalogue: Book[]) {
           ]);
 
           if (authorized()) {
-            items = project(books, [...epub, ...cloudEpub], [...pdf, ...cloudPdf], operation, request.query as string);
+            const projectionNow = Date.now();
+            const localItems = project(books, epub, pdf, operation, request.query as string, projectionNow);
+            if (accountSnapshotAvailable) {
+              const cloudItems = project(books, cloudEpub, cloudPdf, operation, request.query as string, projectionNow);
+              if (accountProjectionMatchesLocal(localItems, cloudItems, epub, pdf, cloudEpub, cloudPdf)) {
+                coverage = 'account-synced';
+              }
+            }
+            items = localItems;
             status = items.length ? 'ready' : 'empty';
           }
         } catch {
