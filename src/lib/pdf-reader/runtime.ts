@@ -271,8 +271,8 @@ class PdfReaderController {
   private settings: PdfReaderSettings = getPdfReaderSettings();
   private bookmarks: PdfBookmarkRecord[] = [];
   private annotations: PdfAnnotationRecord[] = [];
-  private pendingSelection?: PendingPdfSelection;
-  private editingAnnotationId?: string;
+  private pendingSelection: PendingPdfSelection | undefined;
+  private editingAnnotationId: string | undefined;
   private searchAbort?: AbortController;
   private searchResults: SearchResult[] = [];
   private activeQuery = '';
