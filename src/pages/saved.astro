@@ -26,7 +26,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
           <p class="eyebrow">Personal books</p>
           <h2 id="personal-import-title">Add your own books</h2>
           <p>Import an EPUB or PDF from this device and keep it in My Library.</p>
-          <p class="personal-import__privacy">Files stay in this browser. Thiepn Library does not upload your personal books.</p>
+          <p class="personal-import__privacy">Files stay on this device unless you separately enable Personal book cloud in THIEPN Account. Organization metadata remains portable with Library backup and Account state sync.</p>
         </div>
         <div class="personal-import__actions">
           <input data-personal-file-input type="file" accept=".epub,.pdf,application/epub+zip,application/pdf" multiple hidden />
@@ -39,11 +39,91 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
       <section class="personal-books" data-personal-books-section hidden aria-labelledby="personal-books-title">
         <div class="personal-books__heading">
-          <div><p class="eyebrow">On this device</p><h2 id="personal-books-title">Imported books</h2></div>
+          <div><p class="eyebrow">Personal library</p><h2 id="personal-books-title">Imported books</h2></div>
           <p class="micro" data-personal-count></p>
         </div>
+
+        <div class="personal-organizer" data-personal-organizer aria-label="Organize imported books">
+          <label class="personal-organizer__search">
+            <span>Search</span>
+            <input type="search" data-personal-search autocomplete="off" placeholder="Title, author, shelf, tag…" />
+          </label>
+          <label>
+            <span>Format</span>
+            <select data-personal-format>
+              <option value="all">All formats</option>
+              <option value="epub">EPUB</option>
+              <option value="pdf">PDF</option>
+            </select>
+          </label>
+          <label>
+            <span>Shelf</span>
+            <select data-personal-shelf><option value="">Any shelf</option></select>
+          </label>
+          <label>
+            <span>Tag</span>
+            <select data-personal-tag><option value="">Any tag</option></select>
+          </label>
+          <label>
+            <span>Sort</span>
+            <select data-personal-sort>
+              <option value="updated">Recently organized</option>
+              <option value="added">Recently added</option>
+              <option value="title">Title A–Z</option>
+              <option value="creator">Author A–Z</option>
+              <option value="size">Largest files</option>
+            </select>
+          </label>
+          <button class="personal-organizer__clear" type="button" data-personal-clear>Clear filters</button>
+          <p class="micro personal-organizer__summary" data-personal-visible-count aria-live="polite"></p>
+        </div>
+
         <div class="personal-books__grid" data-personal-books-list></div>
+        <div class="empty personal-books__empty" data-personal-books-empty hidden>
+          <h3>No imported books match.</h3>
+          <p>Clear a filter or search for another title, author, shelf, or tag.</p>
+        </div>
       </section>
+
+      <dialog class="personal-metadata-dialog" data-personal-metadata-dialog aria-labelledby="personal-metadata-title">
+        <form method="dialog" data-personal-metadata-form>
+          <div class="personal-metadata-dialog__heading">
+            <div>
+              <p class="eyebrow">Personal book</p>
+              <h2 id="personal-metadata-title">Edit book details</h2>
+            </div>
+            <button type="button" class="personal-metadata-dialog__close" data-personal-metadata-close aria-label="Close book details">×</button>
+          </div>
+          <input type="hidden" data-personal-metadata-id />
+          <label>
+            <span>Title</span>
+            <input type="text" maxlength="240" required data-personal-metadata-book-title />
+          </label>
+          <label>
+            <span>Author / creator</span>
+            <input type="text" maxlength="180" data-personal-metadata-creator />
+          </label>
+          <label>
+            <span>Language</span>
+            <input type="text" maxlength="64" data-personal-metadata-language placeholder="e.g. English, fr, ko" />
+          </label>
+          <label>
+            <span>Shelves</span>
+            <input type="text" data-personal-metadata-shelves placeholder="Reference, Theology, To review" />
+            <small>Comma-separated. Up to 12 shelves.</small>
+          </label>
+          <label>
+            <span>Tags</span>
+            <input type="text" data-personal-metadata-tags placeholder="history, favorite, research" />
+            <small>Comma-separated. Up to 24 tags.</small>
+          </label>
+          <p class="personal-metadata-dialog__status" data-personal-metadata-status role="status" aria-live="polite"></p>
+          <div class="personal-metadata-dialog__actions">
+            <button class="personal-book__action" type="submit" data-personal-metadata-save>Save details</button>
+            <button class="personal-book__action personal-book__action--remove" type="button" data-personal-metadata-cancel>Cancel</button>
+          </div>
+        </form>
+      </dialog>
 
       <div class="work-list saved-list" data-saved-list>
         {works.map((work, index) => <div
@@ -76,8 +156,16 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       personalReaderWorkId,
       requestPersonalLibraryPersistence,
       subscribePersonalBooks,
+      updatePersonalBookMetadata,
       type PersonalBookSummary,
     } from '../lib/client/personal-books';
+    import {
+      filterAndSortPersonalBooks,
+      parsePersonalOrganizationInput,
+      personalLibraryFacets,
+      type PersonalLibraryFilters,
+      type PersonalLibrarySort,
+    } from '../lib/client/personal-library-organization';
     import { normalizeLibraryStorageError } from '../lib/client/storage-reliability';
     import { getReadingContinuity, subscribeUnifiedReadingState } from '../lib/reader-entry/client';
     import { readingActionLabel, readingPositionLabel } from '../lib/reader-entry/continuity';
@@ -92,6 +180,24 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     const personalSection = document.querySelector<HTMLElement>('[data-personal-books-section]');
     const personalList = document.querySelector<HTMLElement>('[data-personal-books-list]');
     const personalCount = document.querySelector<HTMLElement>('[data-personal-count]');
+    const personalVisibleCount = document.querySelector<HTMLElement>('[data-personal-visible-count]');
+    const personalEmpty = document.querySelector<HTMLElement>('[data-personal-books-empty]');
+    const personalSearch = document.querySelector<HTMLInputElement>('[data-personal-search]');
+    const personalFormat = document.querySelector<HTMLSelectElement>('[data-personal-format]');
+    const personalShelf = document.querySelector<HTMLSelectElement>('[data-personal-shelf]');
+    const personalTag = document.querySelector<HTMLSelectElement>('[data-personal-tag]');
+    const personalSort = document.querySelector<HTMLSelectElement>('[data-personal-sort]');
+    const personalClear = document.querySelector<HTMLButtonElement>('[data-personal-clear]');
+    const metadataDialog = document.querySelector<HTMLDialogElement>('[data-personal-metadata-dialog]');
+    const metadataForm = document.querySelector<HTMLFormElement>('[data-personal-metadata-form]');
+    const metadataId = document.querySelector<HTMLInputElement>('[data-personal-metadata-id]');
+    const metadataTitle = document.querySelector<HTMLInputElement>('[data-personal-metadata-book-title]');
+    const metadataCreator = document.querySelector<HTMLInputElement>('[data-personal-metadata-creator]');
+    const metadataLanguage = document.querySelector<HTMLInputElement>('[data-personal-metadata-language]');
+    const metadataShelves = document.querySelector<HTMLInputElement>('[data-personal-metadata-shelves]');
+    const metadataTags = document.querySelector<HTMLInputElement>('[data-personal-metadata-tags]');
+    const metadataStatus = document.querySelector<HTMLElement>('[data-personal-metadata-status]');
+    const metadataSave = document.querySelector<HTMLButtonElement>('[data-personal-metadata-save]');
     const input = document.querySelector<HTMLInputElement>('[data-personal-file-input]');
     const chooseButton = document.querySelector<HTMLButtonElement>('[data-personal-file-button]');
     const drop = document.querySelector<HTMLElement>('[data-personal-drop]');
@@ -102,6 +208,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     let hostedTotal = 0;
     let offlinePreparationBatch = 0;
     let libraryStateUnavailable = false;
+    let personalBooks: PersonalBookSummary[] = [];
 
     const formatBytes = (bytes: number) => {
       if (bytes < 1024) return `${bytes} B`;
@@ -128,6 +235,63 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       return book.format === 'epub'
         ? `${base}/personal/read?id=${encodeURIComponent(book.id)}`
         : `${base}/personal/pdf?id=${encodeURIComponent(book.id)}`;
+    }
+
+    function personalFilters(): PersonalLibraryFilters {
+      const format = personalFormat?.value === 'epub' || personalFormat?.value === 'pdf'
+        ? personalFormat.value
+        : 'all';
+      const sort = ['updated', 'added', 'title', 'creator', 'size'].includes(personalSort?.value ?? '')
+        ? personalSort!.value as PersonalLibrarySort
+        : 'updated';
+      return {
+        query: personalSearch?.value ?? '',
+        format,
+        shelf: personalShelf?.value ?? '',
+        tag: personalTag?.value ?? '',
+        sort,
+      };
+    }
+
+    function replaceFacetOptions(
+      select: HTMLSelectElement | null,
+      values: string[],
+      emptyLabel: string,
+    ) {
+      if (!select) return;
+      const current = select.value;
+      select.replaceChildren();
+      const emptyOption = document.createElement('option');
+      emptyOption.value = '';
+      emptyOption.textContent = emptyLabel;
+      select.append(emptyOption);
+      for (const value of values) {
+        const option = document.createElement('option');
+        option.value = value;
+        option.textContent = value;
+        select.append(option);
+      }
+      if ([...select.options].some((option) => option.value === current)) select.value = current;
+    }
+
+    function openMetadataEditor(book: PersonalBookSummary) {
+      if (!metadataDialog || !metadataId || !metadataTitle || !metadataCreator || !metadataLanguage || !metadataShelves || !metadataTags) return;
+      metadataId.value = book.id;
+      metadataTitle.value = book.title;
+      metadataCreator.value = book.creator ?? '';
+      metadataLanguage.value = book.language ?? '';
+      metadataShelves.value = (book.shelves ?? []).join(', ');
+      metadataTags.value = (book.tags ?? []).join(', ');
+      if (metadataStatus) metadataStatus.textContent = '';
+      if (!metadataDialog.open) metadataDialog.showModal();
+      queueMicrotask(() => metadataTitle.focus());
+    }
+
+    function closeMetadataEditor() {
+      if (metadataDialog?.open) metadataDialog.close();
+      metadataForm?.reset();
+      if (metadataId) metadataId.value = '';
+      if (metadataStatus) metadataStatus.textContent = '';
     }
 
     async function renderPersonalCard(book: PersonalBookSummary): Promise<HTMLElement> {
@@ -171,6 +335,27 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       meta.textContent = `${formatBytes(book.size)} · stored on this device`;
       body.append(meta);
 
+      const organization = [...(book.shelves ?? []).map((label) => ({ kind: 'shelf' as const, label })),
+        ...(book.tags ?? []).map((label) => ({ kind: 'tag' as const, label }))];
+      if (organization.length) {
+        const chips = document.createElement('div');
+        chips.className = 'personal-book__chips';
+        for (const item of organization) {
+          const chip = document.createElement('button');
+          chip.type = 'button';
+          chip.className = `personal-book__chip personal-book__chip--${item.kind}`;
+          chip.textContent = item.kind === 'shelf' ? item.label : `#${item.label}`;
+          chip.setAttribute('aria-label', `Filter by ${item.kind} ${item.label}`);
+          chip.addEventListener('click', () => {
+            if (item.kind === 'shelf' && personalShelf) personalShelf.value = item.label;
+            if (item.kind === 'tag' && personalTag) personalTag.value = item.label;
+            void renderPersonalView();
+          });
+          chips.append(chip);
+        }
+        body.append(chips);
+      }
+
       const route = personalRoute(book);
       const continuity = await getReadingContinuity({
         workId: personalReaderWorkId(book),
@@ -193,6 +378,12 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       open.href = route;
       open.textContent = readingActionLabel(reading);
       if (reading) open.setAttribute('aria-label', `${readingActionLabel(reading)} ${book.title} in ${book.format.toUpperCase()}`);
+      const edit = document.createElement('button');
+      edit.className = 'personal-book__action';
+      edit.type = 'button';
+      edit.textContent = 'Organize';
+      edit.addEventListener('click', () => openMetadataEditor(book));
+
       const remove = document.createElement('button');
       remove.className = 'personal-book__action personal-book__action--remove';
       remove.type = 'button';
@@ -210,22 +401,37 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
           if (status) { status.dataset.state = 'error'; status.textContent = error instanceof Error ? error.message : 'Unable to remove this book.'; }
         }
       });
-      actions.append(open, remove);
+      actions.append(open, edit, remove);
       body.append(actions);
       article.append(cover, body);
       return article;
     }
 
-    async function renderPersonal() {
+    async function renderPersonalView() {
       if (!personalList || !personalSection) return;
       clearCoverUrls();
-      const books = await getPersonalBooks();
-      const cards = await Promise.all(books.map(renderPersonalCard));
+      const facets = personalLibraryFacets(personalBooks);
+      replaceFacetOptions(personalShelf, facets.shelves, 'Any shelf');
+      replaceFacetOptions(personalTag, facets.tags, 'Any tag');
+
+      const visible = filterAndSortPersonalBooks(personalBooks, personalFilters());
+      const cards = await Promise.all(visible.map(renderPersonalCard));
       personalList.replaceChildren(...cards);
-      personalTotal = books.length;
-      personalSection.hidden = books.length === 0;
-      if (personalCount) personalCount.textContent = `${books.length} imported`;
+      personalTotal = personalBooks.length;
+      personalSection.hidden = personalBooks.length === 0;
+      if (personalCount) personalCount.textContent = `${personalBooks.length} imported`;
+      if (personalVisibleCount) {
+        personalVisibleCount.textContent = visible.length === personalBooks.length
+          ? `${visible.length} shown`
+          : `${visible.length} of ${personalBooks.length} shown`;
+      }
+      if (personalEmpty) personalEmpty.hidden = visible.length !== 0 || personalBooks.length === 0;
       updateTotal();
+    }
+
+    async function renderPersonal() {
+      personalBooks = await getPersonalBooks();
+      await renderPersonalView();
     }
 
     async function renderHosted() {
@@ -327,6 +533,48 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       await render();
       prepareImportedReaders(readerRoutes);
     }
+
+    for (const control of [personalSearch, personalFormat, personalShelf, personalTag, personalSort]) {
+      control?.addEventListener(control === personalSearch ? 'input' : 'change', () => { void renderPersonalView(); });
+    }
+    personalClear?.addEventListener('click', () => {
+      if (personalSearch) personalSearch.value = '';
+      if (personalFormat) personalFormat.value = 'all';
+      if (personalShelf) personalShelf.value = '';
+      if (personalTag) personalTag.value = '';
+      if (personalSort) personalSort.value = 'updated';
+      void renderPersonalView();
+      personalSearch?.focus();
+    });
+
+    metadataForm?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const id = metadataId?.value ?? '';
+      if (!id || !metadataTitle) return;
+      const organization = parsePersonalOrganizationInput(metadataShelves?.value ?? '', metadataTags?.value ?? '');
+      if (metadataSave) metadataSave.disabled = true;
+      if (metadataStatus) metadataStatus.textContent = 'Saving…';
+      void updatePersonalBookMetadata(id, {
+        title: metadataTitle.value,
+        ...(metadataCreator?.value.trim() ? { creator: metadataCreator.value } : {}),
+        ...(metadataLanguage?.value.trim() ? { language: metadataLanguage.value } : {}),
+        ...organization,
+      }).then(async () => {
+        if (status) { status.dataset.state = 'ok'; status.textContent = 'Book details updated.'; }
+        closeMetadataEditor();
+        await renderPersonal();
+      }).catch((error) => {
+        if (metadataStatus) metadataStatus.textContent = error instanceof Error ? error.message : 'Unable to save book details.';
+      }).finally(() => {
+        if (metadataSave) metadataSave.disabled = false;
+      });
+    });
+    document.querySelector('[data-personal-metadata-close]')?.addEventListener('click', closeMetadataEditor);
+    document.querySelector('[data-personal-metadata-cancel]')?.addEventListener('click', closeMetadataEditor);
+    metadataDialog?.addEventListener('cancel', (event) => {
+      event.preventDefault();
+      closeMetadataEditor();
+    });
 
     chooseButton?.addEventListener('click', () => input?.click());
     input?.addEventListener('change', () => { void importFiles([...input.files ?? []]); });

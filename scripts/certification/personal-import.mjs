@@ -79,10 +79,10 @@ if (present) {
     saved.includes('Choose EPUB or PDF')
       && saved.includes('data-personal-drop')
       && saved.includes('multiple hidden')
-      && saved.includes('Files stay in this browser')
+      && saved.includes('Files stay on this device unless you separately enable Personal book cloud')
       && saved.includes('getPersonalBooks')
       && saved.includes('deletePersonalBook'),
-    'My Library exposes explicit multi-file choice, drag/drop, local-only disclosure, listing, and removal',
+    'My Library exposes explicit multi-file choice, drag/drop, accurate optional-cloud disclosure, listing, and removal',
   );
   pass(
     'PERSONAL_IMPORT_ER2_UNTRUSTED_METADATA_TEXT',

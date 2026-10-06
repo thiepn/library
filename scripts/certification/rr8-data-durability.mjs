@@ -104,13 +104,14 @@ if (present) {
     'Main categories and PDF progress/bookmarks each replace through one database transaction');
 
   pass('RR8_COMPENSATING_ROLLBACK',
-    portability.includes('const [beforeMain, beforePdf, currentPersonalBooks]')
+    portability.includes('const [beforeMain, beforePdf, beforePersonalMetadata]')
       && portability.includes('await replaceLibraryDbPortabilitySnapshot(beforeMain)')
       && portability.includes('await replacePdfReaderStateSnapshot(beforePdf)')
+      && portability.includes('await applyPersonalBookPortableMetadata(beforePersonalMetadata)')
       && portability.includes('replacePendingPersonalBookMetadata(beforePending)')
       && tests.includes('failed cross-backend restore compensates back to the previous committed state')
       && tests.includes('RR8 rollback simulation'),
-    'Cross-backend failures compensate to the pre-import snapshot and have injected failure acceptance coverage');
+    'Cross-backend failures compensate main, PDF, settings, personal metadata, and pending relink state to the pre-import snapshot with injected failure acceptance coverage');
 
   pass('RR8_USER_SURFACE',
     page.includes('data-library-backup-export')
