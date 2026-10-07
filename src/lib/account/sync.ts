@@ -141,6 +141,42 @@ async function hashBackup(backup: LibraryBackupV1): Promise<string> {
     .join('');
 }
 
+function readingProgressProjection(backup: LibraryBackupV1) {
+  const epub = backup.state.main?.epubProgress?.records ?? [];
+  const pdf = backup.state.pdf?.progress?.records ?? [];
+  return {
+    epub: epub.map((record) => ({
+      workId: record.workId,
+      edition: record.edition,
+      releaseVersion: record.releaseVersion,
+      percentage: record.percentage,
+      furthestPercentage: record.furthestPercentage,
+      updatedAt: record.updatedAt,
+    })).sort((a, b) => a.workId.localeCompare(b.workId)
+      || a.edition - b.edition
+      || a.releaseVersion.localeCompare(b.releaseVersion)),
+    pdf: pdf.map((record) => ({
+      workId: record.identity.workId,
+      edition: record.identity.edition,
+      releaseVersion: record.identity.releaseVersion,
+      page: record.page,
+      furthestPage: record.furthestPage,
+      pageCount: record.pageCount,
+      updatedAt: record.updatedAt,
+    })).sort((a, b) => a.workId.localeCompare(b.workId)
+      || a.edition - b.edition
+      || a.releaseVersion.localeCompare(b.releaseVersion)),
+  };
+}
+
+async function hashReadingProgress(backup: LibraryBackupV1): Promise<string> {
+  const bytes = new TextEncoder().encode(stableStringify(readingProgressProjection(backup)));
+  const digest = await crypto.subtle.digest('SHA-256', bytes);
+  return [...new Uint8Array(digest)]
+    .map((byte) => byte.toString(16).padStart(2, '0'))
+    .join('');
+}
+
 function normalizeCloudState(value: unknown): CloudState {
   if (typeof value !== 'object' || value === null) throw new Error('Invalid Library cloud state response.');
   const row = value as { revision?: unknown; state?: unknown; updated_at?: unknown };
@@ -271,8 +307,8 @@ export async function compareLibraryAccountStateReadOnly(user: User): Promise<Li
     ]);
     if (!cloud) return { status: 'missing' };
     const [cloudHash, localHash] = await Promise.all([
-      hashBackup(cloud.state),
-      hashBackup(local),
+      hashReadingProgress(cloud.state),
+      hashReadingProgress(local),
     ]);
     return {
       status: cloudHash === localHash ? 'exact' : 'different',
