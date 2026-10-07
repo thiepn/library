@@ -11,12 +11,14 @@ test('P4 fixes the PDF reader v2 bridge boundary', () => {
   assert.doesNotMatch(bridge, /readRows\('thiepn-library-pdf-reader', 1, 'progress'\)/);
 });
 
-test('Account-aware Hub reading reconciles through Library instead of exposing raw cloud state', () => {
-  assert.match(account, /getVerifiedLibraryAccountUser/);
+test('Account-aware Hub reading verifies identity then performs one read-only RLS snapshot request', () => {
+  assert.match(account, /getVerifiedLibraryAccountIdentity/);
   assert.match(account, /isLibrarySyncEnabledForUser/);
-  assert.match(account, /library_sync_state/);
-  assert.match(account, /\.select\('state'\)/);
-  assert.doesNotMatch(account, /reconcileLibraryAccountSync|sync_thiepn_library_state|\.insert\(|\.update\(|\.delete\(/);
+  assert.match(account, /getThiepnAccountSession\(\)\.getAccessToken\(\)/);
+  assert.match(account, /\/rest\/v1\/library_sync_state/);
+  assert.match(account, /method: 'GET'/);
+  assert.match(account, /Authorization: \`Bearer \$\{token\}\`/);
+  assert.doesNotMatch(account, /reconcileLibraryAccountSync|sync_thiepn_library_state|\.insert\(|\.update\(|\.delete\(|method: 'POST'|method: 'PATCH'/);
   assert.doesNotMatch(bridge, /supabase|sync_thiepn_library_state/);
 });
 

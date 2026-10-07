@@ -96,9 +96,17 @@ export async function isLibraryAccountConnectionActive(): Promise<boolean> {
   return data?.status === 'connected' || data?.status === 'limited';
 }
 
-export async function getVerifiedLibraryAccountUser(): Promise<LibraryAccountUser | null> {
+export async function getVerifiedLibraryAccountIdentity(): Promise<LibraryAccountUser | null> {
   if (!hasThiepnAccountConfiguration()) return null;
-  const user = identityToUser(await getThiepnAccountSession().verify());
+  return identityToUser(await getThiepnAccountSession().verify());
+}
+
+export function getThiepnAccountPublishableKey(): string {
+  return configuredPublishableKey();
+}
+
+export async function getVerifiedLibraryAccountUser(): Promise<LibraryAccountUser | null> {
+  const user = await getVerifiedLibraryAccountIdentity();
   if (!user) return null;
   if (!(await isLibraryAccountConnectionActive())) {
     getThiepnAccountSession().signOutLocal();
