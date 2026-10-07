@@ -289,3 +289,36 @@
   .personal-metadata-dialog,
   .personal-metadata-dialog__close { border-color: CanvasText; }
 }
+
+
+.reading-resurface {
+  margin: 0 0 1.75rem;
+  padding: 1rem 0 0;
+  border-top: 1px solid var(--line, #d7d2c8);
+}
+.reading-resurface[hidden] { display: none; }
+.reading-resurface__heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 1rem;
+  margin-bottom: .65rem;
+}
+.reading-resurface__heading h2 {
+  margin: .1rem 0 .25rem;
+  font-family: var(--serif, Georgia, serif);
+  font-size: 1.4rem;
+}
+.reading-resurface__heading p { margin: 0; }
+.reading-resurface__privacy {
+  max-width: 24rem;
+  text-align: right;
+  opacity: .68;
+}
+@media (max-width: 700px) {
+  .reading-resurface__heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .reading-resurface__privacy { text-align: left; }
+}
