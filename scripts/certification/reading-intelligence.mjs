@@ -43,7 +43,7 @@ if (present) {
 
   pass(
     'P5_READING_INTELLIGENCE_UI',
-    dom.includes("data-reading-filter = 'paused'")
+    dom.includes("button.dataset.readingFilter = 'paused'")
       && dom.includes('renderReadingIntelligence')
       && dom.includes('rankPausedReading')
       && dom.includes('data-reading-resurface-list'),
