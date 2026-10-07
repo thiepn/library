@@ -1,5 +1,5 @@
 const DB_NAME = 'thiepn-library';
-const DB_VERSION = 9;
+const DB_VERSION = 10;
 const CHANNEL = 'thiepn-library';
 
 // P12 compatibility history: before P29 the legacy/native bridge used `DB_VERSION = 6`.
@@ -20,7 +20,14 @@ export type StoreName =
   | 'annotations'
   | 'annotationStats'
   | 'readingSessions'
-  | 'readingActivity';
+  | 'readingActivity'
+  | 'preferences';
+
+export interface LibraryPreferenceRecord {
+  key: string;
+  value: boolean;
+  updatedAt: string;
+}
 
 export interface FavoriteRecord {
   schemaVersion: typeof FAVORITE_SCHEMA_VERSION;
@@ -101,6 +108,7 @@ const storeDefinitions: Array<[StoreName, string]> = [
   ['annotationStats', 'workId'],
   ['readingSessions', 'id'],
   ['readingActivity', 'workId'],
+  ['preferences', 'key'],
 ];
 
 function request<T>(value: IDBRequest<T>): Promise<T> {
@@ -264,6 +272,19 @@ export function isReadingActivityRecordV1(value: unknown): value is ReadingActiv
     && (record.format === 'epub' || record.format === 'pdf' || record.format === 'web')
     && (record.source === 'hosted' || record.source === 'personal')
     && typeof record.openedAt === 'string';
+}
+
+export async function getLibraryBooleanPreference(key: string, fallback = false): Promise<boolean> {
+  return withStore('preferences', 'readonly', async (store) => {
+    const record = await request<LibraryPreferenceRecord | undefined>(store.get(key));
+    return typeof record?.value === 'boolean' ? record.value : fallback;
+  });
+}
+
+export async function setLibraryBooleanPreference(key: string, value: boolean): Promise<void> {
+  const record: LibraryPreferenceRecord = { key, value, updatedAt: new Date().toISOString() };
+  await withStore('preferences', 'readwrite', async (store) => { await request(store.put(record)); });
+  broadcast('preferences');
 }
 
 export async function getFavoriteWorkIds(): Promise<string[]> {
