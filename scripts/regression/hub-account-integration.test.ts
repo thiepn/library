@@ -4,6 +4,7 @@ import test from 'node:test';
 
 const bridge = await readFile('src/lib/hub/bridge.ts', 'utf8');
 const account = await readFile('src/lib/hub/account.ts', 'utf8');
+const sync = await readFile('src/lib/account/sync.ts', 'utf8');
 const consentPage = await readFile('src/pages/hub/index.astro', 'utf8');
 
 test('P4 fixes the PDF reader v2 bridge boundary', () => {
@@ -11,11 +12,15 @@ test('P4 fixes the PDF reader v2 bridge boundary', () => {
   assert.doesNotMatch(bridge, /readRows\('thiepn-library-pdf-reader', 1, 'progress'\)/);
 });
 
-test('Account-aware Hub reading reconciles through Library instead of exposing raw cloud state', () => {
+test('Account-aware Hub reading compares through Library without write-capable reconciliation', () => {
   assert.match(account, /getVerifiedLibraryAccountUser/);
   assert.match(account, /isLibrarySyncEnabledForUser/);
-  assert.match(account, /library_sync_state/);
-  assert.match(account, /\.select\('state'\)/);
+  assert.match(account, /compareLibraryAccountStateReadOnly/);
+  assert.match(sync, /compareLibraryAccountStateReadOnly/);
+  assert.match(sync, /readCloudState\(\)/);
+  assert.match(sync, /createLibraryBackup\(\)/);
+  assert.match(sync, /hashBackup\(cloud\.state\)/);
+  assert.match(sync, /hashBackup\(local\)/);
   assert.doesNotMatch(account, /reconcileLibraryAccountSync|sync_thiepn_library_state|\.insert\(|\.update\(|\.delete\(/);
   assert.doesNotMatch(bridge, /supabase|sync_thiepn_library_state/);
 });
