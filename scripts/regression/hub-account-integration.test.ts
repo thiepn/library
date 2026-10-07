@@ -5,6 +5,7 @@ import test from 'node:test';
 const bridge = await readFile('src/lib/hub/bridge.ts', 'utf8');
 const account = await readFile('src/lib/hub/account.ts', 'utf8');
 const consentPage = await readFile('src/pages/hub/index.astro', 'utf8');
+const baseLayout = await readFile('src/layouts/BaseLayout.astro', 'utf8');
 
 test('P4 fixes the PDF reader v2 bridge boundary', () => {
   assert.match(bridge, /readRows\('thiepn-library-pdf-reader', 2, 'progress'\)/);
@@ -31,4 +32,9 @@ test('legacy Hub connections are down-converted and stay device-local', () => {
   assert.match(bridge, /legacyConnect/);
   assert.match(bridge, /legacyConsent\(consent\)/);
   assert.match(bridge, /coverage: 'device-local' \| 'account-synced'/);
+});
+
+test('Hub bridge never mounts the ambient Library Account sync runtime', () => {
+  assert.match(baseLayout, /normalizedPath\.endsWith\('\/hub\/bridge'\)/);
+  assert.match(baseLayout, /if \(!accountRuntimeInert\)/);
 });
