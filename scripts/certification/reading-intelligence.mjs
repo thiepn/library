@@ -46,7 +46,7 @@ if (present) {
     dom.includes("button.dataset.readingFilter = 'paused'")
       && dom.includes('renderReadingIntelligence')
       && dom.includes('rankPausedReading')
-      && dom.includes('data-reading-resurface-list'),
+      && dom.includes('readingResurfaceList'),
     'My Library exposes a Paused smart filter and bounded local resurfacing view',
   );
 
