@@ -308,7 +308,7 @@ function ensureReadingIntelligenceUi(): HTMLElement | undefined {
     section.append(heading, list);
     filterRoot.insertAdjacentElement('afterend', section);
   }
-  return section;
+  return section ?? undefined;
 }
 
 function renderReadingIntelligence(items: Array<{ node: HTMLElement; state: ReadingLibraryState }>) {
