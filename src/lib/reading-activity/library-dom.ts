@@ -1,4 +1,12 @@
 import { formatReadingFormat, readingPositionLabel } from '../reader-entry/continuity';
+import {
+  getLibraryBooleanPreference,
+  setLibraryBooleanPreference,
+} from '../client/library-db';
+import {
+  rankPersonalizedDiscovery,
+} from '../content/personalized-discovery';
+import type { DiscoveryWork } from '../content/discovery';
 import type { ReadingContinuityRequest } from '../reader-entry/client';
 import {
   getReadingLibraryState,
@@ -19,6 +27,7 @@ import {
 } from './intelligence';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const PERSONALIZED_DISCOVERY_PREFERENCE = 'personalized-discovery-enabled';
 const validFilters = new Set(['all', 'in-progress', 'not-started', 'completed', 'paused']);
 type LibraryFilter = 'all' | ReadingLibraryStatus | 'paused';
 
@@ -361,6 +370,103 @@ function renderReadingIntelligence(items: Array<{ node: HTMLElement; state: Read
   section.hidden = list.childElementCount === 0;
 }
 
+function parseStringArray(value?: string): string[] {
+  if (!value) return [];
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed.filter((item): item is string => typeof item === 'string') : [];
+  } catch {
+    return [];
+  }
+}
+
+function parseContributors(value?: string): unknown[] {
+  if (!value) return [];
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function discoveryWorkFromNode(node: HTMLElement): DiscoveryWork | undefined {
+  const id = node.dataset.savedWork;
+  const slug = node.dataset.discoverySlug;
+  const title = node.dataset.discoveryTitle;
+  if (!id || !slug || !title) return undefined;
+  return {
+    id,
+    slug,
+    title,
+    language: node.dataset.discoveryLanguage ?? '',
+    contributors: parseContributors(node.dataset.discoveryContributors),
+    classification: {
+      subjects: parseStringArray(node.dataset.discoverySubjects),
+      tags: parseStringArray(node.dataset.discoveryTags),
+      collections: parseStringArray(node.dataset.discoveryCollections),
+    },
+    relationships: {
+      relatedWorks: parseStringArray(node.dataset.discoveryRelated),
+      prerequisites: parseStringArray(node.dataset.discoveryPrerequisites),
+    },
+  };
+}
+
+function renderPersonalizedDiscovery(
+  hosted: Array<{ node: HTMLElement; state: ReadingLibraryState }>,
+  enabled: boolean,
+) {
+  const root = document.querySelector<HTMLElement>('[data-personalized-discovery]');
+  const toggle = root?.querySelector<HTMLInputElement>('[data-personalized-discovery-toggle]');
+  const status = root?.querySelector<HTMLElement>('[data-personalized-discovery-status]');
+  const list = root?.querySelector<HTMLElement>('[data-personalized-discovery-list]');
+  if (!root || !toggle || !status || !list) return;
+
+  toggle.checked = enabled;
+  list.replaceChildren();
+
+  if (!enabled) {
+    status.textContent = 'Off by default. Reading activity stays on this device and is not sent to a recommendation service.';
+    list.hidden = true;
+    return;
+  }
+
+  const items = hosted.flatMap(({ node, state }) => {
+    const work = discoveryWorkFromNode(node);
+    if (!work) return [];
+    return [{ work, state, saved: !node.hidden }];
+  });
+  const recommendations = rankPersonalizedDiscovery(items, true, Date.now(), 4);
+  const titleById = new Map(items.map(({ work }) => [work.id, work.title]));
+
+  for (const recommendation of recommendations) {
+    const anchor = document.createElement('a');
+    anchor.className = 'personalized-discovery__item';
+    anchor.href = `${base}/works/${recommendation.work.slug}`;
+
+    const eyebrow = document.createElement('span');
+    eyebrow.className = 'eyebrow';
+    const sourceTitle = titleById.get(recommendation.sourceWorkId) ?? 'your reading';
+    eyebrow.textContent = `From ${sourceTitle}`;
+
+    const title = document.createElement('strong');
+    title.textContent = recommendation.work.title;
+
+    const reason = document.createElement('span');
+    reason.className = 'micro';
+    reason.textContent = recommendation.reasons.join(' · ');
+
+    anchor.append(eyebrow, title, reason);
+    list.append(anchor);
+  }
+
+  status.textContent = recommendations.length
+    ? 'On-device personalization is on. Only Library metadata and local reading activity are used.'
+    : 'On-device personalization is on, but there are no strong unsaved matches yet.';
+  list.hidden = recommendations.length === 0;
+}
+
 function isCurrentLibraryItem(node: HTMLElement): boolean {
   if (node.matches('[data-saved-work]')) {
     const list = document.querySelector<HTMLElement>('[data-saved-list]');
@@ -427,6 +533,8 @@ async function renderMyLibrary() {
   applyLibraryFilter(items);
   renderLibrarySummary(items);
   renderReadingIntelligence(items);
+  const personalizedDiscoveryEnabled = await getLibraryBooleanPreference(PERSONALIZED_DISCOVERY_PREFERENCE, false);
+  renderPersonalizedDiscovery(hosted, personalizedDiscoveryEnabled);
 }
 
 async function renderAll() {
@@ -464,11 +572,23 @@ export function mountReadingActivityLibraryState(): () => void {
   };
   filterRoot?.addEventListener('click', filterListener);
 
+  const discoveryToggle = document.querySelector<HTMLInputElement>('[data-personalized-discovery-toggle]');
+  const discoveryToggleListener = () => {
+    if (!discoveryToggle) return;
+    void setLibraryBooleanPreference(PERSONALIZED_DISCOVERY_PREFERENCE, discoveryToggle.checked)
+      .then(refresh)
+      .catch(() => {
+        discoveryToggle.checked = !discoveryToggle.checked;
+      });
+  };
+  discoveryToggle?.addEventListener('change', discoveryToggleListener);
+
   refresh();
   return () => {
     disposed = true;
     unsubscribe();
     observer?.disconnect();
     filterRoot?.removeEventListener('click', filterListener);
+    discoveryToggle?.removeEventListener('change', discoveryToggleListener);
   };
 }
