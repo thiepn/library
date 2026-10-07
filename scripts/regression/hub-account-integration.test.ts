@@ -19,8 +19,8 @@ test('Account-aware Hub reading compares through Library without write-capable r
   assert.match(sync, /compareLibraryAccountStateReadOnly/);
   assert.match(sync, /readCloudState\(\)/);
   assert.match(sync, /createLibraryBackup\(\)/);
-  assert.match(sync, /hashBackup\(cloud\.state\)/);
-  assert.match(sync, /hashBackup\(local\)/);
+  assert.match(sync, /hashReadingProgress(cloud.state)/);
+  assert.match(sync, /hashReadingProgress(local)/);
   assert.doesNotMatch(account, /reconcileLibraryAccountSync|sync_thiepn_library_state|\.insert\(|\.update\(|\.delete\(/);
   assert.doesNotMatch(bridge, /supabase|sync_thiepn_library_state/);
 });
