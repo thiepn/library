@@ -91,7 +91,10 @@ const contentSecurityPolicy = [
     </script>
     <script>
       const normalizedPath = window.location.pathname.replace(/\/$/, '');
-      if (!normalizedPath.endsWith('/auth/callback')) {
+      const accountRuntimeInert =
+        normalizedPath.endsWith('/auth/callback')
+        || normalizedPath.endsWith('/hub/bridge');
+      if (!accountRuntimeInert) {
         void import('../lib/account/runtime').then(({ mountLibraryAccountRuntime }) => {
           const unmount = mountLibraryAccountRuntime();
           window.addEventListener('pagehide', unmount, { once: true });
