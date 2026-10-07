@@ -251,6 +251,42 @@ async function pushLocal(
   return result;
 }
 
+export interface LibraryAccountReadOnlyComparison {
+  status: 'exact' | 'different' | 'missing' | 'offline' | 'error';
+  cloudUpdatedAt?: string;
+}
+
+/**
+ * Compare this device with the owner-isolated Account snapshot without writing
+ * cloud state or restoring anything locally. Used by the Hub projection gate.
+ */
+export async function compareLibraryAccountStateReadOnly(user: User): Promise<LibraryAccountReadOnlyComparison> {
+  if (!isLibrarySyncEnabledForUser(user.id)) return { status: 'missing' };
+  try {
+    const connected = await readLibraryConnectionActive();
+    if (!connected) return { status: 'missing' };
+    const [cloud, local] = await Promise.all([
+      readCloudState(),
+      createLibraryBackup(),
+    ]);
+    if (!cloud) return { status: 'missing' };
+    const [cloudHash, localHash] = await Promise.all([
+      hashBackup(cloud.state),
+      hashBackup(local),
+    ]);
+    return {
+      status: cloudHash === localHash ? 'exact' : 'different',
+      ...(cloud.updated_at ? { cloudUpdatedAt: cloud.updated_at } : {}),
+    };
+  } catch (error) {
+    const message = describeError(error).toLocaleLowerCase();
+    if (message.includes('fetch') || message.includes('network') || message.includes('offline')) {
+      return { status: 'offline' };
+    }
+    return { status: 'error' };
+  }
+}
+
 export async function enableLibraryAccountSync(user: User): Promise<LibrarySyncResult> {
   await connectLibraryApp();
   const current = metaForUser(user.id);
