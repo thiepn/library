@@ -31,7 +31,7 @@ test('Library uses the pinned first-party THIEPN OAuth client', async () => {
   assert.equal(authSource.includes('if (!hasThiepnAccountConfiguration()) return null;'), true);
   assert.match(
     pkg.dependencies?.['@thiepn/account-session'] ?? '',
-    /^github:thiepn\/account#2bc5ac10eada7e18092e2b9f8ceb262e65a6d236&path:\/packages\/account-session$/,
+    /^github:thiepn\/account#df029d08a49ef27d3fd5fedf58400572746c0b47&path:\/packages\/account-session$/,
   );
 });
 
