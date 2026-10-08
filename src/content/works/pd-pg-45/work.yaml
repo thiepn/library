@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-45",
+  "slug": "pd-pg-45",
+  "title": "Anne of Green Gables",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "L. M. (Lucy Maud) Montgomery",
+      "role": "creator",
+      "birthYear": 1874,
+      "deathYear": 1942
+    }
+  ],
+  "description": "A public-domain edition of Anne of Green Gables by L. M. (Lucy Maud) Montgomery. Project Gutenberg classifies it under Orphans -- Fiction, Islands -- Fiction, Friendship -- Fiction.",
+  "shortDescription": "A public-domain edition of Anne of Green Gables by L. M. (Lucy Maud) Montgomery. Project Gutenberg classifies it under Orphans -- Fiction, Islands -- Fiction, Friendship -- Fict…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2008-06-27",
+    "lastUpdated": "2026-09-27",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-45-b86e9815aeca-cover-525fa87962d4",
+    "activeRelease": "pg-45-b86e9815aeca-cover-525fa87962d4"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-45.webp",
+    "alt": "Cover for Anne of Green Gables by L. M. (Lucy Maud) Montgomery"
+  },
+  "classification": {
+    "subjects": [
+      "orphans",
+      "islands",
+      "friendship",
+      "bildungsromans",
+      "girls"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "childrens-literature"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/45",
+      "gutenbergId": 45
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/45/pg45.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #45. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}
