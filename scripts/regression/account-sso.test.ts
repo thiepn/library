@@ -5,6 +5,7 @@ import { readThiepnAccountProbeMessage } from '@thiepn/account-session';
 import {
   THIEPN_LIBRARY_OAUTH_CLIENT_ID,
   THIEPN_ACCOUNT_ORIGIN,
+  coalesceLibraryAccountAuthChanges,
 } from '../../src/lib/account/supabase';
 
 const CLIENT_ID = '76e41661-f8a9-4181-b8b9-4084f2e2acbf';
@@ -29,6 +30,14 @@ test('Library uses the pinned first-party THIEPN OAuth client', async () => {
   assert.equal(callbackPage.includes('completeLibraryAccountSsoCallback'), true);
   assert.equal(accountPage.includes('data-account-signed-out hidden'), true);
   assert.equal(accountDom.includes('initializeLibraryAccountSso()'), true);
+  assert.equal(accountDom.includes('const epoch = ++renderEpoch'), true);
+  assert.equal(accountDom.includes('await render(isCurrent)'), true);
+  assert.equal(accountDom.includes('await render(user)'), false);
+  assert.equal(accountDom.includes('if (!isCurrent()) return null'), true);
+  assert.equal(accountDom.includes('epoch !== renderEpoch'), true);
+  assert.equal(accountDom.includes('user?.id !== current.id'), true);
+  assert.equal(accountDom.includes('File permission outages are not evidence that the user signed out'), true);
+  assert.equal(accountDom.includes("text('[data-personal-files-mode]', 'Unavailable')"), true);
   assert.equal(accountDom.includes("hidden('[data-account-signed-out]', false)"), true);
   assert.equal(runtime.includes('initializeLibraryAccountSso()'), true);
   assert.equal(runtime.includes('probeExistingThiepnAccountSession'), false);
@@ -81,4 +90,28 @@ test('silent Account probe exposes only signed-in eligibility semantics', () => 
     }, CLIENT_ID),
     null,
   );
+});
+
+
+test('repeated verify events cannot recursively trigger Account page refresh', () => {
+  let notifications = 0;
+  const notify = coalesceLibraryAccountAuthChanges(() => { notifications += 1; });
+
+  notify({ status: 'signed-out' });
+  notify({ status: 'signed-out' });
+  assert.equal(notifications, 1);
+
+  notify({ status: 'signed-in', id: CLIENT_ID, email: 'reader@example.test' });
+  notify({ status: 'signed-in', id: CLIENT_ID, email: 'reader@example.test' });
+  assert.equal(notifications, 2);
+
+  notify({ status: 'signed-in', id: CLIENT_ID, email: 'updated@example.test' });
+  assert.equal(notifications, 3);
+
+  notify({ status: 'unavailable', code: 'ACCOUNT_VERIFY_UNAVAILABLE' });
+  notify({ status: 'unavailable', code: 'ACCOUNT_VERIFY_UNAVAILABLE' });
+  assert.equal(notifications, 4);
+
+  notify({ status: 'signed-out' });
+  assert.equal(notifications, 5);
 });
