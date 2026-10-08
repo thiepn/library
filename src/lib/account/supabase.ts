@@ -124,8 +124,22 @@ export async function getVerifiedLibraryAccountUser(): Promise<LibraryAccountUse
   return user;
 }
 
+function rememberLibrarySsoReturnTo(returnTo: string): void {
+  try {
+    sessionStorage.setItem(LIBRARY_SSO_RETURN_KEY, safeLibraryReturnTo(returnTo));
+  } catch {
+    // A blocked return-path hint must not prevent the OAuth attempt.
+  }
+}
+
+/** Preserve the requested Library route during a silent first-party SSO redirect. */
+export function initializeLibraryAccountSso(returnTo = window.location.href) {
+  rememberLibrarySsoReturnTo(returnTo);
+  return getLibraryBrowserSso().initialize();
+}
+
 export async function beginLibraryAccountSso(returnTo = window.location.href): Promise<void> {
-  sessionStorage.setItem(LIBRARY_SSO_RETURN_KEY, safeLibraryReturnTo(returnTo));
+  rememberLibrarySsoReturnTo(returnTo);
   await getLibraryBrowserSso().connect();
 }
 
