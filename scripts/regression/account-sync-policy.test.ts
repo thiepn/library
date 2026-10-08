@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import type { LibraryBackupV1 } from '../../src/lib/client/library-portability';
-import { READER_SETTINGS_DEFAULTS } from '../../src/lib/reader/settings';
+import { READER_SETTINGS_DEFAULTS } from '../../src/lib/reader/settings-defaults';
 import { backupHasMeaningfulLibraryState, decideLibrarySync } from '../../src/lib/account/sync-policy';
 
 function backup(records = 0): LibraryBackupV1 {
