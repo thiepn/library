@@ -77,6 +77,7 @@ const pdfReaderHref = work.release?.artifacts.pdf
       import { isLegacyReaderRequested, resolveLegacyResumeHref } from '../../../../lib/reader/legacy-bridge';
       import { ReaderPerformanceController } from '../../../../lib/reader/performance';
       import { getReaderAnnotationById } from '../../../../lib/reader/annotation-store';
+      import { getReaderBookmarkById } from '../../../../lib/reader/bookmark-store';
       import { recordReadingOpen } from '../../../../lib/reading-activity/client';
       import type { ReaderPublicationCandidate } from '../../../../lib/reader/publication';
       import { mountReaderShell } from '../../../../lib/reader/shell';
@@ -132,7 +133,9 @@ const pdfReaderHref = work.release?.artifacts.pdf
           readerPerformance?.markOpening();
 
           let target: string | undefined;
-          const annotationId = new URL(location.href).searchParams.get('annotation');
+          const requested = new URL(location.href);
+          const annotationId = requested.searchParams.get('annotation');
+          const bookmarkId = requested.searchParams.get('bookmark');
           if (annotationId) {
             const annotation = await getReaderAnnotationById(annotationId);
             if (annotation
@@ -140,6 +143,14 @@ const pdfReaderHref = work.release?.artifacts.pdf
               && annotation.edition === publication.edition
               && annotation.releaseVersion === publication.version) {
               target = annotation.cfiRange;
+            }
+          } else if (bookmarkId) {
+            const bookmark = await getReaderBookmarkById(bookmarkId);
+            if (bookmark
+              && bookmark.workId === publication.workId
+              && bookmark.edition === publication.edition
+              && bookmark.releaseVersion === publication.version) {
+              target = bookmark.cfi;
             }
           }
 
