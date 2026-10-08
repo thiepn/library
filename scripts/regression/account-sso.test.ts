@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
-import { interpretLibrarySsoProbeMessage } from '../../src/lib/account/sso-probe';
+import { readThiepnAccountProbeMessage } from '@thiepn/account-session';
 import {
   THIEPN_LIBRARY_OAUTH_CLIENT_ID,
   THIEPN_ACCOUNT_ORIGIN,
@@ -26,50 +26,54 @@ test('Library uses the pinned first-party THIEPN OAuth client', async () => {
   assert.equal(accountPage.includes('Continue with Google'), false);
   assert.equal(accountPage.includes('Connect THIEPN Account'), true);
   assert.equal(callbackPage.includes('completeLibraryAccountSsoCallback'), true);
-  assert.equal(runtime.includes('probeExistingThiepnAccountSession'), true);
+  assert.equal(runtime.includes('getLibraryBrowserSso().initialize()'), true);
+  assert.equal(runtime.includes('probeExistingThiepnAccountSession'), false);
+  assert.equal(authSource.includes('createThiepnBrowserSso'), true);
+  assert.equal(authSource.includes('getLibraryBrowserSso().connect()'), true);
+  assert.equal(authSource.includes('getLibraryBrowserSso().completeCallback(window.location)'), true);
   assert.equal(runtime.includes('if (!hasThiepnAccountConfiguration()) return () => {};'), true);
   assert.equal(authSource.includes('if (!hasThiepnAccountConfiguration()) return null;'), true);
   assert.match(
     pkg.dependencies?.['@thiepn/account-session'] ?? '',
-    /^github:thiepn\/account#df029d08a49ef27d3fd5fedf58400572746c0b47&path:\/packages\/account-session$/,
+    /^github:thiepn\/account#83c3af63a18c771105e4460368dadbeaeb625fd0&path:\/packages\/account-session$/,
   );
 });
 
 test('silent Account probe exposes only signed-in eligibility semantics', () => {
   assert.equal(
-    interpretLibrarySsoProbeMessage({
+    readThiepnAccountProbeMessage({
       type: 'thiepn:sso-probe:v1',
       clientId: CLIENT_ID,
       signedIn: true,
       eligible: true,
-    }),
+    }, CLIENT_ID),
     'signed-in',
   );
   assert.equal(
-    interpretLibrarySsoProbeMessage({
+    readThiepnAccountProbeMessage({
       type: 'thiepn:sso-probe:v1',
       clientId: CLIENT_ID,
       signedIn: true,
       eligible: false,
-    }),
+    }, CLIENT_ID),
     'disconnected',
   );
   assert.equal(
-    interpretLibrarySsoProbeMessage({
+    readThiepnAccountProbeMessage({
       type: 'thiepn:sso-probe:v1',
       clientId: CLIENT_ID,
       signedIn: false,
       eligible: true,
-    }),
+    }, CLIENT_ID),
     'signed-out',
   );
   assert.equal(
-    interpretLibrarySsoProbeMessage({
+    readThiepnAccountProbeMessage({
       type: 'thiepn:sso-probe:v1',
       clientId: '11111111-1111-4111-8111-111111111111',
       signedIn: true,
       eligible: true,
-    }),
+    }, CLIENT_ID),
     null,
   );
 });
