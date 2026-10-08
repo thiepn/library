@@ -1,5 +1,5 @@
 import {
-  getLibraryBrowserSso,
+  initializeLibraryAccountSso,
   getVerifiedLibraryAccountUser,
   hasThiepnAccountConfiguration,
   subscribeLibraryAccountAuth,
@@ -23,7 +23,7 @@ export function mountLibraryAccountRuntime(): () => void {
     try {
       // The shared SDK verifies app-local identity, probes the Account origin
       // only when needed, and deduplicates PKCE redirects and sign-out races.
-      const initialized = await getLibraryBrowserSso().initialize();
+      const initialized = await initializeLibraryAccountSso();
       if (initialized.status === 'redirecting' || initialized.identity.status !== 'signed-in') return;
 
       const user = await getVerifiedLibraryAccountUser();
