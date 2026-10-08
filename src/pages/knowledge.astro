@@ -8,6 +8,8 @@ const workCatalog = (await getWorks()).map((work) => ({
   id: work.id,
   slug: work.slug,
   title: work.title,
+  edition: work.release?.edition,
+  releaseVersion: work.release?.version,
 }));
 ---
 <BaseLayout title="Knowledge" description="Search, review, edit, export, and reopen Library highlights, notes, and bookmarks." noindex>
@@ -88,7 +90,11 @@ const workCatalog = (await getWorks()).map((work) => ({
       subscribeLibraryState,
       type AnnotationRecord,
     } from '../lib/client/library-db';
-    import { getPersonalBooks } from '../lib/client/personal-books';
+    import {
+      getPersonalBooks,
+      personalReaderReleaseVersion,
+      personalReaderWorkId,
+    } from '../lib/client/personal-books';
     import {
       deletePdfAnnotation,
       deletePdfBookmark,
@@ -122,7 +128,13 @@ const workCatalog = (await getWorks()).map((work) => ({
       type KnowledgeWorkspaceItem,
     } from '../lib/knowledge/workspace';
 
-    interface HostedWork { id: string; slug: string; title: string; }
+    interface HostedWork {
+      id: string;
+      slug: string;
+      title: string;
+      edition?: number;
+      releaseVersion?: string;
+    }
     type KnowledgeSource = 'epub-annotation' | 'pdf-annotation' | 'legacy-annotation' | 'epub-bookmark' | 'pdf-bookmark';
     type KnowledgeRecord = ReaderAnnotationRecordV2 | PdfAnnotationRecord | AnnotationRecord | ReaderBookmarkRecordV2 | PdfBookmarkRecord;
     interface KnowledgeItem extends KnowledgeWorkspaceItem { source: KnowledgeSource; record: KnowledgeRecord; }
@@ -143,12 +155,18 @@ const workCatalog = (await getWorks()).map((work) => ({
     const base = root?.dataset.base ?? '/library';
     const hostedWorks = new Map<string, HostedWork>();
     const personalTitles = new Map<string, string>();
+    const currentReleases = new Map<string, { edition: number; releaseVersion: string }>();
     let items: KnowledgeItem[] = [];
     let renderRevision = 0;
 
     try {
       const catalog = document.querySelector<HTMLElement>('[data-knowledge-work-catalog]');
-      for (const work of JSON.parse(catalog?.dataset.knowledgeWorkCatalog ?? '[]') as HostedWork[]) hostedWorks.set(work.id, work);
+      for (const work of JSON.parse(catalog?.dataset.knowledgeWorkCatalog ?? '[]') as HostedWork[]) {
+        hostedWorks.set(work.id, work);
+        if (typeof work.edition === 'number' && work.releaseVersion) {
+          currentReleases.set(work.id, { edition: work.edition, releaseVersion: work.releaseVersion });
+        }
+      }
     } catch {}
 
     function isLegacyAnnotation(value: unknown): value is AnnotationRecord {
@@ -172,14 +190,33 @@ const workCatalog = (await getWorks()).map((work) => ({
 
     function hostedSlug(workId: string): string | undefined { return hostedWorks.get(workId)?.slug; }
 
-    function epubHref(workId: string, id: string, parameter: 'annotation' | 'bookmark'): string | undefined {
+    function isCurrentRelease(workId: string, edition: number, releaseVersion: string): boolean {
+      const active = currentReleases.get(workId);
+      return active?.edition === edition && active.releaseVersion === releaseVersion;
+    }
+
+    function epubHref(
+      workId: string,
+      edition: number,
+      releaseVersion: string,
+      id: string,
+      parameter: 'annotation' | 'bookmark',
+    ): string | undefined {
+      if (!isCurrentRelease(workId, edition, releaseVersion)) return undefined;
       const personalId = personalBookId(workId);
       if (personalId) return `${base}/personal/read?id=${encodeURIComponent(personalId)}&${parameter}=${encodeURIComponent(id)}`;
       const slug = hostedSlug(workId);
       return slug ? `${base}/works/${encodeURIComponent(slug)}/read?${parameter}=${encodeURIComponent(id)}` : undefined;
     }
 
-    function pdfHref(workId: string, page: number, annotationId?: string): string | undefined {
+    function pdfHref(
+      workId: string,
+      edition: number,
+      releaseVersion: string,
+      page: number,
+      annotationId?: string,
+    ): string | undefined {
+      if (!isCurrentRelease(workId, edition, releaseVersion)) return undefined;
       const personalId = personalBookId(workId);
       const query = `page=${page}${annotationId ? `&annotation=${encodeURIComponent(annotationId)}` : ''}`;
       if (personalId) return `${base}/personal/pdf?id=${encodeURIComponent(personalId)}&${query}`;
@@ -201,7 +238,7 @@ const workCatalog = (await getWorks()).map((work) => ({
           note: value.note,
           createdAt: value.createdAt,
           updatedAt: value.updatedAt,
-          href: epubHref(value.workId, value.id, 'annotation'),
+          href: epubHref(value.workId, value.edition, value.releaseVersion, value.id, 'annotation'),
           record: value,
         };
       }
@@ -241,7 +278,7 @@ const workCatalog = (await getWorks()).map((work) => ({
         note: value.note,
         createdAt: value.createdAt,
         updatedAt: value.updatedAt,
-        href: pdfHref(value.identity.workId, value.page, value.id),
+        href: pdfHref(value.identity.workId, value.identity.edition, value.identity.releaseVersion, value.page, value.id),
         record: value,
       };
     }
@@ -259,7 +296,7 @@ const workCatalog = (await getWorks()).map((work) => ({
         note: '',
         createdAt: value.createdAt,
         updatedAt: value.updatedAt,
-        href: epubHref(value.workId, value.id, 'bookmark'),
+        href: epubHref(value.workId, value.edition, value.releaseVersion, value.id, 'bookmark'),
         record: value,
       };
     }
@@ -277,7 +314,7 @@ const workCatalog = (await getWorks()).map((work) => ({
         note: '',
         createdAt: value.createdAt,
         updatedAt: value.createdAt,
-        href: pdfHref(value.identity.workId, value.page),
+        href: pdfHref(value.identity.workId, value.identity.edition, value.identity.releaseVersion, value.page),
         record: value,
       };
     }
@@ -458,6 +495,12 @@ const workCatalog = (await getWorks()).map((work) => ({
 
         const actions = document.createElement('div');
         actions.className = 'knowledge-card__actions';
+        if (!item.href && item.format !== 'web') {
+          const unavailable = document.createElement('p');
+          unavailable.className = 'micro knowledge-card__unavailable';
+          unavailable.textContent = 'The original edition or local file is unavailable. This saved item is preserved, but cannot safely reopen in another edition.';
+          article.append(unavailable);
+        }
         if (item.href) {
           const open = document.createElement('a');
           open.className = 'primary-action';
@@ -512,7 +555,16 @@ const workCatalog = (await getWorks()).map((work) => ({
         ]);
         if (revision !== renderRevision) return;
         personalTitles.clear();
-        for (const personalBook of personal) personalTitles.set(personalBook.id, personalBook.title);
+        for (const key of [...currentReleases.keys()]) {
+          if (key.startsWith('personal:')) currentReleases.delete(key);
+        }
+        for (const personalBook of personal) {
+          personalTitles.set(personalBook.id, personalBook.title);
+          currentReleases.set(personalReaderWorkId(personalBook), {
+            edition: 1,
+            releaseVersion: personalReaderReleaseVersion(personalBook),
+          });
+        }
         items = [
           ...mainAnnotations.map(normalizeMain).filter((item): item is KnowledgeItem => Boolean(item)),
           ...pdfAnnotations.filter(isPdfAnnotationRecord).map(normalizePdfAnnotation),
