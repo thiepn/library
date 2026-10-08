@@ -32,7 +32,11 @@ export function backupHasMeaningfulLibraryState(backup: LibraryBackupV1): boolea
       + recordCount(main.annotations)
       + recordCount(main.readingActivity)
     ) > 0)
-    || (pdf && (recordCount(pdf.progress) + recordCount(pdf.bookmarks)) > 0)
+    || (pdf && (
+      recordCount(pdf.progress)
+      + recordCount(pdf.bookmarks)
+      + recordCount(pdf.annotations)
+    ) > 0)
     || (personal && personal.records.length > 0)
   );
 }
