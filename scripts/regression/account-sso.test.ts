@@ -26,10 +26,11 @@ test('Library uses the pinned first-party THIEPN OAuth client', async () => {
   assert.equal(accountPage.includes('Continue with Google'), false);
   assert.equal(accountPage.includes('Connect THIEPN Account'), true);
   assert.equal(callbackPage.includes('completeLibraryAccountSsoCallback'), true);
-  assert.equal(runtime.includes('getLibraryBrowserSso().initialize()'), true);
+  assert.equal(runtime.includes('initializeLibraryAccountSso()'), true);
   assert.equal(runtime.includes('probeExistingThiepnAccountSession'), false);
   assert.equal(authSource.includes('createThiepnBrowserSso'), true);
   assert.equal(authSource.includes('getLibraryBrowserSso().connect()'), true);
+  assert.equal(authSource.includes('rememberLibrarySsoReturnTo(returnTo)'), true);
   assert.equal(authSource.includes('getLibraryBrowserSso().completeCallback(window.location)'), true);
   assert.equal(runtime.includes('if (!hasThiepnAccountConfiguration()) return () => {};'), true);
   assert.equal(authSource.includes('if (!hasThiepnAccountConfiguration()) return null;'), true);
