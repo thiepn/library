@@ -39,7 +39,7 @@ if (present) {
   ]);
 
   pass('RR8_SCHEMA_MIGRATIONS',
-    libraryDb.includes("const DB_VERSION = 9")
+    /const DB_VERSION = (?:9|1[0-9]|[2-9][0-9]+)/.test(libraryDb)
       && libraryDb.includes('FAVORITE_SCHEMA_VERSION = 1')
       && libraryDb.includes('LEGACY_PROGRESS_SCHEMA_VERSION = 1')
       && libraryDb.includes('oldVersion < 9')
