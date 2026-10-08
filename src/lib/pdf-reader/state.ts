@@ -259,15 +259,30 @@ export async function setPdfProgress(identity: PdfReaderIdentity, page: number, 
   return next;
 }
 
-export async function getPdfBookmarks(identity: PdfReaderIdentity): Promise<PdfBookmarkRecord[]> {
-  const publicationKey = pdfReaderIdentityKey(identity);
+export async function getPdfBookmarks(identity?: PdfReaderIdentity): Promise<PdfBookmarkRecord[]> {
+  if (identity) {
+    const publicationKey = pdfReaderIdentityKey(identity);
+    return withStore(BOOKMARK_STORE, 'readonly', async (store) => {
+      const index = store.index('publicationKey');
+      const values = await request<unknown[]>(index.getAll(publicationKey));
+      return values.filter(isPdfBookmarkRecord)
+        .filter((value) => sameIdentity(value.identity, identity))
+        .sort((a, b) => a.page - b.page || a.createdAt.localeCompare(b.createdAt));
+    });
+  }
   return withStore(BOOKMARK_STORE, 'readonly', async (store) => {
-    const index = store.index('publicationKey');
-    const values = await request<unknown[]>(index.getAll(publicationKey));
+    const values = await request<unknown[]>(store.getAll());
     return values.filter(isPdfBookmarkRecord)
-      .filter((value) => sameIdentity(value.identity, identity))
-      .sort((a, b) => a.page - b.page || a.createdAt.localeCompare(b.createdAt));
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   });
+}
+
+export async function deletePdfBookmark(id: string, identity: PdfReaderIdentity): Promise<void> {
+  if (!id) return;
+  await withStore(BOOKMARK_STORE, 'readwrite', async (store) => {
+    await request(store.delete(id));
+  });
+  broadcast('bookmarks', identity);
 }
 
 export async function togglePdfBookmark(
