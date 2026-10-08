@@ -53,7 +53,21 @@ function renderPersonalFileResult(result: PersonalFileCloudResult): void {
 }
 
 async function renderPersonalFiles(user: LibraryAccountUser, readingSyncEnabled: boolean, isCurrent: () => boolean): Promise<void> {
-  const enabled = await isLibraryPersonalFileCloudEnabled(user.id);
+  let enabled: boolean;
+  try {
+    enabled = await isLibraryPersonalFileCloudEnabled(user.id);
+  } catch {
+    if (!isCurrent()) return;
+    // File permission outages are not evidence that the user signed out.
+    // Keep verified Account and reading-state sync visible and leave the
+    // sensitive personal-file actions unavailable until permission is known.
+    hidden('[data-personal-files-disabled]', true);
+    hidden('[data-personal-files-enabled]', true);
+    text('[data-personal-files-mode]', 'Unavailable');
+    text('[data-personal-files-status]', 'Unable to verify Personal book cloud permission. Your local books are unaffected.');
+    text('[data-personal-files-summary]', 'Retry when Account is reachable.');
+    return;
+  }
   if (!isCurrent()) return;
   hidden('[data-personal-files-disabled]', enabled);
   hidden('[data-personal-files-enabled]', !enabled);
