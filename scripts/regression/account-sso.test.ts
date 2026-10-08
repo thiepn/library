@@ -10,9 +10,10 @@ import {
 const CLIENT_ID = '76e41661-f8a9-4181-b8b9-4084f2e2acbf';
 
 test('Library uses the pinned first-party THIEPN OAuth client', async () => {
-  const [authSource, accountPage, callbackPage, runtime, pkgText] = await Promise.all([
+  const [authSource, accountPage, accountDom, callbackPage, runtime, pkgText] = await Promise.all([
     readFile('src/lib/account/supabase.ts', 'utf8'),
     readFile('src/pages/account.astro', 'utf8'),
+    readFile('src/lib/account/account-dom.ts', 'utf8'),
     readFile('src/pages/auth/callback.astro', 'utf8'),
     readFile('src/lib/account/runtime.ts', 'utf8'),
     readFile('package.json', 'utf8'),
@@ -26,6 +27,9 @@ test('Library uses the pinned first-party THIEPN OAuth client', async () => {
   assert.equal(accountPage.includes('Continue with Google'), false);
   assert.equal(accountPage.includes('Connect THIEPN Account'), true);
   assert.equal(callbackPage.includes('completeLibraryAccountSsoCallback'), true);
+  assert.equal(accountPage.includes('data-account-signed-out hidden'), true);
+  assert.equal(accountDom.includes('initializeLibraryAccountSso()'), true);
+  assert.equal(accountDom.includes("hidden('[data-account-signed-out]', false)"), true);
   assert.equal(runtime.includes('initializeLibraryAccountSso()'), true);
   assert.equal(runtime.includes('probeExistingThiepnAccountSession'), false);
   assert.equal(authSource.includes('createThiepnBrowserSso'), true);
