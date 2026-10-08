@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-2542",
+  "slug": "pd-pg-2542",
+  "title": "A Doll's House : a play",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Henrik Ibsen",
+      "role": "creator",
+      "birthYear": 1828,
+      "deathYear": 1906
+    },
+    {
+      "name": "R. Farquharson (Robert Farquharson) Sharp",
+      "role": "trl",
+      "birthYear": 1864,
+      "deathYear": 1945
+    }
+  ],
+  "description": "A public-domain edition of A Doll's House : a play by Henrik Ibsen. Project Gutenberg classifies it under Marriage -- Drama, Man-woman relationships -- Drama, Norwegian drama -- Translations into English.",
+  "shortDescription": "A public-domain edition of A Doll's House : a play by Henrik Ibsen. Project Gutenberg classifies it under Marriage -- Drama, Man-woman relationships -- Drama, Norwegian drama --…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "2001-03-01",
+    "lastUpdated": "2026-09-27",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-2542-dd5e6c08192e-cover-2c972942656a",
+    "activeRelease": "pg-2542-dd5e6c08192e-cover-2c972942656a"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-2542.webp",
+    "alt": "Cover for A Doll's House : a play by Henrik Ibsen"
+  },
+  "classification": {
+    "subjects": [
+      "marriage",
+      "man-woman-relationships",
+      "norwegian-drama",
+      "wives",
+      "pt"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "best-books-ever-listings"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/2542",
+      "gutenbergId": 2542
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/2542/pg2542.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #2542. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}
