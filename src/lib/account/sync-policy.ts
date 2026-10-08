@@ -1,4 +1,5 @@
 import type { LibraryBackupV1 } from '../client/library-portability';
+import { READER_SETTINGS_DEFAULTS } from '../reader/settings';
 
 export interface LibrarySyncBaseline {
   revision: number;
@@ -22,6 +23,18 @@ export function backupHasMeaningfulLibraryState(backup: LibraryBackupV1): boolea
   const main = backup.state.main;
   const pdf = backup.state.pdf;
   const personal = backup.state.personalBooks;
+  const settings = backup.state.settings;
+  // A new device with factory defaults should pull the cloud automatically.
+  // Customized reading preferences are user data, however: never silently
+  // overwrite them during a first-time sync against a different cloud copy.
+  const customizedReader = settings?.reader
+    && (Object.keys(READER_SETTINGS_DEFAULTS) as Array<keyof typeof READER_SETTINGS_DEFAULTS>)
+      .some((key) => settings.reader?.[key] !== READER_SETTINGS_DEFAULTS[key]);
+  const customizedPdf = pdf?.settings
+    && (pdf.settings.fit !== 'width' || pdf.settings.zoom !== 1);
+  const customizedSite = settings?.site && settings.site.appearance !== 'system';
+  const customizedLegacy = settings?.legacyReader
+    && (settings.legacyReader.scale !== 1 || settings.legacyReader.measure !== 68);
 
   return Boolean(
     (main && (
@@ -38,6 +51,10 @@ export function backupHasMeaningfulLibraryState(backup: LibraryBackupV1): boolea
       + recordCount(pdf.annotations)
     ) > 0)
     || (personal && personal.records.length > 0)
+    || customizedReader
+    || customizedPdf
+    || customizedSite
+    || customizedLegacy
   );
 }
 
