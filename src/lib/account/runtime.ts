@@ -1,17 +1,14 @@
 import {
-  beginLibraryAccountSso,
+  getLibraryBrowserSso,
   getVerifiedLibraryAccountUser,
   hasThiepnAccountConfiguration,
   subscribeLibraryAccountAuth,
 } from './supabase';
-import { probeExistingThiepnAccountSession } from './sso-probe';
 import {
   isLibrarySyncEnabledForUser,
   reconcileLibraryAccountSync,
 } from './sync';
 import { reconcileLibraryPersonalFiles } from './personal-files';
-
-const AUTO_SSO_PROBE_COOLDOWN_MS = 30_000;
 
 export function mountLibraryAccountRuntime(): () => void {
   if (!hasThiepnAccountConfiguration()) return () => {};
@@ -19,30 +16,18 @@ export function mountLibraryAccountRuntime(): () => void {
   let timer: number | undefined;
   let running = false;
   let disposed = false;
-  let lastProbeAt = 0;
 
   const run = async () => {
     if (disposed || running) return;
     running = true;
     try {
-      const user = await getVerifiedLibraryAccountUser();
+      // The shared SDK verifies app-local identity, probes the Account origin
+      // only when needed, and deduplicates PKCE redirects and sign-out races.
+      const initialized = await getLibraryBrowserSso().initialize();
+      if (initialized.status === 'redirecting' || initialized.identity.status !== 'signed-in') return;
 
-      if (!user) {
-        const normalizedPath = window.location.pathname.replace(/\/$/, '');
-        if (
-          navigator.onLine
-          && !normalizedPath.endsWith('/auth/callback')
-          && Date.now() - lastProbeAt >= AUTO_SSO_PROBE_COOLDOWN_MS
-        ) {
-          lastProbeAt = Date.now();
-          const probe = await probeExistingThiepnAccountSession();
-          if (probe === 'signed-in') {
-            await beginLibraryAccountSso(window.location.href);
-            return;
-          }
-        }
-        return;
-      }
+      const user = await getVerifiedLibraryAccountUser();
+      if (!user) return;
 
       if (isLibrarySyncEnabledForUser(user.id)) {
         const result = await reconcileLibraryAccountSync(user);
