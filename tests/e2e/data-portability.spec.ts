@@ -43,7 +43,7 @@ async function seedCurrentState(page: Page) {
       transaction.onerror = () => reject(transaction.error);
     });
 
-    const main = await open(mainDb, 9);
+    const main = await open(mainDb, 10);
     const mainTx = main.transaction(['favorites', 'progress', 'legacyProgress', 'bookmarks', 'annotations', 'readingActivity'], 'readwrite');
     mainTx.objectStore('favorites').put({ schemaVersion: 1, workId: 'rr8-favorite', savedAt: '2026-08-30T18:00:00.000Z' });
     mainTx.objectStore('progress').put({
@@ -195,7 +195,7 @@ test('@rr8 full backup round-trips reading state without embedding personal file
   expect(JSON.stringify(backup.state.personalBooks)).not.toMatch(/"file"|"cover"|"data"/);
 
   await page.evaluate(async ({ mainDb, pendingKey, readerSettingsKey }) => {
-    const request = indexedDB.open(mainDb, 9);
+    const request = indexedDB.open(mainDb, 10);
     const db = await new Promise<IDBDatabase>((resolve, reject) => {
       request.onsuccess = () => resolve(request.result);
       request.onerror = () => reject(request.error);
@@ -220,7 +220,7 @@ test('@rr8 full backup round-trips reading state without embedding personal file
   await expect(page.locator('[data-library-backup-status]')).toContainText('1 personal book file');
 
   const restored = await page.evaluate(async ({ mainDb, pendingKey, readerSettingsKey }) => {
-    const request = indexedDB.open(mainDb, 9);
+    const request = indexedDB.open(mainDb, 10);
     const db = await new Promise<IDBDatabase>((resolve, reject) => {
       request.onsuccess = () => resolve(request.result);
       request.onerror = () => reject(request.error);
@@ -271,7 +271,7 @@ test('@rr8 partial restore leaves omitted categories unchanged and rejects corru
   await expect(page.locator('[data-library-backup-status]')).toContainText('Restore complete');
 
   const state = await page.evaluate(async (mainDb) => {
-    const request = indexedDB.open(mainDb, 9);
+    const request = indexedDB.open(mainDb, 10);
     const db = await new Promise<IDBDatabase>((resolve, reject) => {
       request.onsuccess = () => resolve(request.result);
       request.onerror = () => reject(request.error);
@@ -296,7 +296,7 @@ test('@rr8 partial restore leaves omitted categories unchanged and rejects corru
   await restoreBackup(page, { ...partial, schemaVersion: 99 });
   await expect(page.locator('[data-library-backup-status]')).toContainText('Unsupported Library backup schema version');
   const afterCorrupt = await page.evaluate(async (mainDb) => {
-    const request = indexedDB.open(mainDb, 9);
+    const request = indexedDB.open(mainDb, 10);
     const db = await new Promise<IDBDatabase>((resolve, reject) => {
       request.onsuccess = () => resolve(request.result);
       request.onerror = () => reject(request.error);
@@ -346,7 +346,7 @@ test('@rr8 failed cross-backend restore compensates back to the previous committ
   await expect(page.locator('[data-library-backup-status]')).toContainText('previous state was restored');
 
   const favorites = await page.evaluate(async (mainDb) => {
-    const request = indexedDB.open(mainDb, 9);
+    const request = indexedDB.open(mainDb, 10);
     const db = await new Promise<IDBDatabase>((resolve, reject) => {
       request.onsuccess = () => resolve(request.result);
       request.onerror = () => reject(request.error);
