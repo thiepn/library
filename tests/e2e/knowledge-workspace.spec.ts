@@ -120,6 +120,15 @@ test('@p6 Knowledge unifies reader annotations and bookmarks without a parallel 
   await noteCard.getByRole('button', { name: 'Save note' }).click();
   await expect(noteCard.locator('.knowledge-card__note')).toHaveText('P6 edited synthesis');
 
-  await epubBookmark.getByRole('button', { name: 'Delete' }).click();
+  await epubBookmark.getByRole('button', { name: 'Delete', exact: true }).click();
+  await expect(page.locator('[data-knowledge-stat="bookmarks"]')).toHaveText('3');
+  await expect(epubBookmark.getByRole('button', { name: 'Confirm delete' })).toBeVisible();
+  await epubBookmark.getByRole('button', { name: 'Cancel delete' }).click();
+  await expect(page.locator('[data-knowledge-stat="bookmarks"]')).toHaveText('3');
+  await expect(epubBookmark.getByRole('button', { name: 'Confirm delete' })).toHaveCount(0);
+
+  await epubBookmark.getByRole('button', { name: 'Delete', exact: true }).click();
+  await epubBookmark.getByRole('button', { name: 'Confirm delete' }).click();
   await expect(page.locator('[data-knowledge-stat="bookmarks"]')).toHaveText('2');
+  await expect(page.locator('[data-knowledge-status]')).toHaveText('Bookmark deleted.');
 });
