@@ -482,8 +482,8 @@ const workCatalog = (await getWorks()).map((work) => ({
             save.disabled = true;
             try {
               await updateNote(item, textarea.value.slice(0, 5000));
-              if (status) status.textContent = 'Note saved.';
               await load();
+              if (status) status.textContent = 'Note saved.';
             } catch {
               if (status) status.textContent = 'Unable to save this note.';
             } finally {
@@ -517,7 +517,12 @@ const workCatalog = (await getWorks()).map((work) => ({
         remove.type = 'button';
         remove.className = 'text-action';
         remove.textContent = 'Delete';
-        actions.append(copyOne, remove);
+        const cancelDelete = document.createElement('button');
+        cancelDelete.type = 'button';
+        cancelDelete.className = 'secondary-action';
+        cancelDelete.textContent = 'Cancel delete';
+        cancelDelete.hidden = true;
+        actions.append(copyOne, remove, cancelDelete);
         article.append(actions);
 
         copyOne.addEventListener('click', async () => {
@@ -528,14 +533,35 @@ const workCatalog = (await getWorks()).map((work) => ({
             if (status) status.textContent = 'Clipboard access is unavailable.';
           }
         });
+        let deletionConfirmed = false;
+        cancelDelete.addEventListener('click', () => {
+          deletionConfirmed = false;
+          cancelDelete.hidden = true;
+          remove.textContent = 'Delete';
+          if (status) status.textContent = 'Deletion canceled.';
+          remove.focus();
+        });
         remove.addEventListener('click', async () => {
+          if (!deletionConfirmed) {
+            deletionConfirmed = true;
+            remove.textContent = 'Confirm delete';
+            cancelDelete.hidden = false;
+            if (status) status.textContent = `Confirm deletion of this ${item.kind} from ${item.title}.`;
+            return;
+          }
+          remove.disabled = true;
+          cancelDelete.disabled = true;
           remove.setAttribute('aria-busy', 'true');
           try {
             await removeItem(item);
-            if (status) status.textContent = item.kind === 'bookmark' ? 'Bookmark deleted.' : 'Annotation deleted.';
             await load();
+            if (status) status.textContent = item.kind === 'bookmark' ? 'Bookmark deleted.' : 'Annotation deleted.';
           } catch {
             if (status) status.textContent = 'Unable to delete this item.';
+          } finally {
+            remove.disabled = false;
+            cancelDelete.disabled = false;
+            remove.removeAttribute('aria-busy');
           }
         });
 
@@ -572,9 +598,8 @@ const workCatalog = (await getWorks()).map((work) => ({
           ...pdfBookmarks.filter(isPdfBookmarkRecord).map(normalizePdfBookmark),
         ];
         updateBookOptions();
-        if (status) status.textContent = items.length
-          ? 'Knowledge is derived from local reader state. Annotations and bookmarks remain in their original stores and stay covered by Library backup/Account state sync.'
-          : '';
+        // Refreshes may be triggered by cross-tab reader storage notifications.
+        // Do not overwrite the latest actionable save/delete/copy feedback.
         render();
       } catch {
         if (count) count.textContent = 'Knowledge storage unavailable';
