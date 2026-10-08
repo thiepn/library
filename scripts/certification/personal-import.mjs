@@ -79,10 +79,10 @@ if (present) {
     saved.includes('Choose EPUB or PDF')
       && saved.includes('data-personal-drop')
       && saved.includes('multiple hidden')
-      && saved.includes('Files stay in this browser')
+      && saved.includes('Files stay on this device unless you separately enable Personal book cloud')
       && saved.includes('getPersonalBooks')
       && saved.includes('deletePersonalBook'),
-    'My Library exposes explicit multi-file choice, drag/drop, local-only disclosure, listing, and removal',
+    'My Library exposes explicit multi-file choice, drag/drop, accurate optional-cloud disclosure, listing, and removal',
   );
   pass(
     'PERSONAL_IMPORT_ER2_UNTRUSTED_METADATA_TEXT',
@@ -145,10 +145,11 @@ if (present) {
   pass(
     'PERSONAL_IMPORT_ER2_PRIVACY_COPY',
     privacy.includes('stored locally in this browser’s IndexedDB storage')
-      && privacy.includes('Personal EPUB/PDF file bytes and local cover blobs are not uploaded by Account sync')
+      && privacy.includes('Ordinary Account reading-state sync never uploads personal EPUB/PDF bytes or local cover blobs')
+      && privacy.includes('Personal book cloud is a separate, sensitive, opt-in Account permission')
       && privacy.includes('do not contain the bytes of your personal EPUB/PDF files')
       && privacy.includes('Clearing browser site data, browser storage eviction, device loss, or browser-profile removal can delete local state and personal imports'),
-    'Privacy documentation explains local inspection/storage, no upload, backup byte exclusion, and browser/device data-loss boundaries',
+    'Privacy documentation explains local inspection/storage, separate explicit file-cloud consent, backup byte exclusion, and browser/device data-loss boundaries',
   );
   pass(
     'PERSONAL_IMPORT_ER2_RESPONSIVE',

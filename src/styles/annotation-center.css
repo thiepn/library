@@ -1,0 +1,154 @@
+@layer annotation-center {
+  .annotation-center__hero { max-width: 1180px; }
+  .annotation-center__intro {
+    max-width: 720px;
+    margin: 12px 0 0;
+    color: var(--secondary);
+    line-height: 1.6;
+  }
+
+  .annotation-center__toolbar {
+    display: grid;
+    grid-template-columns: minmax(260px, 1.8fr) repeat(3, minmax(130px, .7fr));
+    gap: 12px;
+    align-items: end;
+    margin: 30px 0 12px;
+    padding: 18px;
+    border: 1px solid var(--rule);
+    background: var(--surface);
+  }
+
+  .annotation-center__toolbar label {
+    display: grid;
+    gap: 7px;
+    min-width: 0;
+    color: var(--secondary);
+    font-size: .72rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  .annotation-center__toolbar input,
+  .annotation-center__toolbar select,
+  .annotation-card__editor textarea {
+    width: 100%;
+    min-height: 42px;
+    border: 1px solid var(--strong-rule);
+    border-radius: 2px;
+    background: var(--canvas);
+    color: var(--ink);
+    font: inherit;
+  }
+
+  .annotation-center__toolbar input,
+  .annotation-center__toolbar select { padding: 9px 10px; }
+
+  .annotation-center__export {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-top: 4px;
+  }
+
+  .annotation-center__status { min-height: 1.4em; margin: 12px 0 4px; }
+  .annotation-center__list { display: grid; gap: 14px; margin-top: 10px; }
+
+  .annotation-card {
+    padding: 22px;
+    border: 1px solid var(--rule);
+    background: var(--canvas);
+  }
+
+  .annotation-card__header {
+    display: flex;
+    justify-content: space-between;
+    gap: 18px;
+    align-items: flex-start;
+  }
+
+  .annotation-card h2 {
+    margin: 0;
+    font-family: var(--display);
+    font-size: clamp(1.45rem, 2vw, 2rem);
+    font-weight: 500;
+    line-height: 1.1;
+  }
+
+  .annotation-card__meta {
+    margin: 6px 0 0;
+    color: var(--muted);
+    font-size: .76rem;
+    letter-spacing: .04em;
+  }
+
+  .annotation-card__format {
+    flex: none;
+    padding: 5px 8px;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    color: var(--secondary);
+    font-size: .65rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  .annotation-card blockquote {
+    margin: 18px 0 0;
+    padding: 4px 0 4px 16px;
+    border-left: 2px solid var(--accent);
+    color: var(--secondary);
+    font-family: var(--reader);
+    font-size: 1.02rem;
+    line-height: 1.65;
+  }
+
+  .annotation-card__note {
+    margin: 16px 0 0;
+    max-width: 860px;
+    white-space: pre-wrap;
+    line-height: 1.6;
+  }
+
+  .annotation-card__note[data-empty] {
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  .annotation-card__actions,
+  .annotation-card__editor > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    margin-top: 18px;
+  }
+
+  .annotation-card__editor { margin-top: 18px; }
+  .annotation-card__editor[hidden] { display: none; }
+  .annotation-card__editor textarea {
+    min-height: 110px;
+    padding: 10px 12px;
+    resize: vertical;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 900px) {
+    .annotation-center__toolbar { grid-template-columns: 1fr 1fr; }
+    .annotation-center__search { grid-column: 1 / -1; }
+  }
+
+  @media (max-width: 560px) {
+    .annotation-center__toolbar { grid-template-columns: 1fr; padding: 14px; }
+    .annotation-center__search,
+    .annotation-center__export { grid-column: auto; }
+    .annotation-card { padding: 17px; }
+    .annotation-card__header { flex-direction: column; gap: 10px; }
+  }
+
+  @media (forced-colors: active) {
+    .annotation-center__toolbar,
+    .annotation-card,
+    .annotation-card__format { border: 1px solid CanvasText; }
+  }
+}

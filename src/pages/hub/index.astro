@@ -3,17 +3,19 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 ---
 <BaseLayout title="Share reading with Hub" noindex>
   <section class="page section" aria-labelledby="sharing-heading">
-    <p class="eyebrow">Device-local sharing</p><h1 id="sharing-heading">Library in Hub</h1>
-    <p>Share saved reading progress from this browser profile with THIEPN Home. This is browser data, not an account connection. A shared browser may contain another person’s reading history.</p>
-    <p>Only book titles, format, edition, release, update time, and current/furthest progress are shared. Book files, reader positions, highlights, notes and annotations stay in Library.</p>
+    <p class="eyebrow">Library-owned sharing</p><h1 id="sharing-heading">Library in Hub</h1>
+    <p>Share a bounded reading summary with THIEPN Home. By default this uses saved progress in this browser profile. A shared browser may contain another person’s reading history.</p>
+    <p>If you separately allow Account-synced reading, Library may first reconcile this device through your existing THIEPN Account sync when Hub and Library are signed into the same account. A sync conflict or account mismatch never grants Hub raw cloud access.</p>
+    <p>Only book title, format, edition, release, update time, and current/furthest progress may cross the bridge. Book files, covers, exact EPUB CFIs/PDF anchors, highlights, notes, annotations, shelves, tags, and the raw Account snapshot stay in Library.</p>
     <form data-hub-consent>
       <fieldset><legend>Choose what Home may read</legend>
         <p><label><input type="checkbox" name="permission" value="summary"/> Reading summary</label></p>
         <p><label><input type="checkbox" name="permission" value="continue"/> Continue reading</label></p>
         <p><label><input type="checkbox" name="permission" value="search"/> Search titles with saved progress</label></p>
-        <p><label><input type="checkbox" name="personal"/> Include titles of imported EPUB/PDF books</label></p>
+        <p><label><input type="checkbox" name="personal"/> Include titles of imported EPUB/PDF books stored on this device</label></p>
+        <p><label><input type="checkbox" name="account"/> Include Account-synced reading after Library verifies the same THIEPN Account</label></p>
       </fieldset>
-      <p>Imported titles are excluded unless you select them. Sharing applies only to this browser profile; it is not restored by a Library backup.</p>
+      <p>Imported titles are excluded unless you select them and the matching personal file exists on this device. Account sharing is also excluded unless you select it. These Hub sharing choices stay in this browser profile and are not restored by a Library backup.</p>
       <button type="submit">Save choices</button> <button type="button" data-hub-revoke>Revoke all sharing</button>
       <p role="status" aria-live="polite" data-hub-status></p>
     </form>
@@ -26,15 +28,22 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     const form = document.querySelector<HTMLFormElement>('[data-hub-consent]')!;
     const status = document.querySelector<HTMLElement>('[data-hub-status]')!;
     const personal = form.elements.namedItem('personal') as HTMLInputElement;
+    const account = form.elements.namedItem('account') as HTMLInputElement;
     const checks = [...form.querySelectorAll<HTMLInputElement>('[name="permission"]')];
     const controls = [...form.querySelectorAll<HTMLInputElement | HTMLButtonElement>('input,button')];
-    function render() { const consent = readConsent(); checks.forEach(c => { c.checked = !!consent?.permissions.includes(c.value as Operation); }); personal.checked = !!consent?.includePersonal; }
+    function render() {
+      const consent = readConsent();
+      checks.forEach(c => { c.checked = !!consent?.permissions.includes(c.value as Operation); });
+      personal.checked = !!consent?.includePersonal;
+      account.checked = !!consent?.includeAccount;
+    }
     render();
     form.addEventListener('submit', event => {
       event.preventDefault();
       const previous = readConsent();
       const permissions = checks.filter(c => c.checked && OPERATIONS.includes(c.value as Operation)).map(c => c.value as Operation);
       const includePersonal = personal.checked && permissions.length > 0;
+      const includeAccount = account.checked && permissions.length > 0;
       controls.forEach(c => { c.disabled = true; }); status.textContent = 'Saving your choices…';
       void (async () => {
         const index = includePersonal ? (await getPersonalBooks()).map(personalMetadata) : [];
@@ -43,7 +52,14 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
         // Revoke previous authorization before changing the consent-owned index.
         localStorage.removeItem(CONSENT_KEY);
         if (includePersonal) localStorage.setItem(PERSONAL_INDEX_KEY, JSON.stringify(index)); else localStorage.removeItem(PERSONAL_INDEX_KEY);
-        const consent: Consent = { schemaVersion: 1, deviceId: previous?.deviceId ?? crypto.randomUUID(), revision: crypto.randomUUID(), permissions, includePersonal };
+        const consent: Consent = {
+          schemaVersion: 2,
+          deviceId: previous?.deviceId ?? crypto.randomUUID(),
+          revision: crypto.randomUUID(),
+          permissions,
+          includePersonal,
+          includeAccount,
+        };
         localStorage.setItem(CONSENT_KEY, JSON.stringify(consent));
         status.textContent = permissions.length ? 'Choices saved. In Home, choose Connect this browser.' : 'No reading data is shared.';
       })().catch(error => { status.textContent = error instanceof Error ? error.message : 'Choices could not be saved.'; render(); }).finally(() => controls.forEach(c => { c.disabled = false; }));

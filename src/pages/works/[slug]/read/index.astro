@@ -76,6 +76,7 @@ const pdfReaderHref = work.release?.artifacts.pdf
       import type { ReaderFallbackHarnessHandle } from '../../../../lib/reader/fallback-harness';
       import { isLegacyReaderRequested, resolveLegacyResumeHref } from '../../../../lib/reader/legacy-bridge';
       import { ReaderPerformanceController } from '../../../../lib/reader/performance';
+      import { getReaderAnnotationById } from '../../../../lib/reader/annotation-store';
       import { recordReadingOpen } from '../../../../lib/reading-activity/client';
       import type { ReaderPublicationCandidate } from '../../../../lib/reader/publication';
       import { mountReaderShell } from '../../../../lib/reader/shell';
@@ -129,7 +130,20 @@ const pdfReaderHref = work.release?.artifacts.pdf
           const { mountReaderPublicationWithFallbackHarness } = await import('../../../../lib/reader/fallback-harness');
           if (pageClosing) return;
           readerPerformance?.markOpening();
-          const handle = await mountReaderPublicationWithFallbackHarness(root, publication);
+
+          let target: string | undefined;
+          const annotationId = new URL(location.href).searchParams.get('annotation');
+          if (annotationId) {
+            const annotation = await getReaderAnnotationById(annotationId);
+            if (annotation
+              && annotation.workId === publication.workId
+              && annotation.edition === publication.edition
+              && annotation.releaseVersion === publication.version) {
+              target = annotation.cfiRange;
+            }
+          }
+
+          const handle = await mountReaderPublicationWithFallbackHarness(root, publication, {}, target);
           if (pageClosing) handle.destroy();
           else {
             mounted = handle;

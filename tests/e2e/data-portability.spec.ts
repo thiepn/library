@@ -107,8 +107,8 @@ async function seedCurrentState(page: Page) {
     await complete(mainTx);
     main.close();
 
-    const pdf = await open(pdfDb, 1);
-    const pdfTx = pdf.transaction(['progress', 'bookmarks'], 'readwrite');
+    const pdf = await open(pdfDb, 2);
+    const pdfTx = pdf.transaction(['progress', 'bookmarks', 'annotations'], 'readwrite');
     const identity = { workId: 'rr8-pdf', edition: 1, releaseVersion: 'pdf-r1' };
     const publicationKey = 'rr8-pdf::1::pdf-r1';
     pdfTx.objectStore('progress').put({
@@ -128,6 +128,18 @@ async function seedCurrentState(page: Page) {
       page: 2,
       label: 'Page 2',
       createdAt: '2026-08-30T18:07:00.000Z',
+    });
+    pdfTx.objectStore('annotations').put({
+      schemaVersion: 1,
+      id: `pdf-annotation:${publicationKey}:rr8`,
+      publicationKey,
+      identity,
+      page: 2,
+      quote: 'Portable PDF highlight',
+      note: 'Portable PDF note',
+      rects: [{ x: 0.1, y: 0.2, width: 0.3, height: 0.04 }],
+      createdAt: '2026-08-30T18:07:30.000Z',
+      updatedAt: '2026-08-30T18:07:30.000Z',
     });
     await complete(pdfTx);
     pdf.close();
@@ -173,6 +185,11 @@ test('@rr8 full backup round-trips reading state without embedding personal file
   expect(backup.state.main.favorites.records).toEqual([expect.objectContaining({ schemaVersion: 1, workId: 'rr8-favorite' })]);
   expect(backup.state.main.epubProgress.records[0]).toMatchObject({ workId: 'rr8-epub', releaseVersion: 'r7', furthestPercentage: 0.61 });
   expect(backup.state.pdf.progress.records[0]).toMatchObject({ page: 2, furthestPage: 5 });
+  expect(backup.state.pdf.annotations.records[0]).toMatchObject({
+    page: 2,
+    quote: 'Portable PDF highlight',
+    note: 'Portable PDF note',
+  });
   expect(backup.state.personalBooks.includesFiles).toBe(false);
   expect(backup.state.personalBooks.records[0]).toMatchObject({ schemaVersion: 1, sha256: 'a'.repeat(64) });
   expect(JSON.stringify(backup.state.personalBooks)).not.toMatch(/"file"|"cover"|"data"/);

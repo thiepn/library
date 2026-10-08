@@ -18,7 +18,7 @@ Thiepn Library is local-first and intentionally has more than one browser persis
 | Native EPUB bookmarks | `thiepn-library` IndexedDB | record v2; DB v9 |
 | EPUB annotations/highlights/notes | `thiepn-library` IndexedDB | native record v2; supported legacy annotation shape retained |
 | Reading activity | `thiepn-library` IndexedDB | record v1; DB v9 |
-| PDF progress/bookmarks | `thiepn-library-pdf-reader` IndexedDB | record v1; DB v1 |
+| PDF progress/bookmarks/annotations | `thiepn-library-pdf-reader` IndexedDB | record v1; DB v2 |
 | Native EPUB reader settings | localStorage | record v1 |
 | PDF reader settings | localStorage | record v1 |
 | Site appearance | localStorage | portable settings v1 |
@@ -62,9 +62,9 @@ Current exports contain:
 - EPUB bookmarks;
 - EPUB annotations/highlights/notes;
 - reading activity;
-- PDF progress and bookmarks;
+- PDF progress, bookmarks, highlights, and notes;
 - EPUB/PDF/site/legacy-reader settings;
-- personal-book identity and descriptive metadata.
+- personal-book identity, descriptive metadata, shelves, and tags.
 
 Arrays are sorted by stable identity before serialization. The export timestamp is intentionally variable; the state payload ordering is deterministic.
 
@@ -72,7 +72,7 @@ Stale publication releases are preserved rather than silently upgraded or discar
 
 ## Personal-book binary boundary
 
-The default JSON backup **never includes personal EPUB/PDF bytes or cover blobs**. Each personal-book metadata entry carries its SHA-256 identity, format, filename, size, and descriptive metadata.
+The default JSON backup **never includes personal EPUB/PDF bytes or cover blobs**. Each personal-book metadata entry carries its SHA-256 identity, format, filename, size, descriptive metadata, shelves, and tags. These organization fields are metadata only; they do not change the personal-binary boundary.
 
 After restoring on a fresh browser, missing personal books are staged in a relink manifest. Re-importing a matching EPUB/PDF verifies the file through the normal publication inspection path, recomputes its SHA-256 hash, reconnects the restored metadata, and clears that pending relink entry only after the book write succeeds.
 
@@ -87,6 +87,7 @@ Restore is **replace-present-categories**:
 - duplicate canonical identities are rejected before any write rather than resolved by insertion order;
 - PDF and personal-book identity fields are checked against their canonical release/SHA-derived identities before restore;
 - personal-book binaries already present locally are not deleted by metadata restore;
+- personal metadata, including title/creator/language/shelves/tags, is applied to an already-present matching SHA-256 book;
 - personal metadata whose SHA-256 file is absent becomes a relink requirement.
 
 This makes partial recovery possible without pretending that an incomplete archive is a full snapshot.
@@ -98,9 +99,9 @@ The whole product cannot use one native transaction because authoritative data s
 1. Parse and validate the entire archive before the first write.
 2. Snapshot all supported current state required for compensation.
 3. Replace main-database categories in one IndexedDB transaction.
-4. Replace PDF progress/bookmarks in one PDF IndexedDB transaction.
-5. Apply versioned settings and the personal relink manifest.
-6. If any step fails, restore the pre-import main snapshot, PDF snapshot, settings, and relink manifest.
+4. Replace PDF progress/bookmarks/annotations in one PDF IndexedDB transaction.
+5. Apply versioned settings, matching personal-book metadata, and the personal relink manifest.
+6. If any step fails, restore the pre-import main snapshot, PDF snapshot, settings, personal-book metadata, and relink manifest.
 7. Surface a distinct error if compensation itself cannot complete.
 
 A failed transaction inside either IndexedDB database remains natively atomic. The compensating layer supplies the cross-backend guarantee required by the product contract.
@@ -131,7 +132,7 @@ A failed transaction inside either IndexedDB database remains natively atomic. T
 
 Manual backup remains independent of optional THIEPN Account sync. RR8 still defines the portable JSON format, restore validation, rollback semantics, and personal-binary boundary; the account layer reuses that validated state envelope rather than replacing it.
 
-Account sync is guest-first and opt-in per device. Signing in alone does not upload reading state. When the user explicitly enables sync, portable reading state can synchronize through the shared THIEPN Account identity with revision compare-and-swap conflict protection. Personal EPUB/PDF bytes and cover blobs remain device-local and are never included in the account snapshot.
+Account sync is guest-first and opt-in per device. Signing in alone does not upload reading state. When the user explicitly enables sync, portable reading state can synchronize through the shared THIEPN Account identity with revision compare-and-swap conflict protection. Personal EPUB/PDF bytes and cover blobs are never included in the account snapshot. A later, separately consented Personal book cloud layer may store eligible publication bytes in private Account storage; RR8's JSON format and restore guarantees remain unchanged, and local cover blobs remain device-local.
 
 The manual backup path remains fully usable without an account and remains the explicit portable recovery/export mechanism.
 

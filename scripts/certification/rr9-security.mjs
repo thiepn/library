@@ -13,6 +13,7 @@ const required = [
   'src/pages/security.astro',
   'src/pages/support.astro',
   'src/layouts/BaseLayout.astro',
+  'src/lib/account/personal-files.ts',
   'src/lib/reader/epub-security.ts',
   'src/lib/publication-compatibility.ts',
   'src/lib/pdf-reader/runtime.ts',
@@ -34,7 +35,7 @@ const present = (await Promise.all(required.map(exists))).every(Boolean);
 pass('RR9_FILES', present, 'RR9 security, privacy, dependency, release, documentation, workflow, and executable acceptance owners are present');
 
 if (present) {
-  const [doc, ops, securityDoc, changelog, privacy, securityPage, supportPage, layout, epubSecurity, inspector, pdfRuntime, tests, sbom, licenses, v1Gate, prepareDeploy, verifyProduction, securityWorkflow, v1Workflow, publicationIngest, dependabot, deploy, workspace, packageText] = await Promise.all(required.map((file) => readFile(file, 'utf8')));
+  const [doc, ops, securityDoc, changelog, privacy, securityPage, supportPage, layout, personalFiles, epubSecurity, inspector, pdfRuntime, tests, sbom, licenses, v1Gate, prepareDeploy, verifyProduction, securityWorkflow, v1Workflow, publicationIngest, dependabot, deploy, workspace, packageText] = await Promise.all(required.map((file) => readFile(file, 'utf8')));
   const pkg = JSON.parse(packageText);
 
   pass('RR9_APP_CSP',
@@ -79,16 +80,33 @@ if (present) {
 
   pass('RR9_PUBLIC_PRIVACY_SUPPORT',
     privacy.includes('guest-first: no account is required')
-      && privacy.includes('If you explicitly sign in with THIEPN Account and enable sync for this device')
-      && privacy.includes('Personal EPUB/PDF file bytes and local cover blobs are not uploaded by Account sync')
+      && privacy.includes('If THIEPN Account is already signed in, Library can attach that existing account automatically through first-party SSO')
+      && privacy.includes('Reading-state upload still does not begin until sync is enabled for this device')
+      && privacy.includes('Personal book cloud is a separate, sensitive, opt-in Account permission')
+      && privacy.includes('owner-scoped private Supabase Storage bucket')
+      && privacy.includes('Revoking the permission stops Library access but does not itself delete retained cloud files')
       && privacy.includes('There is no advertising or behavioral analytics path in the reader')
       && privacy.includes('do not contain the bytes of your personal EPUB/PDF files')
-      && securityPage.includes('THIEPN Account uses Supabase Auth with Google OAuth and PKCE')
+      && securityPage.includes('Library never signs into Google directly')
+      && securityPage.includes('registered first-party OAuth 2.1 public client')
+      && securityPage.includes('silent Account-origin probe exposes only signed-in eligibility')
       && securityPage.includes('Publication content is treated as untrusted')
       && supportPage.includes('exact release SHA')
       && layout.includes("href('/security')")
       && layout.includes("href('/support')"),
     'Privacy, account sync, personal-file, security, support, network, and physical-evidence boundaries are publicly discoverable and explicit');
+
+  pass('RR9_PERSONAL_FILE_CLOUD',
+    personalFiles.includes("LIBRARY_PERSONAL_FILES_BUCKET = 'library-personal-books'")
+      && personalFiles.includes("LIBRARY_PERSONAL_FILES_PERMISSION = 'personal_files.sync'")
+      && personalFiles.includes('LIBRARY_PERSONAL_FILE_MAX_BYTES = 50 * 1024 * 1024')
+      && personalFiles.includes('.upload(personalFileCloudPath')
+      && personalFiles.includes('.download(personalFileCloudPath')
+      && personalFiles.includes("crypto.subtle.digest('SHA-256'")
+      && !personalFiles.includes('.remove(')
+      && securityPage.includes('content-addressed SHA-256 object names')
+      && securityPage.includes('no public object URLs'),
+    'Personal-file continuity is separately consented, private, content-addressed, integrity checked, size bounded, and gives the Library browser no ordinary delete path');
 
   pass('RR9_DEPENDENCY_POLICY',
     workspace.includes('minimumReleaseAge: 1440')
@@ -155,15 +173,18 @@ if (present) {
     'Production Pages upload is gated on RR9 after RR8');
 
   pass('RR9_ACCOUNT_PRODUCTION_GATE',
-    deploy.includes('PUBLIC_THIEPN_ACCOUNT_PUBLISHABLE_KEY: ${{ vars.THIEPN_ACCOUNT_PUBLISHABLE_KEY }}')
+    deploy.includes('PUBLIC_THIEPN_ACCOUNT_PUBLISHABLE_KEY: sb_publishable_1rZzRPzfLMaAH5pIgCwIjA_19UPMIsR')
       && deploy.includes('thiepn-account-publishable-key')
       && deploy.includes('PUBLIC_THIEPN_ACCOUNT_PUBLISHABLE_KEY:-')
       && verifyProduction.includes('THIEPN Account publishable key is missing from production verification')
       && verifyProduction.includes('/account/')
+      && verifyProduction.includes('/auth/callback/')
+      && verifyProduction.includes('/.well-known/oauth-authorization-server/auth/v1')
+      && verifyProduction.includes('THIEPN_ACCOUNT_SSO_READY')
       && verifyProduction.includes('/auth/v1/settings')
       && verifyProduction.includes('THIEPN_ACCOUNT_AUTH_READY')
       && verifyProduction.includes('authSettings.external.google !== true'),
-    'Production fails closed when THIEPN Account configuration is absent and live verification proves the Account surface plus Google OAuth readiness');
+    'Production pins the canonical public THIEPN Account publishable key, retains readiness validation, and live-verifies first-party SSO, the Library callback, the Account surface, and upstream Google OAuth readiness');
 
   pass('RR9_V1_FAIL_CLOSED',
     pkg.scripts?.['release:v1:gate'] === 'node scripts/release/v1-gate.mjs'

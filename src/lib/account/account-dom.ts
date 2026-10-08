@@ -1,10 +1,8 @@
-import type { User } from '@supabase/supabase-js';
 import {
-  completeLibraryAccountOAuthCallback,
+  beginLibraryAccountSso,
   getVerifiedLibraryAccountUser,
-  signInLibraryAccountWithGoogle,
-  signOutLibraryAccount,
   subscribeLibraryAccountAuth,
+  type LibraryAccountUser,
 } from './supabase';
 import {
   chooseCloudForLibrarySync,
@@ -16,6 +14,11 @@ import {
   reconcileLibraryAccountSync,
   type LibrarySyncResult,
 } from './sync';
+import {
+  isLibraryPersonalFileCloudEnabled,
+  reconcileLibraryPersonalFiles,
+  type PersonalFileCloudResult,
+} from './personal-files';
 
 function text(selector: string, value: string): void {
   const element = document.querySelector<HTMLElement>(selector);
@@ -33,10 +36,43 @@ function setBusy(value: boolean): void {
   }
 }
 
-function displayName(user: User): string {
-  const metadata = user.user_metadata as Record<string, unknown> | null;
-  const name = metadata && typeof metadata.full_name === 'string' ? metadata.full_name.trim() : '';
-  return name || user.email || 'THIEPN Account';
+function displayName(user: LibraryAccountUser): string {
+  return user.email || 'THIEPN Account';
+}
+
+function renderPersonalFileResult(result: PersonalFileCloudResult): void {
+  text('[data-personal-files-status]', result.message);
+  text(
+    '[data-personal-files-summary]',
+    result.status === 'disabled'
+      ? 'Private file sync is off.'
+      : `Uploaded ${result.uploaded} · restored ${result.downloaded} · cloud/local matches ${result.alreadyAvailable}`,
+  );
+}
+
+async function renderPersonalFiles(user: LibraryAccountUser, readingSyncEnabled: boolean): Promise<void> {
+  const enabled = await isLibraryPersonalFileCloudEnabled(user.id);
+  hidden('[data-personal-files-disabled]', enabled);
+  hidden('[data-personal-files-enabled]', !enabled);
+  text('[data-personal-files-mode]', enabled ? 'Enabled in THIEPN Account' : 'Off');
+
+  const syncButton = document.querySelector<HTMLButtonElement>('[data-personal-files-sync]');
+  if (syncButton) syncButton.disabled = !readingSyncEnabled;
+
+  if (!enabled) {
+    text('[data-personal-files-status]', 'Personal EPUB/PDF bytes stay on this device unless you separately allow Personal book cloud in THIEPN Account.');
+    text('[data-personal-files-summary]', 'Reading-state sync remains independent.');
+    return;
+  }
+
+  if (!readingSyncEnabled) {
+    text('[data-personal-files-status]', 'Personal book cloud is allowed, but this device has Library sync paused. Resume Library sync above to transfer files.');
+    text('[data-personal-files-summary]', 'No personal files are transferred while this device is paused.');
+    return;
+  }
+
+  text('[data-personal-files-status]', 'Private personal-book continuity is enabled. Files up to 50 MB can follow your Library metadata across devices.');
+  text('[data-personal-files-summary]', 'Cloud copies are private and content-addressed by SHA-256.');
 }
 
 function renderResult(result: LibrarySyncResult): void {
@@ -51,7 +87,7 @@ function renderResult(result: LibrarySyncResult): void {
   hidden('[data-sync-conflict]', result.status !== 'conflict');
 }
 
-async function render(userOverride?: User | null): Promise<User | null> {
+async function render(userOverride?: LibraryAccountUser | null): Promise<LibraryAccountUser | null> {
   const user = userOverride === undefined ? await getVerifiedLibraryAccountUser() : userOverride;
 
   hidden('[data-account-signed-out]', Boolean(user));
@@ -59,7 +95,7 @@ async function render(userOverride?: User | null): Promise<User | null> {
   hidden('[data-sync-panel]', !user);
 
   if (!user) {
-    text('[data-account-summary]', 'Reading stays local unless you sign in and explicitly enable sync.');
+    text('[data-account-summary]', 'Library stays guest-first. If THIEPN Account is already signed in, Library connects automatically; reading-state sync remains a separate choice.');
     hidden('[data-sync-conflict]', true);
     return null;
   }
@@ -86,11 +122,13 @@ async function render(userOverride?: User | null): Promise<User | null> {
     );
     hidden('[data-sync-conflict]', true);
   }
+
+  await renderPersonalFiles(user, enabled);
   return user;
 }
 
 export function mountLibraryAccountPage(): () => void {
-  let user: User | null = null;
+  let user: LibraryAccountUser | null = null;
   let disposed = false;
 
   const refresh = async () => {
@@ -105,7 +143,7 @@ export function mountLibraryAccountPage(): () => void {
     }
   };
 
-  const act = async (operation: (current: User) => Promise<LibrarySyncResult>) => {
+  const act = async (operation: (current: LibraryAccountUser) => Promise<LibrarySyncResult>) => {
     if (!user) return;
     setBusy(true);
     try {
@@ -119,20 +157,10 @@ export function mountLibraryAccountPage(): () => void {
 
   document.querySelector('[data-sign-in]')?.addEventListener('click', () => {
     setBusy(true);
-    void signInLibraryAccountWithGoogle().catch((error) => {
+    void beginLibraryAccountSso(window.location.href).catch((error) => {
       setBusy(false);
-      text('[data-account-summary]', error instanceof Error ? error.message : 'Sign-in failed.');
+      text('[data-account-summary]', error instanceof Error ? error.message : 'THIEPN Account connection failed.');
     });
-  });
-
-  document.querySelector('[data-sign-out]')?.addEventListener('click', () => {
-    setBusy(true);
-    void signOutLibraryAccount()
-      .then(() => {
-        user = null;
-        return render(null);
-      })
-      .finally(() => setBusy(false));
   });
 
   document.querySelector('[data-sync-enable]')?.addEventListener('click', () => void act(enableLibraryAccountSync));
@@ -144,23 +172,32 @@ export function mountLibraryAccountPage(): () => void {
   });
   document.querySelector('[data-use-device]')?.addEventListener('click', () => void act(chooseThisDeviceForLibrarySync));
   document.querySelector('[data-use-cloud]')?.addEventListener('click', () => void act(chooseCloudForLibrarySync));
+  document.querySelector('[data-personal-files-sync]')?.addEventListener('click', () => {
+    if (!user) return;
+    setBusy(true);
+    void reconcileLibraryPersonalFiles(user)
+      .then(renderPersonalFileResult)
+      .finally(() => setBusy(false));
+  });
+
   const onSync = (event: Event) => {
     const detail = (event as CustomEvent<LibrarySyncResult>).detail;
     if (detail) renderResult(detail);
   };
+  const onPersonalFiles = (event: Event) => {
+    const detail = (event as CustomEvent<PersonalFileCloudResult>).detail;
+    if (detail) renderPersonalFileResult(detail);
+  };
   window.addEventListener('thiepn:library-sync', onSync);
+  window.addEventListener('thiepn:library-personal-files', onPersonalFiles);
 
   const unsubscribeAuth = subscribeLibraryAccountAuth(() => { void refresh(); });
-
-  void completeLibraryAccountOAuthCallback()
-    .catch((error) => {
-      text('[data-account-summary]', error instanceof Error ? error.message : 'Unable to complete sign-in.');
-    })
-    .finally(() => { void refresh(); });
+  void refresh();
 
   return () => {
     disposed = true;
     window.removeEventListener('thiepn:library-sync', onSync);
+    window.removeEventListener('thiepn:library-personal-files', onPersonalFiles);
     unsubscribeAuth();
   };
 }

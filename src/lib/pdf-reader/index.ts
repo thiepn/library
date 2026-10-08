@@ -29,3 +29,12 @@ export {
   type PdfProgressRecord,
   type PdfReaderSettings,
 } from './state';
+
+export {
+  deletePdfAnnotation,
+  getPdfAnnotations,
+  isPdfAnnotationRecord,
+  putPdfAnnotation,
+  subscribePdfReaderState,
+} from './state';
+export type { PdfAnnotationRecord, PdfAnnotationRect } from './state';

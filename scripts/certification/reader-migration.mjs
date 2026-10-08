@@ -81,7 +81,7 @@ if (present) {
     'EPUB_READER_MIGRATION_RELEASE_IDENTITY',
     launcher.includes('data-reader-publication={JSON.stringify(publication)}')
       && publicationTypeImported
-      && launcher.includes('mountReaderPublicationWithFallbackHarness(root, publication)')
+      && launcher.includes('mountReaderPublicationWithFallbackHarness(root, publication')
       && fallbackHarness.includes('this.publication')
       && fallbackHarness.includes('readerCanonicalCandidateFromPublication(publication)')
       && source.includes('source: publication.epub.url')

@@ -18,8 +18,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
       <div class="account-card" data-account-signed-out>
         <h2>Keep reading without an account</h2>
-        <p>Library remains fully usable as a local-first reader. Sign in only if you want your portable reading state synchronized between devices.</p>
-        <button type="button" class="account-primary" data-account-action data-sign-in>Continue with Google</button>
+        <p>Library remains fully usable as a local-first reader. If THIEPN Account is already signed in, Library connects automatically. You can also connect manually without signing into Library separately.</p>
+        <button type="button" class="account-primary" data-account-action data-sign-in>Connect THIEPN Account</button>
       </div>
 
       <div class="account-card" data-account-signed-in hidden>
@@ -30,7 +30,6 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         </div>
         <div class="account-actions">
           <a href="https://account.thiepn.dev/" rel="noopener">Manage THIEPN Account</a>
-          <button type="button" data-account-action data-sign-out>Sign out on this device</button>
         </div>
       </div>
 
@@ -64,9 +63,34 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         </aside>
 
         <div class="sync-boundary">
-          <h3>What sync includes</h3>
+          <h3>What reading-state sync includes</h3>
           <p>Saved books, EPUB/PDF progress, bookmarks, highlights, notes, reading activity, reader settings, and portable personal-book metadata.</p>
-          <p><strong>Personal EPUB/PDF file bytes and local cover blobs are never uploaded.</strong></p>
+          <p><strong>Personal EPUB/PDF bytes are never placed inside the reading-state snapshot.</strong> File continuity is a separate permission below. Local cover blobs remain device-local.</p>
+        </div>
+
+        <div class="sync-boundary personal-file-cloud" aria-labelledby="personal-file-cloud-title">
+          <div class="sync-card__heading">
+            <div>
+              <p class="eyebrow">Optional file continuity</p>
+              <h3 id="personal-file-cloud-title">Personal book cloud</h3>
+            </div>
+            <strong data-personal-files-mode>Checking…</strong>
+          </div>
+          <p data-personal-files-status>Checking private-file permission…</p>
+          <p class="micro" data-personal-files-summary>Personal files are separate from reading-state sync.</p>
+
+          <div data-personal-files-disabled>
+            <p>When you explicitly allow this sensitive permission in THIEPN Account, Library can privately store personal EPUB/PDF files up to 50 MB so another signed-in device can restore them automatically after metadata sync.</p>
+            <a href="https://account.thiepn.dev/apps/library" rel="noopener">Manage Personal book cloud permission</a>
+          </div>
+
+          <div data-personal-files-enabled hidden>
+            <div class="account-actions">
+              <button type="button" class="account-primary" data-account-action data-personal-files-sync>Sync personal books now</button>
+              <a href="https://account.thiepn.dev/apps/library" rel="noopener">Manage permission</a>
+            </div>
+            <p class="micro">Objects are private, owner-scoped, and named by SHA-256. Books over 50 MB remain device-local and can still be relinked by importing the original file.</p>
+          </div>
         </div>
 
         <div class="danger-zone">

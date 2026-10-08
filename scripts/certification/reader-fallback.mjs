@@ -70,7 +70,7 @@ if (present) {
     'EPUB_READER_FALLBACK_FULL_STACK',
     fallbackHarness.includes('mountCanonicalEpubReader(')
       && canonical.includes('mountReaderShellWithCompatibilityHarness')
-      && launcher.includes('mountReaderPublicationWithFallbackHarness(root, publication)')
+      && launcher.includes('mountReaderPublicationWithFallbackHarness(root, publication')
       && !fallbackHarness.includes('new EpubJsEngine('),
     'Recovery remounts the complete compatibility reader stack through the ER3 canonical source boundary rather than a reduced emergency reader',
   );

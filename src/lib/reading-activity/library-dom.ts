@@ -12,10 +12,15 @@ import {
   type ReadingLibraryState,
   type ReadingLibraryStatus,
 } from './model';
+import {
+  isPausedReading,
+  rankPausedReading,
+  summarizeReadingIntelligence,
+} from './intelligence';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-const validFilters = new Set(['all', 'in-progress', 'not-started', 'completed']);
-type LibraryFilter = 'all' | ReadingLibraryStatus;
+const validFilters = new Set(['all', 'in-progress', 'not-started', 'completed', 'paused']);
+type LibraryFilter = 'all' | ReadingLibraryStatus | 'paused';
 
 function slugFromHref(href?: string | null): string | undefined {
   if (!href) return undefined;
@@ -258,6 +263,104 @@ function currentFilter(): LibraryFilter {
   return active && validFilters.has(active) ? active as LibraryFilter : 'all';
 }
 
+function ensureReadingIntelligenceUi(): HTMLElement | undefined {
+  const filterRoot = document.querySelector<HTMLElement>('[data-reading-filters]');
+  const filters = filterRoot?.querySelector<HTMLElement>('.reading-state-filters');
+  if (filters && !filters.querySelector('[data-reading-filter="paused"]')) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.dataset.readingFilter = 'paused';
+    button.setAttribute('aria-pressed', 'false');
+    button.textContent = 'Paused';
+    filters.append(button);
+  }
+
+  let section = document.querySelector<HTMLElement>('[data-reading-resurface]');
+  if (!section && filterRoot) {
+    section = document.createElement('section');
+    section.className = 'reading-resurface';
+    section.dataset.readingResurface = '';
+    section.hidden = true;
+
+    const heading = document.createElement('div');
+    heading.className = 'reading-resurface__heading';
+    const copy = document.createElement('div');
+    const eyebrow = document.createElement('p');
+    eyebrow.className = 'eyebrow';
+    eyebrow.textContent = 'Reading intelligence';
+    const title = document.createElement('h2');
+    title.textContent = 'Pick back up';
+    const summary = document.createElement('p');
+    summary.className = 'micro';
+    summary.dataset.readingIntelligenceSummary = '';
+    summary.textContent = 'On-device reading activity only';
+    copy.append(eyebrow, title, summary);
+    heading.append(copy);
+
+    const privacy = document.createElement('p');
+    privacy.className = 'micro reading-resurface__privacy';
+    privacy.textContent = 'On-device reading activity only';
+    heading.append(privacy);
+
+    const list = document.createElement('div');
+    list.className = 'continue-list compact-continue';
+    list.dataset.readingResurfaceList = '';
+    section.append(heading, list);
+    filterRoot.insertAdjacentElement('afterend', section);
+  }
+  return section ?? undefined;
+}
+
+function renderReadingIntelligence(items: Array<{ node: HTMLElement; state: ReadingLibraryState }>) {
+  const section = ensureReadingIntelligenceUi();
+  if (!section) return;
+
+  const now = Date.now();
+  const summary = summarizeReadingIntelligence(items.map(({ state }) => state), now);
+  const summaryNode = section.querySelector<HTMLElement>('[data-reading-intelligence-summary]');
+  if (summaryNode) {
+    const pausedLabel = summary.paused === 1 ? '1 paused book' : `${summary.paused} paused books`;
+    summaryNode.textContent = `${summary.started} started · ${summary.recentlyActive} active in the last 30 days · ${pausedLabel}`;
+  }
+
+  const list = section.querySelector<HTMLElement>('[data-reading-resurface-list]');
+  if (!list) return;
+  list.replaceChildren();
+
+  const candidates = rankPausedReading(items.map((value) => ({ value, state: value.state })), now, 3);
+  for (const candidate of candidates) {
+    const { node, state } = candidate.value;
+    const primary = state.continuity.primary;
+    const href = primary?.href ?? node.querySelector<HTMLAnchorElement>('a[href]')?.href;
+    if (!href) continue;
+    const title = node.querySelector<HTMLElement>('h2, h3, .personal-book__title')?.textContent?.trim() || 'Book';
+    const anchor = document.createElement('a');
+    anchor.className = 'continue-item';
+    anchor.href = href;
+
+    const titleWrap = document.createElement('span');
+    const strong = document.createElement('strong');
+    strong.textContent = title;
+    titleWrap.append(strong);
+
+    const status = document.createElement('span');
+    status.className = 'continue-item__status';
+    const context = document.createElement('span');
+    context.textContent = 'Paused';
+    const detail = document.createElement('span');
+    detail.className = 'micro';
+    const date = formatActivityDate(state.lastActivityAt);
+    detail.textContent = primary
+      ? `${readingPositionLabel(primary)}${date ? ` · last read ${date}` : ''}`
+      : date ? `Last read ${date}` : 'Resume reading';
+    status.append(context, detail);
+    anchor.append(titleWrap, status);
+    list.append(anchor);
+  }
+
+  section.hidden = list.childElementCount === 0;
+}
+
 function isCurrentLibraryItem(node: HTMLElement): boolean {
   if (node.matches('[data-saved-work]')) {
     const list = document.querySelector<HTMLElement>('[data-saved-list]');
@@ -272,8 +375,11 @@ function isCurrentLibraryItem(node: HTMLElement): boolean {
 
 function applyLibraryFilter(items: Array<{ node: HTMLElement; state: ReadingLibraryState }>) {
   const filter = currentFilter();
+  const now = Date.now();
   for (const { node, state } of items) {
-    node.dataset.activityFilterHidden = String(filter !== 'all' && state.status !== filter);
+    const visible = filter === 'all'
+      || (filter === 'paused' ? isPausedReading(state, now) : state.status === filter);
+    node.dataset.activityFilterHidden = String(!visible);
   }
   for (const button of document.querySelectorAll<HTMLButtonElement>('[data-reading-filter]')) {
     button.setAttribute('aria-pressed', String(button.dataset.readingFilter === filter));
@@ -309,10 +415,8 @@ function renderLibrarySummary(items: Array<{ node: HTMLElement; state: ReadingLi
   const summary = document.querySelector<HTMLElement>('[data-reading-state-summary]');
   if (!summary) return;
   const members = items.filter(({ node }) => !node.hidden);
-  const reading = members.filter(({ state }) => state.status === 'in-progress').length;
-  const finished = members.filter(({ state }) => state.status === 'completed').length;
-  const later = members.filter(({ state }) => state.status === 'not-started').length;
-  summary.textContent = `${reading} reading · ${finished} finished · ${later} saved for later`;
+  const intelligence = summarizeReadingIntelligence(members.map(({ state }) => state));
+  summary.textContent = `${intelligence.inProgress} reading · ${intelligence.completed} finished · ${intelligence.savedForLater} saved for later${intelligence.paused ? ` · ${intelligence.paused} paused` : ''}`;
 }
 
 async function renderMyLibrary() {
@@ -322,6 +426,7 @@ async function renderMyLibrary() {
   sortLibraryItems(items);
   applyLibraryFilter(items);
   renderLibrarySummary(items);
+  renderReadingIntelligence(items);
 }
 
 async function renderAll() {
