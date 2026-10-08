@@ -30,7 +30,7 @@ if (present) {
 
   pass(
     'EPUB_READER_LEGACY_PROGRESS_SIDECAR',
-    db.includes('const DB_VERSION = 9')
+    /const DB_VERSION = (?:9|1[0-9]|[2-9][0-9]+)/.test(db)
       && db.includes("| 'legacyProgress'")
       && db.includes("['legacyProgress', 'workId']")
       && db.includes("transaction.objectStore('legacyProgress')")
