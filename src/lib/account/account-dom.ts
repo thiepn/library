@@ -1,6 +1,8 @@
 import {
   beginLibraryAccountSso,
+  getLibraryBrowserSso,
   getVerifiedLibraryAccountUser,
+  hasThiepnAccountConfiguration,
   subscribeLibraryAccountAuth,
   type LibraryAccountUser,
 } from './supabase';
@@ -135,6 +137,12 @@ export function mountLibraryAccountPage(): () => void {
     if (disposed) return;
     setBusy(true);
     try {
+      // Resolve the shared Account SSO state before showing personalized data.
+      // Redirects are deduplicated with the global Library Account runtime.
+      if (hasThiepnAccountConfiguration()) {
+        const initial = await getLibraryBrowserSso().initialize();
+        if (disposed || initial.status === 'redirecting') return;
+      }
       user = await render();
     } catch (error) {
       text('[data-account-summary]', error instanceof Error ? error.message : 'Unable to verify THIEPN Account.');
