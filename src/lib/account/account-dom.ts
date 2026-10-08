@@ -52,8 +52,9 @@ function renderPersonalFileResult(result: PersonalFileCloudResult): void {
   );
 }
 
-async function renderPersonalFiles(user: LibraryAccountUser, readingSyncEnabled: boolean): Promise<void> {
+async function renderPersonalFiles(user: LibraryAccountUser, readingSyncEnabled: boolean, isCurrent: () => boolean): Promise<void> {
   const enabled = await isLibraryPersonalFileCloudEnabled(user.id);
+  if (!isCurrent()) return;
   hidden('[data-personal-files-disabled]', enabled);
   hidden('[data-personal-files-enabled]', !enabled);
   text('[data-personal-files-mode]', enabled ? 'Enabled in THIEPN Account' : 'Off');
@@ -89,8 +90,10 @@ function renderResult(result: LibrarySyncResult): void {
   hidden('[data-sync-conflict]', result.status !== 'conflict');
 }
 
-async function render(userOverride?: LibraryAccountUser | null): Promise<LibraryAccountUser | null> {
-  const user = userOverride === undefined ? await getVerifiedLibraryAccountUser() : userOverride;
+async function render(isCurrent: () => boolean): Promise<LibraryAccountUser | null> {
+  // Never reuse an earlier user identity after asynchronous Account operations.
+  const user = await getVerifiedLibraryAccountUser();
+  if (!isCurrent()) return null;
 
   hidden('[data-account-signed-out]', Boolean(user));
   hidden('[data-account-signed-in]', !user);
@@ -112,7 +115,9 @@ async function render(userOverride?: LibraryAccountUser | null): Promise<Library
   text('[data-sync-mode]', enabled ? 'Sync enabled on this device' : 'Local-only on this device');
 
   if (enabled) {
-    renderResult(await reconcileLibraryAccountSync(user));
+    const result = await reconcileLibraryAccountSync(user);
+    if (!isCurrent()) return null;
+    renderResult(result);
   } else {
     text('[data-sync-status]', 'Your local reading data will not be uploaded until you choose “Sync this device”.');
     const meta = readLibrarySyncMeta();
@@ -125,26 +130,31 @@ async function render(userOverride?: LibraryAccountUser | null): Promise<Library
     hidden('[data-sync-conflict]', true);
   }
 
-  await renderPersonalFiles(user, enabled);
-  return user;
+  await renderPersonalFiles(user, enabled, isCurrent);
+  return isCurrent() ? user : null;
 }
 
 export function mountLibraryAccountPage(): () => void {
   let user: LibraryAccountUser | null = null;
   let disposed = false;
+  let renderEpoch = 0;
 
   const refresh = async () => {
     if (disposed) return;
+    const epoch = ++renderEpoch;
+    const isCurrent = () => !disposed && epoch === renderEpoch;
     setBusy(true);
     try {
       // Resolve the shared Account SSO state before showing personalized data.
       // Redirects are deduplicated with the global Library Account runtime.
       if (hasThiepnAccountConfiguration()) {
         const initial = await initializeLibraryAccountSso();
-        if (disposed || initial.status === 'redirecting') return;
+        if (!isCurrent() || initial.status === 'redirecting') return;
       }
-      user = await render();
+      const nextUser = await render(isCurrent);
+      if (isCurrent()) user = nextUser;
     } catch (error) {
+      if (!isCurrent()) return;
       // Identity verification can be unavailable behind tracking blockers or
       // during an outage. Never display stale private state, but retain the
       // explicit top-level Account sign-in recovery path.
@@ -154,19 +164,23 @@ export function mountLibraryAccountPage(): () => void {
       hidden('[data-sync-panel]', true);
       text('[data-account-summary]', error instanceof Error ? error.message : 'Unable to verify THIEPN Account.');
     } finally {
-      setBusy(false);
+      if (isCurrent()) setBusy(false);
     }
   };
 
   const act = async (operation: (current: LibraryAccountUser) => Promise<LibrarySyncResult>) => {
-    if (!user) return;
+    if (!user || disposed) return;
+    const current = user;
+    const epoch = renderEpoch;
     setBusy(true);
     try {
-      const result = await operation(user);
+      const result = await operation(current);
+      if (disposed || epoch !== renderEpoch || user?.id !== current.id) return;
       renderResult(result);
-      await render(user);
+      // Reverify the real Account session, never render a captured identity.
+      await refresh();
     } finally {
-      setBusy(false);
+      if (!disposed && epoch === renderEpoch) setBusy(false);
     }
   };
 
@@ -183,25 +197,32 @@ export function mountLibraryAccountPage(): () => void {
   document.querySelector('[data-sync-pause]')?.addEventListener('click', () => {
     if (!user) return;
     pauseLibrarySync(user.id);
-    void render(user);
+    void refresh();
   });
   document.querySelector('[data-use-device]')?.addEventListener('click', () => void act(chooseThisDeviceForLibrarySync));
   document.querySelector('[data-use-cloud]')?.addEventListener('click', () => void act(chooseCloudForLibrarySync));
   document.querySelector('[data-personal-files-sync]')?.addEventListener('click', () => {
-    if (!user) return;
+    if (!user || disposed) return;
+    const current = user;
+    const epoch = renderEpoch;
     setBusy(true);
-    void reconcileLibraryPersonalFiles(user)
-      .then(renderPersonalFileResult)
-      .finally(() => setBusy(false));
+    void reconcileLibraryPersonalFiles(current)
+      .then((result) => {
+        if (!disposed && epoch === renderEpoch && user?.id === current.id) renderPersonalFileResult(result);
+      })
+      .catch(() => {
+        if (!disposed && epoch === renderEpoch) text('[data-personal-files-status]', 'Personal book sync could not be completed.');
+      })
+      .finally(() => { if (!disposed && epoch === renderEpoch) setBusy(false); });
   });
 
   const onSync = (event: Event) => {
     const detail = (event as CustomEvent<LibrarySyncResult>).detail;
-    if (detail) renderResult(detail);
+    if (!disposed && user && isLibrarySyncEnabledForUser(user.id) && detail) renderResult(detail);
   };
   const onPersonalFiles = (event: Event) => {
     const detail = (event as CustomEvent<PersonalFileCloudResult>).detail;
-    if (detail) renderPersonalFileResult(detail);
+    if (!disposed && user && isLibrarySyncEnabledForUser(user.id) && detail) renderPersonalFileResult(detail);
   };
   window.addEventListener('thiepn:library-sync', onSync);
   window.addEventListener('thiepn:library-personal-files', onPersonalFiles);
@@ -211,6 +232,7 @@ export function mountLibraryAccountPage(): () => void {
 
   return () => {
     disposed = true;
+    ++renderEpoch;
     window.removeEventListener('thiepn:library-sync', onSync);
     window.removeEventListener('thiepn:library-personal-files', onPersonalFiles);
     unsubscribeAuth();
