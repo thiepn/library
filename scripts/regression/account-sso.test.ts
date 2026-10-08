@@ -29,6 +29,12 @@ test('Library uses the pinned first-party THIEPN OAuth client', async () => {
   assert.equal(callbackPage.includes('completeLibraryAccountSsoCallback'), true);
   assert.equal(accountPage.includes('data-account-signed-out hidden'), true);
   assert.equal(accountDom.includes('initializeLibraryAccountSso()'), true);
+  assert.equal(accountDom.includes('const epoch = ++renderEpoch'), true);
+  assert.equal(accountDom.includes('await render(isCurrent)'), true);
+  assert.equal(accountDom.includes('await render(user)'), false);
+  assert.equal(accountDom.includes('if (!isCurrent()) return null'), true);
+  assert.equal(accountDom.includes('epoch !== renderEpoch'), true);
+  assert.equal(accountDom.includes('user?.id !== current.id'), true);
   assert.equal(accountDom.includes("hidden('[data-account-signed-out]', false)"), true);
   assert.equal(runtime.includes('initializeLibraryAccountSso()'), true);
   assert.equal(runtime.includes('probeExistingThiepnAccountSession'), false);
