@@ -145,6 +145,13 @@ export function mountLibraryAccountPage(): () => void {
       }
       user = await render();
     } catch (error) {
+      // Identity verification can be unavailable behind tracking blockers or
+      // during an outage. Never display stale private state, but retain the
+      // explicit top-level Account sign-in recovery path.
+      user = null;
+      hidden('[data-account-signed-out]', false);
+      hidden('[data-account-signed-in]', true);
+      hidden('[data-sync-panel]', true);
       text('[data-account-summary]', error instanceof Error ? error.message : 'Unable to verify THIEPN Account.');
     } finally {
       setBusy(false);
