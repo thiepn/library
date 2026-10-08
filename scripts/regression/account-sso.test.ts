@@ -36,6 +36,8 @@ test('Library uses the pinned first-party THIEPN OAuth client', async () => {
   assert.equal(accountDom.includes('if (!isCurrent()) return null'), true);
   assert.equal(accountDom.includes('epoch !== renderEpoch'), true);
   assert.equal(accountDom.includes('user?.id !== current.id'), true);
+  assert.equal(accountDom.includes('File permission outages are not evidence that the user signed out'), true);
+  assert.equal(accountDom.includes("text('[data-personal-files-mode]', 'Unavailable')"), true);
   assert.equal(accountDom.includes("hidden('[data-account-signed-out]', false)"), true);
   assert.equal(runtime.includes('initializeLibraryAccountSso()'), true);
   assert.equal(runtime.includes('probeExistingThiepnAccountSession'), false);
