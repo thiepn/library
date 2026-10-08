@@ -60,6 +60,7 @@ const contentSecurityPolicy = [
         <a href={href()}>Library</a>
         <a href={href('/ai')}>AI</a>
         <a href={href('/saved')}>My Library</a>
+        <a href={href('/knowledge')}>Knowledge</a>
         <a href={href('/downloads')}>Offline</a>
         <a href={href('/search')}>Search</a>
         <a href={href('/account')}>Account</a>
@@ -70,7 +71,7 @@ const contentSecurityPolicy = [
     <main id="main"><slot /></main>
     <footer class="site-footer">
       <span>THIEPN / LIBRARY</span>
-      <nav aria-label="Footer"><a href={href('/privacy')}>Privacy</a><a href={href('/security')}>Security</a><a href={href('/support')}>Support</a><a href={href('/annotations')}>Annotations</a><a href={href('/backup')}>Backup</a><a href={href('/about')}>About</a></nav>
+      <nav aria-label="Footer"><a href={href('/privacy')}>Privacy</a><a href={href('/security')}>Security</a><a href={href('/support')}>Support</a><a href={href('/knowledge')}>Knowledge</a><a href={href('/backup')}>Backup</a><a href={href('/about')}>About</a></nav>
       <span>Local-first reading</span>
     </footer>
     <script>
