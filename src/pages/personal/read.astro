@@ -17,6 +17,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     import type { ReaderSourceFallbackHarnessHandle } from '../../lib/reader/fallback-harness';
     import { ReaderPerformanceController } from '../../lib/reader/performance';
     import { getReaderAnnotationById } from '../../lib/reader/annotation-store';
+    import { getReaderBookmarkById } from '../../lib/reader/bookmark-store';
     import { mountReaderShell } from '../../lib/reader/shell';
     import { recordReadingOpen } from '../../lib/reading-activity/client';
 
@@ -78,7 +79,9 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
           releaseVersion: personalReaderReleaseVersion(book),
         };
         let target: string | undefined;
-        const annotationId = new URL(location.href).searchParams.get('annotation');
+        const requested = new URL(location.href);
+        const annotationId = requested.searchParams.get('annotation');
+        const bookmarkId = requested.searchParams.get('bookmark');
         if (annotationId) {
           const annotation = await getReaderAnnotationById(annotationId);
           if (annotation
@@ -86,6 +89,14 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
             && annotation.edition === identity.edition
             && annotation.releaseVersion === identity.releaseVersion) {
             target = annotation.cfiRange;
+          }
+        } else if (bookmarkId) {
+          const bookmark = await getReaderBookmarkById(bookmarkId);
+          if (bookmark
+            && bookmark.workId === identity.workId
+            && bookmark.edition === identity.edition
+            && bookmark.releaseVersion === identity.releaseVersion) {
+            target = bookmark.cfi;
           }
         }
 
