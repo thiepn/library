@@ -5,6 +5,7 @@ import { readThiepnAccountProbeMessage } from '@thiepn/account-session';
 import {
   THIEPN_LIBRARY_OAUTH_CLIENT_ID,
   THIEPN_ACCOUNT_ORIGIN,
+  coalesceLibraryAccountAuthChanges,
 } from '../../src/lib/account/supabase';
 
 const CLIENT_ID = '76e41661-f8a9-4181-b8b9-4084f2e2acbf';
@@ -87,4 +88,28 @@ test('silent Account probe exposes only signed-in eligibility semantics', () => 
     }, CLIENT_ID),
     null,
   );
+});
+
+
+test('repeated verify events cannot recursively trigger Account page refresh', () => {
+  let notifications = 0;
+  const notify = coalesceLibraryAccountAuthChanges(() => { notifications += 1; });
+
+  notify({ status: 'signed-out' });
+  notify({ status: 'signed-out' });
+  assert.equal(notifications, 1);
+
+  notify({ status: 'signed-in', id: CLIENT_ID, email: 'reader@example.test' });
+  notify({ status: 'signed-in', id: CLIENT_ID, email: 'reader@example.test' });
+  assert.equal(notifications, 2);
+
+  notify({ status: 'signed-in', id: CLIENT_ID, email: 'updated@example.test' });
+  assert.equal(notifications, 3);
+
+  notify({ status: 'unavailable', code: 'ACCOUNT_VERIFY_UNAVAILABLE' });
+  notify({ status: 'unavailable', code: 'ACCOUNT_VERIFY_UNAVAILABLE' });
+  assert.equal(notifications, 4);
+
+  notify({ status: 'signed-out' });
+  assert.equal(notifications, 5);
 });
