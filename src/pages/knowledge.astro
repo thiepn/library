@@ -598,9 +598,8 @@ const workCatalog = (await getWorks()).map((work) => ({
           ...pdfBookmarks.filter(isPdfBookmarkRecord).map(normalizePdfBookmark),
         ];
         updateBookOptions();
-        if (status) status.textContent = items.length
-          ? 'Knowledge is derived from local reader state. Annotations and bookmarks remain in their original stores and stay covered by Library backup/Account state sync.'
-          : '';
+        // Refreshes may be triggered by cross-tab reader storage notifications.
+        // Do not overwrite the latest actionable save/delete/copy feedback.
         render();
       } catch {
         if (count) count.textContent = 'Knowledge storage unavailable';
