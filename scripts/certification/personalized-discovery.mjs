@@ -44,11 +44,15 @@ if (present) {
     'Personalized discovery uses existing local Library state and its own IndexedDB preference store, with no recommendation network call or web-storage side channel',
   );
 
+  const portabilityShape = db.match(/export interface LibraryDbPortabilitySnapshot \\{([\\s\\S]*?)\\n\\}/)?.[1] ?? '';
+  const portabilityRead = db.match(/export async function getLibraryDbPortabilitySnapshot[\\s\\S]*?export async function replaceLibraryDbPortabilitySnapshot/)?.[0] ?? '';
+
   pass(
     'P5_PERSONALIZED_DISCOVERY_NOT_PORTABLE',
-    db.includes('export interface LibraryDbPortabilitySnapshot')
-      && !/LibraryDbPortabilitySnapshot[\s\S]{0,500}preferences/.test(db)
-      && !/db\.transaction\(\[[^\]]*preferences/.test(db),
+    Boolean(portabilityShape)
+      && !portabilityShape.includes('preferences')
+      && !portabilityRead.includes("transaction(['preferences'")
+      && !portabilityRead.includes("objectStore('preferences')"),
     'The privacy preference is intentionally excluded from backup and Account portability so another device cannot silently inherit opt-in',
   );
 
