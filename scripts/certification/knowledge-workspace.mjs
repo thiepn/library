@@ -93,9 +93,11 @@ if (present) {
       && hostedRead.includes('getReaderBookmarkById')
       && personalRead.includes("searchParams.get('bookmark')")
       && personalRead.includes('getReaderBookmarkById')
-      && page.includes("pdfHref(value.identity.workId, value.page)")
-      && page.includes("'bookmark'"),
-    'Knowledge can reopen EPUB bookmarks at their exact CFI and PDF bookmarks at their saved page',
+      && page.includes("pdfHref(value.identity.workId, value.identity.edition, value.identity.releaseVersion, value.page)")
+      && page.includes("'bookmark'")
+      && page.includes("isCurrentRelease(workId, edition, releaseVersion)")
+      && page.includes("if (!isCurrentRelease(workId, edition, releaseVersion)) return undefined;"),
+    'Knowledge can reopen EPUB CFI and PDF page bookmarks only against the exact original release',
   );
 
   pass(
