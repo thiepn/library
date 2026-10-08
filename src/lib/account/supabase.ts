@@ -163,7 +163,26 @@ export function signOutLibraryAppSession(): void {
   getLibraryBrowserSso().signOutLocal();
 }
 
+/**
+ * The shared OAuth SDK publishes on every verify(), including unchanged
+ * identities. Notify Library only when the verified identity state changes:
+ * otherwise the Account page's auth subscription can recursively reverify.
+ */
+export function coalesceLibraryAccountAuthChanges(listener: () => void): (identity: ThiepnIdentity) => void {
+  let previousKey: string | null = null;
+  return (identity) => {
+    const key = identity.status === 'signed-in'
+      ? `signed-in:${identity.id}:${identity.email ?? ''}`
+      : identity.status === 'unavailable'
+        ? `unavailable:${identity.code}`
+        : 'signed-out';
+    if (key === previousKey) return;
+    previousKey = key;
+    listener();
+  };
+}
+
 export function subscribeLibraryAccountAuth(listener: () => void): () => void {
   if (!hasThiepnAccountConfiguration()) return () => {};
-  return getThiepnAccountSession().subscribe(() => listener());
+  return getThiepnAccountSession().subscribe(coalesceLibraryAccountAuthChanges(listener));
 }
