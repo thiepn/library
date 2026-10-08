@@ -21,6 +21,22 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         <p class="micro" data-reading-state-summary aria-live="polite">Reading state loading…</p>
       </div>
 
+      <section class="personalized-discovery" data-personalized-discovery aria-labelledby="personalized-discovery-title">
+        <div class="personalized-discovery__heading">
+          <div>
+            <p class="eyebrow">Private discovery</p>
+            <h2 id="personalized-discovery-title">Discover next</h2>
+            <p>Optionally use on-device reading activity to rank unsaved Library books related to what you have actually read.</p>
+          </div>
+          <label class="personalized-discovery__toggle">
+            <input type="checkbox" data-personalized-discovery-toggle />
+            <span>Use my reading activity on this device</span>
+          </label>
+        </div>
+        <p class="micro personalized-discovery__privacy" data-personalized-discovery-status aria-live="polite">Off by default. Reading activity stays on this device and is not sent to a recommendation service.</p>
+        <div class="personalized-discovery__list" data-personalized-discovery-list hidden></div>
+      </section>
+
       <section class="personal-import" aria-labelledby="personal-import-title">
         <div class="personal-import__copy">
           <p class="eyebrow">Personal books</p>
@@ -134,6 +150,15 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
           data-reader-href={work.webMaterialized ? `${base}/works/${work.slug}/read` : undefined}
           data-has-epub={work.release?.artifacts.epub ? 'true' : 'false'}
           data-pdf-href={work.release?.artifacts.pdf ? `${base}/works/${work.slug}/pdf` : undefined}
+          data-discovery-title={work.title}
+          data-discovery-slug={work.slug}
+          data-discovery-language={work.language}
+          data-discovery-contributors={JSON.stringify(work.contributors ?? [])}
+          data-discovery-subjects={JSON.stringify(work.classification.subjects ?? [])}
+          data-discovery-tags={JSON.stringify(work.classification.tags ?? [])}
+          data-discovery-collections={JSON.stringify(work.classification.collections ?? [])}
+          data-discovery-related={JSON.stringify(work.relationships.relatedWorks ?? [])}
+          data-discovery-prerequisites={JSON.stringify(work.relationships.prerequisites ?? [])}
           hidden
         ><WorkCard work={work} index={index + 1} /></div>)}
       </div>

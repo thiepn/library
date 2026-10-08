@@ -27,10 +27,10 @@ if (present) {
   pass(
     'EPUB_READER_BOOKMARK_STORAGE_EXISTING',
     db.includes("['bookmarks', 'id']")
-      && db.includes('const DB_VERSION = 9')
+      && /const DB_VERSION = (?:9|1[0-9]|[2-9][0-9]+)/.test(db)
       && !db.includes("createObjectStore('bookmarks'")
       && store.includes("db.objectStoreNames.contains('bookmarks')"),
-    'P19 continues to reuse the unchanged bookmarks store after the additive RR8 IndexedDB v9 record-versioning migration',
+    'P19 continues to reuse the unchanged bookmarks store after the additive RR8 record-versioning migration and later additive DB upgrades',
   );
   pass(
     'EPUB_READER_BOOKMARK_SCHEMA',

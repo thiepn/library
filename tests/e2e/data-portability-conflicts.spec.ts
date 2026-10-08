@@ -15,7 +15,7 @@ test('@rr8 duplicate backup identities are rejected before current state changes
   await ensurePortableStorage(page);
 
   await page.evaluate(async (dbName) => {
-    const open = indexedDB.open(dbName, 9);
+    const open = indexedDB.open(dbName, 10);
     const db = await new Promise<IDBDatabase>((resolve, reject) => {
       open.onsuccess = () => resolve(open.result);
       open.onerror = () => reject(open.error);
@@ -62,7 +62,7 @@ test('@rr8 duplicate backup identities are rejected before current state changes
   await expect(page.locator('[data-library-backup-status]')).toContainText('Duplicate favorite identity');
 
   const workIds = await page.evaluate(async (dbName) => {
-    const open = indexedDB.open(dbName, 9);
+    const open = indexedDB.open(dbName, 10);
     const db = await new Promise<IDBDatabase>((resolve, reject) => {
       open.onsuccess = () => resolve(open.result);
       open.onerror = () => reject(open.error);
