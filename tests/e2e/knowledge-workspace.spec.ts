@@ -7,6 +7,13 @@ test('@p6 Knowledge unifies reader annotations and bookmarks without a parallel 
   await expect(page.locator('[data-knowledge-workspace]')).toBeVisible();
 
   await page.evaluate(async () => {
+    const rawCatalog = document.querySelector<HTMLElement>('[data-knowledge-work-catalog]')?.dataset.knowledgeWorkCatalog;
+    const catalog = JSON.parse(rawCatalog ?? '[]') as Array<{ id: string; edition?: number; releaseVersion?: string }>;
+    const publication = catalog.find((work) => work.id === 'ai-for-the-kingdom');
+    if (!publication || typeof publication.edition !== 'number' || !publication.releaseVersion) {
+      throw new Error('The publication identity is missing from Knowledge.');
+    }
+    const { edition, releaseVersion } = publication;
     const openDb = (name: string, version: number) => new Promise<IDBDatabase>((resolve, reject) => {
       const request = indexedDB.open(name, version);
       request.onsuccess = () => resolve(request.result);
@@ -24,8 +31,8 @@ test('@p6 Knowledge unifies reader annotations and bookmarks without a parallel 
       schemaVersion: 2,
       id: 'p6-annotation',
       workId: 'ai-for-the-kingdom',
-      edition: 1,
-      releaseVersion: '1.0.0',
+      edition,
+      releaseVersion,
       cfiRange: 'epubcfi(/6/2!/4/2,/1:0,/1:8)',
       href: 'chapter-1.xhtml',
       chapterLabel: 'Opening',
@@ -37,10 +44,23 @@ test('@p6 Knowledge unifies reader annotations and bookmarks without a parallel 
     });
     mainTx.objectStore('bookmarks').put({
       schemaVersion: 2,
+      id: 'p6-stale-bookmark',
+      workId: 'ai-for-the-kingdom',
+      edition,
+      releaseVersion: 'obsolete-release',
+      cfi: 'epubcfi(/6/4!/4/2/1:2)',
+      href: 'obsolete-chapter.xhtml',
+      chapterLabel: 'Previous edition',
+      spineIndex: 1,
+      createdAt: '2026-10-08T06:08:00.000Z',
+      updatedAt: '2026-10-08T06:08:00.000Z',
+    });
+    mainTx.objectStore('bookmarks').put({
+      schemaVersion: 2,
       id: 'p6-epub-bookmark',
       workId: 'ai-for-the-kingdom',
-      edition: 1,
-      releaseVersion: '1.0.0',
+      edition,
+      releaseVersion,
       cfi: 'epubcfi(/6/4!/4/2/1:0)',
       href: 'chapter-2.xhtml',
       chapterLabel: 'Second section',
@@ -56,12 +76,12 @@ test('@p6 Knowledge unifies reader annotations and bookmarks without a parallel 
     const pdfTx = pdf.transaction('bookmarks', 'readwrite');
     pdfTx.objectStore('bookmarks').put({
       schemaVersion: 1,
-      id: 'ai-for-the-kingdom::1::1.0.0::page:7',
-      publicationKey: 'ai-for-the-kingdom::1::1.0.0',
+      id: `ai-for-the-kingdom::${edition}::${releaseVersion}::page:7`,
+      publicationKey: `ai-for-the-kingdom::${edition}::${releaseVersion}`,
       identity: {
         workId: 'ai-for-the-kingdom',
-        edition: 1,
-        releaseVersion: '1.0.0',
+        edition,
+        releaseVersion,
       },
       page: 7,
       label: 'Page 7',
@@ -75,15 +95,18 @@ test('@p6 Knowledge unifies reader annotations and bookmarks without a parallel 
 
   await expect(page.locator('[data-knowledge-stat="notes"]')).toHaveText('1');
   await expect(page.locator('[data-knowledge-stat="highlights"]')).toHaveText('0');
-  await expect(page.locator('[data-knowledge-stat="bookmarks"]')).toHaveText('2');
+  await expect(page.locator('[data-knowledge-stat="bookmarks"]')).toHaveText('3');
   await expect(page.locator('[data-knowledge-stat="books"]')).toHaveText('1');
-  await expect(page.locator('.knowledge-card')).toHaveCount(3);
+  await expect(page.locator('.knowledge-card')).toHaveCount(4);
 
   await page.locator('[data-knowledge-kind]').selectOption('bookmark');
-  await expect(page.locator('.knowledge-card')).toHaveCount(2);
+  await expect(page.locator('.knowledge-card')).toHaveCount(3);
 
   const epubBookmark = page.locator('[data-knowledge-key="epub-bookmark:p6-epub-bookmark"]');
   await expect(epubBookmark.getByRole('link', { name: 'Open in book' })).toHaveAttribute('href', /bookmark=p6-epub-bookmark/);
+  const stale = page.locator('[data-knowledge-key="epub-bookmark:p6-stale-bookmark"]');
+  await expect(stale.getByText(/original edition or local file is unavailable/i)).toBeVisible();
+  await expect(stale.getByRole('link', { name: 'Open in book' })).toHaveCount(0);
 
   await page.locator('[data-knowledge-search]').fill('page 7');
   await expect(page.locator('.knowledge-card')).toHaveCount(1);
@@ -98,5 +121,5 @@ test('@p6 Knowledge unifies reader annotations and bookmarks without a parallel 
   await expect(noteCard.locator('.knowledge-card__note')).toHaveText('P6 edited synthesis');
 
   await epubBookmark.getByRole('button', { name: 'Delete' }).click();
-  await expect(page.locator('[data-knowledge-stat="bookmarks"]')).toHaveText('1');
+  await expect(page.locator('[data-knowledge-stat="bookmarks"]')).toHaveText('2');
 });
