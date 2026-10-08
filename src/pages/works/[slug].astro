@@ -1,17 +1,25 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getWorks, type ResolvedWork } from '../../lib/content/repository';
+import { rankRelatedWorks, type RelatedWorkRecommendation } from '../../lib/content/discovery';
 import { taxonomyLabel } from '../../lib/content/taxonomy';
 import { readerCanOpen } from '../../lib/reader/migration';
 import '../../styles/work-detail.css';
 
 export async function getStaticPaths() {
-  return (await getWorks()).map((work) => ({ params: { slug: work.slug }, props: { work } }));
+  const works = await getWorks();
+  return works.map((work) => ({
+    params: { slug: work.slug },
+    props: { work, related: rankRelatedWorks(work, works, 4) },
+  }));
 }
 
-interface Props { work: ResolvedWork; }
+interface Props {
+  work: ResolvedWork;
+  related: RelatedWorkRecommendation<ResolvedWork>[];
+}
 
-const { work } = Astro.props;
+const { work, related } = Astro.props as Props;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const coverUrl = /^https?:\/\//i.test(work.cover.src)
   ? work.cover.src
@@ -26,11 +34,21 @@ const pdfHref = pdf ? `${base}/works/${work.slug}/pdf` : undefined;
 const availableFormats = [canRead ? 'Reader' : null, epub ? 'EPUB' : null, pdf ? 'PDF' : null]
   .filter((value): value is string => Boolean(value));
 const editionLabel = work.publication.editionLabel;
-const authorNames = (work.contributors ?? [])
-  .filter((contributor): contributor is Record<string, unknown> => Boolean(contributor) && typeof contributor === 'object')
-  .filter((contributor) => ['author', 'creator', 'aut'].includes(String(contributor.role ?? '').toLowerCase()))
-  .map((contributor) => String(contributor.name ?? '').trim())
-  .filter(Boolean);
+function authorNamesFor(candidate: ResolvedWork): string[] {
+  return (candidate.contributors ?? [])
+    .filter((contributor): contributor is Record<string, unknown> => Boolean(contributor) && typeof contributor === 'object')
+    .filter((contributor) => ['author', 'creator', 'aut'].includes(String(contributor.role ?? '').toLowerCase()))
+    .map((contributor) => String(contributor.name ?? '').trim())
+    .filter(Boolean);
+}
+
+function relatedCoverUrl(candidate: ResolvedWork): string {
+  return /^https?:\/\//i.test(candidate.cover.src)
+    ? candidate.cover.src
+    : `${base}${candidate.cover.src.startsWith('/') ? candidate.cover.src : `/${candidate.cover.src}`}`;
+}
+
+const authorNames = authorNamesFor(work);
 const authorLabel = authorNames.length ? authorNames.join(', ') : 'Unknown author';
 
 function formatBytes(bytes: number): string {
@@ -182,6 +200,35 @@ const primaryAction = readHref
         </article>
       </div>
     </section>
+
+    {related.length > 0 && (
+      <section class="book-detail__related" aria-labelledby="related-heading">
+        <div class="book-detail__section-heading">
+          <div>
+            <p class="eyebrow">Discover</p>
+            <h2 id="related-heading">Related books</h2>
+          </div>
+          <p>Selected from published book metadata and explicit relationships—not from your reading history.</p>
+        </div>
+        <div class="book-detail__related-grid">
+          {related.map(({ work: relatedWork, reasons }) => {
+            const relatedAuthors = authorNamesFor(relatedWork);
+            return (
+              <a class="book-detail__related-card" data-related-work={relatedWork.id} href={`${base}/works/${relatedWork.slug}`}>
+                <span class="book-detail__related-cover">
+                  <img src={relatedCoverUrl(relatedWork)} alt="" loading="lazy" decoding="async" />
+                </span>
+                <span class="book-detail__related-copy">
+                  <span class="eyebrow">{reasons.join(' · ')}</span>
+                  <strong>{relatedWork.title}</strong>
+                  <span>{relatedAuthors.length ? relatedAuthors.join(', ') : 'Unknown author'}</span>
+                </span>
+              </a>
+            );
+          })}
+        </div>
+      </section>
+    )}
 
     <section class="book-detail__metadata" aria-labelledby="details-heading">
       <div class="book-detail__section-heading">
