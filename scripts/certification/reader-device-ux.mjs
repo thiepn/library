@@ -169,7 +169,7 @@ if (present) {
 
   pass(
     'READER_DEVICE_UX_ER7_CERT_CHAIN',
-    pkg.includes('reading-activity.mjs && node scripts/certification/reading-intelligence.mjs && node scripts/certification/discovery.mjs && node scripts/certification/personalized-discovery.mjs && node scripts/certification/reader-device-ux.mjs'),
+    pkg.includes('reading-activity.mjs && node scripts/certification/reading-intelligence.mjs && node scripts/certification/discovery.mjs && node scripts/certification/personalized-discovery.mjs && node scripts/certification/knowledge-workspace.mjs && node scripts/certification/reader-device-ux.mjs'),
     'ER7 device UX certification is permanently chained after ER6 in certify:source',
   );
 
