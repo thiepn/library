@@ -1,5 +1,5 @@
 import type { LibraryBackupV1 } from '../client/library-portability';
-import { READER_SETTINGS_DEFAULTS } from '../reader/settings';
+import { READER_SETTINGS_DEFAULTS } from '../reader/settings-defaults';
 
 export interface LibrarySyncBaseline {
   revision: number;
