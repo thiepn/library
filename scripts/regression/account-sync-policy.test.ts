@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import type { LibraryBackupV1 } from '../../src/lib/client/library-portability';
+import { READER_SETTINGS_DEFAULTS } from '../../src/lib/reader/settings-defaults';
 import { backupHasMeaningfulLibraryState, decideLibrarySync } from '../../src/lib/account/sync-policy';
 
 function backup(records = 0): LibraryBackupV1 {
@@ -30,6 +31,44 @@ test('empty portable state is not meaningful', () => {
 
 test('saved reading state is meaningful', () => {
   assert.equal(backupHasMeaningfulLibraryState(backup(1)), true);
+});
+
+test('factory-default reading preferences do not turn a new device into a sync conflict', () => {
+  const local = backup();
+  local.state.pdf = { schemaVersion: 1, settings: { schemaVersion: 1, fit: 'width', zoom: 1 } };
+  local.state.settings = {
+    schemaVersion: 1,
+    reader: { ...READER_SETTINGS_DEFAULTS },
+    site: { schemaVersion: 1, appearance: 'system' },
+    legacyReader: { schemaVersion: 1, scale: 1, measure: 68 },
+  };
+  assert.equal(backupHasMeaningfulLibraryState(local), false);
+  assert.equal(decideLibrarySync({
+    localHash: 'clean-defaults',
+    localMeaningful: backupHasMeaningfulLibraryState(local),
+    cloud: { revision: 4, hash: 'other-device' },
+  }), 'pull');
+});
+
+test('each independently customized reader preference protects a first-sync device', () => {
+  const variants: Array<(copy: LibraryBackupV1) => void> = [
+    (copy) => { copy.state.settings = { schemaVersion: 1, reader: { ...READER_SETTINGS_DEFAULTS, theme: 'dark' } }; },
+    (copy) => { copy.state.settings = { schemaVersion: 1, reader: { ...READER_SETTINGS_DEFAULTS, fontScale: 1.45 } }; },
+    (copy) => { copy.state.settings = { schemaVersion: 1, site: { schemaVersion: 1, appearance: 'dark' } }; },
+    (copy) => { copy.state.settings = { schemaVersion: 1, legacyReader: { schemaVersion: 1, scale: 1.2, measure: 68 } }; },
+    (copy) => { copy.state.pdf = { schemaVersion: 1, settings: { schemaVersion: 1, fit: 'page', zoom: 1 } }; },
+    (copy) => { copy.state.pdf = { schemaVersion: 1, settings: { schemaVersion: 1, fit: 'width', zoom: 1.25 } }; },
+  ];
+  for (const customize of variants) {
+    const local = backup();
+    customize(local);
+    assert.equal(backupHasMeaningfulLibraryState(local), true);
+    assert.equal(decideLibrarySync({
+      localHash: 'custom-preferences',
+      localMeaningful: backupHasMeaningfulLibraryState(local),
+      cloud: { revision: 4, hash: 'other-device' },
+    }), 'conflict');
+  }
 });
 
 function pdfAnnotationOnly(note: string): LibraryBackupV1 {
