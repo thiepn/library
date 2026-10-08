@@ -1,6 +1,6 @@
 import {
   beginLibraryAccountSso,
-  getLibraryBrowserSso,
+  initializeLibraryAccountSso,
   getVerifiedLibraryAccountUser,
   hasThiepnAccountConfiguration,
   subscribeLibraryAccountAuth,
@@ -140,7 +140,7 @@ export function mountLibraryAccountPage(): () => void {
       // Resolve the shared Account SSO state before showing personalized data.
       // Redirects are deduplicated with the global Library Account runtime.
       if (hasThiepnAccountConfiguration()) {
-        const initial = await getLibraryBrowserSso().initialize();
+        const initial = await initializeLibraryAccountSso();
         if (disposed || initial.status === 'redirecting') return;
       }
       user = await render();
