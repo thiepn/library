@@ -1,0 +1,561 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getWorks } from '../lib/content/repository';
+import '../styles/knowledge-workspace.css';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const workCatalog = (await getWorks()).map((work) => ({
+  id: work.id,
+  slug: work.slug,
+  title: work.title,
+}));
+---
+<BaseLayout title="Knowledge" description="Search, review, edit, export, and reopen Library highlights, notes, and bookmarks." noindex>
+  <div class="page knowledge-workspace" data-knowledge-workspace data-base={base}>
+    <section class="section knowledge-workspace__hero">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Your reading knowledge</p>
+          <h1>Knowledge</h1>
+          <p class="knowledge-workspace__intro">Highlights, notes, and bookmarks from EPUBs and PDFs in one local-first workspace. Reader records remain authoritative; this page only derives a unified view.</p>
+        </div>
+        <p class="micro" data-knowledge-count>Loading knowledge…</p>
+      </div>
+
+      <div class="knowledge-workspace__summary" aria-label="Knowledge overview">
+        <div><strong data-knowledge-stat="notes">0</strong><span>Notes</span></div>
+        <div><strong data-knowledge-stat="highlights">0</strong><span>Highlights</span></div>
+        <div><strong data-knowledge-stat="bookmarks">0</strong><span>Bookmarks</span></div>
+        <div><strong data-knowledge-stat="books">0</strong><span>Books</span></div>
+      </div>
+
+      <div class="knowledge-workspace__toolbar" aria-label="Knowledge tools">
+        <label class="knowledge-workspace__search">
+          <span>Search</span>
+          <input type="search" data-knowledge-search autocomplete="off" placeholder="Search quotes, notes, books, chapters, or pages" />
+        </label>
+        <label>
+          <span>Book</span>
+          <select data-knowledge-book><option value="all">All books</option></select>
+        </label>
+        <label>
+          <span>Format</span>
+          <select data-knowledge-format>
+            <option value="all">All formats</option>
+            <option value="epub">EPUB</option>
+            <option value="pdf">PDF</option>
+            <option value="web">Legacy web</option>
+          </select>
+        </label>
+        <label>
+          <span>Type</span>
+          <select data-knowledge-kind>
+            <option value="all">Everything</option>
+            <option value="note">Notes</option>
+            <option value="highlight">Highlights</option>
+            <option value="bookmark">Bookmarks</option>
+          </select>
+        </label>
+        <label>
+          <span>Sort</span>
+          <select data-knowledge-sort>
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
+            <option value="book">Book title</option>
+          </select>
+        </label>
+        <div class="knowledge-workspace__export">
+          <button type="button" class="secondary-action" data-knowledge-copy>Copy Markdown</button>
+          <button type="button" class="secondary-action" data-knowledge-export>Export Markdown</button>
+        </div>
+      </div>
+
+      <p class="knowledge-workspace__status micro" data-knowledge-status role="status" aria-live="polite"></p>
+      <div class="knowledge-workspace__list" data-knowledge-list></div>
+      <div class="empty" data-knowledge-empty hidden>
+        <h2>No knowledge items here.</h2>
+        <p data-knowledge-empty-copy>Highlights, notes, and bookmarks created in the readers will appear here.</p>
+      </div>
+    </section>
+  </div>
+  <div hidden data-knowledge-work-catalog={JSON.stringify(workCatalog)}></div>
+
+  <script>
+    import {
+      deleteAnnotation,
+      getAllAnnotationRecords,
+      putLegacyAnnotation,
+      subscribeLibraryState,
+      type AnnotationRecord,
+    } from '../lib/client/library-db';
+    import { getPersonalBooks } from '../lib/client/personal-books';
+    import {
+      deletePdfAnnotation,
+      deletePdfBookmark,
+      getPdfAnnotations,
+      getPdfBookmarks,
+      isPdfAnnotationRecord,
+      isPdfBookmarkRecord,
+      putPdfAnnotation,
+      subscribePdfReaderState,
+      type PdfAnnotationRecord,
+      type PdfBookmarkRecord,
+    } from '../lib/pdf-reader/state';
+    import {
+      deleteReaderAnnotation,
+      isReaderAnnotationRecordV2,
+      putReaderAnnotation,
+      type ReaderAnnotationRecordV2,
+    } from '../lib/reader/annotation-store';
+    import {
+      deleteReaderBookmark,
+      getReaderBookmarks,
+      type ReaderBookmarkRecordV2,
+    } from '../lib/reader/bookmark-store';
+    import {
+      filterKnowledgeWorkspace,
+      knowledgeWorkspaceMarkdown,
+      summarizeKnowledgeWorkspace,
+      type KnowledgeFormat,
+      type KnowledgeKind,
+      type KnowledgeSort,
+      type KnowledgeWorkspaceItem,
+    } from '../lib/knowledge/workspace';
+
+    interface HostedWork { id: string; slug: string; title: string; }
+    type KnowledgeSource = 'epub-annotation' | 'pdf-annotation' | 'legacy-annotation' | 'epub-bookmark' | 'pdf-bookmark';
+    type KnowledgeRecord = ReaderAnnotationRecordV2 | PdfAnnotationRecord | AnnotationRecord | ReaderBookmarkRecordV2 | PdfBookmarkRecord;
+    interface KnowledgeItem extends KnowledgeWorkspaceItem { source: KnowledgeSource; record: KnowledgeRecord; }
+
+    const root = document.querySelector<HTMLElement>('[data-knowledge-workspace]');
+    const list = root?.querySelector<HTMLElement>('[data-knowledge-list]');
+    const empty = root?.querySelector<HTMLElement>('[data-knowledge-empty]');
+    const emptyCopy = root?.querySelector<HTMLElement>('[data-knowledge-empty-copy]');
+    const count = root?.querySelector<HTMLElement>('[data-knowledge-count]');
+    const status = root?.querySelector<HTMLElement>('[data-knowledge-status]');
+    const search = root?.querySelector<HTMLInputElement>('[data-knowledge-search]');
+    const book = root?.querySelector<HTMLSelectElement>('[data-knowledge-book]');
+    const format = root?.querySelector<HTMLSelectElement>('[data-knowledge-format]');
+    const kind = root?.querySelector<HTMLSelectElement>('[data-knowledge-kind]');
+    const sort = root?.querySelector<HTMLSelectElement>('[data-knowledge-sort]');
+    const copy = root?.querySelector<HTMLButtonElement>('[data-knowledge-copy]');
+    const exportButton = root?.querySelector<HTMLButtonElement>('[data-knowledge-export]');
+    const base = root?.dataset.base ?? '/library';
+    const hostedWorks = new Map<string, HostedWork>();
+    const personalTitles = new Map<string, string>();
+    let items: KnowledgeItem[] = [];
+    let renderRevision = 0;
+
+    try {
+      const catalog = document.querySelector<HTMLElement>('[data-knowledge-work-catalog]');
+      for (const work of JSON.parse(catalog?.dataset.knowledgeWorkCatalog ?? '[]') as HostedWork[]) hostedWorks.set(work.id, work);
+    } catch {}
+
+    function isLegacyAnnotation(value: unknown): value is AnnotationRecord {
+      if (typeof value !== 'object' || value === null || 'schemaVersion' in value) return false;
+      const record = value as Partial<AnnotationRecord>;
+      return typeof record.id === 'string' && Boolean(record.id)
+        && typeof record.workId === 'string' && Boolean(record.workId)
+        && typeof record.note === 'string'
+        && typeof record.createdAt === 'string'
+        && typeof record.updatedAt === 'string';
+    }
+
+    function personalBookId(workId: string): string | undefined {
+      return workId.startsWith('personal:') ? workId.slice('personal:'.length) : undefined;
+    }
+
+    function titleFor(workId: string): string {
+      const personalId = personalBookId(workId);
+      return personalId ? personalTitles.get(personalId) ?? 'Personal book' : hostedWorks.get(workId)?.title ?? workId;
+    }
+
+    function hostedSlug(workId: string): string | undefined { return hostedWorks.get(workId)?.slug; }
+
+    function epubHref(workId: string, id: string, parameter: 'annotation' | 'bookmark'): string | undefined {
+      const personalId = personalBookId(workId);
+      if (personalId) return `${base}/personal/read?id=${encodeURIComponent(personalId)}&${parameter}=${encodeURIComponent(id)}`;
+      const slug = hostedSlug(workId);
+      return slug ? `${base}/works/${encodeURIComponent(slug)}/read?${parameter}=${encodeURIComponent(id)}` : undefined;
+    }
+
+    function pdfHref(workId: string, page: number, annotationId?: string): string | undefined {
+      const personalId = personalBookId(workId);
+      const query = `page=${page}${annotationId ? `&annotation=${encodeURIComponent(annotationId)}` : ''}`;
+      if (personalId) return `${base}/personal/pdf?id=${encodeURIComponent(personalId)}&${query}`;
+      const slug = hostedSlug(workId);
+      return slug ? `${base}/works/${encodeURIComponent(slug)}/pdf?${query}` : undefined;
+    }
+
+    function normalizeMain(value: unknown): KnowledgeItem | undefined {
+      if (isReaderAnnotationRecordV2(value)) {
+        return {
+          key: `epub-annotation:${value.id}`,
+          source: 'epub-annotation',
+          kind: value.note.trim() ? 'note' : 'highlight',
+          format: 'epub',
+          workId: value.workId,
+          title: titleFor(value.workId),
+          location: value.chapterLabel || 'EPUB location',
+          quote: value.quote,
+          note: value.note,
+          createdAt: value.createdAt,
+          updatedAt: value.updatedAt,
+          href: epubHref(value.workId, value.id, 'annotation'),
+          record: value,
+        };
+      }
+      if (isLegacyAnnotation(value)) {
+        const slug = hostedSlug(value.workId);
+        return {
+          key: `legacy-annotation:${value.id}`,
+          source: 'legacy-annotation',
+          kind: value.note.trim() ? 'note' : 'highlight',
+          format: 'web',
+          workId: value.workId,
+          title: titleFor(value.workId),
+          location: value.chapterId ? `Section ${value.chapterId}` : 'Legacy reader',
+          quote: value.quote ?? '',
+          note: value.note,
+          createdAt: value.createdAt,
+          updatedAt: value.updatedAt,
+          href: slug ? (value.chapterId
+            ? `${base}/works/${encodeURIComponent(slug)}/read/${encodeURIComponent(value.chapterId)}`
+            : `${base}/works/${encodeURIComponent(slug)}/read?legacy=1`) : undefined,
+          record: value,
+        };
+      }
+      return undefined;
+    }
+
+    function normalizePdfAnnotation(value: PdfAnnotationRecord): KnowledgeItem {
+      return {
+        key: `pdf-annotation:${value.id}`,
+        source: 'pdf-annotation',
+        kind: value.note.trim() ? 'note' : 'highlight',
+        format: 'pdf',
+        workId: value.identity.workId,
+        title: titleFor(value.identity.workId),
+        location: `Page ${value.page}`,
+        quote: value.quote,
+        note: value.note,
+        createdAt: value.createdAt,
+        updatedAt: value.updatedAt,
+        href: pdfHref(value.identity.workId, value.page, value.id),
+        record: value,
+      };
+    }
+
+    function normalizeEpubBookmark(value: ReaderBookmarkRecordV2): KnowledgeItem {
+      return {
+        key: `epub-bookmark:${value.id}`,
+        source: 'epub-bookmark',
+        kind: 'bookmark',
+        format: 'epub',
+        workId: value.workId,
+        title: titleFor(value.workId),
+        location: value.chapterLabel || 'EPUB location',
+        quote: '',
+        note: '',
+        createdAt: value.createdAt,
+        updatedAt: value.updatedAt,
+        href: epubHref(value.workId, value.id, 'bookmark'),
+        record: value,
+      };
+    }
+
+    function normalizePdfBookmark(value: PdfBookmarkRecord): KnowledgeItem {
+      return {
+        key: `pdf-bookmark:${value.id}`,
+        source: 'pdf-bookmark',
+        kind: 'bookmark',
+        format: 'pdf',
+        workId: value.identity.workId,
+        title: titleFor(value.identity.workId),
+        location: value.label || `Page ${value.page}`,
+        quote: '',
+        note: '',
+        createdAt: value.createdAt,
+        updatedAt: value.createdAt,
+        href: pdfHref(value.identity.workId, value.page),
+        record: value,
+      };
+    }
+
+    function visibleItems(): KnowledgeItem[] {
+      return filterKnowledgeWorkspace(items, {
+        query: search?.value ?? '',
+        workId: book?.value || 'all',
+        format: (format?.value || 'all') as KnowledgeFormat | 'all',
+        kind: (kind?.value || 'all') as KnowledgeKind | 'all',
+        sort: (sort?.value || 'newest') as KnowledgeSort,
+      }) as KnowledgeItem[];
+    }
+
+    function updateBookOptions(): void {
+      if (!book) return;
+      const selected = book.value || 'all';
+      const unique = [...new Map(items.map((item) => [item.workId, item.title])).entries()]
+        .sort((a, b) => a[1].localeCompare(b[1]));
+      book.replaceChildren(new Option('All books', 'all'));
+      for (const [workId, title] of unique) book.append(new Option(title, workId));
+      book.value = unique.some(([workId]) => workId === selected) ? selected : 'all';
+    }
+
+    function formatDate(value: string): string {
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return 'Saved';
+      try { return new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(date); }
+      catch { return 'Saved'; }
+    }
+
+    function markdown(values: KnowledgeItem[]): string {
+      return knowledgeWorkspaceMarkdown(values.map((item) => ({
+        ...item,
+        ...(item.href ? { href: new URL(item.href, location.href).href } : {}),
+      })));
+    }
+
+    function downloadText(fileName: string, text: string): void {
+      const blob = new Blob([text], { type: 'text/markdown;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = fileName;
+      anchor.click();
+      setTimeout(() => URL.revokeObjectURL(url), 0);
+    }
+
+    async function updateNote(item: KnowledgeItem, note: string): Promise<void> {
+      const updatedAt = new Date().toISOString();
+      if (item.source === 'epub-annotation' && isReaderAnnotationRecordV2(item.record)) {
+        await putReaderAnnotation({ ...item.record, note, updatedAt });
+      } else if (item.source === 'pdf-annotation' && isPdfAnnotationRecord(item.record)) {
+        await putPdfAnnotation({ ...item.record, note, updatedAt });
+      } else if (item.source === 'legacy-annotation' && isLegacyAnnotation(item.record)) {
+        await putLegacyAnnotation({ ...item.record, note, updatedAt });
+      }
+    }
+
+    async function removeItem(item: KnowledgeItem): Promise<void> {
+      if (item.source === 'epub-annotation' && isReaderAnnotationRecordV2(item.record)) {
+        await deleteReaderAnnotation(item.record.id, item.record.workId);
+      } else if (item.source === 'pdf-annotation' && isPdfAnnotationRecord(item.record)) {
+        await deletePdfAnnotation(item.record.id, item.record.identity);
+      } else if (item.source === 'legacy-annotation' && isLegacyAnnotation(item.record)) {
+        await deleteAnnotation(item.record.id);
+      } else if (item.source === 'epub-bookmark') {
+        const record = item.record as ReaderBookmarkRecordV2;
+        await deleteReaderBookmark(record.id, record.workId);
+      } else if (item.source === 'pdf-bookmark' && isPdfBookmarkRecord(item.record)) {
+        await deletePdfBookmark(item.record.id, item.record.identity);
+      }
+    }
+
+    function render(): void {
+      if (!list) return;
+      const visible = visibleItems();
+      const summary = summarizeKnowledgeWorkspace(items);
+      list.replaceChildren();
+      if (count) count.textContent = `${summary.total} item${summary.total === 1 ? '' : 's'} · ${visible.length} shown`;
+      for (const key of ['notes', 'highlights', 'bookmarks', 'books'] as const) {
+        const node = root?.querySelector<HTMLElement>(`[data-knowledge-stat="${key}"]`);
+        if (node) node.textContent = String(summary[key]);
+      }
+      if (empty) empty.hidden = visible.length !== 0;
+      if (emptyCopy) emptyCopy.textContent = items.length === 0
+        ? 'Highlights, notes, and bookmarks created in the readers will appear here.'
+        : 'No knowledge items match the current search and filters.';
+      if (copy) copy.disabled = visible.length === 0;
+      if (exportButton) exportButton.disabled = visible.length === 0;
+
+      for (const item of visible) {
+        const article = document.createElement('article');
+        article.className = 'knowledge-card';
+        article.dataset.knowledgeKey = item.key;
+
+        const header = document.createElement('header');
+        header.className = 'knowledge-card__header';
+        const identity = document.createElement('div');
+        const title = document.createElement('h2');
+        title.textContent = item.title;
+        const meta = document.createElement('p');
+        meta.className = 'knowledge-card__meta';
+        meta.textContent = `${item.location} · ${item.format.toUpperCase()} · ${formatDate(item.updatedAt)}`;
+        identity.append(title, meta);
+        const chip = document.createElement('span');
+        chip.className = 'knowledge-card__kind';
+        chip.textContent = item.kind;
+        header.append(identity, chip);
+        article.append(header);
+
+        if (item.quote.trim()) {
+          const quote = document.createElement('blockquote');
+          quote.textContent = item.quote;
+          article.append(quote);
+        }
+
+        let editButton: HTMLButtonElement | undefined;
+        if (item.kind !== 'bookmark') {
+          const note = document.createElement('p');
+          note.className = 'knowledge-card__note';
+          note.textContent = item.note.trim() || 'No note attached.';
+          if (!item.note.trim()) note.dataset.empty = '';
+          article.append(note);
+
+          const editor = document.createElement('div');
+          editor.className = 'knowledge-card__editor';
+          editor.hidden = true;
+          const textarea = document.createElement('textarea');
+          textarea.rows = 4;
+          textarea.maxLength = 5000;
+          textarea.value = item.note;
+          textarea.setAttribute('aria-label', `Note for ${item.title}, ${item.location}`);
+          const editorActions = document.createElement('div');
+          const save = document.createElement('button');
+          save.type = 'button';
+          save.className = 'primary-action';
+          save.textContent = 'Save note';
+          const cancel = document.createElement('button');
+          cancel.type = 'button';
+          cancel.className = 'secondary-action';
+          cancel.textContent = 'Cancel';
+          editorActions.append(save, cancel);
+          editor.append(textarea, editorActions);
+          article.append(editor);
+
+          const edit = document.createElement('button');
+          edit.type = 'button';
+          edit.className = 'secondary-action';
+          edit.textContent = item.note.trim() ? 'Edit note' : 'Add note';
+          edit.addEventListener('click', () => {
+            editor.hidden = false;
+            actions.hidden = true;
+            note.hidden = true;
+            textarea.focus();
+          });
+          cancel.addEventListener('click', () => {
+            textarea.value = item.note;
+            editor.hidden = true;
+            actions.hidden = false;
+            note.hidden = false;
+            edit.focus();
+          });
+          save.addEventListener('click', async () => {
+            save.disabled = true;
+            try {
+              await updateNote(item, textarea.value.slice(0, 5000));
+              if (status) status.textContent = 'Note saved.';
+              await load();
+            } catch {
+              if (status) status.textContent = 'Unable to save this note.';
+            } finally {
+              save.disabled = false;
+            }
+          });
+          editButton = edit;
+        }
+
+        const actions = document.createElement('div');
+        actions.className = 'knowledge-card__actions';
+        if (item.href) {
+          const open = document.createElement('a');
+          open.className = 'primary-action';
+          open.href = item.href;
+          open.textContent = 'Open in book';
+          actions.append(open);
+        }
+        if (editButton) actions.append(editButton);
+        const copyOne = document.createElement('button');
+        copyOne.type = 'button';
+        copyOne.className = 'secondary-action';
+        copyOne.textContent = 'Copy';
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.className = 'text-action';
+        remove.textContent = 'Delete';
+        actions.append(copyOne, remove);
+        article.append(actions);
+
+        copyOne.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(markdown([item]));
+            if (status) status.textContent = 'Knowledge item copied as Markdown.';
+          } catch {
+            if (status) status.textContent = 'Clipboard access is unavailable.';
+          }
+        });
+        remove.addEventListener('click', async () => {
+          remove.setAttribute('aria-busy', 'true');
+          try {
+            await removeItem(item);
+            if (status) status.textContent = item.kind === 'bookmark' ? 'Bookmark deleted.' : 'Annotation deleted.';
+            await load();
+          } catch {
+            if (status) status.textContent = 'Unable to delete this item.';
+          }
+        });
+
+        list.append(article);
+      }
+    }
+
+    async function load(): Promise<void> {
+      const revision = ++renderRevision;
+      try {
+        const [mainAnnotations, pdfAnnotations, epubBookmarks, pdfBookmarks, personal] = await Promise.all([
+          getAllAnnotationRecords(),
+          getPdfAnnotations(),
+          getReaderBookmarks(),
+          getPdfBookmarks(),
+          getPersonalBooks(),
+        ]);
+        if (revision !== renderRevision) return;
+        personalTitles.clear();
+        for (const personalBook of personal) personalTitles.set(personalBook.id, personalBook.title);
+        items = [
+          ...mainAnnotations.map(normalizeMain).filter((item): item is KnowledgeItem => Boolean(item)),
+          ...pdfAnnotations.filter(isPdfAnnotationRecord).map(normalizePdfAnnotation),
+          ...epubBookmarks.map(normalizeEpubBookmark),
+          ...pdfBookmarks.filter(isPdfBookmarkRecord).map(normalizePdfBookmark),
+        ];
+        updateBookOptions();
+        if (status) status.textContent = items.length
+          ? 'Knowledge is derived from local reader state. Annotations and bookmarks remain in their original stores and stay covered by Library backup/Account state sync.'
+          : '';
+        render();
+      } catch {
+        if (count) count.textContent = 'Knowledge storage unavailable';
+        if (status) status.textContent = 'This browser could not open Library knowledge storage.';
+      }
+    }
+
+    for (const control of [search, book, format, kind, sort]) {
+      control?.addEventListener(control === search ? 'input' : 'change', render);
+    }
+    copy?.addEventListener('click', async () => {
+      const visible = visibleItems();
+      try {
+        await navigator.clipboard.writeText(markdown(visible));
+        if (status) status.textContent = `Copied ${visible.length} knowledge item${visible.length === 1 ? '' : 's'} as Markdown.`;
+      } catch {
+        if (status) status.textContent = 'Clipboard access is unavailable.';
+      }
+    });
+    exportButton?.addEventListener('click', () => {
+      const visible = visibleItems();
+      const date = new Date().toISOString().slice(0, 10);
+      downloadText(`thiepn-library-knowledge-${date}.md`, markdown(visible));
+      if (status) status.textContent = `Exported ${visible.length} knowledge item${visible.length === 1 ? '' : 's'}.`;
+    });
+
+    const unsubscribeMain = subscribeLibraryState(() => { void load(); });
+    const unsubscribePdf = subscribePdfReaderState(() => { void load(); });
+    window.addEventListener('pagehide', () => {
+      unsubscribeMain();
+      unsubscribePdf();
+    }, { once: true });
+
+    void load();
+  </script>
+</BaseLayout>
