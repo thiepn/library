@@ -95,12 +95,25 @@ function sanitizeBookmark(record: ReaderBookmarkRecordV2): ReaderBookmarkRecordV
   };
 }
 
-export async function getReaderBookmarksForWork(workId: string): Promise<ReaderBookmarkRecordV2[]> {
+export async function getReaderBookmarks(): Promise<ReaderBookmarkRecordV2[]> {
   const records = await withBookmarkStore('readonly', async (store) => request<unknown[]>(store.getAll()));
   return records
     .filter(isReaderBookmarkRecordV2)
-    .filter((record) => record.workId === workId)
     .map(sanitizeBookmark)
+    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+}
+
+export async function getReaderBookmarkById(id: string): Promise<ReaderBookmarkRecordV2 | undefined> {
+  if (!id) return undefined;
+  return withBookmarkStore('readonly', async (store) => {
+    const value = await request<unknown>(store.get(id));
+    return isReaderBookmarkRecordV2(value) ? sanitizeBookmark(value) : undefined;
+  });
+}
+
+export async function getReaderBookmarksForWork(workId: string): Promise<ReaderBookmarkRecordV2[]> {
+  return (await getReaderBookmarks())
+    .filter((record) => record.workId === workId)
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
