@@ -44,15 +44,25 @@ if (present) {
     'Personalized discovery uses existing local Library state and its own IndexedDB preference store, with no recommendation network call or web-storage side channel',
   );
 
-  const portabilityShape = db.match(/export interface LibraryDbPortabilitySnapshot \\{([\\s\\S]*?)\\n\\}/)?.[1] ?? '';
-  const portabilityRead = db.match(/export async function getLibraryDbPortabilitySnapshot[\\s\\S]*?export async function replaceLibraryDbPortabilitySnapshot/)?.[0] ?? '';
+  const snapshotStart = db.indexOf('export interface LibraryDbPortabilitySnapshot {');
+  const snapshotEnd = db.indexOf('export type LibraryDbPortabilityPatch', snapshotStart);
+  const readStart = db.indexOf('export async function getLibraryDbPortabilitySnapshot()');
+  const writeStart = db.indexOf('export async function replaceLibraryDbPortabilitySnapshot(', readStart);
+  const portabilityShape = snapshotStart >= 0 && snapshotEnd > snapshotStart
+    ? db.slice(snapshotStart, snapshotEnd) : '';
+  const portabilityRead = readStart >= 0 && writeStart > readStart
+    ? db.slice(readStart, writeStart) : '';
+  const portabilityWrite = writeStart >= 0 ? db.slice(writeStart) : '';
 
   pass(
     'P5_PERSONALIZED_DISCOVERY_NOT_PORTABLE',
     Boolean(portabilityShape)
+      && Boolean(portabilityRead)
+      && Boolean(portabilityWrite)
       && !portabilityShape.includes('preferences')
-      && !portabilityRead.includes("transaction(['preferences'")
-      && !portabilityRead.includes("objectStore('preferences')"),
+      && !portabilityRead.includes("'preferences'")
+      && !portabilityWrite.includes("requested.add('preferences')")
+      && !portabilityWrite.includes("replace('preferences'"),
     'The privacy preference is intentionally excluded from backup and Account portability so another device cannot silently inherit opt-in',
   );
 
