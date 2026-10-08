@@ -1,4 +1,4 @@
-import { createThiepnAccountSession, type ThiepnIdentity } from '@thiepn/account-session';
+import { createThiepnAccountSession, createThiepnBrowserSso, type ThiepnIdentity } from '@thiepn/account-session';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 export const THIEPN_ACCOUNT_PROJECT_REF = 'hycegznamzjhwinegaai';
@@ -16,6 +16,7 @@ export interface LibraryAccountUser {
 
 let client: SupabaseClient | undefined;
 let session: ReturnType<typeof createThiepnAccountSession> | undefined;
+let browserSso: ReturnType<typeof createThiepnBrowserSso> | undefined;
 
 export function hasThiepnAccountConfiguration(): boolean {
   const key = import.meta.env.PUBLIC_THIEPN_ACCOUNT_PUBLISHABLE_KEY as string | undefined;
@@ -61,6 +62,14 @@ export function getThiepnAccountSession() {
     authPolicy: 'guest-first',
   });
   return session;
+}
+
+export function getLibraryBrowserSso() {
+  if (browserSso) return browserSso;
+  browserSso = createThiepnBrowserSso(getThiepnAccountSession(), {
+    accountOrigin: THIEPN_ACCOUNT_ORIGIN,
+  });
+  return browserSso;
 }
 
 export function getThiepnAccountClient(): SupabaseClient {
@@ -109,19 +118,33 @@ export async function getVerifiedLibraryAccountUser(): Promise<LibraryAccountUse
   const user = await getVerifiedLibraryAccountIdentity();
   if (!user) return null;
   if (!(await isLibraryAccountConnectionActive())) {
-    getThiepnAccountSession().signOutLocal();
+    getLibraryBrowserSso().signOutLocal();
     return null;
   }
   return user;
 }
 
+function rememberLibrarySsoReturnTo(returnTo: string): void {
+  try {
+    sessionStorage.setItem(LIBRARY_SSO_RETURN_KEY, safeLibraryReturnTo(returnTo));
+  } catch {
+    // A blocked return-path hint must not prevent the OAuth attempt.
+  }
+}
+
+/** Preserve the requested Library route during a silent first-party SSO redirect. */
+export function initializeLibraryAccountSso(returnTo = window.location.href) {
+  rememberLibrarySsoReturnTo(returnTo);
+  return getLibraryBrowserSso().initialize();
+}
+
 export async function beginLibraryAccountSso(returnTo = window.location.href): Promise<void> {
-  sessionStorage.setItem(LIBRARY_SSO_RETURN_KEY, safeLibraryReturnTo(returnTo));
-  window.location.assign(await getThiepnAccountSession().authorizationUrl());
+  rememberLibrarySsoReturnTo(returnTo);
+  await getLibraryBrowserSso().connect();
 }
 
 export async function completeLibraryAccountSsoCallback(): Promise<LibraryAccountUser | null> {
-  return identityToUser(await getThiepnAccountSession().completeCallback(window.location));
+  return identityToUser(await getLibraryBrowserSso().completeCallback(window.location));
 }
 
 export function consumeLibraryAccountSsoReturnTo(): string {
@@ -137,7 +160,7 @@ export function consumeLibraryAccountSsoReturnTo(): string {
 }
 
 export function signOutLibraryAppSession(): void {
-  getThiepnAccountSession().signOutLocal();
+  getLibraryBrowserSso().signOutLocal();
 }
 
 export function subscribeLibraryAccountAuth(listener: () => void): () => void {
