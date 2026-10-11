@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-7370",
+  "slug": "pd-pg-7370",
+  "title": "Second Treatise of Government",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "John Locke",
+      "role": "author",
+      "birthYear": 1632,
+      "deathYear": 1704
+    }
+  ],
+  "description": "Second Treatise of Government by John Locke is a classic work associated with Political science -- Early works to 1800, Toleration -- Early works to 1800, Liberty -- Early works to 1800.",
+  "shortDescription": "Second Treatise of Government by John Locke is a classic work associated with Political science -- Early works to 1800, Toleration -- Early works to 1800, Liberty -- Early works to 1800.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "Not verified",
+    "lastUpdated": "2026-10-11",
+    "edition": 1,
+    "editionLabel": "THIEPN Library Edition",
+    "version": "pg-7370-723ca8c92959-cover-0773994434a3",
+    "activeRelease": "pg-7370-723ca8c92959-cover-0773994434a3"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-7370.webp",
+    "alt": "Cover for Second Treatise of Government by John Locke"
+  },
+  "classification": {
+    "subjects": [
+      "political-science",
+      "toleration",
+      "liberty",
+      "jc"
+    ],
+    "tags": [
+      "public-domain",
+      "classic"
+    ],
+    "collections": [
+      "public-domain"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [],
+  "rights": {
+    "status": "Public domain in Germany",
+    "notice": "This Library edition is offered as a public-domain work under German copyright law. Copyright status can differ in other jurisdictions."
+  }
+}

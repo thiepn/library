@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-7370",
+  "version": "pg-7370-723ca8c92959-cover-0773994434a3",
+  "edition": 1,
+  "releasedAt": "2026-10-11T10:18:36Z",
+  "sourceHash": "a7f647675e892d04fa12c72c3411caef6a0883f2b53d1715dc4d4f33212059c9",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-7370/editions/pg-7370-723ca8c92959-cover-0773994434a3/second-treatise-of-government.epub",
+      "filename": "second-treatise-of-government.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 555662,
+      "sha256": "0773994434a3e03b2b513485f15cb4aa8448081d4ed24b9c547cc0daa6aa3a7e"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "723ca8c929592d0e229ed193154e8117f772b01bc1f3c9d463796851f44be131",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-7370-723ca8c92959",
+    "finalArtifactSha256": "0773994434a3e03b2b513485f15cb4aa8448081d4ed24b9c547cc0daa6aa3a7e",
+    "releaseVersioning": "content-addressed"
+  }
+}

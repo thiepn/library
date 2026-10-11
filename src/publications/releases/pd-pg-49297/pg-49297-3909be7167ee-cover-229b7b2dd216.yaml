@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-49297",
+  "version": "pg-49297-3909be7167ee-cover-229b7b2dd216",
+  "edition": 1,
+  "releasedAt": "2026-10-11T10:18:22Z",
+  "sourceHash": "fb11952a6411665a1be84c865cf37c65d58e8bf32db73f98b7e4042189f02042",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-49297/editions/pg-49297-3909be7167ee-cover-229b7b2dd216/the-works-of-william-shakespeare-cambridge-edition-vol-5-of-9.epub",
+      "filename": "the-works-of-william-shakespeare-cambridge-edition-vol-5-of-9.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 1345190,
+      "sha256": "229b7b2dd21699cb1d5fbdf875ab9e8b41d7f6b9c17e0b4c251bbc5f7063560c"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "3909be7167ee13f8a50f398eba3ee971434632fe1fbda3f8b247c10f35d3c037",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-49297-3909be7167ee",
+    "finalArtifactSha256": "229b7b2dd21699cb1d5fbdf875ab9e8b41d7f6b9c17e0b4c251bbc5f7063560c",
+    "releaseVersioning": "content-addressed"
+  }
+}

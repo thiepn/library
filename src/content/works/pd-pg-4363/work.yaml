@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-4363",
+  "slug": "pd-pg-4363",
+  "title": "Beyond Good and Evil",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Friedrich Wilhelm Nietzsche",
+      "role": "author",
+      "birthYear": 1844,
+      "deathYear": 1900
+    },
+    {
+      "name": "Helen Zimmern",
+      "role": "translator",
+      "birthYear": 1846,
+      "deathYear": 1934
+    }
+  ],
+  "description": "Beyond Good and Evil by Friedrich Wilhelm Nietzsche is a classic work associated with Ethics, Philosophy, German, B.",
+  "shortDescription": "Beyond Good and Evil by Friedrich Wilhelm Nietzsche is a classic work associated with Ethics, Philosophy, German, B.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "Not verified",
+    "lastUpdated": "2026-10-11",
+    "edition": 1,
+    "editionLabel": "THIEPN Library Edition",
+    "version": "pg-4363-28312b674389-cover-bf9c7a2669b2",
+    "activeRelease": "pg-4363-28312b674389-cover-bf9c7a2669b2"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-4363.webp",
+    "alt": "Cover for Beyond Good and Evil by Friedrich Wilhelm Nietzsche"
+  },
+  "classification": {
+    "subjects": [
+      "ethics",
+      "philosophy-german",
+      "b"
+    ],
+    "tags": [
+      "public-domain",
+      "classic"
+    ],
+    "collections": [
+      "public-domain"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [],
+  "rights": {
+    "status": "Public domain in Germany",
+    "notice": "This Library edition is offered as a public-domain work under German copyright law. Copyright status can differ in other jurisdictions."
+  }
+}

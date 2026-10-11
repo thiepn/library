@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-16",
+  "slug": "pd-pg-16",
+  "title": "Peter Pan: [Peter and Wendy]",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "J. M. (James Matthew) Barrie",
+      "role": "author",
+      "birthYear": 1860,
+      "deathYear": 1937
+    }
+  ],
+  "description": "Peter Pan : $b [Peter and Wendy] by J. M. (James Matthew) Barrie is a classic work associated with Fantasy literature, Peter Pan (Fictitious character) -- Fiction, Never-Never Land (Imaginary place) -- Fiction.",
+  "shortDescription": "Peter Pan : $b [Peter and Wendy] by J. M. (James Matthew) Barrie is a classic work associated with Fantasy literature, Peter Pan (Fictitious character) -- Fiction, Never-Never Land (Imagi…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "Not verified",
+    "lastUpdated": "2026-10-11",
+    "edition": 1,
+    "editionLabel": "THIEPN Library Edition",
+    "version": "pg-16-7a2c1afe1871-cover-a69172a592ce",
+    "activeRelease": "pg-16-7a2c1afe1871-cover-a69172a592ce"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-16.webp",
+    "alt": "Cover for Peter Pan: [Peter and Wendy] by J. M. (James Matthew) Barrie"
+  },
+  "classification": {
+    "subjects": [
+      "fantasy-literature",
+      "peter-pan-fictitious-character",
+      "never-never-land-imaginary-place",
+      "pirates",
+      "fairies"
+    ],
+    "tags": [
+      "public-domain",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "childrens-literature"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [],
+  "rights": {
+    "status": "Public domain in Germany",
+    "notice": "This Library edition is offered as a public-domain work under German copyright law. Copyright status can differ in other jurisdictions."
+  }
+}

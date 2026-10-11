@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-844",
+  "version": "pg-844-979b96af3108-cover-1cc706bee5bb",
+  "edition": 1,
+  "releasedAt": "2026-10-11T10:18:30Z",
+  "sourceHash": "882723edf484d1852e4639957ee53a16c5bf43c266e67d6deeff672b9bb97058",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-844/editions/pg-844-979b96af3108-cover-1cc706bee5bb/the-importance-of-being-earnest-a-trivial-comedy-for-serious-people.epub",
+      "filename": "the-importance-of-being-earnest-a-trivial-comedy-for-serious-people.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 504587,
+      "sha256": "1cc706bee5bb607f2de3b43e31771e76a1c25f45f827a48103910a205b587803"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "979b96af3108b97d45bbcd4ea93bb2d47747a1c51d4de139527b30f550018920",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-844-979b96af3108",
+    "finalArtifactSha256": "1cc706bee5bb607f2de3b43e31771e76a1c25f45f827a48103910a205b587803",
+    "releaseVersioning": "content-addressed"
+  }
+}

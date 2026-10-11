@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-20738",
+  "slug": "pd-pg-20738",
+  "title": "Diccionario Ingles-Español-Tagalog",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Sofronio G. Calderón",
+      "role": "author",
+      "birthYear": 1878,
+      "deathYear": 1953
+    }
+  ],
+  "description": "Diccionario Ingles-Español-Tagalog by Sofronio G. Calderón is a classic work associated with English language -- Dictionaries -- Spanish, English language -- Dictionaries -- Tagalog, English language -- Dictionaries -- Polyglot.",
+  "shortDescription": "Diccionario Ingles-Español-Tagalog by Sofronio G. Calderón is a classic work associated with English language -- Dictionaries -- Spanish, English language -- Dictionaries -- Tagalog, Engl…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "Not verified",
+    "lastUpdated": "2026-10-11",
+    "edition": 1,
+    "editionLabel": "THIEPN Library Edition",
+    "version": "pg-20738-f0a5cec7a73b-cover-61f206bc9446",
+    "activeRelease": "pg-20738-f0a5cec7a73b-cover-61f206bc9446"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-20738.webp",
+    "alt": "Cover for Diccionario Ingles-Español-Tagalog by Sofronio G. Calderón"
+  },
+  "classification": {
+    "subjects": [
+      "english-language",
+      "pl"
+    ],
+    "tags": [
+      "public-domain",
+      "classic"
+    ],
+    "collections": [
+      "public-domain"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [],
+  "rights": {
+    "status": "Public domain in Germany",
+    "notice": "This Library edition is offered as a public-domain work under German copyright law. Copyright status can differ in other jurisdictions."
+  }
+}

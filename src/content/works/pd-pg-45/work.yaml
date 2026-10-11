@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-45",
+  "slug": "pd-pg-45",
+  "title": "Anne of Green Gables",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "L. M. (Lucy Maud) Montgomery",
+      "role": "author",
+      "birthYear": 1874,
+      "deathYear": 1942
+    }
+  ],
+  "description": "Anne of Green Gables by L. M. (Lucy Maud) Montgomery is a classic work associated with Orphans -- Fiction, Islands -- Fiction, Friendship -- Fiction.",
+  "shortDescription": "Anne of Green Gables by L. M. (Lucy Maud) Montgomery is a classic work associated with Orphans -- Fiction, Islands -- Fiction, Friendship -- Fiction.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "Not verified",
+    "lastUpdated": "2026-10-11",
+    "edition": 1,
+    "editionLabel": "THIEPN Library Edition",
+    "version": "pg-45-e001df19fc1a-cover-6d0b66e25572",
+    "activeRelease": "pg-45-e001df19fc1a-cover-6d0b66e25572"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-45.webp",
+    "alt": "Cover for Anne of Green Gables by L. M. (Lucy Maud) Montgomery"
+  },
+  "classification": {
+    "subjects": [
+      "orphans",
+      "islands",
+      "friendship",
+      "bildungsromans",
+      "girls"
+    ],
+    "tags": [
+      "public-domain",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "childrens-literature"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [],
+  "rights": {
+    "status": "Public domain in Germany",
+    "notice": "This Library edition is offered as a public-domain work under German copyright law. Copyright status can differ in other jurisdictions."
+  }
+}

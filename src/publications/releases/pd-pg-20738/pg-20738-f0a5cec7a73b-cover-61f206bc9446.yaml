@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-20738",
+  "version": "pg-20738-f0a5cec7a73b-cover-61f206bc9446",
+  "edition": 1,
+  "releasedAt": "2026-10-11T10:18:49Z",
+  "sourceHash": "279d923b0339eabf7a111e93ef227b4cf03f90ba7a976beba7c504ed4fc97b4c",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-20738/editions/pg-20738-f0a5cec7a73b-cover-61f206bc9446/diccionario-ingles-espa-ol-tagalog.epub",
+      "filename": "diccionario-ingles-espa-ol-tagalog.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 1088345,
+      "sha256": "61f206bc9446bc0f8d9b7ac32d7b9e391e352230fa28797c1b81e5b60b3f212b"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "f0a5cec7a73bab8007609d68b5bdb927591c66cac53c18104ce0ee87961d7ad0",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-20738-f0a5cec7a73b",
+    "finalArtifactSha256": "61f206bc9446bc0f8d9b7ac32d7b9e391e352230fa28797c1b81e5b60b3f212b",
+    "releaseVersioning": "content-addressed"
+  }
+}

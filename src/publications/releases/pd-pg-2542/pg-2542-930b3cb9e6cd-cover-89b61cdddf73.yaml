@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-2542",
+  "version": "pg-2542-930b3cb9e6cd-cover-89b61cdddf73",
+  "edition": 1,
+  "releasedAt": "2026-10-11T10:18:32Z",
+  "sourceHash": "d2b6a33d6493d79356508fcd3586e17d466bde92f1e81fcca76bc300a1752dd9",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-2542/editions/pg-2542-930b3cb9e6cd-cover-89b61cdddf73/a-dolls-house-a-play.epub",
+      "filename": "a-dolls-house-a-play.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 482400,
+      "sha256": "89b61cdddf731f4713c28893606a62d2c8d100f417a0b7186001bd54eb894a44"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "930b3cb9e6cd93e0c1b7bdeae00176d7785ded1db065b611220ca8a2373494be",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-2542-930b3cb9e6cd",
+    "finalArtifactSha256": "89b61cdddf731f4713c28893606a62d2c8d100f417a0b7186001bd54eb894a44",
+    "releaseVersioning": "content-addressed"
+  }
+}

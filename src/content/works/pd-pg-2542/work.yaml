@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-2542",
+  "slug": "pd-pg-2542",
+  "title": "A Doll's House : a play",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Henrik Ibsen",
+      "role": "author",
+      "birthYear": 1828,
+      "deathYear": 1906
+    },
+    {
+      "name": "R. Farquharson (Robert Farquharson) Sharp",
+      "role": "translator",
+      "birthYear": 1864,
+      "deathYear": 1945
+    }
+  ],
+  "description": "A Doll's House : a play by Henrik Ibsen is a classic work associated with Marriage -- Drama, Man-woman relationships -- Drama, Norwegian drama -- Translations into English.",
+  "shortDescription": "A Doll's House : a play by Henrik Ibsen is a classic work associated with Marriage -- Drama, Man-woman relationships -- Drama, Norwegian drama -- Translations into English.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "Not verified",
+    "lastUpdated": "2026-10-11",
+    "edition": 1,
+    "editionLabel": "THIEPN Library Edition",
+    "version": "pg-2542-930b3cb9e6cd-cover-89b61cdddf73",
+    "activeRelease": "pg-2542-930b3cb9e6cd-cover-89b61cdddf73"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-2542.webp",
+    "alt": "Cover for A Doll's House : a play by Henrik Ibsen"
+  },
+  "classification": {
+    "subjects": [
+      "marriage",
+      "man-woman-relationships",
+      "norwegian-drama",
+      "wives",
+      "pt"
+    ],
+    "tags": [
+      "public-domain",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "best-books-ever-listings"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [],
+  "rights": {
+    "status": "Public domain in Germany",
+    "notice": "This Library edition is offered as a public-domain work under German copyright law. Copyright status can differ in other jurisdictions."
+  }
+}

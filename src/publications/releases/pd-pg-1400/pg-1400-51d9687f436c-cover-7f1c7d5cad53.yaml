@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-1400",
+  "version": "pg-1400-51d9687f436c-cover-7f1c7d5cad53",
+  "edition": 1,
+  "releasedAt": "2026-10-11T10:18:23Z",
+  "sourceHash": "4d1e738eca4be54f87019f5fe8de647b94a05cbc1d7d42968c6ed4b23ce137ef",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-1400/editions/pg-1400-51d9687f436c-cover-7f1c7d5cad53/great-expectations.epub",
+      "filename": "great-expectations.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 945172,
+      "sha256": "7f1c7d5cad538275abf43abac3d7d0f203a8657f549263f7a12c1af61ec083a6"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "51d9687f436c00787383fab830890cd3a8c1f51224f29e7b7e3350f2b1284886",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-1400-51d9687f436c",
+    "finalArtifactSha256": "7f1c7d5cad538275abf43abac3d7d0f203a8657f549263f7a12c1af61ec083a6",
+    "releaseVersioning": "content-addressed"
+  }
+}

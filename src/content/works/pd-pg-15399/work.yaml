@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-15399",
+  "slug": "pd-pg-15399",
+  "title": "The Interesting Narrative of the Life of Olaudah Equiano, Or Gustavus Vassa, The African",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Olaudah Equiano",
+      "role": "author",
+      "birthYear": 1745,
+      "deathYear": 1797
+    }
+  ],
+  "description": "The Interesting Narrative of the Life of Olaudah Equiano, Or Gustavus Vassa, The African by Olaudah Equiano is a classic work associated with Enslaved persons -- United States -- Biography, Equiano, Olaudah, 1745-1797, Enslaved persons -- Great Britain -- Biography.",
+  "shortDescription": "The Interesting Narrative of the Life of Olaudah Equiano, Or Gustavus Vassa, The African by Olaudah Equiano is a classic work associated with Enslaved persons -- United States -- Biograph…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "Not verified",
+    "lastUpdated": "2026-10-11",
+    "edition": 1,
+    "editionLabel": "THIEPN Library Edition",
+    "version": "pg-15399-aa39c33bbaae-cover-b722fd23925f",
+    "activeRelease": "pg-15399-aa39c33bbaae-cover-b722fd23925f"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-15399.webp",
+    "alt": "Cover for The Interesting Narrative of the Life of Olaudah Equiano, Or Gustavus Vassa, The African by Olaudah Equiano"
+  },
+  "classification": {
+    "subjects": [
+      "enslaved-persons",
+      "equiano-olaudah-1745-1797",
+      "ht"
+    ],
+    "tags": [
+      "public-domain",
+      "classic"
+    ],
+    "collections": [
+      "public-domain"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [],
+  "rights": {
+    "status": "Public domain in Germany",
+    "notice": "This Library edition is offered as a public-domain work under German copyright law. Copyright status can differ in other jurisdictions."
+  }
+}

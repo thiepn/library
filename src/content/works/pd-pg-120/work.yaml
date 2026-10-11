@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-120",
+  "slug": "pd-pg-120",
+  "title": "Treasure Island",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Robert Louis Stevenson",
+      "role": "author",
+      "birthYear": 1850,
+      "deathYear": 1894
+    },
+    {
+      "name": "Louis Rhead",
+      "role": "illustrator",
+      "birthYear": 1857,
+      "deathYear": 1926
+    }
+  ],
+  "description": "Treasure Island by Robert Louis Stevenson is a classic work associated with Sea stories, Pirates -- Fiction, Treasure troves -- Fiction.",
+  "shortDescription": "Treasure Island by Robert Louis Stevenson is a classic work associated with Sea stories, Pirates -- Fiction, Treasure troves -- Fiction.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "Not verified",
+    "lastUpdated": "2026-10-11",
+    "edition": 1,
+    "editionLabel": "THIEPN Library Edition",
+    "version": "pg-120-6d6781328ac1-cover-6440ba11772a",
+    "activeRelease": "pg-120-6d6781328ac1-cover-6440ba11772a"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-120.webp",
+    "alt": "Cover for Treasure Island by Robert Louis Stevenson"
+  },
+  "classification": {
+    "subjects": [
+      "sea-stories",
+      "pirates",
+      "treasure-troves",
+      "treasure-island-imaginary-place",
+      "pr"
+    ],
+    "tags": [
+      "public-domain",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "childrens-literature",
+      "historical-fiction",
+      "best-books-ever-listings"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [],
+  "rights": {
+    "status": "Public domain in Germany",
+    "notice": "This Library edition is offered as a public-domain work under German copyright law. Copyright status can differ in other jurisdictions."
+  }
+}

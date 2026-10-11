@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-46",
+  "slug": "pd-pg-46",
+  "title": "A Christmas Carol in Prose; Being a Ghost Story of Christmas",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Charles Dickens",
+      "role": "author",
+      "birthYear": 1812,
+      "deathYear": 1870
+    },
+    {
+      "name": "John Leech",
+      "role": "illustrator",
+      "birthYear": 1817,
+      "deathYear": 1864
+    }
+  ],
+  "description": "A Christmas Carol in Prose; Being a Ghost Story of Christmas by Charles Dickens is a classic work associated with Christmas stories, London (England) -- Fiction, Poor families -- Fiction.",
+  "shortDescription": "A Christmas Carol in Prose; Being a Ghost Story of Christmas by Charles Dickens is a classic work associated with Christmas stories, London (England) -- Fiction, Poor families -- Fiction.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "Not verified",
+    "lastUpdated": "2026-10-11",
+    "edition": 1,
+    "editionLabel": "THIEPN Library Edition",
+    "version": "pg-46-86b33cf1a573-cover-a54a84974c83",
+    "activeRelease": "pg-46-86b33cf1a573-cover-a54a84974c83"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-46.webp",
+    "alt": "Cover for A Christmas Carol in Prose; Being a Ghost Story of Christmas by Charles Dickens"
+  },
+  "classification": {
+    "subjects": [
+      "christmas-stories",
+      "london-england",
+      "poor-families",
+      "ghost-stories",
+      "misers"
+    ],
+    "tags": [
+      "public-domain",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "childrens-literature"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [],
+  "rights": {
+    "status": "Public domain in Germany",
+    "notice": "This Library edition is offered as a public-domain work under German copyright law. Copyright status can differ in other jurisdictions."
+  }
+}

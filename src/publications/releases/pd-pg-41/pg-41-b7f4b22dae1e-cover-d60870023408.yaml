@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-41",
+  "version": "pg-41-b7f4b22dae1e-cover-d60870023408",
+  "edition": 1,
+  "releasedAt": "2026-10-11T10:18:32Z",
+  "sourceHash": "a16269b69cb1bd62597e0ed5e6f3e7329c2d9344f4c8251c2f32947c0f2b59e5",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-41/editions/pg-41-b7f4b22dae1e-cover-d60870023408/the-legend-of-sleepy-hollow.epub",
+      "filename": "the-legend-of-sleepy-hollow.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 517069,
+      "sha256": "d60870023408b7efc8249480c23c5af3f5d330a4777c4976e5e44a26979cac31"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "b7f4b22dae1e9f0b010990a6271b7d8cca062b5b9830c2c9a570fcc010e808da",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-41-b7f4b22dae1e",
+    "finalArtifactSha256": "d60870023408b7efc8249480c23c5af3f5d330a4777c4976e5e44a26979cac31",
+    "releaseVersioning": "content-addressed"
+  }
+}

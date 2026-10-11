@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-16",
+  "version": "pg-16-7a2c1afe1871-cover-a69172a592ce",
+  "edition": 1,
+  "releasedAt": "2026-10-11T10:18:47Z",
+  "sourceHash": "611c44272c17c73d6a50f84b5396dfd35945734db8462c82d6e31cad35a702fe",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-16/editions/pg-16-7a2c1afe1871-cover-a69172a592ce/peter-pan-b-peter-and-wendy.epub",
+      "filename": "peter-pan-b-peter-and-wendy.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 911392,
+      "sha256": "a69172a592ce576a05ad7f96ce3ade2fc9ce35f9a2297227e4baa86c67d915fd"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "7a2c1afe187121a0a3782538b95c54e298a25a920c588e3fa3be7ac92a451046",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-16-7a2c1afe1871",
+    "finalArtifactSha256": "a69172a592ce576a05ad7f96ce3ade2fc9ce35f9a2297227e4baa86c67d915fd",
+    "releaseVersioning": "content-addressed"
+  }
+}

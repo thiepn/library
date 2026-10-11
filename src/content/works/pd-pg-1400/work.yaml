@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-1400",
+  "slug": "pd-pg-1400",
+  "title": "Great Expectations",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Charles Dickens",
+      "role": "author",
+      "birthYear": 1812,
+      "deathYear": 1870
+    }
+  ],
+  "description": "Great Expectations by Charles Dickens is a classic work associated with Orphans -- Fiction, England -- Fiction, Revenge -- Fiction.",
+  "shortDescription": "Great Expectations by Charles Dickens is a classic work associated with Orphans -- Fiction, England -- Fiction, Revenge -- Fiction.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "Not verified",
+    "lastUpdated": "2026-10-11",
+    "edition": 1,
+    "editionLabel": "THIEPN Library Edition",
+    "version": "pg-1400-51d9687f436c-cover-7f1c7d5cad53",
+    "activeRelease": "pg-1400-51d9687f436c-cover-7f1c7d5cad53"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-1400.webp",
+    "alt": "Cover for Great Expectations by Charles Dickens"
+  },
+  "classification": {
+    "subjects": [
+      "orphans",
+      "england",
+      "revenge",
+      "bildungsromans",
+      "young-men"
+    ],
+    "tags": [
+      "public-domain",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "best-books-ever-listings"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [],
+  "rights": {
+    "status": "Public domain in Germany",
+    "notice": "This Library edition is offered as a public-domain work under German copyright law. Copyright status can differ in other jurisdictions."
+  }
+}

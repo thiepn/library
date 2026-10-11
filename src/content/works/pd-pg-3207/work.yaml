@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-3207",
+  "slug": "pd-pg-3207",
+  "title": "Leviathan",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Thomas Hobbes",
+      "role": "author",
+      "birthYear": 1588,
+      "deathYear": 1679
+    }
+  ],
+  "description": "Leviathan by Thomas Hobbes is a classic work associated with Political science -- Early works to 1800, State, The -- Early works to 1800, JC.",
+  "shortDescription": "Leviathan by Thomas Hobbes is a classic work associated with Political science -- Early works to 1800, State, The -- Early works to 1800, JC.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "Not verified",
+    "lastUpdated": "2026-10-11",
+    "edition": 1,
+    "editionLabel": "THIEPN Library Edition",
+    "version": "pg-3207-2d20c696ccd2-cover-c2a97c289e71",
+    "activeRelease": "pg-3207-2d20c696ccd2-cover-c2a97c289e71"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-3207.webp",
+    "alt": "Cover for Leviathan by Thomas Hobbes"
+  },
+  "classification": {
+    "subjects": [
+      "political-science",
+      "state-the",
+      "jc"
+    ],
+    "tags": [
+      "public-domain",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "harvard-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [],
+  "rights": {
+    "status": "Public domain in Germany",
+    "notice": "This Library edition is offered as a public-domain work under German copyright law. Copyright status can differ in other jurisdictions."
+  }
+}

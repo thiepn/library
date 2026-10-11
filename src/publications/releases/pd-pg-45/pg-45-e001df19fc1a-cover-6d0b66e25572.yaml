@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-45",
+  "version": "pg-45-e001df19fc1a-cover-6d0b66e25572",
+  "edition": 1,
+  "releasedAt": "2026-10-11T10:18:34Z",
+  "sourceHash": "df6142c114f918662462ad9943871c0c7b15d5829105c154dffa5e6b7b55982e",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-45/editions/pg-45-e001df19fc1a-cover-6d0b66e25572/anne-of-green-gables.epub",
+      "filename": "anne-of-green-gables.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 765312,
+      "sha256": "6d0b66e25572118b247bcceae2273cd78e24e35d172d2a45877d761a5d1031b0"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "e001df19fc1ae88ca6aa4131e56a51625c50257b95fff1ff3c2dbeb58b4a8bfe",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-45-e001df19fc1a",
+    "finalArtifactSha256": "6d0b66e25572118b247bcceae2273cd78e24e35d172d2a45877d761a5d1031b0",
+    "releaseVersioning": "content-addressed"
+  }
+}

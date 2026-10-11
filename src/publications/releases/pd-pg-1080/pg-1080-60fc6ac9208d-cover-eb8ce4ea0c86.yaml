@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-1080",
+  "version": "pg-1080-60fc6ac9208d-cover-eb8ce4ea0c86",
+  "edition": 1,
+  "releasedAt": "2026-10-11T10:18:25Z",
+  "sourceHash": "2e5b18ebb575d6cab11c1ae2613bd3d671827af7d995db23dd5794014085fe3b",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-1080/editions/pg-1080-60fc6ac9208d-cover-eb8ce4ea0c86/a-modest-proposal.epub",
+      "filename": "a-modest-proposal.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 403682,
+      "sha256": "eb8ce4ea0c86ba2e3e88d96a2a0bada563838d5960ba94540aa87c82b4d8ec93"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "60fc6ac9208d8bdb8dd63b7082b7702f31fc32d9f6920fd01150b07ceebded7d",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-1080-60fc6ac9208d",
+    "finalArtifactSha256": "eb8ce4ea0c86ba2e3e88d96a2a0bada563838d5960ba94540aa87c82b4d8ec93",
+    "releaseVersioning": "content-addressed"
+  }
+}

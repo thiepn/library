@@ -5828,6 +5828,1017 @@
         "releaseVersion": "pg-4300-8cc747be2faa-cover-971b523621bb",
         "artifactSha256": "971b523621bb4866c113785bcddbe4bb6116df994edbfc5561e1ffe25ccf98d6"
       }
+    },
+    {
+      "gutenbergId": 49297,
+      "workId": "pd-pg-49297",
+      "title": "The Works of William Shakespeare [Cambridge Edition] [Vol. 5 of 9]",
+      "author": "William Shakespeare",
+      "score": 127.836,
+      "downloadCountAtSelection": 62150,
+      "bookshelves": [
+        "Category: Historical Novels",
+        "Category: Plays/Films/Dramas",
+        "Category: Classics of Literature",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/49297",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/49297/pg49297.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/49297/pg49297.epub",
+      "sourceRdfSha256": "fb11952a6411665a1be84c865cf37c65d58e8bf32db73f98b7e4042189f02042",
+      "sourceEpubSha256": "3909be7167ee13f8a50f398eba3ee971434632fe1fbda3f8b247c10f35d3c037",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "William Shakespeare",
+          "role": "creator",
+          "birthYear": 1564,
+          "deathYear": 1616
+        },
+        {
+          "name": "William George Clark",
+          "role": "edt",
+          "birthYear": 1821,
+          "deathYear": 1878
+        },
+        {
+          "name": "William Aldis Wright",
+          "role": "edt",
+          "birthYear": 1831,
+          "deathYear": 1914
+        }
+      ],
+      "selectedAt": "2026-10-11T10:18:22Z",
+      "releaseVersion": "pg-49297-3909be7167ee-cover-229b7b2dd216",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 14,
+        "downloadCount": 62150
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-10-11T10:19:22Z",
+        "webCoverSha256": "655cce39b874b31c7743f422ce49d4cc35792dae1219747d6f22ab5fa179419a",
+        "epubCoverSha256": "c821e065356b4c459fe6112ddf67837479a6500a68bae2ca33d8408d197bdcca",
+        "releaseVersion": "pg-49297-3909be7167ee-cover-229b7b2dd216",
+        "artifactSha256": "229b7b2dd21699cb1d5fbdf875ab9e8b41d7f6b9c17e0b4c251bbc5f7063560c"
+      }
+    },
+    {
+      "gutenbergId": 1400,
+      "workId": "pd-pg-1400",
+      "title": "Great Expectations",
+      "author": "Charles Dickens",
+      "score": 251.436,
+      "downloadCountAtSelection": 41441,
+      "bookshelves": [
+        "Best Books Ever Listings",
+        "Category: Novels",
+        "Category: Classics of Literature",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/1400",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/1400/pg1400.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/1400/pg1400.epub",
+      "sourceRdfSha256": "4d1e738eca4be54f87019f5fe8de647b94a05cbc1d7d42968c6ed4b23ce137ef",
+      "sourceEpubSha256": "51d9687f436c00787383fab830890cd3a8c1f51224f29e7b7e3350f2b1284886",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Charles Dickens",
+          "role": "creator",
+          "birthYear": 1812,
+          "deathYear": 1870
+        }
+      ],
+      "selectedAt": "2026-10-11T10:18:23Z",
+      "releaseVersion": "pg-1400-51d9687f436c-cover-7f1c7d5cad53",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 39,
+        "downloadCount": 41441
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-10-11T10:19:56Z",
+        "webCoverSha256": "83a217974a57da39db2577ff87803990bcf9a5db5620325478766e74d48312e5",
+        "epubCoverSha256": "bb32516f6daf352ff28820e813f858b2a0c0341298ee205b47c051d7fcc30fb5",
+        "releaseVersion": "pg-1400-51d9687f436c-cover-7f1c7d5cad53",
+        "artifactSha256": "7f1c7d5cad538275abf43abac3d7d0f203a8657f549263f7a12c1af61ec083a6"
+      }
+    },
+    {
+      "gutenbergId": 49008,
+      "workId": "pd-pg-49008",
+      "title": "The Works of William Shakespeare [Cambridge Edition] [Vol. 8 of 9]",
+      "author": "William Shakespeare",
+      "score": 123.346,
+      "downloadCountAtSelection": 41099,
+      "bookshelves": [
+        "Category: Plays/Films/Dramas",
+        "Category: Classics of Literature",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/49008",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/49008/pg49008.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/49008/pg49008.epub",
+      "sourceRdfSha256": "f2f2b77a80e8e1f62a4d13a86cd7dbea8107d4d3d450ca73b7ccde35606704d2",
+      "sourceEpubSha256": "8f1baa426bdeab872246ba2f46c101cc4780bc9cdf79173b20ad5d66e8bf40a2",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "William Shakespeare",
+          "role": "creator",
+          "birthYear": 1564,
+          "deathYear": 1616
+        },
+        {
+          "name": "William George Clark",
+          "role": "edt",
+          "birthYear": 1821,
+          "deathYear": 1878
+        },
+        {
+          "name": "William Aldis Wright",
+          "role": "edt",
+          "birthYear": 1831,
+          "deathYear": 1914
+        }
+      ],
+      "selectedAt": "2026-10-11T10:18:25Z",
+      "releaseVersion": "pg-49008-8f1baa426bde-cover-16ed94195770",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 40,
+        "downloadCount": 41099
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-10-11T10:20:26Z",
+        "webCoverSha256": "aea362be325957775886169faf57aaff17643747033ded91798bf95576c67de1",
+        "epubCoverSha256": "c03d5ea7d5312e084d3dfc7f49d9f7369cdec8b74c6f5a549863a548876c05e4",
+        "releaseVersion": "pg-49008-8f1baa426bde-cover-16ed94195770",
+        "artifactSha256": "16ed941957705950709d3636993084de47c1a08f1cbdccbde9905e3ad823711e"
+      }
+    },
+    {
+      "gutenbergId": 1080,
+      "workId": "pd-pg-1080",
+      "title": "A Modest Proposal",
+      "author": "Jonathan Swift",
+      "score": 123.192,
+      "downloadCountAtSelection": 40519,
+      "bookshelves": [
+        "Category: Essays, Letters & Speeches",
+        "Category: Classics of Literature",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/1080",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/1080/pg1080.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/1080/pg1080.epub",
+      "sourceRdfSha256": "2e5b18ebb575d6cab11c1ae2613bd3d671827af7d995db23dd5794014085fe3b",
+      "sourceEpubSha256": "60fc6ac9208d8bdb8dd63b7082b7702f31fc32d9f6920fd01150b07ceebded7d",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Jonathan Swift",
+          "role": "creator",
+          "birthYear": 1667,
+          "deathYear": 1745
+        }
+      ],
+      "selectedAt": "2026-10-11T10:18:25Z",
+      "releaseVersion": "pg-1080-60fc6ac9208d-cover-eb8ce4ea0c86",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 41,
+        "downloadCount": 40519
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-10-11T10:21:28Z",
+        "webCoverSha256": "f7672153e6c558c7aefbda04ac4721727144c4cef0cd1927c19fd12d78d6f84d",
+        "epubCoverSha256": "c2b48ebda6b2b9e9f41f2bb5ea1e7620e5b30d83dd7a8d0e2dbef347d09885f5",
+        "releaseVersion": "pg-1080-60fc6ac9208d-cover-eb8ce4ea0c86",
+        "artifactSha256": "eb8ce4ea0c86ba2e3e88d96a2a0bada563838d5960ba94540aa87c82b4d8ec93"
+      }
+    },
+    {
+      "gutenbergId": 205,
+      "workId": "pd-pg-205",
+      "title": "Walden, and On The Duty Of Civil Disobedience",
+      "author": "Henry David Thoreau",
+      "score": 132.991,
+      "downloadCountAtSelection": 39775,
+      "bookshelves": [
+        "Category: Essays, Letters & Speeches",
+        "Category: American Literature",
+        "Category: Philosophy & Ethics"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/205",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/205/pg205.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/205/pg205.epub",
+      "sourceRdfSha256": "0d2b5d3684b869f560fdf2348c5d7443dea5db2039d04bdbf007217da730ee8d",
+      "sourceEpubSha256": "657b0f7fcb603f4c386ea249b46b6282c0aded09ea2f65d324ec3d84e61d9b59",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Henry David Thoreau",
+          "role": "creator",
+          "birthYear": 1817,
+          "deathYear": 1862
+        }
+      ],
+      "selectedAt": "2026-10-11T10:18:27Z",
+      "releaseVersion": "pg-205-657b0f7fcb60-cover-edf6ff1d4087",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 44,
+        "downloadCount": 39775
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-10-11T10:22:00Z",
+        "webCoverSha256": "7af9597a9828a0d4aea37091cdf1863c833440eaf53ca077595fa1702964919e",
+        "epubCoverSha256": "94a5eb06d299398128c67acc1d7239c6d99278c03aba81e0fe2b58418998f822",
+        "releaseVersion": "pg-205-657b0f7fcb60-cover-edf6ff1d4087",
+        "artifactSha256": "edf6ff1d4087e998b614246a1d2301a0f5ab65d2a573047798c3e5f81eba3046"
+      }
+    },
+    {
+      "gutenbergId": 3207,
+      "workId": "pd-pg-3207",
+      "title": "Leviathan",
+      "author": "Thomas Hobbes",
+      "score": 237.97,
+      "downloadCountAtSelection": 39701,
+      "bookshelves": [
+        "Politics",
+        "Harvard Classics",
+        "Category: History - Early Modern (c. 1450-1750)",
+        "Category: Philosophy & Ethics"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/3207",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/3207/pg3207.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/3207/pg3207.epub",
+      "sourceRdfSha256": "3522de3a170c5a462953877348d18f64880c099625e2dd1dfda8790c3ff2fb6c",
+      "sourceEpubSha256": "2d20c696ccd25e5e6a8eae4d77f5c5a219d8ef5b11104ce3f91f36a89e6dcde0",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Thomas Hobbes",
+          "role": "creator",
+          "birthYear": 1588,
+          "deathYear": 1679
+        }
+      ],
+      "selectedAt": "2026-10-11T10:18:28Z",
+      "releaseVersion": "pg-3207-2d20c696ccd2-cover-c2a97c289e71",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 45,
+        "downloadCount": 39701
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-10-11T10:22:32Z",
+        "webCoverSha256": "af6662ffd9671feac12004d3a8e822284349b286a34e00fcddbf53797115c2d3",
+        "epubCoverSha256": "0286e92a24a779adc9fc289d3e93a431171bee884111e5cef9b72b50d107bc64",
+        "releaseVersion": "pg-3207-2d20c696ccd2-cover-c2a97c289e71",
+        "artifactSha256": "c2a97c289e71143050d5e2b45a7b7acb9695a56ecc29c835b5f61c264ca75558"
+      }
+    },
+    {
+      "gutenbergId": 76,
+      "workId": "pd-pg-76",
+      "title": "Adventures of Huckleberry Finn",
+      "author": "Mark Twain",
+      "score": 250.415,
+      "downloadCountAtSelection": 37720,
+      "bookshelves": [
+        "Best Books Ever Listings",
+        "Banned Books from Anne Haight's list",
+        "Banned Books List from the American Library Association",
+        "Category: Adventure",
+        "Category: Novels",
+        "Category: Classics of Literature",
+        "Category: American Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/76",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/76/pg76.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/76/pg76.epub",
+      "sourceRdfSha256": "a22e73561dc5a0bf5446ad07117b8492e9dfc282e7b8acc7fe77a8ab423ae8a7",
+      "sourceEpubSha256": "86dfe26d0b6e3adff51ead29456157e7b4a552d0129314fd1195c03b499008ef",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Mark Twain",
+          "role": "creator",
+          "birthYear": 1835,
+          "deathYear": 1910
+        },
+        {
+          "name": "E. W. (Edward Windsor) Kemble",
+          "role": "ill",
+          "birthYear": 1861,
+          "deathYear": 1933
+        }
+      ],
+      "selectedAt": "2026-10-11T10:18:29Z",
+      "releaseVersion": "pg-76-86dfe26d0b6e-cover-a3720d219813",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 48,
+        "downloadCount": 37720
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-10-11T10:22:58Z",
+        "webCoverSha256": "676f07032da68f94a2e6b19935aeefbb332abafa56dc72a18c63978a4e0c7bb5",
+        "epubCoverSha256": "48ed92c572c9d9f649a72de78458623533311ca0538bb899ee630fe585c51de1",
+        "releaseVersion": "pg-76-86dfe26d0b6e-cover-a3720d219813",
+        "artifactSha256": "a3720d219813e4225221d3bbf23d1c7dfe899a8df7cd59fa529be781b85a4a5d"
+      }
+    },
+    {
+      "gutenbergId": 844,
+      "workId": "pd-pg-844",
+      "title": "The Importance of Being Earnest: A Trivial Comedy for Serious People",
+      "author": "Oscar Wilde",
+      "score": 121.768,
+      "downloadCountAtSelection": 35540,
+      "bookshelves": [
+        "Plays",
+        "Category: Plays/Films/Dramas",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/844",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/844/pg844.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/844/pg844.epub",
+      "sourceRdfSha256": "882723edf484d1852e4639957ee53a16c5bf43c266e67d6deeff672b9bb97058",
+      "sourceEpubSha256": "979b96af3108b97d45bbcd4ea93bb2d47747a1c51d4de139527b30f550018920",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Oscar Wilde",
+          "role": "creator",
+          "birthYear": 1854,
+          "deathYear": 1900
+        }
+      ],
+      "selectedAt": "2026-10-11T10:18:30Z",
+      "releaseVersion": "pg-844-979b96af3108-cover-1cc706bee5bb",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 51,
+        "downloadCount": 35540
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-10-11T10:23:28Z",
+        "webCoverSha256": "b493d20a47f21ef960056cb47ba52cc7b5f64b4447adba8706c0a8945574ef8c",
+        "epubCoverSha256": "3d040fafd64ded6d84ddd5327afddb4bae76a9cbf4572157036aa9442feb48d5",
+        "releaseVersion": "pg-844-979b96af3108-cover-1cc706bee5bb",
+        "artifactSha256": "1cc706bee5bb607f2de3b43e31771e76a1c25f45f827a48103910a205b587803"
+      }
+    },
+    {
+      "gutenbergId": 120,
+      "workId": "pd-pg-120",
+      "title": "Treasure Island",
+      "author": "Robert Louis Stevenson",
+      "score": 304.595,
+      "downloadCountAtSelection": 34978,
+      "bookshelves": [
+        "Children's Literature",
+        "Historical Fiction",
+        "Best Books Ever Listings",
+        "Pirates, Buccaneers, Corsairs, etc.",
+        "Category: Adventure",
+        "Category: Novels",
+        "Category: Classics of Literature",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/120",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/120/pg120.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/120/pg120.epub",
+      "sourceRdfSha256": "b6703022f3ee9f5bfa3c85a3b25f077da3918ebc96cdd02d107e9befd8f9db6e",
+      "sourceEpubSha256": "6d6781328ac1f559053b88e46a0881d69bf228d08e5d0b0e81ca39bd89b94edd",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Robert Louis Stevenson",
+          "role": "creator",
+          "birthYear": 1850,
+          "deathYear": 1894
+        },
+        {
+          "name": "Louis Rhead",
+          "role": "ill",
+          "birthYear": 1857,
+          "deathYear": 1926
+        }
+      ],
+      "selectedAt": "2026-10-11T10:18:31Z",
+      "releaseVersion": "pg-120-6d6781328ac1-cover-6440ba11772a",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 53,
+        "downloadCount": 34978
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-10-11T10:23:59Z",
+        "webCoverSha256": "8d304f5fbe40f3ef48a7efb771f620974f670aec94d3f5e8a84365ec8e4618fc",
+        "epubCoverSha256": "0fc834a6cb0beb7b4266f223bcb60af2f9895e3343275e64cc12a89f46f3d47e",
+        "releaseVersion": "pg-120-6d6781328ac1-cover-6440ba11772a",
+        "artifactSha256": "6440ba11772a05bda812bd00c7774ba75c85800bafd30487331db10da3b77c85"
+      }
+    },
+    {
+      "gutenbergId": 41,
+      "workId": "pd-pg-41",
+      "title": "The Legend of Sleepy Hollow",
+      "author": "Washington Irving",
+      "score": 279.568,
+      "downloadCountAtSelection": 34892,
+      "bookshelves": [
+        "Children's Literature",
+        "Harvard Classics",
+        "Category: Short Stories",
+        "Category: Mythology, Legends & Folklore",
+        "Category: American Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/41",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/41/pg41.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/41/pg41.epub",
+      "sourceRdfSha256": "a16269b69cb1bd62597e0ed5e6f3e7329c2d9344f4c8251c2f32947c0f2b59e5",
+      "sourceEpubSha256": "b7f4b22dae1e9f0b010990a6271b7d8cca062b5b9830c2c9a570fcc010e808da",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Washington Irving",
+          "role": "creator",
+          "birthYear": 1783,
+          "deathYear": 1859
+        }
+      ],
+      "selectedAt": "2026-10-11T10:18:32Z",
+      "releaseVersion": "pg-41-b7f4b22dae1e-cover-d60870023408",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 54,
+        "downloadCount": 34892
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-10-11T10:24:32Z",
+        "webCoverSha256": "9c2c91435d933f0921e5048215cfaa5129d10490769af0dc401da86893432a76",
+        "epubCoverSha256": "6d797f647623374d681494fcdb26d390fc78ebc89dbb27dfbb4bee254ee5f138",
+        "releaseVersion": "pg-41-b7f4b22dae1e-cover-d60870023408",
+        "artifactSha256": "d60870023408b7efc8249480c23c5af3f5d330a4777c4976e5e44a26979cac31"
+      }
+    },
+    {
+      "gutenbergId": 2542,
+      "workId": "pd-pg-2542",
+      "title": "A Doll's House : a play",
+      "author": "Henrik Ibsen",
+      "score": 241.541,
+      "downloadCountAtSelection": 34803,
+      "bookshelves": [
+        "Best Books Ever Listings",
+        "Category: Plays/Films/Dramas",
+        "Category: Classics of Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/2542",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/2542/pg2542.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/2542/pg2542.epub",
+      "sourceRdfSha256": "d2b6a33d6493d79356508fcd3586e17d466bde92f1e81fcca76bc300a1752dd9",
+      "sourceEpubSha256": "930b3cb9e6cd93e0c1b7bdeae00176d7785ded1db065b611220ca8a2373494be",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Henrik Ibsen",
+          "role": "creator",
+          "birthYear": 1828,
+          "deathYear": 1906
+        },
+        {
+          "name": "R. Farquharson (Robert Farquharson) Sharp",
+          "role": "trl",
+          "birthYear": 1864,
+          "deathYear": 1945
+        }
+      ],
+      "selectedAt": "2026-10-11T10:18:32Z",
+      "releaseVersion": "pg-2542-930b3cb9e6cd-cover-89b61cdddf73",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 55,
+        "downloadCount": 34803
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-10-11T10:25:01Z",
+        "webCoverSha256": "e1c4ec089245ef46586a7b095a5719e81fc7098159111e17990490ac04093274",
+        "epubCoverSha256": "ca3d8d4ee3cd7745b206f051b7cb155f3d00e78d26808ebc2a63e19479b0356e",
+        "releaseVersion": "pg-2542-930b3cb9e6cd-cover-89b61cdddf73",
+        "artifactSha256": "89b61cdddf731f4713c28893606a62d2c8d100f417a0b7186001bd54eb894a44"
+      }
+    },
+    {
+      "gutenbergId": 45,
+      "workId": "pd-pg-45",
+      "title": "Anne of Green Gables",
+      "author": "L. M. (Lucy Maud) Montgomery",
+      "score": 173.984,
+      "downloadCountAtSelection": 33062,
+      "bookshelves": [
+        "Canada",
+        "Children's Literature",
+        "Category: Children & Young Adult Reading",
+        "Category: Novels",
+        "Category: Classics of Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/45",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/45/pg45.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/45/pg45.epub",
+      "sourceRdfSha256": "df6142c114f918662462ad9943871c0c7b15d5829105c154dffa5e6b7b55982e",
+      "sourceEpubSha256": "e001df19fc1ae88ca6aa4131e56a51625c50257b95fff1ff3c2dbeb58b4a8bfe",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "L. M. (Lucy Maud) Montgomery",
+          "role": "creator",
+          "birthYear": 1874,
+          "deathYear": 1942
+        }
+      ],
+      "selectedAt": "2026-10-11T10:18:34Z",
+      "releaseVersion": "pg-45-e001df19fc1a-cover-6d0b66e25572",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 60,
+        "downloadCount": 33062
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-10-11T10:25:34Z",
+        "webCoverSha256": "7d1fea538706ddfe83ae420c24eeeb8873c24b76b1f2a6dc5e6a351a41294a3f",
+        "epubCoverSha256": "75192e9a6c8e76d048c76f9c96c184dd5e3b0cf9e90cba0a9bfd156ed66b980d",
+        "releaseVersion": "pg-45-e001df19fc1a-cover-6d0b66e25572",
+        "artifactSha256": "6d0b66e25572118b247bcceae2273cd78e24e35d172d2a45877d761a5d1031b0"
+      }
+    },
+    {
+      "gutenbergId": 46,
+      "workId": "pd-pg-46",
+      "title": "A Christmas Carol in Prose; Being a Ghost Story of Christmas",
+      "author": "Charles Dickens",
+      "score": 163.66,
+      "downloadCountAtSelection": 32092,
+      "bookshelves": [
+        "Children's Literature",
+        "Christmas",
+        "Category: Novels",
+        "Category: Classics of Literature",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/46",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/46/pg46.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/46/pg46.epub",
+      "sourceRdfSha256": "1bb0e1c4264ccd0f5ad463c80d161d16afa4c00939d1e844779edb34953a9d3c",
+      "sourceEpubSha256": "86b33cf1a5732535e7845189b062d660a22e17156f1a75258c3e061b6b730f75",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Charles Dickens",
+          "role": "creator",
+          "birthYear": 1812,
+          "deathYear": 1870
+        },
+        {
+          "name": "John Leech",
+          "role": "ill",
+          "birthYear": 1817,
+          "deathYear": 1864
+        }
+      ],
+      "selectedAt": "2026-10-11T10:18:35Z",
+      "releaseVersion": "pg-46-86b33cf1a573-cover-a54a84974c83",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 61,
+        "downloadCount": 32092
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-10-11T10:26:06Z",
+        "webCoverSha256": "647a4232192a4a4b5f056f9613d4f62a586c75343cdb49ad92d75a345ad3c267",
+        "epubCoverSha256": "b593e0c07233a7a74d42b6424d6b6ff9119cee11f1b24071231ad012eac6cd3b",
+        "releaseVersion": "pg-46-86b33cf1a573-cover-a54a84974c83",
+        "artifactSha256": "a54a84974c83265a0beeb02b122257a773a4c2b40dd4343bd18061bc30e413b6"
+      }
+    },
+    {
+      "gutenbergId": 7370,
+      "workId": "pd-pg-7370",
+      "title": "Second Treatise of Government",
+      "author": "John Locke",
+      "score": 130.277,
+      "downloadCountAtSelection": 30978,
+      "bookshelves": [
+        "Politics",
+        "Philosophy",
+        "Category: History - Early Modern (c. 1450-1750)",
+        "Category: Philosophy & Ethics",
+        "Category: Politics"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/7370",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/7370/pg7370.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/7370/pg7370.epub",
+      "sourceRdfSha256": "a7f647675e892d04fa12c72c3411caef6a0883f2b53d1715dc4d4f33212059c9",
+      "sourceEpubSha256": "723ca8c929592d0e229ed193154e8117f772b01bc1f3c9d463796851f44be131",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "John Locke",
+          "role": "creator",
+          "birthYear": 1632,
+          "deathYear": 1704
+        }
+      ],
+      "selectedAt": "2026-10-11T10:18:36Z",
+      "releaseVersion": "pg-7370-723ca8c92959-cover-0773994434a3",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 63,
+        "downloadCount": 30978
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-10-11T10:26:38Z",
+        "webCoverSha256": "c6d34e4da64c5b0a69b000d9f98ebb25e7fbb44ba658c97e5e0359d36a7b9016",
+        "epubCoverSha256": "88b5aa3f463986b72d70bcf207272374e0ad451c6ce1352ffbee423022eb01b7",
+        "releaseVersion": "pg-7370-723ca8c92959-cover-0773994434a3",
+        "artifactSha256": "0773994434a3e03b2b513485f15cb4aa8448081d4ed24b9c547cc0daa6aa3a7e"
+      }
+    },
+    {
+      "gutenbergId": 1998,
+      "workId": "pd-pg-1998",
+      "title": "Thus Spake Zarathustra: A Book for All and None",
+      "author": "Friedrich Wilhelm Nietzsche",
+      "score": 129.563,
+      "downloadCountAtSelection": 29007,
+      "bookshelves": [
+        "Philosophy",
+        "Category: Classics of Literature",
+        "Category: German Literature",
+        "Category: Philosophy & Ethics"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/1998",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/1998/pg1998.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/1998/pg1998.epub",
+      "sourceRdfSha256": "f9266d3788306270ec8bf4148ef0534f5a54a43b6ea67fc13e17fef0c61be9ba",
+      "sourceEpubSha256": "0b7f384ec019d4b8118e20c9ffcd200b05d7ffc16084cf89623dea9a91f14d7a",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Friedrich Wilhelm Nietzsche",
+          "role": "creator",
+          "birthYear": 1844,
+          "deathYear": 1900
+        },
+        {
+          "name": "Thomas Common",
+          "role": "trl",
+          "birthYear": 1850,
+          "deathYear": 1919
+        }
+      ],
+      "selectedAt": "2026-10-11T10:18:43Z",
+      "releaseVersion": "pg-1998-0b7f384ec019-cover-1d09ee8dcab6",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 68,
+        "downloadCount": 29007
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-10-11T10:27:06Z",
+        "webCoverSha256": "28b500ae1cfe77cb10debadeb45bed9182f5b25f577ee81ad61820eadcec7cd6",
+        "epubCoverSha256": "a3df253ea057e504f62429d64831f29007b498f263190557e6a1698de297818a",
+        "releaseVersion": "pg-1998-0b7f384ec019-cover-1d09ee8dcab6",
+        "artifactSha256": "1d09ee8dcab63719c5de50b23248fbb47a8c284cdb71a2eb9f427cfe7b57211c"
+      }
+    },
+    {
+      "gutenbergId": 1497,
+      "workId": "pd-pg-1497",
+      "title": "The Republic",
+      "author": "Plato",
+      "score": 129.383,
+      "downloadCountAtSelection": 28530,
+      "bookshelves": [
+        "Philosophy",
+        "Category: Classics of Literature",
+        "Category: Philosophy & Ethics"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/1497",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/1497/pg1497.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/1497/pg1497.epub",
+      "sourceRdfSha256": "68a1d214406f8cec9b646e0498a8f3364e7597813cb9a8aa298e781f36d2c66b",
+      "sourceEpubSha256": "ee25669d6f01d3b3da12da32bd05500222fafaf29e5aec1fdc4c66a743dd621a",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Plato",
+          "role": "creator",
+          "birthYear": -428,
+          "deathYear": -348
+        },
+        {
+          "name": "Benjamin Jowett",
+          "role": "trl",
+          "birthYear": 1817,
+          "deathYear": 1893
+        }
+      ],
+      "selectedAt": "2026-10-11T10:18:45Z",
+      "releaseVersion": "pg-1497-ee25669d6f01-cover-ac318dddd412",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 69,
+        "downloadCount": 28530
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-10-11T10:27:36Z",
+        "webCoverSha256": "cf42d04870c2704ff852a6ca287c12664e99eefad5f54e889c3357c0c6ea23c8",
+        "epubCoverSha256": "e75e5a6ad6464525c217e3c60c63a9104e41d5667d47c5b62d6cc037d31c877e",
+        "releaseVersion": "pg-1497-ee25669d6f01-cover-ac318dddd412",
+        "artifactSha256": "ac318dddd412bbe5ee7c99338a592f93d1cf89a80c806ff52c894d0fb98af1cb"
+      }
+    },
+    {
+      "gutenbergId": 4363,
+      "workId": "pd-pg-4363",
+      "title": "Beyond Good and Evil",
+      "author": "Friedrich Wilhelm Nietzsche",
+      "score": 128.88,
+      "downloadCountAtSelection": 27239,
+      "bookshelves": [
+        "Philosophy",
+        "Atheism",
+        "Category: Philosophy & Ethics"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/4363",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/4363/pg4363.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/4363/pg4363.epub",
+      "sourceRdfSha256": "14cb77967ba6e693666352e9a58db105d245534bd03f40c31f12e43bf0e86d21",
+      "sourceEpubSha256": "28312b674389f89fb6d38fd97f4eb7d016f1af2616f3ab21eadc6db7f928398d",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Friedrich Wilhelm Nietzsche",
+          "role": "creator",
+          "birthYear": 1844,
+          "deathYear": 1900
+        },
+        {
+          "name": "Helen Zimmern",
+          "role": "trl",
+          "birthYear": 1846,
+          "deathYear": 1934
+        }
+      ],
+      "selectedAt": "2026-10-11T10:18:45Z",
+      "releaseVersion": "pg-4363-28312b674389-cover-bf9c7a2669b2",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 71,
+        "downloadCount": 27239
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-10-11T10:28:08Z",
+        "webCoverSha256": "9ea5517eda48c67bbf39ef6e5ff4dbbdfc21a0b53f54a2f58e3d0be7bf3687b1",
+        "epubCoverSha256": "5ff88dc2ccd91e4dd040280302726cfcac6226814c61ad4bffefd6db1320fdbb",
+        "releaseVersion": "pg-4363-28312b674389-cover-bf9c7a2669b2",
+        "artifactSha256": "bf9c7a2669b2eb5013ac483d5a9421bead5120ae721c6a3c3c09a0385e48b6ea"
+      }
+    },
+    {
+      "gutenbergId": 15399,
+      "workId": "pd-pg-15399",
+      "title": "The Interesting Narrative of the Life of Olaudah Equiano, Or Gustavus Vassa, The African",
+      "author": "Olaudah Equiano",
+      "score": 118.738,
+      "downloadCountAtSelection": 26885,
+      "bookshelves": [
+        "Africa",
+        "Category: Biographies",
+        "Category: History - Other",
+        "Category: History - Modern (1750+)"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/15399",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/15399/pg15399.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/15399/pg15399.epub",
+      "sourceRdfSha256": "e320f02eeadaa225c1afa743bba972227c731d4002203c62885e2d80a1f41edc",
+      "sourceEpubSha256": "aa39c33bbaae36fdcf3336993f624a780eeffb9822554732d879ae08c17fd4c8",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Olaudah Equiano",
+          "role": "creator",
+          "birthYear": 1745,
+          "deathYear": 1797
+        }
+      ],
+      "selectedAt": "2026-10-11T10:18:46Z",
+      "releaseVersion": "pg-15399-aa39c33bbaae-cover-b722fd23925f",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 72,
+        "downloadCount": 26885
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-10-11T10:28:41Z",
+        "webCoverSha256": "c40efcf8400920e63fdd571f4b63f26a8ced6e28e94d53af56175685de82fb2f",
+        "epubCoverSha256": "e1073e799e00a445339851424fd3722e94384468d3fe600ee2c8bcef67b54126",
+        "releaseVersion": "pg-15399-aa39c33bbaae-cover-b722fd23925f",
+        "artifactSha256": "b722fd23925f1beba7576464e3adf933ba641548d1151f80b226da0ba5755e21"
+      }
+    },
+    {
+      "gutenbergId": 16,
+      "workId": "pd-pg-16",
+      "title": "Peter Pan : $b [Peter and Wendy]",
+      "author": "J. M. (James Matthew) Barrie",
+      "score": 161.715,
+      "downloadCountAtSelection": 26827,
+      "bookshelves": [
+        "Children's Literature",
+        "Movie Books",
+        "Category: Children & Young Adult Reading",
+        "Category: Adventure",
+        "Category: Novels",
+        "Category: Classics of Literature",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/16",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/16/pg16.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/16/pg16.epub",
+      "sourceRdfSha256": "611c44272c17c73d6a50f84b5396dfd35945734db8462c82d6e31cad35a702fe",
+      "sourceEpubSha256": "7a2c1afe187121a0a3782538b95c54e298a25a920c588e3fa3be7ac92a451046",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "J. M. (James Matthew) Barrie",
+          "role": "creator",
+          "birthYear": 1860,
+          "deathYear": 1937
+        }
+      ],
+      "selectedAt": "2026-10-11T10:18:47Z",
+      "releaseVersion": "pg-16-7a2c1afe1871-cover-a69172a592ce",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 73,
+        "downloadCount": 26827
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-10-11T10:29:11Z",
+        "webCoverSha256": "2d4c26b6e04f0ec49569eecb139b876e6d2793f4f441179bd501f5ebe6d507bb",
+        "epubCoverSha256": "4f77cf4ce3a2b42b986929707853bd145407aa84094aaf3e4880464d8babfac8",
+        "releaseVersion": "pg-16-7a2c1afe1871-cover-a69172a592ce",
+        "artifactSha256": "a69172a592ce576a05ad7f96ce3ade2fc9ce35f9a2297227e4baa86c67d915fd"
+      }
+    },
+    {
+      "gutenbergId": 20738,
+      "workId": "pd-pg-20738",
+      "title": "Diccionario Ingles-Español-Tagalog",
+      "author": "Sofronio G. Calderón",
+      "score": 118.661,
+      "downloadCountAtSelection": 26694,
+      "bookshelves": [
+        "Category: Language & Communication",
+        "Category: Encyclopedias/Dictionaries/Reference"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/20738",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/20738/pg20738.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/20738/pg20738.epub",
+      "sourceRdfSha256": "279d923b0339eabf7a111e93ef227b4cf03f90ba7a976beba7c504ed4fc97b4c",
+      "sourceEpubSha256": "f0a5cec7a73bab8007609d68b5bdb927591c66cac53c18104ce0ee87961d7ad0",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Sofronio G. Calderón",
+          "role": "creator",
+          "birthYear": 1878,
+          "deathYear": 1953
+        }
+      ],
+      "selectedAt": "2026-10-11T10:18:49Z",
+      "releaseVersion": "pg-20738-f0a5cec7a73b-cover-61f206bc9446",
+      "popularity": {
+        "source": "https://www.gutenberg.org/browse/scores/top",
+        "window": "last 30 days",
+        "rank": 74,
+        "downloadCount": 26694
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-10-11T10:29:37Z",
+        "webCoverSha256": "0c1a96e8d8bbcaa64b73232e65ad092f56397c519fdf2620b14c6979f97d3545",
+        "epubCoverSha256": "0973333d7f38243f9e583570e79dbd8340de05751f8867997fdf2ed308e52eaf",
+        "releaseVersion": "pg-20738-f0a5cec7a73b-cover-61f206bc9446",
+        "artifactSha256": "61f206bc9446bc0f8d9b7ac32d7b9e391e352230fa28797c1b81e5b60b3f212b"
+      }
     }
   ],
   "rejections": {
@@ -6015,47 +7026,103 @@
       "reason": "unknown death year for trl David (Translator) Wyllie",
       "checkedAt": "2026-09-20T05:41:36Z",
       "copyrightCutoffYear": 1955
+    },
+    "25344": {
+      "gutenbergId": 25344,
+      "title": "The Scarlet Letter",
+      "popularityRank": 42,
+      "downloadCount30d": 40216,
+      "reason": "unknown death year for ill Ludvig Sandöe Ipsen",
+      "checkedAt": "2026-10-11T10:18:26Z",
+      "copyrightCutoffYear": 1955
+    },
+    "61985": {
+      "gutenbergId": 61985,
+      "title": "Harrods for Everything",
+      "popularityRank": 59,
+      "downloadCount30d": 33365,
+      "reason": "unknown death year for creator Harrods Ltd.",
+      "checkedAt": "2026-10-11T10:18:33Z",
+      "copyrightCutoffYear": 1955
+    },
+    "408": {
+      "gutenbergId": 408,
+      "title": "The Souls of Black Folk",
+      "popularityRank": 64,
+      "downloadCount30d": 30744,
+      "reason": "creator W. E. B. (William Edward Burghardt) Du Bois died 1963, after automatic German cutoff 1955",
+      "checkedAt": "2026-10-11T10:18:36Z",
+      "copyrightCutoffYear": 1955
+    },
+    "10": {
+      "gutenbergId": 10,
+      "title": "The King James Version of the Bible",
+      "popularityRank": 67,
+      "downloadCount30d": 29022,
+      "reason": "no creative contributors found in official RDF",
+      "checkedAt": "2026-10-11T10:18:42Z",
+      "copyrightCutoffYear": 1955
     }
   },
   "lastRun": {
-    "at": "2026-09-20T05:41:41Z",
+    "at": "2026-10-11T10:18:49Z",
     "rankingMode": "official-project-gutenberg-top100-30d",
     "rankingSource": "https://www.gutenberg.org/browse/scores/top",
     "rankingWindow": "last 30 days",
     "rankingRowsVerified": 100,
     "copyrightCutoffYear": 1955,
-    "candidateCount": 97,
-    "checkedCount": 13,
+    "candidateCount": 98,
+    "checkedCount": 26,
     "candidateCheckLimit": 100,
-    "addedCount": 9,
-    "skippedCount": 4,
+    "addedCount": 20,
+    "skippedCount": 6,
     "recentSkips": [
       {
-        "gutenbergId": 45839,
-        "title": "Dracula",
-        "popularityRank": 34,
-        "reason": "logical work already represented in Library: Dracula — Bram Stoker"
-      },
-      {
-        "gutenbergId": 5200,
-        "title": "Metamorphosis",
-        "popularityRank": 45,
-        "downloadCount30d": 41503,
-        "reason": "unknown death year for trl David (Translator) Wyllie",
-        "checkedAt": "2026-09-20T05:41:36Z",
+        "gutenbergId": 25344,
+        "title": "The Scarlet Letter",
+        "popularityRank": 42,
+        "downloadCount30d": 40216,
+        "reason": "unknown death year for ill Ludvig Sandöe Ipsen",
+        "checkedAt": "2026-10-11T10:18:26Z",
         "copyrightCutoffYear": 1955
       },
       {
-        "gutenbergId": 42,
-        "title": "The strange case of Dr. Jekyll and Mr. Hyde",
-        "popularityRank": 48,
-        "reason": "logical work already represented in Library: The strange case of Dr. Jekyll and Mr. Hyde — Robert Louis Stevenson"
+        "gutenbergId": 161,
+        "title": "Sense and Sensibility",
+        "popularityRank": 57,
+        "reason": "logical work already represented in Library: Sense and Sensibility — Jane Austen"
       },
       {
-        "gutenbergId": 48320,
-        "title": "Adventures of Sherlock Holmes",
-        "popularityRank": 77,
-        "reason": "logical work already represented in Library: Adventures of Sherlock Holmes — Arthur Conan Doyle"
+        "gutenbergId": 61985,
+        "title": "Harrods for Everything",
+        "popularityRank": 59,
+        "downloadCount30d": 33365,
+        "reason": "unknown death year for creator Harrods Ltd.",
+        "checkedAt": "2026-10-11T10:18:33Z",
+        "copyrightCutoffYear": 1955
+      },
+      {
+        "gutenbergId": 408,
+        "title": "The Souls of Black Folk",
+        "popularityRank": 64,
+        "downloadCount30d": 30744,
+        "reason": "creator W. E. B. (William Edward Burghardt) Du Bois died 1963, after automatic German cutoff 1955",
+        "checkedAt": "2026-10-11T10:18:36Z",
+        "copyrightCutoffYear": 1955
+      },
+      {
+        "gutenbergId": 35,
+        "popularityRank": 65,
+        "reason": "RuntimeError: no usable EPUB: https://www.gutenberg.org/cache/epub/35/pg35.epub: Remote end closed connection without response"
+      },
+      {
+        "gutenbergId": 10,
+        "title": "The King James Version of the Bible",
+        "popularityRank": 67,
+        "downloadCount30d": 29022,
+        "reason": "no creative contributors found in official RDF",
+        "checkedAt": "2026-10-11T10:18:42Z",
+        "copyrightCutoffYear": 1955
       }
     ]
   }

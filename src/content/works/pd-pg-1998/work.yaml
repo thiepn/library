@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-1998",
+  "slug": "pd-pg-1998",
+  "title": "Thus Spake Zarathustra: A Book for All and None",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Friedrich Wilhelm Nietzsche",
+      "role": "author",
+      "birthYear": 1844,
+      "deathYear": 1900
+    },
+    {
+      "name": "Thomas Common",
+      "role": "translator",
+      "birthYear": 1850,
+      "deathYear": 1919
+    }
+  ],
+  "description": "Thus Spake Zarathustra: A Book for All and None by Friedrich Wilhelm Nietzsche is a classic work associated with Superman (Philosophical concept), Philosophy, German, B.",
+  "shortDescription": "Thus Spake Zarathustra: A Book for All and None by Friedrich Wilhelm Nietzsche is a classic work associated with Superman (Philosophical concept), Philosophy, German, B.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "Not verified",
+    "lastUpdated": "2026-10-11",
+    "edition": 1,
+    "editionLabel": "THIEPN Library Edition",
+    "version": "pg-1998-0b7f384ec019-cover-1d09ee8dcab6",
+    "activeRelease": "pg-1998-0b7f384ec019-cover-1d09ee8dcab6"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-1998.webp",
+    "alt": "Cover for Thus Spake Zarathustra: A Book for All and None by Friedrich Wilhelm Nietzsche"
+  },
+  "classification": {
+    "subjects": [
+      "superman-philosophical-concept",
+      "philosophy-german",
+      "b"
+    ],
+    "tags": [
+      "public-domain",
+      "classic"
+    ],
+    "collections": [
+      "public-domain"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [],
+  "rights": {
+    "status": "Public domain in Germany",
+    "notice": "This Library edition is offered as a public-domain work under German copyright law. Copyright status can differ in other jurisdictions."
+  }
+}

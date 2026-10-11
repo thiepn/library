@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-1080",
+  "slug": "pd-pg-1080",
+  "title": "A Modest Proposal",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Jonathan Swift",
+      "role": "author",
+      "birthYear": 1667,
+      "deathYear": 1745
+    }
+  ],
+  "description": "A Modest Proposal by Jonathan Swift is a classic work associated with Political satire, English, Religious satire, English, Ireland -- Politics and government -- 18th century -- Humor.",
+  "shortDescription": "A Modest Proposal by Jonathan Swift is a classic work associated with Political satire, English, Religious satire, English, Ireland -- Politics and government -- 18th century -- Humor.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "Not verified",
+    "lastUpdated": "2026-10-11",
+    "edition": 1,
+    "editionLabel": "THIEPN Library Edition",
+    "version": "pg-1080-60fc6ac9208d-cover-eb8ce4ea0c86",
+    "activeRelease": "pg-1080-60fc6ac9208d-cover-eb8ce4ea0c86"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-1080.webp",
+    "alt": "Cover for A Modest Proposal by Jonathan Swift"
+  },
+  "classification": {
+    "subjects": [
+      "political-satire-english",
+      "religious-satire-english",
+      "ireland",
+      "pr"
+    ],
+    "tags": [
+      "public-domain",
+      "classic"
+    ],
+    "collections": [
+      "public-domain"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [],
+  "rights": {
+    "status": "Public domain in Germany",
+    "notice": "This Library edition is offered as a public-domain work under German copyright law. Copyright status can differ in other jurisdictions."
+  }
+}

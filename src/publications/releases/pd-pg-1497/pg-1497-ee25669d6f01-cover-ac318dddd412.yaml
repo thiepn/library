@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-1497",
+  "version": "pg-1497-ee25669d6f01-cover-ac318dddd412",
+  "edition": 1,
+  "releasedAt": "2026-10-11T10:18:45Z",
+  "sourceHash": "68a1d214406f8cec9b646e0498a8f3364e7597813cb9a8aa298e781f36d2c66b",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-1497/editions/pg-1497-ee25669d6f01-cover-ac318dddd412/the-republic.epub",
+      "filename": "the-republic.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 810470,
+      "sha256": "ac318dddd412bbe5ee7c99338a592f93d1cf89a80c806ff52c894d0fb98af1cb"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "ee25669d6f01d3b3da12da32bd05500222fafaf29e5aec1fdc4c66a743dd621a",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-1497-ee25669d6f01",
+    "finalArtifactSha256": "ac318dddd412bbe5ee7c99338a592f93d1cf89a80c806ff52c894d0fb98af1cb",
+    "releaseVersioning": "content-addressed"
+  }
+}

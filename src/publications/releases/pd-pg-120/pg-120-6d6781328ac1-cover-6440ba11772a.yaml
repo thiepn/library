@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-120",
+  "version": "pg-120-6d6781328ac1-cover-6440ba11772a",
+  "edition": 1,
+  "releasedAt": "2026-10-11T10:18:31Z",
+  "sourceHash": "b6703022f3ee9f5bfa3c85a3b25f077da3918ebc96cdd02d107e9befd8f9db6e",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-120/editions/pg-120-6d6781328ac1-cover-6440ba11772a/treasure-island.epub",
+      "filename": "treasure-island.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 798083,
+      "sha256": "6440ba11772a05bda812bd00c7774ba75c85800bafd30487331db10da3b77c85"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "6d6781328ac1f559053b88e46a0881d69bf228d08e5d0b0e81ca39bd89b94edd",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-120-6d6781328ac1",
+    "finalArtifactSha256": "6440ba11772a05bda812bd00c7774ba75c85800bafd30487331db10da3b77c85",
+    "releaseVersioning": "content-addressed"
+  }
+}

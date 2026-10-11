@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-844",
+  "slug": "pd-pg-844",
+  "title": "The Importance of Being Earnest: A Trivial Comedy for Serious People",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Oscar Wilde",
+      "role": "author",
+      "birthYear": 1854,
+      "deathYear": 1900
+    }
+  ],
+  "description": "The Importance of Being Earnest: A Trivial Comedy for Serious People by Oscar Wilde is a classic work associated with Comedy plays, England -- Drama, Identity (Psychology) -- Drama.",
+  "shortDescription": "The Importance of Being Earnest: A Trivial Comedy for Serious People by Oscar Wilde is a classic work associated with Comedy plays, England -- Drama, Identity (Psychology) -- Drama.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "Not verified",
+    "lastUpdated": "2026-10-11",
+    "edition": 1,
+    "editionLabel": "THIEPN Library Edition",
+    "version": "pg-844-979b96af3108-cover-1cc706bee5bb",
+    "activeRelease": "pg-844-979b96af3108-cover-1cc706bee5bb"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-844.webp",
+    "alt": "Cover for The Importance of Being Earnest: A Trivial Comedy for Serious People by Oscar Wilde"
+  },
+  "classification": {
+    "subjects": [
+      "comedy-plays",
+      "england",
+      "identity-psychology",
+      "foundlings",
+      "pr"
+    ],
+    "tags": [
+      "public-domain",
+      "classic"
+    ],
+    "collections": [
+      "public-domain"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [],
+  "rights": {
+    "status": "Public domain in Germany",
+    "notice": "This Library edition is offered as a public-domain work under German copyright law. Copyright status can differ in other jurisdictions."
+  }
+}

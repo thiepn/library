@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-3207",
+  "version": "pg-3207-2d20c696ccd2-cover-c2a97c289e71",
+  "edition": 1,
+  "releasedAt": "2026-10-11T10:18:28Z",
+  "sourceHash": "3522de3a170c5a462953877348d18f64880c099625e2dd1dfda8790c3ff2fb6c",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-3207/editions/pg-3207-2d20c696ccd2-cover-c2a97c289e71/leviathan.epub",
+      "filename": "leviathan.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 1280076,
+      "sha256": "c2a97c289e71143050d5e2b45a7b7acb9695a56ecc29c835b5f61c264ca75558"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "2d20c696ccd25e5e6a8eae4d77f5c5a219d8ef5b11104ce3f91f36a89e6dcde0",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-3207-2d20c696ccd2",
+    "finalArtifactSha256": "c2a97c289e71143050d5e2b45a7b7acb9695a56ecc29c835b5f61c264ca75558",
+    "releaseVersioning": "content-addressed"
+  }
+}

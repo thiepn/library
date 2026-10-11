@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-15399",
+  "version": "pg-15399-aa39c33bbaae-cover-b722fd23925f",
+  "edition": 1,
+  "releasedAt": "2026-10-11T10:18:46Z",
+  "sourceHash": "e320f02eeadaa225c1afa743bba972227c731d4002203c62885e2d80a1f41edc",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-15399/editions/pg-15399-aa39c33bbaae-cover-b722fd23925f/the-interesting-narrative-of-the-life-of-olaudah-equiano-or-gustavus-vassa-the-a.epub",
+      "filename": "the-interesting-narrative-of-the-life-of-olaudah-equiano-or-gustavus-vassa-the-a.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 604566,
+      "sha256": "b722fd23925f1beba7576464e3adf933ba641548d1151f80b226da0ba5755e21"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "aa39c33bbaae36fdcf3336993f624a780eeffb9822554732d879ae08c17fd4c8",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-15399-aa39c33bbaae",
+    "finalArtifactSha256": "b722fd23925f1beba7576464e3adf933ba641548d1151f80b226da0ba5755e21",
+    "releaseVersioning": "content-addressed"
+  }
+}

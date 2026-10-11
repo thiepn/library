@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-49008",
+  "slug": "pd-pg-49008",
+  "title": "The Works of William Shakespeare [Cambridge Edition] [Vol. 8 of 9]",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "William Shakespeare",
+      "role": "author",
+      "birthYear": 1564,
+      "deathYear": 1616
+    },
+    {
+      "name": "William George Clark",
+      "role": "editor",
+      "birthYear": 1821,
+      "deathYear": 1878
+    },
+    {
+      "name": "William Aldis Wright",
+      "role": "editor",
+      "birthYear": 1831,
+      "deathYear": 1914
+    }
+  ],
+  "description": "The Works of William Shakespeare [Cambridge Edition] [Vol. 8 of 9] by William Shakespeare is a classic work associated with English drama, PR.",
+  "shortDescription": "The Works of William Shakespeare [Cambridge Edition] [Vol. 8 of 9] by William Shakespeare is a classic work associated with English drama, PR.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "Not verified",
+    "lastUpdated": "2026-10-11",
+    "edition": 1,
+    "editionLabel": "THIEPN Library Edition",
+    "version": "pg-49008-8f1baa426bde-cover-16ed94195770",
+    "activeRelease": "pg-49008-8f1baa426bde-cover-16ed94195770"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-49008.webp",
+    "alt": "Cover for The Works of William Shakespeare [Cambridge Edition] [Vol. 8 of 9] by William Shakespeare"
+  },
+  "classification": {
+    "subjects": [
+      "english-drama",
+      "pr"
+    ],
+    "tags": [
+      "public-domain",
+      "classic"
+    ],
+    "collections": [
+      "public-domain"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [],
+  "rights": {
+    "status": "Public domain in Germany",
+    "notice": "This Library edition is offered as a public-domain work under German copyright law. Copyright status can differ in other jurisdictions."
+  }
+}

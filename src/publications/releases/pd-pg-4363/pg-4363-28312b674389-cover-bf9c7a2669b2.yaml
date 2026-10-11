@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-4363",
+  "version": "pg-4363-28312b674389-cover-bf9c7a2669b2",
+  "edition": 1,
+  "releasedAt": "2026-10-11T10:18:45Z",
+  "sourceHash": "14cb77967ba6e693666352e9a58db105d245534bd03f40c31f12e43bf0e86d21",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-4363/editions/pg-4363-28312b674389-cover-bf9c7a2669b2/beyond-good-and-evil.epub",
+      "filename": "beyond-good-and-evil.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 579053,
+      "sha256": "bf9c7a2669b2eb5013ac483d5a9421bead5120ae721c6a3c3c09a0385e48b6ea"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "28312b674389f89fb6d38fd97f4eb7d016f1af2616f3ab21eadc6db7f928398d",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-4363-28312b674389",
+    "finalArtifactSha256": "bf9c7a2669b2eb5013ac483d5a9421bead5120ae721c6a3c3c09a0385e48b6ea",
+    "releaseVersioning": "content-addressed"
+  }
+}
