@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-1998",
+  "slug": "pd-pg-1998",
+  "title": "Thus Spake Zarathustra: A Book for All and None",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Friedrich Wilhelm Nietzsche",
+      "role": "creator",
+      "birthYear": 1844,
+      "deathYear": 1900
+    },
+    {
+      "name": "Thomas Common",
+      "role": "trl",
+      "birthYear": 1850,
+      "deathYear": 1919
+    }
+  ],
+  "description": "A public-domain edition of Thus Spake Zarathustra: A Book for All and None by Friedrich Wilhelm Nietzsche. Project Gutenberg classifies it under Superman (Philosophical concept), Philosophy, German, B.",
+  "shortDescription": "A public-domain edition of Thus Spake Zarathustra: A Book for All and None by Friedrich Wilhelm Nietzsche. Project Gutenberg classifies it under Superman (Philosophical concept)…",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "1999-12-01",
+    "lastUpdated": "2026-09-27",
+    "edition": 1,
+    "editionLabel": "Project Gutenberg public-domain edition",
+    "version": "pg-1998-b0628bcf9887-cover-0a3320ac949f",
+    "activeRelease": "pg-1998-b0628bcf9887-cover-0a3320ac949f"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-1998.webp",
+    "alt": "Cover for Thus Spake Zarathustra: A Book for All and None by Friedrich Wilhelm Nietzsche"
+  },
+  "classification": {
+    "subjects": [
+      "superman-philosophical-concept",
+      "philosophy-german",
+      "b"
+    ],
+    "tags": [
+      "public-domain",
+      "project-gutenberg",
+      "classic"
+    ],
+    "collections": [
+      "public-domain"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [
+    {
+      "type": "source",
+      "label": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/ebooks/1998",
+      "gutenbergId": 1998
+    },
+    {
+      "type": "provenance",
+      "label": "Official Project Gutenberg RDF metadata",
+      "url": "https://www.gutenberg.org/cache/epub/1998/pg1998.rdf"
+    }
+  ],
+  "rights": {
+    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
+    "notice": "Source edition: Project Gutenberg #1998. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+  }
+}

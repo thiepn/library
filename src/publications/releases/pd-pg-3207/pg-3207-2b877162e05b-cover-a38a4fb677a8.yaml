@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-3207",
+  "version": "pg-3207-2b877162e05b-cover-a38a4fb677a8",
+  "edition": 1,
+  "releasedAt": "2026-09-27T09:31:00Z",
+  "sourceHash": "ea2648dd167e1b8c172967142be0a76290762f57299f17ead730f8b414e4e1ba",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-3207/editions/pg-3207-2b877162e05b-cover-a38a4fb677a8/leviathan-project-gutenberg.epub",
+      "filename": "leviathan-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 1327248,
+      "sha256": "a38a4fb677a867f5941e1424a3c89823835bdb555202191a9384a31ef21c48c7"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "2b877162e05bbbd587906b4932543f6232f7fa5e25dee7599cd100bef02a287b",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-3207-2b877162e05b",
+    "finalArtifactSha256": "a38a4fb677a867f5941e1424a3c89823835bdb555202191a9384a31ef21c48c7",
+    "releaseVersioning": "content-addressed"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-205",
+  "version": "pg-205-5084cf2d77e4-cover-c11da3a4107d",
+  "edition": 1,
+  "releasedAt": "2026-09-27T09:31:04Z",
+  "sourceHash": "a780aa3abf55340390310221ef46a2d063a00e80c273fffbbf95c8d674afb98b",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-205/editions/pg-205-5084cf2d77e4-cover-c11da3a4107d/walden-and-on-the-duty-of-civil-disobedience-project-gutenberg.epub",
+      "filename": "walden-and-on-the-duty-of-civil-disobedience-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 836331,
+      "sha256": "c11da3a4107d6166dd6a56425d500c00ffd11487ce3b479ee2be8bfae0a570e5"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "5084cf2d77e4664980dea01691452ff80c3c9263b809365e85486d0c5859e91c",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-205-5084cf2d77e4",
+    "finalArtifactSha256": "c11da3a4107d6166dd6a56425d500c00ffd11487ce3b479ee2be8bfae0a570e5",
+    "releaseVersioning": "content-addressed"
+  }
+}

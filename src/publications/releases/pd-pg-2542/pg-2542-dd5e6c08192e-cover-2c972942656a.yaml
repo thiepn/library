@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-2542",
+  "version": "pg-2542-dd5e6c08192e-cover-2c972942656a",
+  "edition": 1,
+  "releasedAt": "2026-09-27T09:31:05Z",
+  "sourceHash": "276694ffa7e08409beee209ffbb71b56fb1a7d129c8e03076caccbe1c4f399c3",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-2542/editions/pg-2542-dd5e6c08192e-cover-2c972942656a/a-dolls-house-a-play-project-gutenberg.epub",
+      "filename": "a-dolls-house-a-play-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 513330,
+      "sha256": "2c972942656a98799f015c59479e8743fefb3bcc7f1de6ac27a91f58826cefd5"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "dd5e6c08192e4d58d95b2e7013f3226acf29d3586f15990e7e788b6bfb7329c4",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-2542-dd5e6c08192e",
+    "finalArtifactSha256": "2c972942656a98799f015c59479e8743fefb3bcc7f1de6ac27a91f58826cefd5",
+    "releaseVersioning": "content-addressed"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-7370",
+  "version": "pg-7370-5c8df939236f-cover-b0f7d61aca9b",
+  "edition": 1,
+  "releasedAt": "2026-09-27T09:31:09Z",
+  "sourceHash": "35413e6e1c50d8afe9c9f71270f443752fd679f79ccbafe9681ac839ef313dcd",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-7370/editions/pg-7370-5c8df939236f-cover-b0f7d61aca9b/second-treatise-of-government-project-gutenberg.epub",
+      "filename": "second-treatise-of-government-project-gutenberg.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 554125,
+      "sha256": "b0f7d61aca9b880c86b040e08c21132a6490c57956daddbc418b1516001642f8"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "5c8df939236f87349a740c28dba55ec9ef27d5b9bad8cd008e56905659e0a2c7",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-7370-5c8df939236f",
+    "finalArtifactSha256": "b0f7d61aca9b880c86b040e08c21132a6490c57956daddbc418b1516001642f8",
+    "releaseVersioning": "content-addressed"
+  }
+}
