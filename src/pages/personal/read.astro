@@ -65,6 +65,12 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         if (closing) return;
 
         setIdentity(book.title, book.creator);
+        const notebook = root.querySelector<HTMLAnchorElement>('[data-reader-notebook]');
+        if(notebook){
+          const base=import.meta.env.BASE_URL.replace(/\/$/,'');
+          notebook.href=`${base}/notebook?work=${encodeURIComponent(personalReaderWorkId(book))}`;
+          notebook.hidden=false;
+        }
         const source = await book.file.arrayBuffer();
         if (closing) return;
 
