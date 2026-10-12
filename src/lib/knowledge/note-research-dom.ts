@@ -309,6 +309,13 @@ export function mountResearchWorkbench(
   }
   async function addNotes(noteIds:readonly string[]):Promise<void> {
     if(!active){notify('Create or select a collection first.');root.scrollIntoView({behavior:'smooth'});return;}
+    // A freshly saved note can reach this action before a broadcast refresh.
+    // Read missing IDs directly from the authoritative IndexedDB note store.
+    for(const id of [...new Set(noteIds)]) {
+      if(byId(id))continue;
+      const fresh=await getBookNote(id).catch(()=>undefined);
+      if(fresh)all=[...all.filter(note=>note.id!==id),fresh];
+    }
     const unique=[...new Set(noteIds)].filter(id=>!!byId(id) && !active!.noteIds.includes(id));
     if(!unique.length){notify('All selected source notes are already collected or unavailable.');return;}
     try {
