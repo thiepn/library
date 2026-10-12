@@ -596,3 +596,20 @@
     }
   }
 }
+
+
+@layer pdf-reader {
+  .pdf-reader__tools [data-pdf-notebook][hidden] { display: none !important; }
+  @media (max-width: 760px) {
+    /* Keep the private notebook route available even when other links collapse. */
+    .pdf-reader__tools [data-pdf-notebook]:not([hidden]) {
+      display: inline-flex;
+      width: 44px; min-width: 44px; max-width: 44px;
+      overflow: hidden; white-space: nowrap;
+      font-size: 0; padding-inline: 4px;
+    }
+    .pdf-reader__tools [data-pdf-notebook]:not([hidden])::before {
+      content: 'N'; font-size: 0.94rem; font-weight: 700;
+    }
+  }
+}
