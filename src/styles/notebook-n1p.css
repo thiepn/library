@@ -207,3 +207,23 @@
     .book-notebook__n1p-compare-actions button {flex:1 1 150px;}
   }
 }
+
+
+@layer notebook {
+  .book-notebook__n1p-review-actions a {
+    display:inline-flex;align-items:center;
+    text-decoration:none;color:var(--ink);
+    background:var(--canvas);
+    border:1px solid var(--strong-rule);
+    border-radius:2px;
+    padding:7px 9px;
+    min-height:34px;box-sizing:border-box;
+    font-size:.76rem;
+  }
+  .book-notebook__n1p-review-actions a:hover {
+    background:var(--surface);
+  }
+  .book-notebook__n1p-review-actions a:focus-visible {
+    outline:2px solid var(--accent);outline-offset:2px;
+  }
+}
