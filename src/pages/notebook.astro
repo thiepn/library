@@ -10,6 +10,7 @@ import '../styles/notebook-n1l.css';
 import '../styles/notebook-n1m.css';
 import '../styles/notebook-n1n.css';
 import '../styles/notebook-n1o.css';
+import '../styles/notebook-n1p.css';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const catalog = (await getWorks()).map((work) => ({
@@ -225,6 +226,33 @@ const catalog = (await getWorks()).map((work) => ({
           <button type="button" data-research-create>Create collection</button>
         </div>
         <p class="micro" role="status" aria-live="polite" data-research-status></p>
+        <section class="book-notebook__n1p-review" aria-labelledby="n1p-review-heading">
+          <div class="book-notebook__n1o-heading">
+            <div>
+              <p class="eyebrow">Across your workspaces</p>
+              <h3 id="n1p-review-heading">Cross-book review desk</h3>
+              <p class="micro">Continue the tab-local research sessions you already started. Review flags are self-reported, not mastery.</p>
+            </div>
+            <span class="micro" data-n1p-review-count aria-live="polite"></span>
+          </div>
+          <div class="book-notebook__n1p-review-controls">
+            <label for="n1p-review-collection">Collection</label>
+            <select id="n1p-review-collection" data-n1p-review-collection>
+              <option value="all">All collections</option>
+            </select>
+            <label for="n1p-review-filter">Status</label>
+            <select id="n1p-review-filter" data-n1p-review-filter>
+              <option value="pending">Pending</option>
+              <option value="revisit">Needs revisit</option>
+              <option value="all">Every review entry</option>
+              <option value="reviewed">Reviewed</option>
+            </select>
+            <button type="button" data-n1p-review-start>Start current collection</button>
+          </div>
+          <div data-n1p-review-queue class="book-notebook__n1p-review-queue"
+            aria-label="Research notes from selected review sessions"></div>
+          <p class="micro" data-n1p-review-status role="status" aria-live="polite"></p>
+        </section>
         <section class="book-notebook__n1o-hub" aria-labelledby="n1o-hub-title">
           <div class="book-notebook__n1o-heading">
             <div>
@@ -383,6 +411,23 @@ const catalog = (await getWorks()).map((work) => ({
               <button type="button" data-research-export-bibliography>Export bibliography</button>
             </div>
             <div data-research-bibliography class="book-notebook__reference-list"></div>
+          </section>
+          <section class="book-notebook__n1p-workflow" aria-labelledby="n1p-navigation-title">
+            <div class="book-notebook__n1o-heading">
+              <div>
+                <h4 id="n1p-navigation-title">Research-to-writing continuity</h4>
+                <p class="micro">Open the source, compare it with another book, or jump back to your native synthesis without duplicating notes.</p>
+              </div>
+              <span data-n1p-flow-info class="micro"></span>
+            </div>
+            <div class="book-notebook__n1p-workflow-actions">
+              <button type="button" data-n1p-go-source>Open pinned source note</button>
+              <button type="button" data-n1p-go-reader>Open its reader</button>
+              <button type="button" data-n1p-go-synthesis>Open native synthesis</button>
+              <button type="button" data-n1p-focus-writing>Write in synthesis</button>
+              <button type="button" data-n1p-download-working-copy>Download current writing draft</button>
+            </div>
+            <div class="book-notebook__n1p-source-path" data-n1p-source-path></div>
           </section>
           <section class="book-notebook__n1o-evidence" aria-labelledby="n1o-evidence-heading">
             <div class="book-notebook__n1o-heading">
