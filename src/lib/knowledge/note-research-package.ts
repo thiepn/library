@@ -89,7 +89,7 @@ export async function exportResearchPackage(
     collection,manifest,notes,
   };
   const encoded=JSON.stringify(packageData,null,2)+'\n';
-  if(encoded.length>10_000_000)
+  if(new TextEncoder().encode(encoded).byteLength>10_000_000)
     throw new Error('This research package exceeds 10 MB. Split the collection before exporting.');
   return encoded;
 }
