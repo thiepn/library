@@ -57,6 +57,17 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
           <p data-auto-sync-runtime role="status" aria-live="polite">No foreground check yet in this tab.</p>
         </div>
 
+        <section class="sync-boundary" data-core-coordinate-section hidden aria-labelledby="core-coordinate-title">
+          <h3 id="core-coordinate-title">Core sync coordination · this device</h3>
+          <p class="micro">Optional, separate from Library cloud sync. Allows a Core coordination request to ask Library to check through its existing Account sync engine. Does not share reading records with Core or make other apps automatically sync.</p>
+          <label class="sync-device-switch">
+            <input type="checkbox" data-core-coordinate-toggle aria-describedby="core-coordinate-status" />
+            <span>Allow requests to Library from Core</span>
+          </label>
+          <p id="core-coordinate-status" data-core-coordinate-status role="status">Coordination is off.</p>
+          <button type="button" data-account-action data-core-coordinate-request>Request native Library sync</button>
+          <p class="micro">To revoke, turn this switch off. If Library has a conflict, resolve it with Library's source-of-truth chooser above.</p>
+        </section>
         <div class="account-actions">
           <button type="button" class="account-primary" data-account-action data-sync-enable>Sync this device</button>
           <div data-sync-enabled-actions hidden>
