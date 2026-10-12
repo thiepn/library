@@ -133,6 +133,10 @@ const catalog = (await getWorks()).map((work) => ({
               <div><h4>Notes linking here</h4><div data-notebook-backlinks></div></div>
             </div>
             <p class="micro" data-notebook-source></p>
+            <div class="book-notebook__source-actions">
+              <a data-notebook-source-reader hidden>Open original book</a>
+              <button type="button" data-notebook-source-copy>Copy source reference</button>
+            </div>
           </section>
         </section>
         <section class="book-notebook__welcome" data-notebook-welcome>
@@ -200,6 +204,8 @@ const catalog = (await getWorks()).map((work) => ({
       const outgoing = root.querySelector<HTMLElement>('[data-notebook-outgoing]')!;
       const backlinks = root.querySelector<HTMLElement>('[data-notebook-backlinks]')!;
       const sourceInfo = root.querySelector<HTMLElement>('[data-notebook-source]')!;
+      const sourceReader = root.querySelector<HTMLAnchorElement>('[data-notebook-source-reader]')!;
+      const sourceCopy = root.querySelector<HTMLButtonElement>('[data-notebook-source-copy]')!;
       const wordCount = root.querySelector<HTMLElement>('[data-notebook-words]')!;
       const characterCount = root.querySelector<HTMLElement>('[data-notebook-characters]')!;
       const focusToggle = root.querySelector<HTMLButtonElement>('[data-notebook-focus]')!;
@@ -416,6 +422,8 @@ const catalog = (await getWorks()).map((work) => ({
         outgoing.replaceChildren();
         backlinks.replaceChildren();
         sourceInfo.textContent = '';
+        sourceReader.hidden = true;
+        sourceCopy.disabled = !selected;
         if (!selected) {
           paragraph(outgoing, 'Links and backlinks appear after this note is first saved.');
           paragraph(backlinks, 'Save this draft to create its note ID.');
@@ -439,6 +447,8 @@ const catalog = (await getWorks()).map((work) => ({
             (link.crossBook ? 'Another book · ' : '') + bookName(link.target.workId)));
         }
         if (!graph.inbound.length) paragraph(backlinks, 'No notes link here yet.');
+        sourceReader.hidden = readLink.hidden;
+        if (!readLink.hidden) sourceReader.href = readLink.href;
         const anchor = selected.anchor;
         if (!anchor) {
           sourceInfo.textContent = 'Source: book-level note; no exact reader location captured.';
@@ -632,6 +642,18 @@ const catalog = (await getWorks()).map((work) => ({
             event.preventDefault();
             useMarkdownTool(event.key.toLowerCase() === 'b' ? 'bold' : 'italic');
           }
+        }
+      });
+      sourceCopy.addEventListener('click', async () => {
+        if (!selected) return;
+        const location = sourceInfo.textContent ?? '';
+        const reference = bookName(selected.workId) + '\n' + location
+          + '\nNote ID: ' + selected.id;
+        try {
+          await navigator.clipboard.writeText(reference);
+          mark('Source reference copied.');
+        } catch {
+          mark('Clipboard unavailable. Select and copy the source details above.');
         }
       });
       focusToggle.addEventListener('click', () => {
