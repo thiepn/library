@@ -133,7 +133,7 @@ const catalog = (await getWorks()).map((work) => ({
 
       function updateBookControls(): void {
         const id = currentBook();
-        for (const btn of root.querySelectorAll<HTMLButtonElement>('[data-notebook-create]')) btn.disabled = !id;
+        for (const btn of root!.querySelectorAll<HTMLButtonElement>('[data-notebook-create]')) btn.disabled = !id;
         exportButton.disabled = !id;
         highlightsLink.hidden = !id;
         highlightsLink.href = `${base}/knowledge?book=${encodeURIComponent(id)}`;
