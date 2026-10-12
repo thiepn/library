@@ -2,6 +2,7 @@ import { getNotebookHeadings } from './note-outline';
 import { researchCitationLocations } from './note-research-n1q-citations';
 import { notebookTitle, type BookNoteDocumentV1 } from './note-model';
 import { noteReferenceMarkdown } from './note-links';
+import { describeResearchSource } from './note-research';
 
 /**
  * Markdown headings and authored stable-ID links remain the only source of
@@ -133,6 +134,8 @@ export function sectionWritingPacketMarkdown(
       ?'- '+bookTitle(note.workId)+' — '+notebookTitle(note)
         +' · note:'+id+' · revision '+note.revision
         +' · updated '+note.updatedAt
+        +' · recorded location: '+describeResearchSource(note.anchor,note.chapterKey)
+          .replace(/[\r\n]/g,' ')
       :'- Unavailable local source note: '+id);
   }
   if(!section.sourceIds.length)
