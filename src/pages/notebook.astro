@@ -287,6 +287,13 @@ const catalog = (await getWorks()).map((work) => ({
             </select>
             <button type="button" data-n1p-review-start>Start current collection</button>
             <button type="button" data-n1p-export-review>Export filtered review checklist</button>
+            <label for="n1s-review-focus">Citation focus</label>
+            <select id="n1s-review-focus" data-n1s-review-focus>
+              <option value="all">All source links</option>
+              <option value="uncited">Not linked in synthesis</option>
+              <option value="cited">Linked in synthesis</option>
+              <option value="crossbook">Cross-book research</option>
+            </select>
             <label for="n1r-review-search">Find in queue</label>
             <input id="n1r-review-search" data-n1r-review-search type="search"
               placeholder="Book, note, topic, collection…" autocomplete="off" />
