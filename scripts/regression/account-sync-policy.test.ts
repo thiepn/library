@@ -119,3 +119,43 @@ test('two-sided changes never silently overwrite', () => {
     cloud: { revision: 3, hash: 'cloud' },
   }), 'conflict');
 });
+
+
+test('a V2 notebook-only state is meaningful and cannot be silently replaced on a first sync', () => {
+  const state = {
+    ...backup(),
+    schemaVersion: 2 as const,
+    state: {
+      main: {
+        schemaVersion: 1 as const,
+        noteDocuments: {
+          schemaVersion: 1 as const,
+          records: [{
+            schemaVersion: 1 as const,
+            id: 'source-note-1',
+            workId: 'a-book',
+            scope: 'reading-note' as const,
+            title: 'Idea',
+            bodyMarkdown: 'My original insight.',
+            sourceAnnotations: [],
+            revision: 1,
+            createdAt: '2026-10-12T00:00:00.000Z',
+            updatedAt: '2026-10-12T00:00:00.000Z',
+          }],
+        },
+      },
+    },
+  };
+  assert.equal(backupHasMeaningfulLibraryState(state), true);
+  assert.equal(decideLibrarySync({
+    localHash: 'with-local-notes',
+    localMeaningful: backupHasMeaningfulLibraryState(state),
+    cloud: { revision: 2, hash: 'different-account-copy' },
+  }), 'conflict');
+  assert.equal(decideLibrarySync({
+    localHash: 'local-new-edit',
+    localMeaningful: true,
+    baseline: { revision: 5, hash: 'shared-previous-version' },
+    cloud: { revision: 6, hash: 'remote-new-edit' },
+  }), 'conflict');
+});
