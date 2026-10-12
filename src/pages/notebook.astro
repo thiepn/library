@@ -205,6 +205,7 @@ const catalog = (await getWorks()).map((work) => ({
             <div>
               <h3 id="research-collection-library-title">Your research workspaces</h3>
               <p class="micro">Search locally across collection names, descriptions, source books and topics.</p>
+              <button type="button" data-n1m-export-catalogue>Export collection catalogue</button>
             </div>
             <label for="research-collection-filter">Find a collection</label>
             <input id="research-collection-filter" type="search" data-n1m-collection-filter
@@ -312,7 +313,7 @@ const catalog = (await getWorks()).map((work) => ({
             </div>
             <div data-research-session-queue class="book-notebook__n1l-session-queue" aria-label="Source review queue"></div>
           </section>
-          <div class="book-notebook__research-compare" aria-label="Side-by-side source reading">
+          <div class="book-notebook__research-compare" data-research-compare aria-label="Side-by-side source reading">
             <article>
               <header><h4>Source A</h4><span data-research-left-caption class="micro">Select a source</span></header>
               <div data-research-left-preview class="book-notebook__research-preview"></div>
@@ -365,6 +366,11 @@ const catalog = (await getWorks()).map((work) => ({
                 </div>
                 <div data-n1m-prompts class="book-notebook__n1m-prompts"></div>
               </section>
+            </div>
+            <div class="book-notebook__n1m-related">
+              <h5>Related collections</h5>
+              <p class="micro">Other local workspaces reusing one or more of these source-note references.</p>
+              <div data-n1m-related-collections></div>
             </div>
           </section>
           <div class="book-notebook__research-write">
