@@ -1,4 +1,6 @@
 import { notebookTitle, type BookNoteDocumentV1 } from './note-model';
+import { notebookWordCount } from './note-links';
+import { renderNotebookPreview } from './note-preview';
 import {
   exportResearchPackage, parseResearchPackage, reconcileResearchPackage,
   type ResearchPackageV1,
@@ -25,6 +27,7 @@ export interface ResearchRefinementHost {
   setDraft(title:string,body:string):void;
   sourceHref(note:BookNoteDocumentV1):string|undefined;
   bookTitle(workId:string):string;
+  openNote(note:BookNoteDocumentV1):Promise<void>;
   pins():{left:string;right:string};
   setPins(left:string,right:string):void;
   activateCollection(id:string):Promise<void>;
@@ -62,11 +65,16 @@ export function mountResearchRefinements(
   const copyDraft=$<HTMLButtonElement>('[data-research-copy-draft]');
   const insertCitation=$<HTMLButtonElement>('[data-research-insert-source]');
   const insertQuestions=$<HTMLButtonElement>('[data-research-insert-questions]');
+  const insertComparison=$<HTMLButtonElement>('[data-research-insert-comparison]');
+  const previewToggle=$<HTMLButtonElement>('[data-research-toggle-preview]');
+  const livePreview=$<HTMLElement>('[data-research-live-preview]');
+  const writingStats=$<HTMLElement>('[data-research-writing-stats]');
   const synthBody=$<HTMLTextAreaElement>('[data-research-synthesis-body]');
   const synthTitle=$<HTMLInputElement>('[data-research-synthesis-title]');
   const listeners:Array<()=>void>=[];
   let pending:ResearchPackageV1|undefined;
   let pageBusy=false;
+  let previewTimer:ReturnType<typeof setTimeout>|undefined;
   const bind=(query:string,kind:string,callback:EventListener)=>{
     const node=$(query);node.addEventListener(kind,callback);
     listeners.push(()=>node.removeEventListener(kind,callback));
@@ -108,6 +116,9 @@ export function mountResearchRefinements(
     $<HTMLButtonElement>('[data-research-swap]').disabled=sources.length<2;
     insertCitation.disabled=!host.synthesis()||!sources.length;
     insertQuestions.disabled=!host.synthesis();
+    const currentPins=host.pins();
+    insertComparison.disabled=!host.synthesis()||!currentPins.left||!currentPins.right
+      ||currentPins.left===currentPins.right;
     downloadDraft.disabled=!host.synthesis();
     copyDraft.disabled=!host.synthesis();
   }
@@ -174,6 +185,35 @@ export function mountResearchRefinements(
     synthBody.setSelectionRange(before.length+addition.length,before.length+addition.length);
     onDraftEdited();
   }
+  function refreshWritingStats():void {
+    const active=!!host.synthesis();
+    previewToggle.disabled=!active;
+    writingStats.textContent=active
+      ? notebookWordCount(host.body()).toLocaleString()+' words · '
+        +host.body().length.toLocaleString()+' characters'
+      : 'No synthesis to preview';
+  }
+  function refreshLivePreview():void {
+    refreshWritingStats();
+    if(livePreview.hidden)return;
+    const text=host.body();
+    livePreview.replaceChildren();
+    if(!host.synthesis()) {
+      livePreview.append(info('p','Create a synthesis note to see its Markdown preview.'));
+      return;
+    }
+    renderNotebookPreview(livePreview,text,{
+      notes:host.notes(),
+      onOpenNote:note=>{void host.openNote(note);},
+    });
+  }
+  function schedulePreview():void {
+    refreshWritingStats();
+    if(previewTimer)clearTimeout(previewTimer);
+    if(!livePreview.hidden)
+      previewTimer=setTimeout(()=>{previewTimer=undefined;refreshLivePreview();},180);
+  }
+
   function recovery(){
     const active=host.active(),note=host.synthesis();
     return active&&note?readResearchDraftCheckpoint(active.id,note.id):undefined;
@@ -199,19 +239,23 @@ export function mountResearchRefinements(
       host.notify('Session checkpoint could not be saved. Download a draft copy for recovery.');
     }
     renderRecovery();
+    schedulePreview();
   }
   function onSynthesisSaved():void {
     const collection=host.active(),note=host.synthesis();
     if(collection&&note)clearResearchDraftCheckpoint(collection.id,note.id);
     renderRecovery();renderBibliography();renderNavigation();
+    schedulePreview();
   }
   function onSynthesisChanged():void {
     renderRecovery();renderBibliography();renderNavigation();
+    schedulePreview();
   }
   function onCollectionChanged():void {
     pending=undefined;
     pkgReview.hidden=true;
     renderNavigation();renderBibliography();renderRecovery();
+    schedulePreview();
   }
   function onNotesChanged():void {
     renderNavigation();renderBibliography();
@@ -240,6 +284,29 @@ export function mountResearchRefinements(
   });
   bind('[data-research-insert-questions]','click',()=>{
     insertAtCursor('## Source evaluation\n\n- What is the author’s main claim?\n- What evidence supports it?\n- How does this compare with other sources?\n- What remains uncertain?\n');
+  });
+  bind('[data-research-insert-comparison]','click',()=>{
+    const {left,right}=host.pins();
+    const refs=researchReferences(orderedSources());
+    const a=refs.find(item=>item.id===left),b=refs.find(item=>item.id===right);
+    if(!a||!b||a.id===b.id){
+      host.notify('Pin two different sources to build a comparison.');return;
+    }
+    insertAtCursor([
+      '## Comparing two sources','',
+      '### Source A','',researchCitationMarkdown(a),'',
+      '### Source B','',researchCitationMarkdown(b),'',
+      '### Shared question','','',
+      '### Points of agreement','','',
+      '### Differences in arguments or evidence','','',
+      '### My synthesis','','',
+    ].join('\n'));
+  });
+  bind('[data-research-toggle-preview]','click',()=>{
+    livePreview.hidden=!livePreview.hidden;
+    previewToggle.setAttribute('aria-expanded',String(!livePreview.hidden));
+    previewToggle.textContent=livePreview.hidden?'Show writing preview':'Hide writing preview';
+    if(!livePreview.hidden)refreshLivePreview();
   });
   bind('[data-research-download-draft]','click',()=>{
     const active=host.active(),note=host.synthesis();
@@ -357,6 +424,6 @@ export function mountResearchRefinements(
   onCollectionChanged();
   return {
     onCollectionChanged,onNotesChanged,onSynthesisChanged,onSynthesisSaved,onDraftEdited,
-    dispose:()=>{for(const off of listeners)off();},
+    dispose:()=>{if(previewTimer)clearTimeout(previewTimer);for(const off of listeners)off();},
   };
 }
