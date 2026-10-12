@@ -690,6 +690,7 @@ const catalog = (await getWorks()).map((work) => ({
     import { downloadNotebookRecovery } from '../lib/knowledge/note-recovery';
     import { renderNotebookPreview } from '../lib/knowledge/note-preview';
     import { mountResearchWorkbench } from '../lib/knowledge/note-research-dom';
+    import { mountNotebookNavigation, type NotebookNavigationController } from '../lib/knowledge/note-navigator-dom';
     import { buildNoteGraph, graphNeighbors, type NoteGraphData } from '../lib/knowledge/note-graph';
     import { getNotebookHeadings, rewriteNotebookTopic } from '../lib/knowledge/note-outline';
     import {
@@ -818,6 +819,7 @@ const catalog = (await getWorks()).map((work) => ({
       let graphModel: NoteGraphData = { nodes: [], edges: [], omitted: 0, workCount: 0 };
       let topicMutationBusy = false;
       let currentViewId = '';
+      let notebookNavigation: NotebookNavigationController | undefined;
       const openedNoteHistory: string[] = [];
       let historyPosition = -1;
       let replayingHistory = false;
@@ -916,6 +918,7 @@ const catalog = (await getWorks()).map((work) => ({
         focusToggle.setAttribute('aria-pressed', 'false');
         outline.replaceChildren();
         outlineCount.textContent='No note open';
+        notebookNavigation?.onNoteChanged();
       }
 
       function openEditor(doc?: BookNoteDocumentV1, pending?: NewBookNote): void {
@@ -940,6 +943,7 @@ const catalog = (await getWorks()).map((work) => ({
         }
         history.replaceState(null, '', url);
         recordNoteHistory(doc);
+        notebookNavigation?.onNoteChanged();
         updateWritingStats();
         setWritingView(previewMode);
         renderOutline();
@@ -963,6 +967,7 @@ const catalog = (await getWorks()).map((work) => ({
             : await createBookNote({ ...draft!, title: writeTitle, bodyMarkdown: writeBody });
           selected = next; draft = undefined;
           savedTitle = writeTitle; savedBody = writeBody;
+          notebookNavigation?.onNoteChanged();
           removeButton.hidden = false;
           mark('Saved locally');
           const url = new URL(location.href);
@@ -1513,6 +1518,7 @@ const catalog = (await getWorks()).map((work) => ({
           renderGraph();
           renderLinkChoices();
           renderConnections();
+          notebookNavigation?.onNotesChanged();
         } catch {
           discoverCount.textContent = 'Notebook discovery unavailable on this device.';
           if (selected) paragraph(outgoing, 'Linked note lookup unavailable; your draft remains editable.');
@@ -2013,8 +2019,34 @@ const catalog = (await getWorks()).map((work) => ({
         },
         openNote: note => openAnyNote(note),
       });
+      notebookNavigation = mountNotebookNavigation(root,{
+        selected:()=>selected,
+        notes:()=>libraryNotes,
+        bookTitle:workId=>bookName(workId),
+        openNote:note=>openAnyNote(note),
+        openCollection:async id=>{
+          await research.openCollection(id);
+          if(research.activeCollectionId()===id)researchRoot.scrollIntoView({
+            behavior:'smooth',block:'start',
+          });
+        },
+        activeCollection:()=>research.activeCollectionId(),
+        insertReference:markdown=>{
+          if(!selected&&!draft){mark('Open a note before inserting a reference.');return;}
+          setWritingView('write');
+          insertAtCursor(markdown);
+        },
+        notify:message=>setStatus(message),
+        noteUrl:note=>{
+          const url=new URL(`${base}/notebook`,location.origin);
+          url.searchParams.set('work',note.workId);
+          url.searchParams.set('note',note.id);
+          return url.toString();
+        },
+      });
       window.addEventListener('pagehide', () => {
         unsubscribe();
+        notebookNavigation?.dispose();
         research.dispose();
       }, { once: true });
       void initialize();
