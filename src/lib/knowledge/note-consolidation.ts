@@ -192,3 +192,46 @@ export function researchKnowledgeMarkdown(
     researchBibliographyMarkdown(researchReferences(sources)));
   return lines.join('\n').trim()+'\n';
 }
+
+
+/**
+ * Single portable catalogue of all local collection references.
+ * The authoritative note store is only read, never repackaged as a replacement
+ * for Library V2 backup, and no session scores are exported.
+ */
+export function researchNotebookCatalogueMarkdown(
+  collections:readonly ResearchCollection[],
+  notes:readonly BookNoteDocumentV1[],
+  bookTitle:(workId:string)=>string,
+):string {
+  const byId=new Map(notes.map(note=>[note.id,note]));
+  const lines=[
+    '# Research notebook collection catalogue','',
+    '> THIEPN Library · local collection index overview',
+    '> Collection names and source identifiers are portable. Restore actual notes using the Library V2 backup.',
+    '',
+    'Collections: '+collections.length,'',
+  ];
+  for(const collection of [...collections].sort((a,b)=>a.name.localeCompare(b.name))){
+    const available=collection.noteIds.filter(id=>byId.has(id));
+    const bookIds=new Set(available.map(id=>byId.get(id)!.workId));
+    const topics=new Set(available.flatMap(id=>extractNotebookTopics(byId.get(id)!.bodyMarkdown)));
+    lines.push('## '+collection.name.replace(/[\r\n#]/g,' ').trim(),'',
+      collection.description||'_No project purpose recorded_','',
+      '- Collection ID: '+collection.id,
+      '- Source-note references: '+collection.noteIds.length,
+      '- Available locally: '+available.length,
+      '- Books: '+bookIds.size,
+      '- Synthesis note ID: '+(collection.synthesisId??'none'),
+      '- Topics: '+([...topics].map(id=>'#topic/'+id).join(', ')||'none'),'',
+      '### Source references','');
+    for(const id of collection.noteIds){
+      const note=byId.get(id);
+      lines.push('- '+(note
+        ?bookTitle(note.workId)+' — '+notebookTitle(note)+' · note:'+id
+        :'Unavailable local note ID: '+id));
+    }
+    lines.push('');
+  }
+  return lines.join('\n').trim()+'\n';
+}
