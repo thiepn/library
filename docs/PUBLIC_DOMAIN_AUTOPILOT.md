@@ -9,8 +9,19 @@ The Public Domain Autopilot is the Library's unattended acquisition pipeline for
 - The existing official-popularity pipeline remains available for troubleshooting but must not resume recurring or bulk imports.
 - Durable discovery starts from Project Gutenberg's official machine-readable catalog.
 - Up to two Gutendex popularity pages are optional ranking enrichment only.
-- Manual `workflow_dispatch` remains available for maintenance or a larger one-off batch.
+- Manual `workflow_dispatch` remains available for explicitly approved maintenance only; it must not be used to resume bulk or periodic acquisition.
 - The former hourly Library Autopilot Supervisor is disabled; no recurring automatic promotion is authorized.
+
+
+## Final essential-canon freeze (2026-10-12)
+
+- Final essential shortlist: 29 works. Exactly 13 Gutenberg editions passed qualification; 16 are recorded as missing from the curated import (15 source-edition mismatches/unavailable records, 1 unsafe illustrated edition).
+- Certified curated acquisition: GitHub Actions [run 38214900974](https://github.com/thiepn/library/actions/runs/38214900974), finalize job 114697811463.
+- The immutable R2 release pipeline verified the byte length and SHA-256 readback of all 13 new EPUBs before pushing publication metadata to main.
+- Final curated publication commit: `a9c8daba65106e97f0f3547c2bd0c6b8e448fb6a`. That snapshot contains 149 public-domain Gutenberg works and 5 native works (154 total).
+- The curated audit in `src/publications/curated-canon-status.json` records 13 represented and 16 missing titles, which remain missing rather than silently substituted.
+- The curator's GitHub Actions credential pushed the final commit; the normal push-triggered Pages deployment may not run for such bot-generated commits. A subsequent authorized documentation-only release marker is used to initiate the normal `Deploy Library` source build and complete live-production verification.
+- No recurring bulk additions are authorized. Leave source licensing, prior published records, notes, data, and Account permissions unchanged.
 
 ## Selection
 
