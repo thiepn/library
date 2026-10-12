@@ -16,9 +16,10 @@ export function mountLibraryAccountRuntime(): () => void {
   let timer: number | undefined;
   let running = false;
   let disposed = false;
+  let conflictPausedFor: string | null = null;
 
   const run = async () => {
-    if (disposed || running) return;
+    if (disposed || running || !navigator.onLine || document.visibilityState !== 'visible') return;
     running = true;
     try {
       // The shared SDK verifies app-local identity, probes the Account origin
@@ -29,9 +30,17 @@ export function mountLibraryAccountRuntime(): () => void {
       const user = await getVerifiedLibraryAccountUser();
       if (!user) return;
 
+      if (conflictPausedFor === user.id) return;
       if (isLibrarySyncEnabledForUser(user.id)) {
         const result = await reconcileLibraryAccountSync(user);
+        if (result.status === 'conflict') {
+          conflictPausedFor = user.id;
+          return;
+        }
         if (result.status === 'synced' || result.status === 'pushed' || result.status === 'pulled') {
+          // A former identity must never trigger another app-owned file pass.
+          const current = await getVerifiedLibraryAccountUser();
+          if (current?.id !== user.id || disposed) return;
           await reconcileLibraryPersonalFiles(user);
         }
       }
@@ -62,6 +71,21 @@ export function mountLibraryAccountRuntime(): () => void {
     }
   }
 
+  // Honor the existing per-user Library Account opt-in; no new permission.
+  // A closed or hidden browser does not promise background synchronization.
+  const periodic = window.setInterval(() => {
+    if (navigator.onLine && document.visibilityState === 'visible') schedule(500);
+  }, 30_000);
+  const onSyncResult = (event: Event) => {
+    const detail = (event as CustomEvent<{ status?: string }>).detail;
+    if (!detail) return;
+    if (detail.status === 'pushed' || detail.status === 'pulled' || detail.status === 'synced') {
+      // User explicitly resolved a conflict through Library's existing UI.
+      conflictPausedFor = null;
+      schedule(250);
+    }
+  };
+  window.addEventListener('thiepn:library-sync', onSyncResult);
   const onOnline = () => schedule(250);
   const onFocus = () => schedule(500);
   const onVisibility = () => {
@@ -84,6 +108,8 @@ export function mountLibraryAccountRuntime(): () => void {
   return () => {
     disposed = true;
     if (timer !== undefined) window.clearTimeout(timer);
+    window.clearInterval(periodic);
+    window.removeEventListener('thiepn:library-sync', onSyncResult);
     for (const channel of channels) channel.close();
     window.removeEventListener('online', onOnline);
     window.removeEventListener('focus', onFocus);
