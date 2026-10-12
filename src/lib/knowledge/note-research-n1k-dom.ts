@@ -1,4 +1,5 @@
 import { notebookTitle, type BookNoteDocumentV1 } from './note-model';
+import { listBookNotes } from './note-store';
 import { notebookWordCount } from './note-links';
 import { renderNotebookPreview } from './note-preview';
 import {
@@ -74,6 +75,7 @@ export function mountResearchRefinements(
   const listeners:Array<()=>void>=[];
   let pending:ResearchPackageV1|undefined;
   let pageBusy=false;
+  let importGeneration=0;
   let previewTimer:ReturnType<typeof setTimeout>|undefined;
   const bind=(query:string,kind:string,callback:EventListener)=>{
     const node=$(query);node.addEventListener(kind,callback);
@@ -356,7 +358,7 @@ export function mountResearchRefinements(
     const active=host.active();
     if(!active)return;
     pageBusy=true;
-    void exportResearchPackage(active,host.notes()).then(text=>{
+    void listBookNotes().then(notes=>exportResearchPackage(active,notes)).then(text=>{
       download('research-package-'+safeFile(active.name)+'.json',text,'application/json;charset=utf-8');
       host.notify('Complete research package download requested. Contains readable note content and source custody hashes; store privately.');
     }).catch(error=>{
@@ -369,12 +371,14 @@ export function mountResearchRefinements(
     pkgFile.value='';
     if(!file)return;
     pending=undefined;attach.disabled=true;pkgReview.hidden=false;
+    const generation=++importGeneration;
     pkgDetails.replaceChildren();
     if(file.size>10_000_000){pkgStatus.textContent='File exceeds 10 MB. Choose a smaller package.';return;}
     pkgStatus.textContent='Reading local package and checking source custody hashes…';
     void file.text().then(parseResearchPackage)
       .then(async data=>{
-        const review=await reconcileResearchPackage(data,host.notes());
+        const review=await reconcileResearchPackage(data,await listBookNotes());
+        if(generation!==importGeneration)return;
         pending=data;
         const description=info('p',data.collection.name+' · '
           +data.collection.noteIds.length+' collection notes · '
@@ -392,6 +396,7 @@ export function mountResearchRefinements(
           ? 'Complete exact local match; collection attachment available.'
           : 'Local records do not match package custody; attachment blocked.';
       }).catch(error=>{
+        if(generation!==importGeneration)return;
         pending=undefined;attach.disabled=true;
         pkgStatus.textContent=error instanceof Error?error.message:'Invalid research package.';
       });
@@ -400,7 +405,7 @@ export function mountResearchRefinements(
     if(!pending || pageBusy)return;
     const selected=pending;
     pageBusy=true;attach.disabled=true;
-    void reconcileResearchPackage(selected,host.notes()).then(async review=>{
+    void listBookNotes().then(notes=>reconcileResearchPackage(selected,notes)).then(async review=>{
       if(!review.attachable)throw new Error('Local note custody changed since the import review. Attachment blocked.');
       if(!window.confirm('Attach collection "'+selected.collection.name
         +'" to this browser? This changes collection references only, never existing notes.'))return;
@@ -417,6 +422,7 @@ export function mountResearchRefinements(
     }).finally(()=>{pageBusy=false;attach.disabled=!pending;});
   });
   bind('[data-research-dismiss-package]','click',()=>{
+    ++importGeneration;
     pkgReview.hidden=true;pending=undefined;attach.disabled=true;
     pkgDetails.replaceChildren();
   });
