@@ -44,6 +44,17 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
         <p data-sync-status>Your local reading data will not be uploaded until you enable sync.</p>
         <p class="micro" data-sync-meta>No cloud sync enabled.</p>
+        <div class="sync-device-preferences" data-auto-sync-section hidden>
+          <div>
+            <strong>Automatically sync this device</strong>
+            <p class="micro">When enabled, Library checks for changes every 30 seconds while this tab is visible and online. It also syncs after local edits and reconnecting. Turning this off keeps manual sync available.</p>
+          </div>
+          <label class="sync-device-switch">
+            <input type="checkbox" data-auto-sync-checkbox aria-describedby="auto-sync-status" />
+            <span>Auto-sync</span>
+          </label>
+          <p id="auto-sync-status" data-auto-sync-status role="status">Checking device preference…</p>
+        </div>
 
         <div class="account-actions">
           <button type="button" class="account-primary" data-account-action data-sync-enable>Sync this device</button>
@@ -55,7 +66,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
         <aside class="sync-conflict" data-sync-conflict hidden>
           <h3>Choose the source of truth</h3>
-          <p>Library will never silently merge two independently changed snapshots. Choose which copy should become authoritative.</p>
+          <p>Changes were made both here and in the cloud. Automatic synchronization pauses to protect both versions. Review which copy should become authoritative.</p>
+          <p class="micro">Using this device replaces the cloud snapshot. Using cloud replaces matching local categories. Export a manual backup first if you need both copies.</p>
           <div class="account-actions">
             <button type="button" class="account-primary" data-account-action data-use-device>Use this device</button>
             <button type="button" data-account-action data-use-cloud>Use cloud</button>
