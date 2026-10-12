@@ -305,3 +305,14 @@
   .reader-shell__error-actions button,
   .reader-shell__error-actions a { border-color: CanvasText; }
 }
+
+
+/* Native notebook navigation remains accessible in compact reader chrome. */
+.reader-shell__cluster--start [data-reader-notebook][hidden] { display: none !important; }
+@media (max-width: 600px) {
+  .reader-shell__bar--top { grid-template-columns: max-content minmax(0, 1fr) auto; }
+  .reader-shell__cluster--start { gap: 0; }
+  .reader-shell__cluster--start [data-reader-notebook] {
+    min-width: 40px; min-height: 44px;
+  }
+}
