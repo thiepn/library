@@ -447,7 +447,7 @@ export function mountResearchN1L(root:HTMLElement,host:ResearchN1LHost):Research
   bind('[data-n1s-evidence-export]','click',()=>{
     const active=host.active(),context=selectedContext(),synthesis=host.synthesis();
     if(!active||!context||!synthesis)return;
-    const markdown=sectionEvidenceReviewMarkdown(context,active,host.notes(),host.bookTitle);
+    const markdown=sectionEvidenceReviewMarkdown(context,active,host.notes(),host.bookTitle,host.sourceHref);
     download('section-evidence-'+filename(active.name)+'-'+(context.sectionIndex+1)+'.md',markdown);
     evidenceStatus.textContent='Local evidence worksheet download requested. No native notebook record was changed.';
   });
@@ -519,7 +519,7 @@ export function mountResearchN1L(root:HTMLElement,host:ResearchN1LHost):Research
         });
       const gaps=getSectionEvidenceContext(draft.body,index,active,host.notes(),30);
       const packet=markdown+(gaps?'\n---\n\n'
-        +sectionEvidenceReviewMarkdown(gaps,active,host.notes(),host.bookTitle):'');
+        +sectionEvidenceReviewMarkdown(gaps,active,host.notes(),host.bookTitle,host.sourceHref):'');
       download('section-research-'+filename(active.name)+'-'+(index+1)+'.md',packet);
       sectionStatus.textContent='Section writing and evidence worksheet exported as a working copy; no native note save occurred.';
     }catch(error){
