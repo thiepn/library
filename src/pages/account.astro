@@ -53,14 +53,48 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
           </div>
         </div>
 
-        <aside class="sync-conflict" data-sync-conflict hidden>
-          <h3>Choose the source of truth</h3>
-          <p>Library will never silently merge two independently changed snapshots. Choose which copy should become authoritative.</p>
+        <section class="sync-conflict" data-sync-conflict hidden aria-labelledby="conflict-title">
+          <p class="eyebrow">Action required</p>
+          <h3 id="conflict-title">Two copies of your Library</h3>
+          <p>Your device and cloud contain different changes. Nothing will be overwritten until you review them and choose a version.</p>
           <div class="account-actions">
-            <button type="button" class="account-primary" data-account-action data-use-device>Use this device</button>
-            <button type="button" data-account-action data-use-cloud>Use cloud</button>
+            <button type="button" class="account-primary" data-account-action data-sync-review-open>Compare the copies</button>
+            <button type="button" data-account-action data-sync-local-download>Download device backup</button>
           </div>
-        </aside>
+          <p class="micro" data-sync-review-status role="status" aria-live="polite">No choice has been made.</p>
+          <div data-sync-review hidden>
+            <div class="sync-compare" aria-label="Compare Library copies">
+              <section class="sync-compare__column" aria-labelledby="device-version-title">
+                <h4 id="device-version-title">This device</h4>
+                <p class="micro">Local reading state, including offline notes</p>
+                <dl data-sync-device-details></dl>
+              </section>
+              <section class="sync-compare__column" aria-labelledby="cloud-version-title">
+                <h4 id="cloud-version-title">Cloud copy</h4>
+                <p class="micro" data-sync-cloud-version>No cloud revision</p>
+                <dl data-sync-cloud-details></dl>
+              </section>
+            </div>
+            <div class="sync-notes-diff" data-sync-notes-diff></div>
+            <div class="sync-review__backups">
+              <p><strong>Protect both versions before deciding.</strong> Download each copy as a separate JSON backup. Saved notebook Markdown remains in the backup.</p>
+              <div class="account-actions">
+                <button type="button" data-account-action data-sync-local-download-review>Download device JSON</button>
+                <button type="button" data-account-action data-sync-cloud-download>Download cloud JSON</button>
+              </div>
+              <p class="micro" data-sync-download-status>No backups downloaded from this review.</p>
+            </div>
+            <label class="sync-review__confirm">
+              <input type="checkbox" data-sync-confirm-choice />
+              <span>I saved the backups and understand that my chosen copy replaces the other copy's Library state.</span>
+            </label>
+            <div class="sync-review__choices account-actions">
+              <button type="button" class="account-primary" data-account-action data-use-device disabled>Keep this device — replace cloud</button>
+              <button type="button" data-account-action data-use-cloud disabled>Restore cloud — replace device</button>
+            </div>
+            <p class="micro">Library rechecks both copies and the cloud revision before any replacement. If either changed, you must review them again. Personal EPUB/PDF file bytes are not part of either JSON.</p>
+          </div>
+        </section>
 
         <div class="sync-boundary">
           <h3>What reading-state sync includes</h3>
