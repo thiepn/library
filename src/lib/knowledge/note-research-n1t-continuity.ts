@@ -3,6 +3,7 @@ import { notebookTitle } from './note-model';
 import { noteReferenceMarkdown } from './note-links';
 import { noteEvidenceExcerpts } from './note-evidence-workflows';
 import { researchSynthesisSections, type SynthesisSection } from './note-research-n1r-sections';
+import { getSectionEvidenceContext } from './note-research-n1s-evidence';
 import { describeResearchSource, type ResearchCollection } from './note-research';
 
 /**
@@ -136,6 +137,20 @@ export function researchContinuityMarkdown(
       if(href)rows.push('  - Open original reader: '+href.replace(/[\r\n]/g,' '));
     }
     if(!item.section.sourceIds.length)rows.push('_No authored note references._');
+    if(item.gapReasons.length){
+      const context=getSectionEvidenceContext(markdown,item.section.index,collection,notes,3);
+      if(context?.suggestions.length){
+        rows.push('','### Saved-note candidates to inspect (not verified evidence)','');
+        for(const candidate of context.suggestions){
+          rows.push('- '+bookTitle(candidate.note.workId)+' — '+notebookTitle(candidate.note)
+            +' · '+noteReferenceMarkdown(candidate.note)
+            +' · '+(candidate.inCollection?'collected':'outside collection'),
+            '  - Grounded connection: '+candidate.relation.join('; '));
+          const href=readerLink(candidate.note);
+          if(href)rows.push('  - Reader: '+href.replace(/[\r\n]/g,' '));
+        }
+      }
+    }
     rows.push('','- [ ] Check whether each cited note supports the actual claim',
       '- [ ] Revisit original reading context and consider counterevidence','');
   }
