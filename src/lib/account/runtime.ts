@@ -9,6 +9,7 @@ import {
   reconcileLibraryAccountSync,
 } from './sync';
 import { reconcileLibraryPersonalFiles } from './personal-files';
+import { isLibraryAutomaticSyncEnabled } from './auto-sync';
 
 export function mountLibraryAccountRuntime(): () => void {
   if (!hasThiepnAccountConfiguration()) return () => {};
@@ -30,7 +31,7 @@ export function mountLibraryAccountRuntime(): () => void {
       const user = await getVerifiedLibraryAccountUser();
       if (!user) return;
 
-      if (conflictPausedFor === user.id) return;
+      if (conflictPausedFor === user.id || !isLibraryAutomaticSyncEnabled(user.id)) return;
       if (isLibrarySyncEnabledForUser(user.id)) {
         const result = await reconcileLibraryAccountSync(user);
         if (result.status === 'conflict') {
@@ -76,10 +77,12 @@ export function mountLibraryAccountRuntime(): () => void {
   const periodic = window.setInterval(() => {
     if (navigator.onLine && document.visibilityState === 'visible') schedule(500);
   }, 30_000);
+  const onAutoPreference = () => schedule(250);
+  window.addEventListener('thiepn:library-auto-sync', onAutoPreference);
   const onSyncResult = (event: Event) => {
     const detail = (event as CustomEvent<{ status?: string }>).detail;
     if (!detail) return;
-    if (detail.status === 'pushed' || detail.status === 'pulled' || detail.status === 'synced') {
+    if (conflictPausedFor && (detail.status === 'pushed' || detail.status === 'pulled' || detail.status === 'synced')) {
       // User explicitly resolved a conflict through Library's existing UI.
       conflictPausedFor = null;
       schedule(250);
@@ -110,6 +113,7 @@ export function mountLibraryAccountRuntime(): () => void {
     if (timer !== undefined) window.clearTimeout(timer);
     window.clearInterval(periodic);
     window.removeEventListener('thiepn:library-sync', onSyncResult);
+    window.removeEventListener('thiepn:library-auto-sync', onAutoPreference);
     for (const channel of channels) channel.close();
     window.removeEventListener('online', onOnline);
     window.removeEventListener('focus', onFocus);

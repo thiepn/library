@@ -16,6 +16,7 @@ import {
   reconcileLibraryAccountSync,
   type LibrarySyncResult,
 } from './sync';
+import { isLibraryAutomaticSyncEnabled, setLibraryAutomaticSync } from './auto-sync';
 import {
   isLibraryPersonalFileCloudEnabled,
   reconcileLibraryPersonalFiles,
@@ -109,6 +110,14 @@ async function render(userOverride?: LibraryAccountUser | null): Promise<Library
   const enabled = isLibrarySyncEnabledForUser(user.id);
   hidden('[data-sync-enable]', enabled);
   hidden('[data-sync-enabled-actions]', !enabled);
+  hidden('[data-auto-sync-section]', !enabled);
+  const preference = document.querySelector<HTMLInputElement>('[data-auto-sync-checkbox]');
+  if (preference) preference.checked = enabled && isLibraryAutomaticSyncEnabled(user.id);
+  text('[data-auto-sync-status]', enabled
+    ? isLibraryAutomaticSyncEnabled(user.id)
+      ? 'Automatic checks enabled in this browser while Library is open.'
+      : 'Automatic checks paused. You can still sync manually.'
+    : 'Enable Library sync before setting automatic checks.');
   text('[data-sync-mode]', enabled ? 'Sync enabled on this device' : 'Local-only on this device');
 
   if (enabled) {
@@ -180,6 +189,18 @@ export function mountLibraryAccountPage(): () => void {
 
   document.querySelector('[data-sync-enable]')?.addEventListener('click', () => void act(enableLibraryAccountSync));
   document.querySelector('[data-sync-now]')?.addEventListener('click', () => void act(reconcileLibraryAccountSync));
+  document.querySelector<HTMLInputElement>('[data-auto-sync-checkbox]')?.addEventListener('change', (event) => {
+    if (!user || !isLibrarySyncEnabledForUser(user.id)) return;
+    const target = event.currentTarget as HTMLInputElement;
+    if (!setLibraryAutomaticSync(user.id, target.checked)) {
+      target.checked = !target.checked;
+      text('[data-auto-sync-status]', 'Unable to save your device preference. Automatic checks remain off.');
+      return;
+    }
+    text('[data-auto-sync-status]', target.checked
+      ? 'Automatic checks enabled while this tab is visible and online.'
+      : 'Automatic checks paused. Manual sync remains available.');
+  });
   document.querySelector('[data-sync-pause]')?.addEventListener('click', () => {
     if (!user) return;
     pauseLibrarySync(user.id);
@@ -197,7 +218,12 @@ export function mountLibraryAccountPage(): () => void {
 
   const onSync = (event: Event) => {
     const detail = (event as CustomEvent<LibrarySyncResult>).detail;
-    if (detail) renderResult(detail);
+    if (detail) {
+      renderResult(detail);
+      if (detail.status === 'conflict' || detail.status === 'offline' || detail.status === 'error')
+        text('[data-sync-mode]', detail.status === 'conflict' ? 'Attention required: changes conflict' : detail.status === 'offline' ? 'Waiting for connection' : 'Sync needs attention');
+      // Avoid displaying a stale success indicator when the event signals an error.
+    }
   };
   const onPersonalFiles = (event: Event) => {
     const detail = (event as CustomEvent<PersonalFileCloudResult>).detail;
