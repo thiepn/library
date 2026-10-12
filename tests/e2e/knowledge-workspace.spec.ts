@@ -25,7 +25,7 @@ test('@p6 Knowledge unifies reader annotations and bookmarks without a parallel 
       transaction.onabort = () => reject(transaction.error);
     });
 
-    const main = await openDb('thiepn-library', 10);
+    const main = await openDb('thiepn-library', 11);
     const mainTx = main.transaction(['annotations', 'bookmarks'], 'readwrite');
     mainTx.objectStore('annotations').put({
       schemaVersion: 2,
