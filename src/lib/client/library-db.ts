@@ -1,5 +1,5 @@
 const DB_NAME = 'thiepn-library';
-const DB_VERSION = 10;
+const DB_VERSION = 11;
 const CHANNEL = 'thiepn-library';
 
 // P12 compatibility history: before P29 the legacy/native bridge used `DB_VERSION = 6`.
@@ -21,7 +21,8 @@ export type StoreName =
   | 'annotationStats'
   | 'readingSessions'
   | 'readingActivity'
-  | 'preferences';
+  | 'preferences'
+  | 'noteDocuments';
 
 export interface LibraryPreferenceRecord {
   key: string;
@@ -109,6 +110,7 @@ const storeDefinitions: Array<[StoreName, string]> = [
   ['readingSessions', 'id'],
   ['readingActivity', 'workId'],
   ['preferences', 'key'],
+  ['noteDocuments', 'id'],
 ];
 
 function request<T>(value: IDBRequest<T>): Promise<T> {
@@ -168,6 +170,12 @@ export function openLibraryDb(): Promise<IDBDatabase> {
       }
 
       const oldVersion = (event as IDBVersionChangeEvent).oldVersion;
+      if (oldVersion < 11 && open.transaction) {
+        const notes = open.transaction.objectStore('noteDocuments');
+        notes.createIndex('workId', 'workId', { unique: false });
+        notes.createIndex('updatedAt', 'updatedAt', { unique: false });
+        notes.createIndex('workScopeKey', ['workId', 'scopeKey'], { unique: true });
+      }
       const transaction = open.transaction;
       if (oldVersion < 7 && transaction) {
         const shared = transaction.objectStore('progress');
