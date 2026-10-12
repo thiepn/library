@@ -724,7 +724,10 @@ const catalog = (await getWorks()).map((work) => ({
         discoverBook.value = 'all';
         discoverTopic.value = topic;
         discoverQuery.value = '';
+        currentViewId = '';
+        savedView.value = '';
         renderDiscover();
+        renderGraph();
         discoverQuery.closest('.book-notebook__discover')?.scrollIntoView({
           behavior: 'smooth', block: 'start',
         });
@@ -1084,11 +1087,18 @@ const catalog = (await getWorks()).map((work) => ({
           }
           discoverBook.value = listed.has(selectedBook) ? selectedBook : 'all';
           const currentTopic = discoverTopic.value;
+          const managedTopic = topicManage.value;
+          const topics = collectNotebookTopics(documents);
           discoverTopic.replaceChildren(new Option('All topics', 'all'));
-          for (const item of collectNotebookTopics(documents))
+          topicManage.replaceChildren(new Option('Choose topic…', ''));
+          for (const item of topics) {
             discoverTopic.add(new Option('#' + item.id + ' (' + item.count + ')', item.id));
+            topicManage.add(new Option('#' + item.id + ' · ' + item.count + ' notes', item.id));
+          }
           discoverTopic.value = [...discoverTopic.options].some(option => option.value === currentTopic)
             ? currentTopic : 'all';
+          topicManage.value = [...topicManage.options].some(option => option.value === managedTopic)
+            ? managedTopic : '';
           renderSavedViews();
           renderDashboard();
           renderDiscover();
@@ -1326,12 +1336,12 @@ const catalog = (await getWorks()).map((work) => ({
       root.querySelector('[data-topic-remove]')?.addEventListener('click',
         ()=>{void mutateTopicEverywhere(true);});
 
-      discoverQuery.addEventListener('input', renderDiscover);
-      discoverBook.addEventListener('change', renderDiscover);
-      discoverTopic.addEventListener('change', renderDiscover);
-      discoverScope.addEventListener('change', renderDiscover);
-      discoverLinks.addEventListener('change', renderDiscover);
-      discoverSort.addEventListener('change', renderDiscover);
+      discoverQuery.addEventListener('input', filtersChanged);
+      discoverBook.addEventListener('change', filtersChanged);
+      discoverTopic.addEventListener('change', filtersChanged);
+      discoverScope.addEventListener('change', filtersChanged);
+      discoverLinks.addEventListener('change', filtersChanged);
+      discoverSort.addEventListener('change', filtersChanged);
       root.querySelectorAll<HTMLButtonElement>('[data-notebook-view]').forEach(button => {
         button.addEventListener('click', () => {
           const mode = button.dataset.notebookView;
