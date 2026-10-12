@@ -8,6 +8,7 @@ import {
 import { mountResearchN1L, type ResearchN1LController } from './note-research-n1l-dom';
 import { mountKnowledgeWorkbench, type KnowledgeWorkbench } from './note-research-n1m-dom';
 import { mountResearchN1O, type ResearchN1OController } from './note-research-n1o-dom';
+import { mountResearchN1P, type ResearchN1PController } from './note-research-n1p-dom';
 import { extractNotebookTopics } from './note-workspace';
 import { mountResearchRefinements, type ResearchRefinements } from './note-research-n1k-dom';
 import { readNotebookContinuity, rememberResearchCollection, orderResearchCollections } from './note-continuity';
@@ -113,6 +114,7 @@ export function mountResearchWorkbench(
   let sessionControls:ResearchN1LController | undefined;
   let knowledge:KnowledgeWorkbench | undefined;
   let workflow:ResearchN1OController | undefined;
+  let integration:ResearchN1PController | undefined;
   let searchIndex:ResearchSearchIndexEntry[]=[];
   const events:Array<()=>void>=[];
   const notify=(message:string)=>{notice.textContent=message;};
@@ -253,10 +255,12 @@ export function mountResearchWorkbench(
       if(note) {
         actions.append(
           button(pins.left===id?'Pinned A':'Pin A',()=>{
-            pins.left=id;renderSources();renderSide('left');refinements?.onNotesChanged();
+            pins.left=id;renderSources();renderSide('left');
+            refinements?.onNotesChanged();workflow?.onNotesChanged();integration?.onNotesChanged();
           }),
           button(pins.right===id?'Pinned B':'Pin B',()=>{
-            pins.right=id;renderSources();renderSide('right');refinements?.onNotesChanged();
+            pins.right=id;renderSources();renderSide('right');
+            refinements?.onNotesChanged();workflow?.onNotesChanged();integration?.onNotesChanged();
           }),
           button('Edit',()=>{void host.openNote(note);}),
           button('Copy link',()=>copyNoteLink(note)),
@@ -356,6 +360,7 @@ export function mountResearchWorkbench(
     sessionControls?.onNotesChanged();
     knowledge?.onNotesChanged();
     workflow?.onNotesChanged();
+    integration?.onNotesChanged();
   }
   async function activate(id:string,force=false):Promise<void> {
     if(!force && id!==activeId && !guardSwitch()){
@@ -378,6 +383,7 @@ export function mountResearchWorkbench(
     sessionControls?.onCollectionChanged();
     knowledge?.onCollectionChanged();
     workflow?.onCollectionChanged();
+    integration?.onCollectionChanged();
   }
   async function addNotes(noteIds:readonly string[]):Promise<void> {
     if(!active){notify('Create or select a collection first.');root.scrollIntoView({behavior:'smooth'});return;}
@@ -505,6 +511,7 @@ export function mountResearchWorkbench(
     sessionControls?.onDraftChanged();
     knowledge?.onDraftChanged();
     workflow?.onDraftChanged();
+    integration?.onDraftChanged();
   };
   bind('[data-research-synthesis-title]','input',synthInput);
   bind('[data-research-synthesis-body]','input',synthInput);
@@ -520,6 +527,7 @@ export function mountResearchWorkbench(
         sessionControls?.onSaved();
         knowledge?.onDraftChanged();
         workflow?.onDraftChanged();
+        integration?.onDraftChanged();
         synthState.textContent='Saved locally · revision '+saved.revision;
         notify('Synthesis saved to your authoritative Library notebook.');
       })
@@ -630,6 +638,25 @@ export function mountResearchWorkbench(
     collectNote:id=>addNote(id),
     notify,
   });
+  integration=mountResearchN1P(root,{
+    active:()=>active,
+    notes:()=>all,
+    synthesis:()=>synthesis,
+    draft:()=>({title:synthTitle.value,body:synthBody.value}),
+    isDirty:()=>dirty(),
+    pins:()=>({...pins}),
+    setPins:(left,right)=>{
+      pins={left,right};
+      renderSources();renderSide('left');renderSide('right');
+      refinements?.onNotesChanged();workflow?.onNotesChanged();
+    },
+    openNote:note=>host.openNote(note),
+    openCollection:id=>activate(id),
+    sourceHref:note=>host.sourceHref(note),
+    bookTitle:id=>host.bookTitle(id),
+    refreshReview:()=>sessionControls?.onCollectionChanged(),
+    notify,
+  });
   void refresh();
   return {
     refresh,addNote,addNotes,
@@ -643,6 +670,7 @@ export function mountResearchWorkbench(
       sessionControls?.dispose();
       knowledge?.dispose();
       workflow?.dispose();
+      integration?.dispose();
       window.removeEventListener('beforeunload',beforeUnload);
     },
   };
