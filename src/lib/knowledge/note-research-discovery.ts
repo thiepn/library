@@ -39,6 +39,7 @@ export function searchResearchIndex(
   book='all',limit=24,
 ):ResearchCandidate[] {
   const terms=tokens(query);
+  if(!terms.length)return [];
   const eligible=index.filter(item=>
     !exclude.has(item.note.id) && (book==='all'||item.note.workId===book));
   const matches=eligible.flatMap(item=>{
