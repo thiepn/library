@@ -423,10 +423,12 @@ const catalog = (await getWorks()).map((work) => ({
             </div>
             <div class="book-notebook__n1p-workflow-actions">
               <button type="button" data-n1p-go-source>Open pinned source note</button>
-              <button type="button" data-n1p-go-reader>Open its reader</button>
+              <button type="button" data-n1p-go-reader>Open reader in new tab</button>
               <button type="button" data-n1p-go-synthesis>Open native synthesis</button>
               <button type="button" data-n1p-focus-writing>Write in synthesis</button>
               <button type="button" data-n1p-download-working-copy>Download current writing draft</button>
+              <button type="button" data-n1p-copy-working-copy>Copy current draft</button>
+              <button type="button" data-n1p-recovery-jump>Open session recovery controls</button>
             </div>
             <div class="book-notebook__n1p-source-path" data-n1p-source-path></div>
           </section>
@@ -451,6 +453,7 @@ const catalog = (await getWorks()).map((work) => ({
             <div class="book-notebook__n1p-compare-actions">
               <button type="button" data-n1p-compare-insert disabled>Insert cross-book outline in synthesis</button>
               <button type="button" data-n1p-compare-copy disabled>Copy source references</button>
+              <button type="button" data-n1p-compare-export disabled>Download comparison outline</button>
             </div>
             <p class="micro" data-n1p-compare-status role="status" aria-live="polite"></p>
           </section>
