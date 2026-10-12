@@ -149,3 +149,20 @@
     .book-notebook__n1n-membership-add button {grid-column:1/-1;}
   }
 }
+
+
+@layer notebook {
+  .book-notebook__n1n-source-actions {
+    display:flex;gap:8px;align-items:center;flex-wrap:wrap;
+  }
+  .book-notebook__n1n-source-actions a {
+    color:var(--ink);text-decoration:none;
+    background:var(--canvas);border:1px solid var(--strong-rule);
+    padding:8px 12px;font-size:.81rem;min-height:38px;
+    display:inline-flex;align-items:center;box-sizing:border-box;
+  }
+  .book-notebook__n1n-source-actions a[hidden] {display:none!important;}
+  .book-notebook__n1n-source-actions a:focus-visible {
+    outline:2px solid var(--accent);outline-offset:2px;
+  }
+}
