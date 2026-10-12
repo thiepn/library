@@ -147,6 +147,12 @@ export function mountLibraryConflictReview(
     }).catch(error=>say(error instanceof Error?error.message:'Could not export local backup.'))
       .finally(()=>setWorking(false));
   };
+  bind('[data-sync-device-backup]','click',() => {
+    const feedback=find<HTMLElement>('[data-sync-device-backup-status]');
+    void downloadLocalConflictBackup()
+      .then(() => { if(feedback)feedback.textContent='Device JSON download requested. Confirm it was saved.'; })
+      .catch(error => { if(feedback)feedback.textContent=error instanceof Error?error.message:'Local backup unavailable.'; });
+  });
   bind('[data-sync-local-download]','click',downloadDevice);
   bind('[data-sync-local-download-review]','click',downloadDevice);
   bind('[data-sync-cloud-download]','click',() => {
