@@ -10,12 +10,41 @@ import { notebookTitle, type BookNoteDocumentV1, type SourceAnchorV1 } from './n
  */
 export const NOTEBOOK_COLLECTIONS_KEY = 'thiepn.library.notebook.collections.v1';
 export const NOTEBOOK_COLLECTIONS_FORMAT = 'thiepn-library-research-collections';
+export interface ResearchWorkflow {
+  id: string;
+  label: string;
+  purpose: string;
+  sections: string;
+}
+export const RESEARCH_WORKFLOWS: readonly ResearchWorkflow[] = [
+  {
+    id:'open-research',label:'Open research',
+    purpose:'Start with an open question and connect evidence across books.',
+    sections:'## Research question\n\n\n## Observations and evidence\n\n\n## Differences across sources\n\n\n## Synthesis in my own words\n\n\n## Open questions\n\n- ',
+  },
+  {
+    id:'compare-authors',label:'Compare authors',
+    purpose:'Identify where authors agree, differ, or address different questions.',
+    sections:'## Common question\n\n\n## Author A — main argument\n\n\n## Author B — main argument\n\n\n## Agreements\n\n\n## Disagreements and limits\n\n\n## My conclusion\n\n',
+  },
+  {
+    id:'argument-review',label:'Evaluate an argument',
+    purpose:'Separate claims, support, assumptions, counterarguments and conclusions.',
+    sections:'## Core claim\n\n\n## Evidence offered\n\n\n## Assumptions\n\n\n## Counterarguments\n\n\n## My assessment\n\n\n## Remaining uncertainty\n\n',
+  },
+  {
+    id:'discussion-prep',label:'Discussion preparation',
+    purpose:'Bring multiple readings into a study or discussion session.',
+    sections:'## Theme and opening question\n\n\n## Passages and source evidence\n\n\n## Discussion questions\n\n1. \n2. \n3. \n\n## Points of disagreement\n\n\n## Follow-up actions\n\n- [ ] ',
+  },
+];
 const MAX_COLLECTIONS = 30;
 const MAX_ENTRIES = 120;
 export interface ResearchCollection {
   id: string;
   name: string;
   description: string;
+  workflowId?: string;
   noteIds: string[];
   synthesisId?: string;
   createdAt: string;
@@ -34,6 +63,8 @@ const validCollection=(item:unknown):item is ResearchCollection=>{
   if(!isObj(item) || !validId(item.id)
     || typeof item.name!=='string' || !item.name.trim() || item.name.length>100
     || typeof item.description!=='string' || item.description.length>800
+    || (item.workflowId!==undefined && (typeof item.workflowId!=='string'
+      || !RESEARCH_WORKFLOWS.some(workflow=>workflow.id===item.workflowId)))
     || !validTime(item.createdAt) || !validTime(item.updatedAt)
     || !Array.isArray(item.noteIds) || item.noteIds.length>MAX_ENTRIES
     || !item.noteIds.every(validId) || new Set(item.noteIds).size!==item.noteIds.length
@@ -68,15 +99,19 @@ function writeAll(items:ResearchCollection[]):ResearchCollection[] {
   catch {throw new Error('Local collection preferences could not be saved.');}
   return items;
 }
-export function createResearchCollection(name:string,description=''):ResearchCollection {
+export function createResearchCollection(
+  name:string,description='',workflowId='open-research',
+):ResearchCollection {
   const title=name.normalize('NFKC').trim().slice(0,100);
   if(!title)throw new Error('Enter a name for this collection.');
+  if(!RESEARCH_WORKFLOWS.some(workflow=>workflow.id===workflowId))
+    throw new Error('Select a valid research workflow.');
   const all=loadResearchCollections();
   if(all.length>=MAX_COLLECTIONS)throw new Error('The 30 collection limit has been reached.');
   const now=new Date().toISOString();
   const record:ResearchCollection={
     id:crypto.randomUUID(),name:title,description:description.trim().slice(0,800),
-    noteIds:[],createdAt:now,updatedAt:now,
+    workflowId,noteIds:[],createdAt:now,updatedAt:now,
   };
   writeAll([record,...all]);
   return record;
@@ -150,6 +185,8 @@ export function groupedResearchMarkdown(
     '',
     collection.description.trim()||'_No project description_',
     '',
+    '**Workflow:** '+(RESEARCH_WORKFLOWS.find(w=>w.id===collection.workflowId)?.label??'Open research'),
+    '',
     '> THIEPN Library research collection · Markdown export',
     '> Book notes remain separately editable in Library. Missing local sources are identified below.',
     '',
@@ -192,12 +229,11 @@ export function researchSynthesisBody(
   const list=sources.map(source=>
     '- [[note:'+source.note.id+'|'+mdText(notebookTitle(source.note)).replace(/\|/g,' ')+']] — '
     +mdText(source.bookTitle)+'; '+mdText(source.sourceLocation));
+  const workflow = RESEARCH_WORKFLOWS.find(item=>item.id===collection.workflowId)
+    ?? RESEARCH_WORKFLOWS[0];
   return [
-    '## Research question','','',
-    '## Observations and evidence','','',
-    '## Differences across sources','','',
-    '## Synthesis in my own words','','',
-    '## Open questions','','- ',
+    workflow.sections,
+    '',
     '## Linked source notes','',...list,'',
   ].join('\n');
 }
