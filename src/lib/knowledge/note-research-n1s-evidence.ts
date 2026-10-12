@@ -45,6 +45,9 @@ export function getSectionEvidenceContext(
   const inCollectionIds=noteIds.filter(id=>collectionIds.has(id)&&byId.has(id));
   const uncitedCollectionIds=collection.noteIds.filter(id=>byId.has(id)&&!noteIds.includes(id));
   const used=inCollectionIds.map(id=>byId.get(id)!);
+  const authoredSectionTopics=new Set(extractNotebookTopics(
+    markdown.slice(section.start,section.end),
+  ));
   const topicSet=new Set(used.flatMap(note=>extractNotebookTopics(note.bodyMarkdown)));
   const explicitLinks=new Set(used.flatMap(note=>extractNotebookLinks(note.bodyMarkdown).map(link=>link.id)));
   const headingTerms=words(section.title);
@@ -53,8 +56,15 @@ export function getSectionEvidenceContext(
     if(noteIds.includes(note.id)||note.id===collection.synthesisId)continue;
     const reasons:string[]=[];
     let score=0;
-    const shared=extractNotebookTopics(note.bodyMarkdown).filter(topic=>topicSet.has(topic));
-    if(shared.length){score+=shared.length*6;reasons.push('Shared explicit topics: '+shared.slice(0,3).map(t=>'#topic/'+t).join(', '));}
+    const noteTopics=extractNotebookTopics(note.bodyMarkdown);
+    const directTopics=noteTopics.filter(topic=>authoredSectionTopics.has(topic));
+    if(directTopics.length){
+      score+=directTopics.length*10;
+      reasons.push('Topic marked in this section: '+directTopics.slice(0,3)
+        .map(t=>'#topic/'+t).join(', '));
+    }
+    const shared=noteTopics.filter(topic=>topicSet.has(topic)&&!authoredSectionTopics.has(topic));
+    if(shared.length){score+=shared.length*6;reasons.push('Shared explicit cited-note topics: '+shared.slice(0,3).map(t=>'#topic/'+t).join(', '));}
     if(explicitLinks.has(note.id)){
       score+=9;reasons.push('Linked by a cited note');
     }
