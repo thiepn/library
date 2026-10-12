@@ -2,6 +2,7 @@ import { listBookNotes, createBookNote, updateBookNote, getBookNote, subscribeBo
 import { renderNotebookPreview } from './note-preview';
 import { notebookTitle, type BookNoteDocumentV1 } from './note-model';
 import { findNotebookNotes } from './note-links';
+import { extractNotebookTopics } from './note-workspace';
 import { mountResearchRefinements, type ResearchRefinements } from './note-research-n1k-dom';
 import {
   createResearchCollection, deleteResearchCollection, RESEARCH_WORKFLOWS,
@@ -65,6 +66,8 @@ export function mountResearchWorkbench(
   const search=$<HTMLInputElement>('[data-research-find]');
   const results=$<HTMLElement>('[data-research-search-results]');
   const sourcesList=$<HTMLElement>('[data-research-sources]');
+  const sourceFilter=$<HTMLInputElement>('[data-research-filter-sources]');
+  const sourceFilterCount=$<HTMLElement>('[data-research-source-filter-count]');
   const indexFile=$<HTMLInputElement>('[data-research-index-file]');
   const synthState=$<HTMLElement>('[data-research-synthesis-state]');
   const synthTitle=$<HTMLInputElement>('[data-research-synthesis-title]');
@@ -203,12 +206,26 @@ export function mountResearchWorkbench(
   }
   function renderSources():void {
     sourcesList.replaceChildren();
-    if(!active)return;
+    if(!active){sourceFilterCount.textContent='';return;}
     if(!active.noteIds.length){
       sourcesList.append(el('p','No collected notes yet. Search above or add a note from cross-book discovery.'));
       return;
     }
-    for(const id of active.noteIds) {
+    const query=sourceFilter.value.normalize('NFKC').trim().toLocaleLowerCase();
+    const shown=active.noteIds.filter(id=>{
+      if(!query)return true;
+      const note=byId(id);
+      return !note?id.toLocaleLowerCase().includes(query):[
+        notebookTitle(note),host.bookTitle(note.workId),note.chapterKey??'',
+        extractNotebookTopics(note.bodyMarkdown).join(' '),note.bodyMarkdown.slice(0,5000),
+      ].join(' ').normalize('NFKC').toLocaleLowerCase().includes(query);
+    });
+    sourceFilterCount.textContent=shown.length+' / '+active.noteIds.length+' source notes shown';
+    if(!shown.length){
+      sourcesList.append(el('p','No sources match this collection filter.'));
+      return;
+    }
+    for(const id of shown) {
       const note=byId(id);
       const row=el('div');row.className='book-notebook__research-source';
       const label=el('div');label.className='book-notebook__research-source-label';
@@ -334,6 +351,7 @@ export function mountResearchWorkbench(
   });
   bind('[data-research-select]','change',()=>{void activate(select.value);});
   bind('[data-research-find]','input',()=>renderSearch());
+  bind('[data-research-filter-sources]','input',()=>renderSources());
   bind('[data-research-delete]','click',()=>{
     if(!active || !guardSwitch())return;
     if(!window.confirm('Remove this research collection? Your original notes and synthesis are not deleted.'))return;
