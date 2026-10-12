@@ -4,6 +4,7 @@ import { getWorks } from '../lib/content/repository';
 import '../styles/notebook.css';
 import '../styles/notebook-n1h.css';
 import '../styles/notebook-n1i.css';
+import '../styles/notebook-n1i.css';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const catalog = (await getWorks()).map((work) => ({
@@ -200,6 +201,11 @@ const catalog = (await getWorks()).map((work) => ({
             <span data-notebook-kind></span>
             <span class="micro" data-notebook-save-status aria-live="polite">Not saved</span>
           </div>
+          <div class="book-notebook__history" role="navigation" aria-label="Navigate recently opened notes">
+            <button type="button" data-note-history-back disabled>← Previous note</button>
+            <span class="micro" data-note-history-position>Open a saved note to navigate.</span>
+            <button type="button" data-note-history-forward disabled>Next note →</button>
+          </div>
           <label for="notebook-title">Title</label>
           <input id="notebook-title" data-notebook-title maxlength="200" autocomplete="off" />
           <label for="notebook-body">Markdown note</label>
@@ -329,7 +335,7 @@ const catalog = (await getWorks()).map((work) => ({
       getPersonalBooks, personalReaderWorkId, type PersonalBookSummary,
     } from '../lib/client/personal-books';
     import {
-      createBookNote, deleteBookNote, listBookNotes, subscribeBookNotes,
+      createBookNote, deleteBookNote, listBookNotes, getBookNote, subscribeBookNotes,
       updateBookNote, type NewBookNote,
     } from '../lib/knowledge/note-store';
     import { bookNotebookToObsidianMarkdown } from '../lib/knowledge/note-export';
@@ -461,6 +467,12 @@ const catalog = (await getWorks()).map((work) => ({
       let graphModel: NoteGraphData = { nodes: [], edges: [], omitted: 0, workCount: 0 };
       let topicMutationBusy = false;
       let currentViewId = '';
+      const openedNoteHistory: string[] = [];
+      let historyPosition = -1;
+      let replayingHistory = false;
+      const historyBack = root.querySelector<HTMLButtonElement>('[data-note-history-back]')!;
+      const historyForward = root.querySelector<HTMLButtonElement>('[data-note-history-forward]')!;
+      const historyLabel = root.querySelector<HTMLElement>('[data-note-history-position]')!;
       for (const template of NOTEBOOK_TEMPLATES)
         templateSelect.add(new Option(template.label + ' — ' + template.description, template.id));
 
