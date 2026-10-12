@@ -44,6 +44,24 @@ const catalog = (await getWorks()).map((work) => ({
       <div class="book-notebook__layout">
         <aside class="book-notebook__sidebar" aria-label="Book notes">
           <h2>Notes</h2>
+          <div class="book-notebook__filters">
+            <label for="notebook-search">Find in notes</label>
+            <input id="notebook-search" type="search" data-notebook-search placeholder="Title, chapter, or note text" autocomplete="off" disabled />
+            <label for="notebook-scope">Show</label>
+            <select id="notebook-scope" data-notebook-scope disabled>
+              <option value="all">All notes</option>
+              <option value="reading-note">Reading notes</option>
+              <option value="chapter-summary">Chapter summaries</option>
+              <option value="book-overview">Book overview</option>
+            </select>
+            <label for="notebook-sort">Order</label>
+            <select id="notebook-sort" data-notebook-sort disabled>
+              <option value="recent">Recently edited</option>
+              <option value="oldest">Oldest first</option>
+              <option value="title">Title A–Z</option>
+            </select>
+            <p class="micro" role="status" aria-live="polite" data-notebook-matches></p>
+          </div>
           <div data-notebook-list></div>
           <p class="micro" data-notebook-empty>No notes yet. Create a book overview or quick reading note.</p>
           <a data-notebook-highlights href={`${base}/knowledge`} hidden>View this book’s highlights and bookmarks in Knowledge</a>
@@ -96,6 +114,10 @@ const catalog = (await getWorks()).map((work) => ({
       const bookSelect = root.querySelector<HTMLSelectElement>('[data-notebook-book]')!;
       const list = root.querySelector<HTMLElement>('[data-notebook-list]')!;
       const empty = root.querySelector<HTMLElement>('[data-notebook-empty]')!;
+      const search = root.querySelector<HTMLInputElement>('[data-notebook-search]')!;
+      const scopeFilter = root.querySelector<HTMLSelectElement>('[data-notebook-scope]')!;
+      const sortBy = root.querySelector<HTMLSelectElement>('[data-notebook-sort]')!;
+      const matches = root.querySelector<HTMLElement>('[data-notebook-matches]')!;
       const status = root.querySelector<HTMLElement>('[data-notebook-status]')!;
       const count = root.querySelector<HTMLElement>('[data-notebook-count]')!;
       const editor = root.querySelector<HTMLElement>('[data-notebook-editor]')!;
@@ -138,6 +160,9 @@ const catalog = (await getWorks()).map((work) => ({
         const id = currentBook();
         for (const btn of root!.querySelectorAll<HTMLButtonElement>('[data-notebook-create]')) btn.disabled = !id;
         exportButton.disabled = !id;
+        search.disabled = !id;
+        scopeFilter.disabled = !id;
+        sortBy.disabled = !id;
         highlightsLink.hidden = !id;
         highlightsLink.href = `${base}/knowledge?book=${encodeURIComponent(id)}`;
         const entry = books.get(id);
@@ -206,6 +231,19 @@ const catalog = (await getWorks()).map((work) => ({
       }
 
       function renderNotes(notes: BookNoteDocumentV1[]): void {
+        const needle = search.value.normalize('NFKC').trim().toLocaleLowerCase();
+        const selectedScope = scopeFilter.value;
+        const visible = notes.filter((note) => {
+          if (selectedScope !== 'all' && note.scope !== selectedScope) return false;
+          if (!needle) return true;
+          return [note.title, note.bodyMarkdown, note.chapterKey ?? '', note.anchor?.format ?? '']
+            .some((text) => text.normalize('NFKC').toLocaleLowerCase().includes(needle));
+        });
+        const sorted = [...visible].sort((a, b) => {
+          if (sortBy.value === 'title') return notebookTitle(a).localeCompare(notebookTitle(b));
+          if (sortBy.value === 'oldest') return a.createdAt.localeCompare(b.createdAt);
+          return b.updatedAt.localeCompare(a.updatedAt);
+        });
         list.replaceChildren();
         const groups: Array<{ label: string; scope: BookNoteScope }> = [
           { label: 'Book overview', scope: 'book-overview' },
@@ -213,20 +251,27 @@ const catalog = (await getWorks()).map((work) => ({
           { label: 'Reading notes', scope: 'reading-note' },
         ];
         for (const group of groups) {
-          const relevant = notes.filter((note) => note.scope === group.scope);
+          const relevant = sorted.filter((note) => note.scope === group.scope);
           if (!relevant.length) continue;
           const section = document.createElement('section');
           const heading = document.createElement('h3'); heading.textContent = group.label; section.append(heading);
           for (const note of relevant) {
             const link = document.createElement('button'); link.type = 'button'; link.className = 'book-notebook__item';
-            link.textContent = notebookTitle(note);
+            const name = document.createElement('span'); name.textContent = notebookTitle(note);
+            const modified = document.createElement('span');
+            modified.className = 'book-notebook__item-date';
+            modified.textContent = new Date(note.updatedAt).toLocaleDateString();
+            link.append(name, modified);
             link.setAttribute('aria-label', 'Edit ' + notebookTitle(note));
+            link.setAttribute('aria-current', String(note.id === selected?.id));
             link.addEventListener('click', () => { void switchEditor(note); });
             section.append(link);
           }
           list.append(section);
         }
-        empty.hidden = notes.length > 0;
+        empty.textContent = notes.length ? 'No notes match these filters.' : 'No notes yet. Create a book overview or quick reading note.';
+        empty.hidden = visible.length > 0;
+        matches.textContent = visible.length === notes.length ? '' : visible.length + ' of ' + notes.length + ' notes shown';
         count.textContent = notes.length + (notes.length === 1 ? ' notebook note' : ' notebook notes');
       }
 
@@ -244,6 +289,8 @@ const catalog = (await getWorks()).map((work) => ({
       async function chooseBook(value: string): Promise<void> {
         if (dirty() && !await save()) { bookSelect.value = selected?.workId ?? draft?.workId ?? ''; return; }
         hideEditor(); bookSelect.value = value;
+        search.value = '';
+        scopeFilter.value = 'all';
         const url = new URL(location.href);
         if (value) url.searchParams.set('work', value); else url.searchParams.delete('work');
         history.replaceState(null, '', url);
@@ -301,6 +348,9 @@ const catalog = (await getWorks()).map((work) => ({
       });
       root.querySelector('[data-notebook-chapter-cancel]')?.addEventListener('click', () => { chapterPane.hidden = true; });
       bookSelect.addEventListener('change', () => { void chooseBook(bookSelect.value); });
+      search.addEventListener('input', () => renderNotes(allNotes));
+      scopeFilter.addEventListener('change', () => renderNotes(allNotes));
+      sortBy.addEventListener('change', () => renderNotes(allNotes));
       title.addEventListener('input', scheduleSave);
       body.addEventListener('input', scheduleSave);
       title.addEventListener('blur', () => { if (dirty()) void save(); });
