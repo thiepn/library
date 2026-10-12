@@ -878,6 +878,73 @@ const catalog = (await getWorks()).map((work) => ({
 
       discoverQuery.addEventListener('input', renderDiscover);
       discoverBook.addEventListener('change', renderDiscover);
+      discoverTopic.addEventListener('change', renderDiscover);
+      root.querySelectorAll<HTMLButtonElement>('[data-notebook-view]').forEach(button => {
+        button.addEventListener('click', () => {
+          const mode = button.dataset.notebookView;
+          if (mode === 'write' || mode === 'split' || mode === 'read') setWritingView(mode);
+        });
+      });
+      root.querySelector('[data-notebook-insert-template]')?.addEventListener('click', () => {
+        const template = NOTEBOOK_TEMPLATES.find(item => item.id === templateSelect.value);
+        if (!template) { mark('Choose a writing template first.'); return; }
+        insertAtCursor(template.markdown);
+        mark('Template inserted into the draft. Your previous text was preserved.');
+      });
+      root.querySelector('[data-notebook-insert-table]')?.addEventListener('click', () => {
+        insertAtCursor('| Idea | Evidence | Reflection |\n| --- | --- | --- |\n|  |  |  |\n');
+      });
+      root.querySelector('[data-notebook-insert-divider]')?.addEventListener('click', () => {
+        insertAtCursor('---\n');
+      });
+      root.querySelector('[data-notebook-topic-add]')?.addEventListener('click', () => {
+        if (!selected && !draft) { setStatus('Open a note before adding topics.'); return; }
+        const topic = normalizeNotebookTopic(topicInput.value);
+        if (!topic) { mark('Enter a topic name using letters or numbers.'); topicInput.focus(); return; }
+        if (extractNotebookTopics(body.value).includes(topic)) {
+          mark('This topic is already part of the note.');
+          topicInput.select();
+          return;
+        }
+        const edit = insertNotebookText(body.value, body.value.length, body.value.length,
+          '#topic/' + topic);
+        if (edit.value.length > body.maxLength) { mark('This note has reached its size limit.'); return; }
+        setWritingView('write');
+        body.value = edit.value;
+        body.setSelectionRange(edit.cursor, edit.cursor);
+        topicInput.value = '';
+        body.dispatchEvent(new Event('input', { bubbles: true }));
+        mark('Topic added to Markdown and will be saved locally.');
+      });
+      topicInput.addEventListener('keydown', event => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          root!.querySelector<HTMLButtonElement>('[data-notebook-topic-add]')?.click();
+        }
+      });
+      linkedPreviewClose.addEventListener('click', () => linkedPreview.close());
+      linkedPreview.addEventListener('close', () => {
+        linkedPreviewNote = undefined;
+        if (peekOpener?.isConnected) peekOpener.focus({ preventScroll: true });
+        peekOpener = null;
+      });
+      linkedPreviewOpen.addEventListener('click', () => {
+        const note = linkedPreviewNote;
+        if (!note) return;
+        peekOpener = null;
+        linkedPreview.close();
+        void openAnyNote(note);
+      });
+      linkedPreviewCopy.addEventListener('click', async () => {
+        if (!linkedPreviewNote) return;
+        try {
+          await navigator.clipboard.writeText(noteReferenceMarkdown(linkedPreviewNote));
+          linkedPreviewCopy.textContent = 'Copied link';
+          window.setTimeout(() => { linkedPreviewCopy.textContent = 'Copy note reference'; }, 1500);
+        } catch {
+          linkedPreviewCopy.textContent = 'Clipboard unavailable';
+        }
+      });
       linkSearch.addEventListener('input', renderLinkChoices);
       linkToggle.addEventListener('click', () => {
         if (!selected && !draft) return;
