@@ -282,17 +282,57 @@ export function mountResearchWorkbench(
   }
   function renderSearch():void {
     results.replaceChildren();
-    if(!active)return;
+    if(!active){searchCount.textContent='';return;}
     const query=search.value.trim();
-    if(!query){results.append(el('p','Search all notebook notes to add sources.'));return;}
-    const matches=findNotebookNotes(all,host.bookTitle,query,18).filter(n=>!active?.noteIds.includes(n.id));
-    if(!matches.length){results.append(el('p','No additional matching notes.'));return;}
-    for(const note of matches){
+    const excluded=new Set(active.noteIds);
+    const candidates=query
+      ? searchResearchIndex(searchIndex,query,excluded,searchBook.value,30):[];
+    searchCount.textContent=candidates.length
+      ? candidates.length+' ranked results'
+      :query?'No matching uncollected notes':'Search your local saved notes';
+    if(!query){
+      results.append(el('p','Search note titles, chapters, topics, book names, and text.'));
+      return;
+    }
+    if(!candidates.length){results.append(el('p','No additional matching notes.'));return;}
+    for(const item of candidates){
+      const note=item.note;
       const row=el('div');row.className='book-notebook__research-result';
-      const label=el('span',notebookTitle(note)+' · '+host.bookTitle(note.workId));
-      row.append(label,button('Add source',()=>{void addNote(note.id);}));
+      const detail=el('div');
+      const name=el('strong',notebookTitle(note)+' · '+host.bookTitle(note.workId));
+      const snippet=el('small',note.bodyMarkdown.replace(/\s+/g,' ').slice(0,120));
+      detail.append(name,snippet);
+      row.append(detail,button('Add source',()=>{void addNote(note.id);}));
       results.append(row);
     }
+  }
+  function renderSuggestions():void {
+    suggestions.replaceChildren();
+    if(!active)return;
+    const candidates=suggestedResearchSources(active,searchIndex,12);
+    if(!candidates.length){
+      suggestions.append(el('p','Suggestions appear when saved notes explicitly link to collected notes or share topic markers.'));
+      return;
+    }
+    for(const item of candidates){
+      const row=el('div');row.className='book-notebook__research-result';
+      const detail=el('div');
+      detail.append(
+        el('strong',notebookTitle(item.note)+' · '+host.bookTitle(item.note.workId)),
+        el('small',item.reasons.join(' · ')),
+      );
+      row.append(detail,button('Collect',()=>{void addNote(item.note.id);}));
+      suggestions.append(row);
+    }
+  }
+  function renderBookFacets():void {
+    const previous=searchBook.value;
+    searchBook.replaceChildren(new Option('Every book','all'));
+    for(const facet of researchBookFacets(searchIndex)){
+      searchBook.add(new Option(host.bookTitle(facet.workId)+' ('+facet.count+')',facet.workId));
+    }
+    searchBook.value=[...searchBook.options].some(option=>option.value===previous)
+      ?previous:'all';
   }
   function renderDetail():void {
     renderSelector();
@@ -302,7 +342,7 @@ export function mountResearchWorkbench(
     name.textContent=active.name;
     description.textContent=(active.description||'No project description')+' · Workflow: '
       +(RESEARCH_WORKFLOWS.find(w=>w.id===active?.workflowId)?.label??'Open research');
-    renderSources();renderSearch();renderSide('left');renderSide('right');renderSynthesis();
+    renderSources();renderSearch();renderSuggestions();renderSide('left');renderSide('right');renderSynthesis();
     refinements?.onNotesChanged();
     refinements?.onSynthesisChanged();
     sessionControls?.onNotesChanged();
