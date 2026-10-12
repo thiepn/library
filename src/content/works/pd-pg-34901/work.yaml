@@ -22,12 +22,12 @@
     "lastUpdated": "2026-10-12",
     "edition": 1,
     "editionLabel": "THIEPN Library Edition",
-    "version": "pg-34901-6e38fd03fbb8",
-    "activeRelease": "pg-34901-6e38fd03fbb8"
+    "version": "pg-34901-6e38fd03fbb8-cover-3235a37d0f30",
+    "activeRelease": "pg-34901-6e38fd03fbb8-cover-3235a37d0f30"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-34901.svg",
-    "alt": "Cover of On Liberty by John Stuart Mill"
+    "src": "/covers/public-domain/pd-pg-34901.webp",
+    "alt": "Cover for On Liberty by John Stuart Mill"
   },
   "classification": {
     "subjects": [

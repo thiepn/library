@@ -22,12 +22,12 @@
     "lastUpdated": "2026-10-12",
     "edition": 1,
     "editionLabel": "THIEPN Library Edition",
-    "version": "pg-11449-d3123f5ecbfd",
-    "activeRelease": "pg-11449-d3123f5ecbfd"
+    "version": "pg-11449-d3123f5ecbfd-cover-5e91ce07a748",
+    "activeRelease": "pg-11449-d3123f5ecbfd-cover-5e91ce07a748"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-11449.svg",
-    "alt": "Cover of An Enquiry into the Obligations of Christians to Use Means for the Conversion of the Heathens by William Carey"
+    "src": "/covers/public-domain/pd-pg-11449.webp",
+    "alt": "Cover for An Enquiry into the Obligations of Christians to Use Means for the Conversion of the Heathens by William Carey"
   },
   "classification": {
     "subjects": [

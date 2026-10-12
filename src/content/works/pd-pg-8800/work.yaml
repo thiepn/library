@@ -34,12 +34,12 @@
     "lastUpdated": "2026-10-12",
     "edition": 1,
     "editionLabel": "THIEPN Library Edition",
-    "version": "pg-8800-6066397cd53c",
-    "activeRelease": "pg-8800-6066397cd53c"
+    "version": "pg-8800-6066397cd53c-cover-1af5d3f93cbe",
+    "activeRelease": "pg-8800-6066397cd53c-cover-1af5d3f93cbe"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-8800.svg",
-    "alt": "Cover of The Divine Comedy by Dante Alighieri"
+    "src": "/covers/public-domain/pd-pg-8800.webp",
+    "alt": "Cover for The Divine Comedy by Dante Alighieri"
   },
   "classification": {
     "subjects": [

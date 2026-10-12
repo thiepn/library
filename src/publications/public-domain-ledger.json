@@ -6615,7 +6615,7 @@
         }
       ],
       "selectedAt": "2026-10-12T06:55:20Z",
-      "releaseVersion": "pg-2199-f32b68a9a7a2",
+      "releaseVersion": "pg-2199-f32b68a9a7a2-cover-f1c4696e757c",
       "curation": {
         "mode": "curated-library-canon",
         "requestedPosition": 1,
@@ -6624,6 +6624,17 @@
         "collection": "general-classics",
         "rightsMode": "global",
         "sourceMatch": "matched PG#2199 confidence=1.000"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-10-12T07:00:18Z",
+        "webCoverSha256": "99f9721a55d1fc80bc7bf9d752162b618d2f1f230c4234d13dbc30d1ef5006d5",
+        "epubCoverSha256": "2e9b6be3953f698c057b0d006431fc697ab2ac149b6883927a3ca083b08acb49",
+        "releaseVersion": "pg-2199-f32b68a9a7a2-cover-f1c4696e757c",
+        "artifactSha256": "f1c4696e757c27aa3e3c4c1651bd8380c830fd8b2e866976692d455d37b0c7fe"
       }
     },
     {
@@ -6666,7 +6677,7 @@
         }
       ],
       "selectedAt": "2026-10-12T06:55:23Z",
-      "releaseVersion": "pg-8800-6066397cd53c",
+      "releaseVersion": "pg-8800-6066397cd53c-cover-1af5d3f93cbe",
       "curation": {
         "mode": "curated-library-canon",
         "requestedPosition": 2,
@@ -6675,6 +6686,17 @@
         "collection": "general-classics",
         "rightsMode": "global",
         "sourceMatch": "matched PG#8800 confidence=1.000"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-10-12T07:00:56Z",
+        "webCoverSha256": "1ff2796356eadaeae1cad7cfd808f77094995f44a9c5273b59e2eba41b5e5024",
+        "epubCoverSha256": "dd1cea5757a5dd686e025a683ea11b56712cfb6eabe4c97375526a98ac5770c0",
+        "releaseVersion": "pg-8800-6066397cd53c-cover-1af5d3f93cbe",
+        "artifactSha256": "1af5d3f93cbe08c7d9727c2659e79aff545e9cd2321e26651746e256c75150fc"
       }
     },
     {
@@ -6713,7 +6735,7 @@
         }
       ],
       "selectedAt": "2026-10-12T06:55:27Z",
-      "releaseVersion": "pg-135-af9844d0621e",
+      "releaseVersion": "pg-135-af9844d0621e-cover-7dac13b77b24",
       "curation": {
         "mode": "curated-library-canon",
         "requestedPosition": 3,
@@ -6722,6 +6744,17 @@
         "collection": "general-classics",
         "rightsMode": "global",
         "sourceMatch": "matched PG#135 confidence=1.000"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-10-12T07:01:30Z",
+        "webCoverSha256": "72bdf05934753d6c1628b5ee3865c6b0cfa794fbcf822988176e9ba245650f3b",
+        "epubCoverSha256": "9c6228cf0ebd84fd90a916e62cfb5f4d5c922e10ed7b6fcffd0fa551ff7149ce",
+        "releaseVersion": "pg-135-af9844d0621e-cover-7dac13b77b24",
+        "artifactSha256": "7dac13b77b24610ea0aa78d47b7f56c8845a7a5e23660b67bd14b86ab6495360"
       }
     },
     {
@@ -6758,7 +6791,7 @@
         }
       ],
       "selectedAt": "2026-10-12T06:55:30Z",
-      "releaseVersion": "pg-70841-fbf0a5a1cc82",
+      "releaseVersion": "pg-70841-fbf0a5a1cc82-cover-812279893489",
       "curation": {
         "mode": "curated-library-canon",
         "requestedPosition": 4,
@@ -6767,6 +6800,17 @@
         "collection": "general-classics",
         "rightsMode": "global",
         "sourceMatch": "matched PG#70841 confidence=1.000"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-10-12T07:02:04Z",
+        "webCoverSha256": "c739ba941953be883a632163e80e22c81cbd4c63095c2b91c90f448ec587cfbc",
+        "epubCoverSha256": "909526956a2e79b1e2000c580ff19afb3ba4a377329aafac8ab550e861d3b626",
+        "releaseVersion": "pg-70841-fbf0a5a1cc82-cover-812279893489",
+        "artifactSha256": "812279893489489e04cc6093f88a402c945084c0376c0d1df017bc5d2eac1470"
       }
     },
     {
@@ -6798,7 +6842,7 @@
         }
       ],
       "selectedAt": "2026-10-12T06:55:36Z",
-      "releaseVersion": "pg-219-03e961e7a98b",
+      "releaseVersion": "pg-219-03e961e7a98b-cover-553cd1daf648",
       "curation": {
         "mode": "curated-library-canon",
         "requestedPosition": 6,
@@ -6807,6 +6851,17 @@
         "collection": "general-classics",
         "rightsMode": "global",
         "sourceMatch": "matched PG#219 confidence=1.000"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-10-12T07:02:36Z",
+        "webCoverSha256": "357986657e5ede8409d4390b726332d5702c5dee9fb5d07191a1550285759cb1",
+        "epubCoverSha256": "90ad46680689e3c854d184bcb7f26b733c4aeb6bd5abf7e75149a95cc15d23f6",
+        "releaseVersion": "pg-219-03e961e7a98b-cover-553cd1daf648",
+        "artifactSha256": "553cd1daf648e4c87bdff876b5acba04137b31452ef0719fc3ab9fc5be4b7401"
       }
     },
     {
@@ -6838,7 +6893,7 @@
         }
       ],
       "selectedAt": "2026-10-12T06:55:45Z",
-      "releaseVersion": "pg-33-98b2022af7c2",
+      "releaseVersion": "pg-33-98b2022af7c2-cover-e90e431ca7fa",
       "curation": {
         "mode": "curated-library-canon",
         "requestedPosition": 9,
@@ -6847,6 +6902,17 @@
         "collection": "general-classics",
         "rightsMode": "global",
         "sourceMatch": "matched PG#33 confidence=1.000"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-10-12T07:03:07Z",
+        "webCoverSha256": "75de96ad3ea015a848f5d6aa5095ed37db4babac9aad3295f6bf258c1eb77fd2",
+        "epubCoverSha256": "7cf179810993b770b8306b6f665d061ba3a55aa5c524f35a7b98dd1707d1c67f",
+        "releaseVersion": "pg-33-98b2022af7c2-cover-e90e431ca7fa",
+        "artifactSha256": "e90e431ca7fa4370d90f707f2b4e8c391c7c48afb76c5bf562785a8eba796dde"
       }
     },
     {
@@ -6883,7 +6949,7 @@
         }
       ],
       "selectedAt": "2026-10-12T06:55:48Z",
-      "releaseVersion": "pg-2413-e6b4614f01d7",
+      "releaseVersion": "pg-2413-e6b4614f01d7-cover-ece8c04866cd",
       "curation": {
         "mode": "curated-library-canon",
         "requestedPosition": 10,
@@ -6892,6 +6958,17 @@
         "collection": "general-classics",
         "rightsMode": "global",
         "sourceMatch": "matched PG#2413 confidence=1.000"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-10-12T07:03:47Z",
+        "webCoverSha256": "08e0df8034f40a1e7d90aa0c3a124535f49a1cfc0c3f320de6d938ab9580378a",
+        "epubCoverSha256": "e185041928085996fdb13aa2455ef57ce7338e3acab2b31a557cd71e0c0519cc",
+        "releaseVersion": "pg-2413-e6b4614f01d7-cover-ece8c04866cd",
+        "artifactSha256": "ece8c04866cd8fe4d5eaddfb30702a5505541759b1d06cd0686bb244ce4a2725"
       }
     },
     {
@@ -6928,7 +7005,7 @@
         }
       ],
       "selectedAt": "2026-10-12T06:55:51Z",
-      "releaseVersion": "pg-215-c8979f50cb73",
+      "releaseVersion": "pg-215-c8979f50cb73-cover-5449a91cad44",
       "curation": {
         "mode": "curated-library-canon",
         "requestedPosition": 11,
@@ -6937,6 +7014,17 @@
         "collection": "general-classics",
         "rightsMode": "global",
         "sourceMatch": "matched PG#215 confidence=1.000"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-10-12T07:04:21Z",
+        "webCoverSha256": "e9ef08d4a2aa2f9b8e06b99bf8d69f009b7d46a917fd317dc66232df412dfe58",
+        "epubCoverSha256": "fb031166793ef3ebb12f2121fe617b8f034b5c75e55b8144ce1e613032d5d013",
+        "releaseVersion": "pg-215-c8979f50cb73-cover-5449a91cad44",
+        "artifactSha256": "5449a91cad44d5d3e9336fa2c515b06e6d94c0b50613b17c050180fbf763a4d4"
       }
     },
     {
@@ -6967,7 +7055,7 @@
         }
       ],
       "selectedAt": "2026-10-12T06:55:55Z",
-      "releaseVersion": "pg-8438-0609068660aa",
+      "releaseVersion": "pg-8438-0609068660aa-cover-987bb985d0ed",
       "curation": {
         "mode": "curated-library-canon",
         "requestedPosition": 12,
@@ -6976,6 +7064,17 @@
         "collection": "philosophy-classics",
         "rightsMode": "global",
         "sourceMatch": "matched PG#8438 confidence=0.969"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-10-12T07:04:54Z",
+        "webCoverSha256": "a527e9ebc18232200700b5a91c12fec35f39de86374476b87e8da9b50caa3522",
+        "epubCoverSha256": "efba351105c36f8cff52b9089202d1764ba3db3f7c0cd946ee4fbb5a8a5d46a7",
+        "releaseVersion": "pg-8438-0609068660aa-cover-987bb985d0ed",
+        "artifactSha256": "987bb985d0ed6b636bc0b23aa66f9b154ff97b52abfb5d787077dfb9af039957"
       }
     },
     {
@@ -7004,7 +7103,7 @@
         }
       ],
       "selectedAt": "2026-10-12T06:56:00Z",
-      "releaseVersion": "pg-34901-6e38fd03fbb8",
+      "releaseVersion": "pg-34901-6e38fd03fbb8-cover-3235a37d0f30",
       "curation": {
         "mode": "curated-library-canon",
         "requestedPosition": 14,
@@ -7013,6 +7112,17 @@
         "collection": "philosophy-classics",
         "rightsMode": "global",
         "sourceMatch": "matched PG#34901 confidence=1.000"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-10-12T07:05:29Z",
+        "webCoverSha256": "5f0b58a34706fdfb2fa020a5c7062bb2f1119ae279d71e0d952c382eaaf8d95d",
+        "epubCoverSha256": "cf967128eb5af07f0f032be6d33d5272411836e351c2385772194c62bf6e33f2",
+        "releaseVersion": "pg-34901-6e38fd03fbb8-cover-3235a37d0f30",
+        "artifactSha256": "3235a37d0f30a218f49cbe1c4729ddd80c6dc75aa4dd6adb96da812385fec0f7"
       }
     },
     {
@@ -7050,7 +7160,7 @@
         }
       ],
       "selectedAt": "2026-10-12T06:56:03Z",
-      "releaseVersion": "pg-3330-916085cffa7c",
+      "releaseVersion": "pg-3330-916085cffa7c-cover-f0961dbe1035",
       "curation": {
         "mode": "curated-library-canon",
         "requestedPosition": 15,
@@ -7059,6 +7169,17 @@
         "collection": "general-classics",
         "rightsMode": "global",
         "sourceMatch": "matched PG#3330 confidence=0.969"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-10-12T07:06:05Z",
+        "webCoverSha256": "af6b560c5e94376f2009a936ed805871eff1d57155cbaaf67feb0e3747746d07",
+        "epubCoverSha256": "4c36b3532828acb6f3fd4b06b8b420ac3bc5b7b618cd6abd3653050e873f3d8b",
+        "releaseVersion": "pg-3330-916085cffa7c-cover-f0961dbe1035",
+        "artifactSha256": "f0961dbe10357d36c9de7145e43ad2d9c2bb6bd5184e10b322e6e6f65e563813"
       }
     },
     {
@@ -7088,7 +7209,7 @@
         }
       ],
       "selectedAt": "2026-10-12T06:56:23Z",
-      "releaseVersion": "pg-65688-d6b5bbf4463f",
+      "releaseVersion": "pg-65688-d6b5bbf4463f-cover-f6f80677c700",
       "curation": {
         "mode": "curated-library-canon",
         "requestedPosition": 23,
@@ -7097,6 +7218,17 @@
         "collection": "christian-classics",
         "rightsMode": "global",
         "sourceMatch": "matched PG#65688 confidence=1.000"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-10-12T07:06:36Z",
+        "webCoverSha256": "aed8cacb006f2212e9f6aa92aa02bd482fa57fa2f941b857725d2f780e55216b",
+        "epubCoverSha256": "c7159ca20e2f1cb2ce3036ee8d7e88b0b17a363fc4c00528eb752287d1467c9c",
+        "releaseVersion": "pg-65688-d6b5bbf4463f-cover-f6f80677c700",
+        "artifactSha256": "f6f80677c70060f859345a13d0bcea9a65edf027a5520a4576873acad1b0f148"
       }
     },
     {
@@ -7126,7 +7258,7 @@
         }
       ],
       "selectedAt": "2026-10-12T06:56:39Z",
-      "releaseVersion": "pg-11449-d3123f5ecbfd",
+      "releaseVersion": "pg-11449-d3123f5ecbfd-cover-5e91ce07a748",
       "curation": {
         "mode": "curated-library-canon",
         "requestedPosition": 27,
@@ -7135,6 +7267,17 @@
         "collection": "missions-classics",
         "rightsMode": "global",
         "sourceMatch": "matched PG#11449 confidence=0.969"
+      },
+      "cover": {
+        "promptVersion": "libcover-v1",
+        "model": "gpt-image-2",
+        "size": "1024x1536",
+        "quality": "medium",
+        "generatedAt": "2026-10-12T07:07:08Z",
+        "webCoverSha256": "5a63a506bd622f9f64beb809875d449884eeb670787fff747462512343b01798",
+        "epubCoverSha256": "dd3c61ea62020ae64b5520291daad22b6594bdb1948fdabeaa67279166d04337",
+        "releaseVersion": "pg-11449-d3123f5ecbfd-cover-5e91ce07a748",
+        "artifactSha256": "5e91ce07a748d94ea45124a4fe344750b5d77fd31e5798aca8a94ba9bde520cc"
       }
     }
   ],

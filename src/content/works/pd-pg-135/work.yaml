@@ -28,12 +28,12 @@
     "lastUpdated": "2026-10-12",
     "edition": 1,
     "editionLabel": "THIEPN Library Edition",
-    "version": "pg-135-af9844d0621e",
-    "activeRelease": "pg-135-af9844d0621e"
+    "version": "pg-135-af9844d0621e-cover-7dac13b77b24",
+    "activeRelease": "pg-135-af9844d0621e-cover-7dac13b77b24"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-135.svg",
-    "alt": "Cover of Les Misérables by Victor Hugo"
+    "src": "/covers/public-domain/pd-pg-135.webp",
+    "alt": "Cover for Les Misérables by Victor Hugo"
   },
   "classification": {
     "subjects": [

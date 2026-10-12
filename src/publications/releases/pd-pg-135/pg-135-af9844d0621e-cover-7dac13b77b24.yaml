@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-135",
+  "version": "pg-135-af9844d0621e-cover-7dac13b77b24",
+  "edition": 1,
+  "releasedAt": "2026-10-12T06:55:27Z",
+  "sourceHash": "ad26cc69ed39aeea5e480eb024b11d8fe6a8c4a8c7e68dff6dc9634804cb6719",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-135/editions/pg-135-af9844d0621e-cover-7dac13b77b24/les-mis-rables.epub",
+      "filename": "les-mis-rables.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 2214877,
+      "sha256": "7dac13b77b24610ea0aa78d47b7f56c8845a7a5e23660b67bd14b86ab6495360"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "af9844d0621e3a64a235e7c615c38febf2be4876d5dda6d61ebab083ba8d49ab",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-135-af9844d0621e",
+    "finalArtifactSha256": "7dac13b77b24610ea0aa78d47b7f56c8845a7a5e23660b67bd14b86ab6495360",
+    "releaseVersioning": "content-addressed"
+  }
+}

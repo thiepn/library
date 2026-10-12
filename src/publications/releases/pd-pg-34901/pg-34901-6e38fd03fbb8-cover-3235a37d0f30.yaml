@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-34901",
+  "version": "pg-34901-6e38fd03fbb8-cover-3235a37d0f30",
+  "edition": 1,
+  "releasedAt": "2026-10-12T06:56:00Z",
+  "sourceHash": "4d1da2e5c1cd6d3112614d9b94cec442da4149d414346aef1002c49fa814c24a",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-34901/editions/pg-34901-6e38fd03fbb8-cover-3235a37d0f30/on-liberty.epub",
+      "filename": "on-liberty.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 546258,
+      "sha256": "3235a37d0f30a218f49cbe1c4729ddd80c6dc75aa4dd6adb96da812385fec0f7"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "6e38fd03fbb8e1005c5211dd98232451458da4435798d41390d6d6a72bd1dc72",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-34901-6e38fd03fbb8",
+    "finalArtifactSha256": "3235a37d0f30a218f49cbe1c4729ddd80c6dc75aa4dd6adb96da812385fec0f7",
+    "releaseVersioning": "content-addressed"
+  }
+}

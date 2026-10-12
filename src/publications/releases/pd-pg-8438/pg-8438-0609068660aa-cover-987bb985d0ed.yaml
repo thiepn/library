@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-8438",
+  "version": "pg-8438-0609068660aa-cover-987bb985d0ed",
+  "edition": 1,
+  "releasedAt": "2026-10-12T06:55:55Z",
+  "sourceHash": "41efb09f07797f5946f80cdc85e7611170c4e47c2baee0f7a9d208e3e0d30092",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-8438/editions/pg-8438-0609068660aa-cover-987bb985d0ed/the-nicomachean-ethics-of-aristotle.epub",
+      "filename": "the-nicomachean-ethics-of-aristotle.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 608449,
+      "sha256": "987bb985d0ed6b636bc0b23aa66f9b154ff97b52abfb5d787077dfb9af039957"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "0609068660aa1fa2e7f6fda696c5ac7a9536a42a1e304174aa26cab8ac55ea3b",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-8438-0609068660aa",
+    "finalArtifactSha256": "987bb985d0ed6b636bc0b23aa66f9b154ff97b52abfb5d787077dfb9af039957",
+    "releaseVersioning": "content-addressed"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-2199",
+  "version": "pg-2199-f32b68a9a7a2-cover-f1c4696e757c",
+  "edition": 1,
+  "releasedAt": "2026-10-12T06:55:20Z",
+  "sourceHash": "4925b57a1252de4bd9b8a56493e9a34f6b51931075ff1576f7b26e7532d3b6d8",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-2199/editions/pg-2199-f32b68a9a7a2-cover-f1c4696e757c/the-iliad.epub",
+      "filename": "the-iliad.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 788793,
+      "sha256": "f1c4696e757c27aa3e3c4c1651bd8380c830fd8b2e866976692d455d37b0c7fe"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "f32b68a9a7a21c8c03a83f58f1d57329ffb9f069af8a1bfb4fe80b6e0511b7ec",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-2199-f32b68a9a7a2",
+    "finalArtifactSha256": "f1c4696e757c27aa3e3c4c1651bd8380c830fd8b2e866976692d455d37b0c7fe",
+    "releaseVersioning": "content-addressed"
+  }
+}

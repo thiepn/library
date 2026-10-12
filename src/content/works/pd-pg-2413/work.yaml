@@ -28,12 +28,12 @@
     "lastUpdated": "2026-10-12",
     "edition": 1,
     "editionLabel": "THIEPN Library Edition",
-    "version": "pg-2413-e6b4614f01d7",
-    "activeRelease": "pg-2413-e6b4614f01d7"
+    "version": "pg-2413-e6b4614f01d7-cover-ece8c04866cd",
+    "activeRelease": "pg-2413-e6b4614f01d7-cover-ece8c04866cd"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-2413.svg",
-    "alt": "Cover of Madame Bovary by Gustave Flaubert"
+    "src": "/covers/public-domain/pd-pg-2413.webp",
+    "alt": "Cover for Madame Bovary by Gustave Flaubert"
   },
   "classification": {
     "subjects": [

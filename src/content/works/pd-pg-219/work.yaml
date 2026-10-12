@@ -22,12 +22,12 @@
     "lastUpdated": "2026-10-12",
     "edition": 1,
     "editionLabel": "THIEPN Library Edition",
-    "version": "pg-219-03e961e7a98b",
-    "activeRelease": "pg-219-03e961e7a98b"
+    "version": "pg-219-03e961e7a98b-cover-553cd1daf648",
+    "activeRelease": "pg-219-03e961e7a98b-cover-553cd1daf648"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-219.svg",
-    "alt": "Cover of Heart of Darkness by Joseph Conrad"
+    "src": "/covers/public-domain/pd-pg-219.webp",
+    "alt": "Cover for Heart of Darkness by Joseph Conrad"
   },
   "classification": {
     "subjects": [

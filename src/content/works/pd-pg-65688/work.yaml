@@ -22,12 +22,12 @@
     "lastUpdated": "2026-10-12",
     "edition": 1,
     "editionLabel": "THIEPN Library Edition",
-    "version": "pg-65688-d6b5bbf4463f",
-    "activeRelease": "pg-65688-d6b5bbf4463f"
+    "version": "pg-65688-d6b5bbf4463f-cover-f6f80677c700",
+    "activeRelease": "pg-65688-d6b5bbf4463f-cover-f6f80677c700"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-65688.svg",
-    "alt": "Cover of The Everlasting Man by G. K. Chesterton"
+    "src": "/covers/public-domain/pd-pg-65688.webp",
+    "alt": "Cover for The Everlasting Man by G. K. Chesterton"
   },
   "classification": {
     "subjects": [

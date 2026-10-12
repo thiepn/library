@@ -28,12 +28,12 @@
     "lastUpdated": "2026-10-12",
     "edition": 1,
     "editionLabel": "THIEPN Library Edition",
-    "version": "pg-2199-f32b68a9a7a2",
-    "activeRelease": "pg-2199-f32b68a9a7a2"
+    "version": "pg-2199-f32b68a9a7a2-cover-f1c4696e757c",
+    "activeRelease": "pg-2199-f32b68a9a7a2-cover-f1c4696e757c"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-2199.svg",
-    "alt": "Cover of The Iliad by Homer"
+    "src": "/covers/public-domain/pd-pg-2199.webp",
+    "alt": "Cover for The Iliad by Homer"
   },
   "classification": {
     "subjects": [

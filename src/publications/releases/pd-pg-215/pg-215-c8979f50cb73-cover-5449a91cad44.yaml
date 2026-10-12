@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-215",
+  "version": "pg-215-c8979f50cb73-cover-5449a91cad44",
+  "edition": 1,
+  "releasedAt": "2026-10-12T06:55:51Z",
+  "sourceHash": "76cbba5531e7088b33c9e88552d52603ce8729dfa98fc439fb3a37cb67a6388b",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-215/editions/pg-215-c8979f50cb73-cover-5449a91cad44/the-call-of-the-wild.epub",
+      "filename": "the-call-of-the-wild.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 626661,
+      "sha256": "5449a91cad44d5d3e9336fa2c515b06e6d94c0b50613b17c050180fbf763a4d4"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "c8979f50cb7385864bf06df9a6f5cb271c994652cc734595fd2e27b2046c0183",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-215-c8979f50cb73",
+    "finalArtifactSha256": "5449a91cad44d5d3e9336fa2c515b06e6d94c0b50613b17c050180fbf763a4d4",
+    "releaseVersioning": "content-addressed"
+  }
+}

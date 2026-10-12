@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-8800",
+  "version": "pg-8800-6066397cd53c-cover-1af5d3f93cbe",
+  "edition": 1,
+  "releasedAt": "2026-10-12T06:55:23Z",
+  "sourceHash": "c72a8d24d1edc66d579ded89da97e9cee489b7b100825a70dd31d02069d56c3a",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-8800/editions/pg-8800-6066397cd53c-cover-1af5d3f93cbe/the-divine-comedy.epub",
+      "filename": "the-divine-comedy.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 931461,
+      "sha256": "1af5d3f93cbe08c7d9727c2659e79aff545e9cd2321e26651746e256c75150fc"
+    }
+  },
+  "coverPipeline": {
+    "promptVersion": "libcover-v1",
+    "model": "gpt-image-2",
+    "sourceEpubSha256": "6066397cd53cd9317eb5bc157cad10db1f076024df9784e337bd59b4d04c9d03",
+    "embeddedCover": true,
+    "sourceReleaseVersion": "pg-8800-6066397cd53c",
+    "finalArtifactSha256": "1af5d3f93cbe08c7d9727c2659e79aff545e9cd2321e26651746e256c75150fc",
+    "releaseVersioning": "content-addressed"
+  }
+}

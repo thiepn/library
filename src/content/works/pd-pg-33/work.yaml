@@ -22,12 +22,12 @@
     "lastUpdated": "2026-10-12",
     "edition": 1,
     "editionLabel": "THIEPN Library Edition",
-    "version": "pg-33-98b2022af7c2",
-    "activeRelease": "pg-33-98b2022af7c2"
+    "version": "pg-33-98b2022af7c2-cover-e90e431ca7fa",
+    "activeRelease": "pg-33-98b2022af7c2-cover-e90e431ca7fa"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-33.svg",
-    "alt": "Cover of The Scarlet Letter by Nathaniel Hawthorne"
+    "src": "/covers/public-domain/pd-pg-33.webp",
+    "alt": "Cover for The Scarlet Letter by Nathaniel Hawthorne"
   },
   "classification": {
     "subjects": [

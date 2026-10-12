@@ -22,12 +22,12 @@
     "lastUpdated": "2026-10-12",
     "edition": 1,
     "editionLabel": "THIEPN Library Edition",
-    "version": "pg-215-c8979f50cb73",
-    "activeRelease": "pg-215-c8979f50cb73"
+    "version": "pg-215-c8979f50cb73-cover-5449a91cad44",
+    "activeRelease": "pg-215-c8979f50cb73-cover-5449a91cad44"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-215.svg",
-    "alt": "Cover of The Call of the Wild by Jack London"
+    "src": "/covers/public-domain/pd-pg-215.webp",
+    "alt": "Cover for The Call of the Wild by Jack London"
   },
   "classification": {
     "subjects": [

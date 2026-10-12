@@ -22,12 +22,12 @@
     "lastUpdated": "2026-10-12",
     "edition": 1,
     "editionLabel": "THIEPN Library Edition",
-    "version": "pg-8438-0609068660aa",
-    "activeRelease": "pg-8438-0609068660aa"
+    "version": "pg-8438-0609068660aa-cover-987bb985d0ed",
+    "activeRelease": "pg-8438-0609068660aa-cover-987bb985d0ed"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-8438.svg",
-    "alt": "Cover of Nicomachean Ethics by Aristotle"
+    "src": "/covers/public-domain/pd-pg-8438.webp",
+    "alt": "Cover for Nicomachean Ethics by Aristotle"
   },
   "classification": {
     "subjects": [

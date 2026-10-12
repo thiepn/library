@@ -1,0 +1,261 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-12T07:07:09Z",
+  "catalogEntries": 29,
+  "counts": {
+    "represented": 13,
+    "missing-global-source": 16,
+    "regional-de": 0,
+    "translation-review": 0,
+    "protected": 0,
+    "protected-until-2027-de": 0,
+    "rights-review": 0
+  },
+  "items": [
+    {
+      "position": 1,
+      "title": "The Iliad",
+      "author": "Homer",
+      "collection": "general-classics",
+      "rightsMode": "global",
+      "state": "represented",
+      "workId": "pd-pg-2199"
+    },
+    {
+      "position": 2,
+      "title": "The Divine Comedy",
+      "author": "Dante Alighieri",
+      "collection": "general-classics",
+      "rightsMode": "global",
+      "state": "represented",
+      "workId": "pd-pg-8800"
+    },
+    {
+      "position": 3,
+      "title": "Les Misérables",
+      "author": "Victor Hugo",
+      "collection": "general-classics",
+      "rightsMode": "global",
+      "state": "represented",
+      "workId": "pd-pg-135"
+    },
+    {
+      "position": 4,
+      "title": "Robinson Crusoe",
+      "author": "Daniel Defoe",
+      "collection": "general-classics",
+      "rightsMode": "global",
+      "state": "represented",
+      "workId": "pd-pg-70841"
+    },
+    {
+      "position": 5,
+      "title": "Gulliver's Travels",
+      "author": "Jonathan Swift",
+      "collection": "general-classics",
+      "rightsMode": "global",
+      "state": "missing-global-source"
+    },
+    {
+      "position": 6,
+      "title": "Heart of Darkness",
+      "author": "Joseph Conrad",
+      "collection": "general-classics",
+      "rightsMode": "global",
+      "state": "represented",
+      "workId": "pd-pg-219"
+    },
+    {
+      "position": 7,
+      "title": "Notes from Underground",
+      "author": "Fyodor Dostoevsky",
+      "collection": "general-classics",
+      "rightsMode": "global",
+      "state": "missing-global-source"
+    },
+    {
+      "position": 8,
+      "title": "The Death of Ivan Ilyich",
+      "author": "Leo Tolstoy",
+      "collection": "general-classics",
+      "rightsMode": "global",
+      "state": "missing-global-source"
+    },
+    {
+      "position": 9,
+      "title": "The Scarlet Letter",
+      "author": "Nathaniel Hawthorne",
+      "collection": "general-classics",
+      "rightsMode": "global",
+      "state": "represented",
+      "workId": "pd-pg-33"
+    },
+    {
+      "position": 10,
+      "title": "Madame Bovary",
+      "author": "Gustave Flaubert",
+      "collection": "general-classics",
+      "rightsMode": "global",
+      "state": "represented",
+      "workId": "pd-pg-2413"
+    },
+    {
+      "position": 11,
+      "title": "The Call of the Wild",
+      "author": "Jack London",
+      "collection": "general-classics",
+      "rightsMode": "global",
+      "state": "represented",
+      "workId": "pd-pg-215"
+    },
+    {
+      "position": 12,
+      "title": "Nicomachean Ethics",
+      "author": "Aristotle",
+      "collection": "philosophy-classics",
+      "rightsMode": "global",
+      "state": "represented",
+      "workId": "pd-pg-8438"
+    },
+    {
+      "position": 13,
+      "title": "Pensées",
+      "author": "Blaise Pascal",
+      "collection": "philosophy-classics",
+      "rightsMode": "global",
+      "state": "missing-global-source"
+    },
+    {
+      "position": 14,
+      "title": "On Liberty",
+      "author": "John Stuart Mill",
+      "collection": "philosophy-classics",
+      "rightsMode": "global",
+      "state": "represented",
+      "workId": "pd-pg-34901"
+    },
+    {
+      "position": 15,
+      "title": "The Analects of Confucius",
+      "author": "Confucius",
+      "collection": "general-classics",
+      "rightsMode": "global",
+      "state": "represented",
+      "workId": "pd-pg-3330"
+    },
+    {
+      "position": 16,
+      "title": "On the Incarnation",
+      "author": "Athanasius",
+      "collection": "christian-classics",
+      "rightsMode": "global",
+      "state": "missing-global-source"
+    },
+    {
+      "position": 17,
+      "title": "The Didache",
+      "author": "Anonymous",
+      "collection": "christian-classics",
+      "rightsMode": "global",
+      "state": "missing-global-source"
+    },
+    {
+      "position": 18,
+      "title": "The Mortification of Sin",
+      "author": "John Owen",
+      "collection": "christian-classics",
+      "rightsMode": "global",
+      "state": "missing-global-source"
+    },
+    {
+      "position": 19,
+      "title": "Religious Affections",
+      "author": "Jonathan Edwards",
+      "collection": "christian-classics",
+      "rightsMode": "global",
+      "state": "missing-global-source"
+    },
+    {
+      "position": 20,
+      "title": "Holiness",
+      "author": "J. C. Ryle",
+      "collection": "christian-classics",
+      "rightsMode": "global",
+      "state": "missing-global-source"
+    },
+    {
+      "position": 21,
+      "title": "The Reformed Pastor",
+      "author": "Richard Baxter",
+      "collection": "christian-classics",
+      "rightsMode": "global",
+      "state": "missing-global-source"
+    },
+    {
+      "position": 22,
+      "title": "All of Grace",
+      "author": "Charles H. Spurgeon",
+      "collection": "christian-classics",
+      "rightsMode": "global",
+      "state": "missing-global-source"
+    },
+    {
+      "position": 23,
+      "title": "The Everlasting Man",
+      "author": "G. K. Chesterton",
+      "collection": "christian-classics",
+      "rightsMode": "global",
+      "state": "represented",
+      "workId": "pd-pg-65688"
+    },
+    {
+      "position": 24,
+      "title": "Christianity and Liberalism",
+      "author": "J. Gresham Machen",
+      "collection": "christian-classics",
+      "rightsMode": "global",
+      "state": "missing-global-source"
+    },
+    {
+      "position": 25,
+      "title": "The Bondage of the Will",
+      "author": "Martin Luther",
+      "collection": "christian-classics",
+      "rightsMode": "global",
+      "state": "missing-global-source"
+    },
+    {
+      "position": 26,
+      "title": "Missionary Methods: St. Paul's or Ours?",
+      "author": "Roland Allen",
+      "collection": "missions-classics",
+      "rightsMode": "global",
+      "state": "missing-global-source"
+    },
+    {
+      "position": 27,
+      "title": "An Enquiry into the Obligations of Christians to Use Means for the Conversion of the Heathens",
+      "author": "William Carey",
+      "collection": "missions-classics",
+      "rightsMode": "global",
+      "state": "represented",
+      "workId": "pd-pg-11449"
+    },
+    {
+      "position": 28,
+      "title": "Autobiography of John G. Paton",
+      "author": "John G. Paton",
+      "collection": "missions-classics",
+      "rightsMode": "global",
+      "state": "missing-global-source"
+    },
+    {
+      "position": 29,
+      "title": "Absolute Surrender",
+      "author": "Andrew Murray",
+      "collection": "christian-classics",
+      "rightsMode": "global",
+      "state": "missing-global-source"
+    }
+  ]
+}

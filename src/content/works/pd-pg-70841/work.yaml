@@ -27,12 +27,12 @@
     "lastUpdated": "2026-10-12",
     "edition": 1,
     "editionLabel": "THIEPN Library Edition",
-    "version": "pg-70841-fbf0a5a1cc82",
-    "activeRelease": "pg-70841-fbf0a5a1cc82"
+    "version": "pg-70841-fbf0a5a1cc82-cover-812279893489",
+    "activeRelease": "pg-70841-fbf0a5a1cc82-cover-812279893489"
   },
   "cover": {
-    "src": "/covers/public-domain/pd-pg-70841.svg",
-    "alt": "Cover of Robinson Crusoe by Daniel Defoe"
+    "src": "/covers/public-domain/pd-pg-70841.webp",
+    "alt": "Cover for Robinson Crusoe by Daniel Defoe"
   },
   "classification": {
     "subjects": [
