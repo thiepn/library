@@ -119,6 +119,14 @@ async function render(userOverride?: LibraryAccountUser | null): Promise<Library
       : 'Automatic checks paused. You can still sync manually.'
     : 'Enable Library sync before setting automatic checks.');
   text('[data-sync-mode]', enabled ? 'Sync enabled on this device' : 'Local-only on this device');
+  text('[data-ecosystem-library-state]', enabled
+    ? isLibraryAutomaticSyncEnabled(user.id)
+      ? 'Reading-state sync enabled · automatic checks on'
+      : 'Reading-state sync enabled · manual checks only'
+    : 'Local-only · no Library cloud updates');
+  text('[data-ecosystem-library-detail]', enabled
+    ? 'The Library Account is authoritative. Use the native conflict chooser if copies diverge.'
+    : 'Connect this device in Library before cloud changes can be read or written.');
 
   if (enabled) {
     renderResult(await reconcileLibraryAccountSync(user));
@@ -167,12 +175,18 @@ export function mountLibraryAccountPage(): () => void {
     }
   };
 
-  const act = async (operation: (current: LibraryAccountUser) => Promise<LibrarySyncResult>) => {
+  const act = async (operation: (current: LibraryAccountUser) => Promise<LibrarySyncResult>,
+    conflictResolution = false) => {
     if (!user) return;
     setBusy(true);
     try {
       const result = await operation(user);
       renderResult(result);
+      if (conflictResolution && ['pushed', 'pulled', 'synced'].includes(result.status)) {
+        window.dispatchEvent(new CustomEvent('thiepn:library-conflict-resolved', {
+          detail: { ownerId: user.id },
+        }));
+      }
       await render(user);
     } finally {
       setBusy(false);
@@ -206,8 +220,9 @@ export function mountLibraryAccountPage(): () => void {
     pauseLibrarySync(user.id);
     void render(user);
   });
-  document.querySelector('[data-use-device]')?.addEventListener('click', () => void act(chooseThisDeviceForLibrarySync));
-  document.querySelector('[data-use-cloud]')?.addEventListener('click', () => void act(chooseCloudForLibrarySync));
+  document.querySelector('[data-use-device]')?.addEventListener('click', () => void act(chooseThisDeviceForLibrarySync, true));
+  document.querySelector('[data-use-cloud]')?.addEventListener('click', () => void act(chooseCloudForLibrarySync, true));
+  document.querySelector('[data-ecosystem-retry]')?.addEventListener('click', () => void act(reconcileLibraryAccountSync));
   document.querySelector('[data-personal-files-sync]')?.addEventListener('click', () => {
     if (!user) return;
     setBusy(true);
@@ -233,6 +248,13 @@ export function mountLibraryAccountPage(): () => void {
       : detail.status === 'error' ? 'Automatic check failed; local reading remains available.'
       : 'Latest automatic check: ' + detail.status;
     text('[data-auto-sync-runtime]', status);
+    text('[data-ecosystem-library-detail]', status);
+    text('[data-ecosystem-library-state]', detail.status === 'conflict'
+      ? 'Conflict · choose a source of truth in Library'
+      : detail.status === 'error' ? 'Needs attention · retry in Library'
+      : detail.status === 'checking' ? 'Checking Library…'
+      : detail.status === 'offline' ? 'Offline · local data remains accessible'
+      : 'Library reported: ' + detail.status);
   };
   window.addEventListener('thiepn:library-runtime', onRuntime);
   const onPersonalFiles = (event: Event) => {

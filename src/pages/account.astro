@@ -106,6 +106,30 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
           </div>
         </div>
 
+        <section class="sync-boundary ecosystem-overview" aria-labelledby="ecosystem-sync-heading" data-ecosystem-sync-overview>
+          <h3 id="ecosystem-sync-heading">Ecosystem sync dashboard</h3>
+          <p class="micro">Each app owns its data, permissions and sync engine. Library cannot check another app's private sync status without its own consent.</p>
+          <div class="ecosystem-app-grid">
+            <article aria-labelledby="ecosystem-library">
+              <h4 id="ecosystem-library">Library</h4>
+              <p data-ecosystem-library-state role="status">Checking this device…</p>
+              <p class="micro" data-ecosystem-library-detail>Reading-state sync uses Library's own Account permission.</p>
+              <button type="button" data-account-action data-ecosystem-retry>Check Library again</button>
+            </article>
+            <article aria-labelledby="ecosystem-notes">
+              <h4 id="ecosystem-notes">Notes</h4>
+              <p>Managed independently by Notes.</p>
+              <p class="micro">Open Notes → Settings → Account &amp; sync to see its native status and Core coordination permission. No Notes records are read here.</p>
+              <a href="/notes/" rel="noopener">Open Notes</a>
+            </article>
+            <article aria-labelledby="ecosystem-hub">
+              <h4 id="ecosystem-hub">Hub</h4>
+              <p>Metadata sharing requires its own consent.</p>
+              <p class="micro">Hub remains a temporary read-only device session. It does not receive Library cloud copies.</p>
+              <a href="/" rel="noopener">Open Hub</a>
+            </article>
+          </div>
+        </section>
         <div class="danger-zone">
           <h3>Cloud-data lifecycle</h3>
           <p>Deletion is managed centrally by THIEPN Account with a deletion review, recent-authentication check, and revision-conflict protection. Local reading data and personal files on this device are not erased.</p>
