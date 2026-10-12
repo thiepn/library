@@ -531,6 +531,132 @@ const catalog = (await getWorks()).map((work) => ({
         return button;
       }
 
+
+      function renderReadingView(): void {
+        if (previewMode === 'write' || editor.hidden) return;
+        renderNotebookPreview(readingPreview, body.value, {
+          notes: libraryNotes,
+          onOpenNote: note => { void openAnyNote(note); },
+        });
+      }
+
+      function setWritingView(mode: 'write' | 'split' | 'read'): void {
+        previewMode = mode;
+        writingSurface.dataset.view = mode;
+        body.hidden = mode === 'read';
+        readingPreview.hidden = mode === 'write';
+        root!.querySelectorAll<HTMLButtonElement>('[data-notebook-view]').forEach(button => {
+          button.setAttribute('aria-pressed', String(button.dataset.notebookView === mode));
+        });
+        renderReadingView();
+        if (mode === 'write') body.focus({ preventScroll: true });
+      }
+
+      function insertAtCursor(markdown: string): void {
+        if (!selected && !draft) { setStatus('Open a note before inserting content.'); return; }
+        const insert = insertNotebookText(body.value, body.selectionStart, body.selectionEnd, markdown);
+        if (insert.value.length > body.maxLength) {
+          mark('Insertion would exceed the maximum note size.');
+          return;
+        }
+        setWritingView('write');
+        body.value = insert.value;
+        body.setSelectionRange(insert.cursor, insert.cursor);
+        body.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+
+      function renderCurrentTopics(): void {
+        currentTopics.replaceChildren();
+        if (!selected && !draft) return;
+        const topics = extractNotebookTopics(body.value);
+        if (!topics.length) { paragraph(currentTopics, 'No topics in this note yet.'); return; }
+        for (const id of topics) {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'book-notebook__topic-chip';
+          button.textContent = '#' + id;
+          button.title = 'Browse this topic across saved books';
+          button.addEventListener('click', () => selectTopic(id));
+          currentTopics.append(button);
+        }
+      }
+
+      function selectTopic(topic: string): void {
+        if (![...discoverTopic.options].some(option => option.value === topic)) {
+          setStatus('Save this topic before filtering across books.');
+          return;
+        }
+        discoverBook.value = 'all';
+        discoverTopic.value = topic;
+        discoverQuery.value = '';
+        renderDiscover();
+        discoverQuery.closest('.book-notebook__discover')?.scrollIntoView({
+          behavior: 'smooth', block: 'start',
+        });
+      }
+
+      function renderDashboard(): void {
+        const overview = buildNotebookOverview(libraryNotes);
+        const values: Record<string, number> = {
+          notes: overview.total, books: overview.books,
+          connections: overview.links, topics: overview.topics,
+        };
+        for (const element of dashboardStats.querySelectorAll<HTMLElement>('[data-dashboard-stat]'))
+          element.textContent = String(values[element.dataset.dashboardStat ?? ''] ?? 0);
+        dashboardRecent.replaceChildren();
+        for (const note of overview.recentlyUpdated) {
+          dashboardRecent.append(connectedWithPreview(note,
+            bookName(note.workId) + ' · ' + new Date(note.updatedAt).toLocaleDateString()));
+        }
+        if (!overview.recentlyUpdated.length)
+          paragraph(dashboardRecent, 'Begin a reading note to start your notebook.');
+        dashboardTopics.replaceChildren();
+        for (const { id, count } of overview.topicCounts.slice(0, 20)) {
+          const chip = document.createElement('button');
+          chip.type = 'button';
+          chip.className = 'book-notebook__topic-chip';
+          chip.textContent = '#' + id + ' · ' + count;
+          chip.addEventListener('click', () => selectTopic(id));
+          dashboardTopics.append(chip);
+        }
+        if (!overview.topicCounts.length)
+          paragraph(dashboardTopics, 'Add a #topic/name marker to any note to group related ideas.');
+        dashboardUnlinked.textContent = overview.total
+          ? overview.unlinked + ' notes have no incoming or outgoing links yet.'
+          : 'Your ideas will appear here once saved.';
+      }
+
+      function showLinkedPreview(note: BookNoteDocumentV1): void {
+        linkedPreviewNote = note;
+        peekOpener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+        linkedPreviewTitle.textContent = notebookTitle(note);
+        linkedPreviewSource.textContent = bookName(note.workId) + ' · '
+          + note.scope.replace(/-/g, ' ') + ' · edited '
+          + new Date(note.updatedAt).toLocaleDateString();
+        renderNotebookPreview(linkedPreviewText, note.bodyMarkdown.slice(0, 12000), {
+          notes: libraryNotes,
+          onOpenNote: other => {
+            linkedPreview.close();
+            void openAnyNote(other);
+          },
+        });
+        if (!linkedPreview.open) linkedPreview.showModal();
+      }
+
+      function connectedWithPreview(note: BookNoteDocumentV1, description?: string): HTMLElement {
+        const row = document.createElement('div');
+        row.className = 'book-notebook__connected-row';
+        const open = connectedButton(note, description);
+        const preview = document.createElement('button');
+        preview.type = 'button';
+        preview.className = 'book-notebook__peek-trigger';
+        preview.textContent = 'Preview';
+        preview.setAttribute('aria-label', 'Preview ' + notebookTitle(note));
+        preview.addEventListener('click', () => showLinkedPreview(note));
+        row.append(open, preview);
+        return row;
+      }
+
       function renderConnections(): void {
         outgoing.replaceChildren();
         backlinks.replaceChildren();
