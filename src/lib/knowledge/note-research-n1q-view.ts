@@ -166,6 +166,7 @@ export function mountResearchViews(
   const exportOptions:Record<string,{target:string;needsCollection:boolean;draft:boolean}>={
     handoff:{target:'[data-n1o-export-handoff]',needsCollection:true,draft:false},
     knowledge:{target:'[data-n1m-export-knowledge]',needsCollection:true,draft:false},
+    ledger:{target:'[data-n1t-export-ledger]',needsCollection:true,draft:false},
     section:{target:'[data-n1r-section-export]',needsCollection:true,draft:true},
     comparison:{target:'[data-n1p-compare-export]',needsCollection:true,draft:true},
     evidence:{target:'[data-n1o-export-evidence]',needsCollection:true,draft:false},
