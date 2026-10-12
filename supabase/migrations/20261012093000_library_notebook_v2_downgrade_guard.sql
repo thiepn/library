@@ -74,6 +74,10 @@ begin
     raise exception 'UNSUPPORTED_LIBRARY_BACKUP_VERSION' using errcode='22023';
   end if;
   v_incoming_version := (p_state->>'schemaVersion')::integer;
+  if v_incoming_version = 1
+     and (p_state #> '{state,main,noteDocuments}') is not null then
+    raise exception 'LIBRARY_V1_CANNOT_CONTAIN_NOTEBOOK_DATA' using errcode='22023';
+  end if;
   if v_incoming_version = 2 then
     v_notes := p_state #> '{state,main,noteDocuments,records}';
     if v_notes is null or jsonb_typeof(v_notes) <> 'array' then
@@ -88,8 +92,12 @@ begin
          or n.value->>'schemaVersion' is distinct from '1'
          or nullif(n.value->>'id','') is null
          or nullif(n.value->>'workId','') is null
-         or n.value->>'scope' not in ('book-overview','chapter-summary','reading-note')
-         or jsonb_typeof(n.value->'bodyMarkdown') <> 'string'
+         or coalesce(n.value->>'scope','') not in ('book-overview','chapter-summary','reading-note')
+         or jsonb_typeof(n.value->'bodyMarkdown') is distinct from 'string'
+         or jsonb_typeof(n.value->'sourceAnnotations') is distinct from 'array'
+         or jsonb_typeof(n.value->'revision') is distinct from 'number'
+         or jsonb_typeof(n.value->'createdAt') is distinct from 'string'
+         or jsonb_typeof(n.value->'updatedAt') is distinct from 'string'
     ) then raise exception 'LIBRARY_V2_NOTEBOOK_RECORD_INVALID' using errcode='22023'; end if;
     if exists (select 1 from jsonb_array_elements(v_notes) as n(value)
       group by n.value->>'id' having count(*) > 1) then
