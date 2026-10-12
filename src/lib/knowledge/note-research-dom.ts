@@ -1,7 +1,11 @@
 import { listBookNotes, createBookNote, updateBookNote, getBookNote, subscribeBookNotes } from './note-store';
 import { renderNotebookPreview } from './note-preview';
 import { notebookTitle, type BookNoteDocumentV1 } from './note-model';
-import { findNotebookNotes } from './note-links';
+import {
+  indexResearchNotes, searchResearchIndex, suggestedResearchSources,
+  researchBookFacets, type ResearchSearchIndexEntry,
+} from './note-research-discovery';
+import { mountResearchN1L, type ResearchN1LController } from './note-research-n1l-dom';
 import { extractNotebookTopics } from './note-workspace';
 import { mountResearchRefinements, type ResearchRefinements } from './note-research-n1k-dom';
 import {
@@ -64,6 +68,9 @@ export function mountResearchWorkbench(
   const newDescription=$<HTMLInputElement>('[data-research-new-description]');
   const newWorkflow=$<HTMLSelectElement>('[data-research-new-workflow]');
   const search=$<HTMLInputElement>('[data-research-find]');
+  const searchBook=$<HTMLSelectElement>('[data-research-search-book]');
+  const searchCount=$<HTMLElement>('[data-research-search-count]');
+  const suggestions=$<HTMLElement>('[data-research-suggestions]');
   const results=$<HTMLElement>('[data-research-search-results]');
   const sourcesList=$<HTMLElement>('[data-research-sources]');
   const sourceFilter=$<HTMLInputElement>('[data-research-filter-sources]');
@@ -97,6 +104,8 @@ export function mountResearchWorkbench(
   let disposed=false,revision=0;
   let busy=false;
   let refinements:ResearchRefinements | undefined;
+  let sessionControls:ResearchN1LController | undefined;
+  let searchIndex:ResearchSearchIndexEntry[]=[];
   const events:Array<()=>void>=[];
   const notify=(message:string)=>{notice.textContent=message;};
   const el=(tag:string,text?:string):HTMLElement=>{
@@ -296,6 +305,7 @@ export function mountResearchWorkbench(
     renderSources();renderSearch();renderSide('left');renderSide('right');renderSynthesis();
     refinements?.onNotesChanged();
     refinements?.onSynthesisChanged();
+    sessionControls?.onNotesChanged();
   }
   async function activate(id:string,force=false):Promise<void> {
     if(!force && id!==activeId && !guardSwitch()){
@@ -310,6 +320,7 @@ export function mountResearchWorkbench(
     }
     renderDetail();
     refinements?.onCollectionChanged();
+    sessionControls?.onCollectionChanged();
   }
   async function addNotes(noteIds:readonly string[]):Promise<void> {
     if(!active){notify('Create or select a collection first.');root.scrollIntoView({behavior:'smooth'});return;}
@@ -340,6 +351,8 @@ export function mountResearchWorkbench(
       const fetched=await listBookNotes();
       if(disposed||token!==revision)return;
       all=fetched;
+      searchIndex=indexResearchNotes(all,host.bookTitle);
+      renderBookFacets();
       const localActive=loadResearchCollections().find(c=>c.id===activeId);
       if(activeId && !localActive)activeId='';
       if(localActive?.synthesisId) {
@@ -362,6 +375,7 @@ export function mountResearchWorkbench(
   });
   bind('[data-research-select]','change',()=>{void activate(select.value);});
   bind('[data-research-find]','input',()=>renderSearch());
+  bind('[data-research-search-book]','change',()=>renderSearch());
   bind('[data-research-filter-sources]','input',()=>renderSources());
   bind('[data-research-delete]','click',()=>{
     if(!active || !guardSwitch())return;
@@ -422,6 +436,7 @@ export function mountResearchWorkbench(
     saveSynth.disabled=!dirty()||busy;
     synthState.textContent=dirty()?'Unsaved synthesis edits':'Saved locally · revision '+synthesis.revision;
     refinements?.onDraftEdited();
+    sessionControls?.onDraftChanged();
   };
   bind('[data-research-synthesis-title]','input',synthInput);
   bind('[data-research-synthesis-body]','input',synthInput);
@@ -434,6 +449,7 @@ export function mountResearchWorkbench(
       .then(saved=>{
         adoptSynthesis(saved);
         refinements?.onSynthesisSaved();
+        sessionControls?.onSaved();
         synthState.textContent='Saved locally · revision '+saved.revision;
         notify('Synthesis saved to your authoritative Library notebook.');
       })
