@@ -9,6 +9,7 @@ import '../styles/notebook-n1j.css';
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const catalog = (await getWorks()).map((work) => ({
   id: work.id, title: work.title, slug: work.slug,
+  hasPdf: Boolean(work.release?.artifacts.pdf),
 }));
 ---
 <BaseLayout title="Book Notebook" description="Private, local-first book overviews, chapter summaries and reading notes." noindex>
@@ -455,7 +456,9 @@ const catalog = (await getWorks()).map((work) => ({
       type BookNoteDocumentV1, type BookNoteScope,
     } from '../lib/knowledge/note-model';
 
-    interface BookEntry { id: string; title: string; slug?: string; personal?: PersonalBookSummary }
+    interface BookEntry {
+      id: string; title: string; slug?: string; hasPdf?: boolean; personal?: PersonalBookSummary
+    }
     const root = document.querySelector<HTMLElement>('[data-notebook-root]');
     if (root) {
       const base = root.dataset.base ?? '/library';
@@ -1726,12 +1729,24 @@ const catalog = (await getWorks()).map((work) => ({
         bookTitle: workId => bookName(workId),
         sourceHref: note => {
           const entry = books.get(note.workId);
-          if (entry?.personal) {
-            const route = entry.personal.format === 'pdf' ? 'pdf' : 'read';
-            return `${base}/personal/${route}?id=${encodeURIComponent(entry.personal.id)}`;
+          if (!entry) return undefined;
+          if (entry.personal) {
+            const isPdf = entry.personal.format === 'pdf';
+            const route = isPdf ? 'pdf' : 'read';
+            const origin = `${base}/personal/${route}?id=${encodeURIComponent(entry.personal.id)}`;
+            const annotation = !isPdf && note.anchor?.format === 'epub'
+              ? note.sourceAnnotations.find(source => source.format === 'epub') : undefined;
+            return annotation ? origin + '&annotation=' + encodeURIComponent(annotation.id) : origin;
           }
-          if (entry?.slug) return `${base}/works/${encodeURIComponent(entry.slug)}/read`;
-          return undefined;
+          if (!entry.slug) return undefined;
+          const origin = `${base}/works/${encodeURIComponent(entry.slug)}`;
+          if (note.anchor?.format === 'pdf') {
+            return entry.hasPdf ? origin + '/pdf' : undefined;
+          }
+          const annotation = note.anchor?.format === 'epub'
+            ? note.sourceAnnotations.find(source => source.format === 'epub') : undefined;
+          return origin + '/read'
+            + (annotation ? '?annotation=' + encodeURIComponent(annotation.id) : '');
         },
         openNote: note => openAnyNote(note),
       });
