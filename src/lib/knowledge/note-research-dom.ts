@@ -7,6 +7,7 @@ import {
 } from './note-research-discovery';
 import { mountResearchN1L, type ResearchN1LController } from './note-research-n1l-dom';
 import { mountKnowledgeWorkbench, type KnowledgeWorkbench } from './note-research-n1m-dom';
+import { mountResearchN1O, type ResearchN1OController } from './note-research-n1o-dom';
 import { extractNotebookTopics } from './note-workspace';
 import { mountResearchRefinements, type ResearchRefinements } from './note-research-n1k-dom';
 import { readNotebookContinuity, rememberResearchCollection, orderResearchCollections } from './note-continuity';
@@ -111,6 +112,7 @@ export function mountResearchWorkbench(
   let refinements:ResearchRefinements | undefined;
   let sessionControls:ResearchN1LController | undefined;
   let knowledge:KnowledgeWorkbench | undefined;
+  let workflow:ResearchN1OController | undefined;
   let searchIndex:ResearchSearchIndexEntry[]=[];
   const events:Array<()=>void>=[];
   const notify=(message:string)=>{notice.textContent=message;};
@@ -353,6 +355,7 @@ export function mountResearchWorkbench(
     refinements?.onSynthesisChanged();
     sessionControls?.onNotesChanged();
     knowledge?.onNotesChanged();
+    workflow?.onNotesChanged();
   }
   async function activate(id:string,force=false):Promise<void> {
     if(!force && id!==activeId && !guardSwitch()){
@@ -374,6 +377,7 @@ export function mountResearchWorkbench(
     refinements?.onCollectionChanged();
     sessionControls?.onCollectionChanged();
     knowledge?.onCollectionChanged();
+    workflow?.onCollectionChanged();
   }
   async function addNotes(noteIds:readonly string[]):Promise<void> {
     if(!active){notify('Create or select a collection first.');root.scrollIntoView({behavior:'smooth'});return;}
@@ -500,6 +504,7 @@ export function mountResearchWorkbench(
     refinements?.onDraftEdited();
     sessionControls?.onDraftChanged();
     knowledge?.onDraftChanged();
+    workflow?.onDraftChanged();
   };
   bind('[data-research-synthesis-title]','input',synthInput);
   bind('[data-research-synthesis-body]','input',synthInput);
@@ -514,6 +519,7 @@ export function mountResearchWorkbench(
         refinements?.onSynthesisSaved();
         sessionControls?.onSaved();
         knowledge?.onDraftChanged();
+        workflow?.onDraftChanged();
         synthState.textContent='Saved locally · revision '+saved.revision;
         notify('Synthesis saved to your authoritative Library notebook.');
       })
@@ -606,6 +612,23 @@ export function mountResearchWorkbench(
     },
     notify,
   });
+  workflow=mountResearchN1O(root,{
+    active:()=>active,
+    notes:()=>all,
+    synthesis:()=>synthesis,
+    draft:()=>({title:synthTitle.value,body:synthBody.value}),
+    isDirty:()=>dirty(),
+    setDraft:(title,body)=>{
+      synthTitle.value=title;synthBody.value=body;
+      synthInput();
+    },
+    pins:()=>({...pins}),
+    bookTitle:id=>host.bookTitle(id),
+    sourceHref:note=>host.sourceHref(note),
+    openNote:note=>host.openNote(note),
+    openCollection:id=>activate(id),
+    notify,
+  });
   void refresh();
   return {
     refresh,addNote,addNotes,
@@ -618,6 +641,7 @@ export function mountResearchWorkbench(
       refinements?.dispose();
       sessionControls?.dispose();
       knowledge?.dispose();
+      workflow?.dispose();
       window.removeEventListener('beforeunload',beforeUnload);
     },
   };
