@@ -43,7 +43,7 @@ async function seedCurrentState(page: Page) {
       transaction.onerror = () => reject(transaction.error);
     });
 
-    const main = await open(mainDb, 10);
+    const main = await open(mainDb, 11);
     const mainTx = main.transaction(['favorites', 'progress', 'legacyProgress', 'bookmarks', 'annotations', 'readingActivity'], 'readwrite');
     mainTx.objectStore('favorites').put({ schemaVersion: 1, workId: 'rr8-favorite', savedAt: '2026-08-30T18:00:00.000Z' });
     mainTx.objectStore('progress').put({
