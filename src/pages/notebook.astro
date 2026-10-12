@@ -586,6 +586,26 @@ const catalog = (await getWorks()).map((work) => ({
               <button type="button" data-research-md-tool="checkbox" aria-label="Insert task">Task</button>
               <button type="button" data-research-md-tool="code" aria-label="Inline code">Code</button>
             </div>
+            <section class="book-notebook__n1q-citations" aria-labelledby="n1q-citations-heading">
+              <div class="book-notebook__n1q-citation-head">
+                <div>
+                  <h5 id="n1q-citations-heading">Source citation navigator</h5>
+                  <p class="micro">Follow and insert stable-ID note references without leaving your current synthesis draft.</p>
+                </div>
+                <span class="micro" data-n1q-citation-count>No synthesis selected</span>
+              </div>
+              <div class="book-notebook__n1q-citation-actions">
+                <label for="n1q-citation-note">Source</label>
+                <select id="n1q-citation-note" data-n1q-citation-source>
+                  <option value="">Choose a collected source…</option>
+                </select>
+                <button type="button" data-n1q-citation-insert disabled>Insert stable link</button>
+                <button type="button" data-n1q-citation-next disabled>Next use in synthesis</button>
+                <button type="button" data-n1q-citation-open disabled>Open saved note</button>
+                <button type="button" data-n1q-citation-pin disabled>Pin source A</button>
+              </div>
+              <p class="micro" role="status" aria-live="polite" data-n1q-citation-status></p>
+            </section>
             <section class="book-notebook__n1l-outline" aria-labelledby="research-synthesis-outline-title">
               <div class="book-notebook__n1l-heading">
                 <h5 id="research-synthesis-outline-title">Synthesis outline</h5>
