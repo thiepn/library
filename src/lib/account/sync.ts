@@ -1,7 +1,8 @@
 import {
   createLibraryBackup,
   restoreLibraryBackupJson,
-  type LibraryBackupV1,
+  parseLibraryBackupJson,
+  type LibraryBackup,
 } from '../client/library-portability';
 import {
   getThiepnAccountClient,
@@ -16,7 +17,7 @@ import {
 
 export const LIBRARY_ACCOUNT_SYNC_KEY = 'thiepn.library.account-sync.v1';
 const DEVICE_ID_KEY = 'thiepn.library.device-id.v1';
-const APP_VERSION = '1.0.0-account-sync';
+const APP_VERSION = '1.1.0-notebook-v2';
 
 export type LibrarySyncStatus =
   | 'disabled'
@@ -46,7 +47,7 @@ interface LibrarySyncMeta {
 
 interface CloudState {
   revision: number;
-  state: LibraryBackupV1;
+  state: LibraryBackup;
   updated_at?: string;
 }
 
@@ -131,7 +132,7 @@ function stableStringify(value: unknown): string {
     .join(',')}}`;
 }
 
-async function hashBackup(backup: LibraryBackupV1): Promise<string> {
+async function hashBackup(backup: LibraryBackup): Promise<string> {
   const canonical = {
     format: backup.format,
     schemaVersion: backup.schemaVersion,
@@ -152,9 +153,21 @@ function normalizeCloudState(value: unknown): CloudState {
   }
   return {
     revision: row.revision,
-    state: row.state as LibraryBackupV1,
+    state: parseLibraryBackupJson(JSON.stringify(row.state)),
     ...(typeof row.updated_at === 'string' ? { updated_at: row.updated_at } : {}),
   };
+}
+
+async function assertNotebookSyncProtocol(): Promise<void> {
+  const { data, error } = await getThiepnAccountClient().rpc('library_note_sync_capabilities');
+  if (error || !data || typeof data !== 'object') {
+    throw new Error('Notebook cloud sync is paused: server V2 downgrade protection has not been independently enabled. Your local notes remain unchanged.');
+  }
+  const capability = data as Record<string, unknown>;
+  if (capability.library_backup_schema !== 2 || capability.revision_cas !== true ||
+      capability.notebook_rollback_guard !== true || capability.format !== 'thiepn-library-backup') {
+    throw new Error('Notebook cloud sync is paused: required server V2 protections are missing. Your local notes remain unchanged.');
+  }
 }
 
 async function readCloudState(): Promise<CloudState | undefined> {
@@ -168,7 +181,7 @@ async function readCloudState(): Promise<CloudState | undefined> {
 
 async function writeCloudState(
   expectedRevision: number | null,
-  state: LibraryBackupV1,
+  state: LibraryBackup,
   deviceId: string,
 ): Promise<CloudState> {
   const { data, error } = await getThiepnAccountClient().rpc('sync_thiepn_library_state', {
@@ -223,7 +236,7 @@ async function applyCloud(userId: string, cloud: CloudState): Promise<LibrarySyn
 async function pushLocal(
   userId: string,
   cloud: CloudState | undefined,
-  local: LibraryBackupV1,
+  local: LibraryBackup,
 ): Promise<LibrarySyncResult> {
   const meta = metaForUser(userId);
   const saved = await writeCloudState(cloud?.revision ?? null, local, meta.deviceId);
@@ -278,6 +291,7 @@ export async function reconcileLibraryAccountSync(user: LibraryAccountUser): Pro
       return result;
     }
 
+    await assertNotebookSyncProtocol();
     const [local, cloud] = await Promise.all([createLibraryBackup(), readCloudState()]);
     const localHash = await hashBackup(local);
     const cloudHash = cloud ? await hashBackup(cloud.state) : undefined;
@@ -334,6 +348,7 @@ export async function reconcileLibraryAccountSync(user: LibraryAccountUser): Pro
 
 export async function chooseThisDeviceForLibrarySync(user: LibraryAccountUser): Promise<LibrarySyncResult> {
   try {
+    await assertNotebookSyncProtocol();
     const [local, cloud] = await Promise.all([createLibraryBackup(), readCloudState()]);
     return await pushLocal(user.id, cloud, local);
   } catch (error) {
@@ -345,6 +360,7 @@ export async function chooseThisDeviceForLibrarySync(user: LibraryAccountUser): 
 
 export async function chooseCloudForLibrarySync(user: LibraryAccountUser): Promise<LibrarySyncResult> {
   try {
+    await assertNotebookSyncProtocol();
     const cloud = await readCloudState();
     if (!cloud) {
       const result: LibrarySyncResult = { status: 'error', message: 'No Library cloud copy exists.' };
