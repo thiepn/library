@@ -14,6 +14,10 @@ Publication validation, immutable media storage, and release ingestion remain ma
 
 The new `/notebook` UI supports local Markdown book overviews, chapter summaries, and free reading notes with debounced autosave, CAS revision checks and a per-book Markdown export. Original EPUB/PDF/web highlights remain in their existing stores and appear alongside notebook documents in `/knowledge`. **Until N1C, notebook documents are local-only and are not included in the existing JSON backup or THIEPN Account sync**; the UI warns readers to export important notes. No reader engine migrations or release actions are part of N1A.
 
+## Book Notes N1C (stacked draft — not deployed)
+
+The /notebook workspace now exports independent Markdown notes through a version 2 manual JSON backup, with validated older V1 backup import and transactional rollback. Per-book Markdown exports carry Obsidian-compatible frontmatter and EPUB/PDF/web source anchors. Account sync is **fail-closed** until the source-only database migration `20261012093000_library_notebook_v2_downgrade_guard.sql` is independently applied and qualified; it has NOT been deployed. This supersedes the local-only backup limitation documented for N1A above. See [N1C portability and release gates](docs/BOOK_NOTES_N1C.md).
+
 ## Reader capabilities
 
 - one consolidated EPUB reader for hosted and personal books
