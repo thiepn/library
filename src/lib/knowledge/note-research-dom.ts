@@ -40,6 +40,18 @@ export function mountResearchWorkbench(
     return result;
   };
   const select=$<HTMLSelectElement>('[data-research-select]');
+  const base=root.closest<HTMLElement>('[data-notebook-root]')?.dataset.base ?? '/library';
+  const noteUrl=(note:BookNoteDocumentV1):string=>{
+    const href=new URL(base+'/notebook',window.location.origin);
+    href.searchParams.set('work',note.workId);
+    href.searchParams.set('note',note.id);
+    return href.toString();
+  };
+  const copyNoteLink=(note:BookNoteDocumentV1)=>{
+    void navigator.clipboard.writeText(noteUrl(note))
+      .then(()=>notify('Direct Library note link copied.'),
+        ()=>notify('Clipboard unavailable. Open the note in the editor to copy its URL.'));
+  };
   const summary=$<HTMLElement>('[data-research-summary]');
   const notice=$<HTMLElement>('[data-research-status]');
   const detail=$<HTMLElement>('[data-research-detail]');
@@ -177,6 +189,7 @@ export function mountResearchWorkbench(
     slot.actions.append(details,
       button('Edit note',()=>{void host.openNote(note);}),
       openSourceLink(note),
+      button('Copy note link',()=>copyNoteLink(note)),
       button('Copy reference',()=>{
         const copy=host.bookTitle(note.workId)+'\n'
           +describeResearchSource(note.anchor,note.chapterKey)+'\nNote ID: '+note.id;
@@ -205,6 +218,7 @@ export function mountResearchWorkbench(
           button(pins.left===id?'Pinned A':'Pin A',()=>{pins.left=id;renderSources();renderSide('left');}),
           button(pins.right===id?'Pinned B':'Pin B',()=>{pins.right=id;renderSources();renderSide('right');}),
           button('Edit',()=>{void host.openNote(note);}),
+          button('Copy link',()=>copyNoteLink(note)),
         );
       }
       actions.append(button('Remove',()=>{
