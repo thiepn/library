@@ -2,7 +2,7 @@ import {
   multiSourceComparisonMarkdown, conciseSourceReferences, type ComparisonSource,
 } from './note-research-n1p-writing';
 import { notebookTitle, type BookNoteDocumentV1 } from './note-model';
-import { noteReferenceMarkdown } from './note-links';
+import { noteReferenceMarkdown, extractNotebookLinks } from './note-links';
 import { extractNotebookTopics } from './note-workspace';
 import { synthesisSectionTemplate } from './note-research-n1r-sections';
 import { requestResearchView } from './note-research-n1q-view';
@@ -76,6 +76,7 @@ export function mountResearchN1P(
   const status=$<HTMLElement>('[data-n1p-review-status]');
   const reviewSearch=$<HTMLInputElement>('[data-n1r-review-search]');
   const reviewNext=$<HTMLButtonElement>('[data-n1r-review-next]');
+  const reviewFocus=$<HTMLSelectElement>('[data-n1s-review-focus]');
   const info=$<HTMLElement>('[data-n1p-flow-info]');
   const path=$<HTMLElement>('[data-n1p-source-path]');
   const start=$<HTMLButtonElement>('[data-n1p-review-start]');
@@ -124,12 +125,37 @@ export function mountResearchN1P(
     ].join(' ').normalize('NFKC').toLocaleLowerCase();
     return query.every(term=>words.includes(term));
   };
+  function citationContext(){
+    const notes=host.notes(),lookup=new Map(notes.map(note=>[note.id,note]));
+    const contexts=new Map<string,{links:Set<string>|undefined;multiBook:boolean}>();
+    for(const collection of loadResearchCollections()){
+      const synthesis=collection.synthesisId
+        ?lookup.get(collection.synthesisId):undefined;
+      const body=host.active()?.id===collection.id
+        ?host.draft().body:synthesis?.bodyMarkdown;
+      const books=new Set(collection.noteIds.map(id=>lookup.get(id)?.workId).filter(Boolean));
+      contexts.set(collection.id,{
+        links:body===undefined?undefined:
+          new Set(extractNotebookLinks(body).map(link=>link.id)),
+        multiBook:books.size>1,
+      });
+    }
+    return contexts;
+  }
   const currentReviewMatches=()=>{
     const words=reviewSearch.value.normalize('NFKC').toLocaleLowerCase()
       .split(/\s+/).filter(Boolean).slice(0,10);
+    const contexts=citationContext();
     return collectCrossBookReviewQueue(loadResearchCollections(),host.notes(),
       collectionSelect.value,filter.value as QueueFilter,3600)
-      .filter(item=>matchReviewQuery(item,words));
+      .filter(item=>{
+        if(!matchReviewQuery(item,words))return false;
+        const context=contexts.get(item.collectionId);
+        if(reviewFocus.value==='uncited')return !context?.links?.has(item.note.id);
+        if(reviewFocus.value==='cited')return !!context?.links?.has(item.note.id);
+        if(reviewFocus.value==='crossbook')return !!context?.multiBook;
+        return true;
+      });
   };
   function renderQueue():void {
     queue.replaceChildren();
@@ -147,6 +173,7 @@ export function mountResearchN1P(
     }
     if(filtered.length>90)
       status.textContent='Showing the first 90 matching review entries of '+filtered.length+'. Narrow the search to reach other sources.';
+    const contexts=citationContext();
     for(const item of filtered.slice(0,90)){
       const row=document.createElement('article');
       row.className='book-notebook__n1p-review-entry';
@@ -157,6 +184,11 @@ export function mountResearchN1P(
         element('span',host.bookTitle(item.note.workId)+' · '+item.collectionName),
         element('small',describeResearchSource(item.note.anchor,item.note.chapterKey)),
         element('small',item.state==='revisit'?'Needs revisit':item.state==='reviewed'?'Self-marked reviewed':'Pending'),
+        element('small',!contexts.get(item.collectionId)?.links
+          ?'No saved synthesis available'
+          :contexts.get(item.collectionId)!.links!.has(item.note.id)
+            ?'Explicitly linked in synthesis (not claim verification)'
+            :'Not linked in current synthesis'),
       );
       const controls=document.createElement('div');
       controls.className='book-notebook__n1p-review-actions';
@@ -466,6 +498,7 @@ export function mountResearchN1P(
   bind('[data-n1p-review-collection]','change',renderQueue);
   bind('[data-n1p-review-filter]','change',renderQueue);
   bind('[data-n1r-review-search]','input',renderQueue);
+  bind('[data-n1s-review-focus]','change',renderQueue);
   bind('[data-n1r-review-next]','click',()=>{
     const next=currentReviewMatches().find(item=>item.state==='revisit'||item.state==='pending');
     if(next)void openReviewSource(next);
