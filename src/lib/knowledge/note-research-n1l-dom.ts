@@ -487,9 +487,13 @@ export function mountResearchN1L(root:HTMLElement,host:ResearchN1LHost):Research
       const markdown=sectionWritingPacketMarkdown(draft.body,index,
         host.notes(),host.bookTitle,{
           savedRevision:synthesis.revision,collectionName:active.name,
+          dirty:host.isDirty(),
         });
-      download('section-'+filename(active.name)+'-'+(index+1)+'.md',markdown);
-      sectionStatus.textContent='Current editor section exported as a working copy, not a saved notebook revision.';
+      const gaps=getSectionEvidenceContext(draft.body,index,active,host.notes(),30);
+      const packet=markdown+(gaps?'\n---\n\n'
+        +sectionEvidenceReviewMarkdown(gaps,active,host.notes(),host.bookTitle):'');
+      download('section-research-'+filename(active.name)+'-'+(index+1)+'.md',packet);
+      sectionStatus.textContent='Section writing and evidence worksheet exported as a working copy; no native note save occurred.';
     }catch(error){
       sectionStatus.textContent=error instanceof Error?error.message:'Section export unavailable.';
     }
