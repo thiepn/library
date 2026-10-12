@@ -192,16 +192,6 @@ const catalog = (await getWorks()).map((work) => ({
           </div>
           <p class="micro">Plain Markdown stays editable and portable. Use [[note:ID|Title]] to link saved notes by stable ID.</p>
           <section class="book-notebook__relations" aria-labelledby="notebook-relations-heading">
-            <div class="book-notebook__linked-preview" data-notebook-linked-preview hidden
-              aria-label="Linked note preview">
-              <div class="book-notebook__linked-preview-head">
-                <strong data-linked-preview-title></strong>
-                <button type="button" data-linked-preview-close aria-label="Close linked note preview">Close</button>
-              </div>
-              <p class="micro" data-linked-preview-source></p>
-              <div class="book-notebook__linked-preview-text" data-linked-preview-text></div>
-              <button type="button" data-linked-preview-open>Open this note</button>
-            </div>
             <h3 id="notebook-relations-heading">Connected notes</h3>
             <div class="book-notebook__relation-columns">
               <div><h4>References in this note</h4><div data-notebook-outgoing></div></div>
@@ -226,6 +216,18 @@ const catalog = (await getWorks()).map((work) => ({
       </div>
     </section>
   </div>
+  <dialog class="book-notebook__peek" data-notebook-linked-preview aria-labelledby="notebook-peek-title">
+    <div class="book-notebook__linked-preview-head">
+      <h2 id="notebook-peek-title" data-linked-preview-title>Linked note</h2>
+      <button type="button" data-linked-preview-close aria-label="Close linked note preview">Close</button>
+    </div>
+    <p class="micro" data-linked-preview-source></p>
+    <div class="book-notebook__linked-preview-text" data-linked-preview-text></div>
+    <div class="book-notebook__peek-actions">
+      <button type="button" data-linked-preview-open>Open this note</button>
+      <button type="button" data-linked-preview-copy>Copy note reference</button>
+    </div>
+  </dialog>
   <div hidden data-notebook-catalog={JSON.stringify(catalog)}></div>
   <script>
     import {
@@ -302,11 +304,14 @@ const catalog = (await getWorks()).map((work) => ({
       const templateSelect = root.querySelector<HTMLSelectElement>('[data-notebook-template]')!;
       const topicInput = root.querySelector<HTMLInputElement>('[data-notebook-topic-input]')!;
       const currentTopics = root.querySelector<HTMLElement>('[data-notebook-current-topics]')!;
-      const linkedPreview = root.querySelector<HTMLElement>('[data-notebook-linked-preview]')!;
+      const linkedPreview = document.querySelector<HTMLDialogElement>('[data-notebook-linked-preview]')!;
       const linkedPreviewTitle = root.querySelector<HTMLElement>('[data-linked-preview-title]')!;
       const linkedPreviewSource = root.querySelector<HTMLElement>('[data-linked-preview-source]')!;
       const linkedPreviewText = root.querySelector<HTMLElement>('[data-linked-preview-text]')!;
-      const linkedPreviewOpen = root.querySelector<HTMLButtonElement>('[data-linked-preview-open]')!;
+      const linkedPreviewOpen = linkedPreview.querySelector<HTMLButtonElement>('[data-linked-preview-open]')!;
+      const linkedPreviewCopy = linkedPreview.querySelector<HTMLButtonElement>('[data-linked-preview-copy]')!;
+      const linkedPreviewClose = linkedPreview.querySelector<HTMLButtonElement>('[data-linked-preview-close]')!;
+      let peekOpener: HTMLElement | null = null;
       const dashboardRecent = root.querySelector<HTMLElement>('[data-dashboard-recent]')!;
       const dashboardTopics = root.querySelector<HTMLElement>('[data-dashboard-topics]')!;
       const dashboardUnlinked = root.querySelector<HTMLElement>('[data-dashboard-unlinked]')!;
