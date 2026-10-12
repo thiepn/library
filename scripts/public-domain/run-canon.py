@@ -238,11 +238,11 @@ def annotate_entry(ledger: dict[str, Any], gid: int, item: CanonItem, match_note
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Ingest the user-curated Library canon with rights and source verification.")
-    parser.add_argument("--max-books", type=int, default=300)
+    parser.add_argument("--max-books", type=int, default=29)
     parser.add_argument("--max-candidate-checks", type=int, default=500)
     args = parser.parse_args()
 
-    max_books = max(0, min(args.max_books, 350))
+    max_books = max(0, min(args.max_books, 29))
     max_checks = max(max_books, min(args.max_candidate_checks, 700))
 
     items = load_catalog()
