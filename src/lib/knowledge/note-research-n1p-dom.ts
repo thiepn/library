@@ -164,7 +164,8 @@ export function mountResearchN1P(
       if(reader){
         const link=document.createElement('a');
         link.href=reader;link.textContent='Open book';
-        link.title='Opens the existing book reader; exact original location is listed on this card.';
+        link.target='_blank';link.rel='noopener noreferrer';
+        link.title='Opens the existing book reader in a separate tab; the recorded source location appears on this card.';
         controls.append(link);
       }
       row.append(name,controls);queue.append(row);
