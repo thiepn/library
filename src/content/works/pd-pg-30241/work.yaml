@@ -7,7 +7,7 @@
   "language": "en",
   "contributors": [
     {
-      "name": "R. A. (Reuben Archer) Torrey",
+      "name": "Reuben Archer Torrey",
       "role": "author",
       "birthYear": 1856,
       "deathYear": 1928
@@ -18,7 +18,7 @@
   "status": "published",
   "visibility": "public",
   "publication": {
-    "firstPublished": "Not verified",
+    "firstPublished": "1910",
     "lastUpdated": "2026-10-12",
     "edition": 1,
     "editionLabel": "THIEPN Library Edition",
@@ -27,7 +27,7 @@
   },
   "cover": {
     "src": "/covers/public-domain/pd-pg-30241.webp",
-    "alt": "Cover of The Person and Work of The Holy Spirit by R. A. (Reuben Archer) Torrey"
+    "alt": "Cover of The Person and Work of The Holy Spirit by Reuben Archer Torrey"
   },
   "classification": {
     "subjects": [

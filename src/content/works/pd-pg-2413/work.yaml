@@ -24,7 +24,7 @@
   "status": "published",
   "visibility": "public",
   "publication": {
-    "firstPublished": "Not verified",
+    "firstPublished": "1856",
     "lastUpdated": "2026-10-12",
     "edition": 1,
     "editionLabel": "THIEPN Library Edition",
@@ -33,7 +33,7 @@
   },
   "cover": {
     "src": "/covers/public-domain/pd-pg-2413.webp",
-    "alt": "Cover for Madame Bovary by Gustave Flaubert"
+    "alt": "Cover of Madame Bovary by Gustave Flaubert"
   },
   "classification": {
     "subjects": [

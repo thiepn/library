@@ -24,7 +24,7 @@
   "status": "published",
   "visibility": "public",
   "publication": {
-    "firstPublished": "Not verified",
+    "firstPublished": "1862",
     "lastUpdated": "2026-10-12",
     "edition": 1,
     "editionLabel": "THIEPN Library Edition",
@@ -33,7 +33,7 @@
   },
   "cover": {
     "src": "/covers/public-domain/pd-pg-135.webp",
-    "alt": "Cover for Les Misérables by Victor Hugo"
+    "alt": "Cover of Les Misérables by Victor Hugo"
   },
   "classification": {
     "subjects": [

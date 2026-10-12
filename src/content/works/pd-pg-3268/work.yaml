@@ -7,7 +7,7 @@
   "language": "en",
   "contributors": [
     {
-      "name": "Ann Ward Radcliffe",
+      "name": "Ann Radcliffe",
       "role": "author",
       "birthYear": 1764,
       "deathYear": 1823
@@ -18,7 +18,7 @@
   "status": "published",
   "visibility": "public",
   "publication": {
-    "firstPublished": "Not verified",
+    "firstPublished": "1794",
     "lastUpdated": "2026-10-12",
     "edition": 1,
     "editionLabel": "THIEPN Library Edition",
@@ -27,7 +27,7 @@
   },
   "cover": {
     "src": "/covers/public-domain/pd-pg-3268.webp",
-    "alt": "Cover of The Mysteries of Udolpho by Ann Ward Radcliffe"
+    "alt": "Cover of The Mysteries of Udolpho by Ann Radcliffe"
   },
   "classification": {
     "subjects": [

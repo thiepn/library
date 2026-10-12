@@ -7,7 +7,7 @@
   "language": "en",
   "contributors": [
     {
-      "name": "Emperor of Rome Marcus Aurelius",
+      "name": "Marcus Aurelius",
       "role": "author",
       "birthYear": 121,
       "deathYear": 180
@@ -27,7 +27,7 @@
   },
   "cover": {
     "src": "/covers/public-domain/pd-pg-2680.webp",
-    "alt": "Cover of Meditations by Emperor of Rome Marcus Aurelius"
+    "alt": "Cover of Meditations by Marcus Aurelius"
   },
   "classification": {
     "subjects": [

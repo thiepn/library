@@ -7,7 +7,7 @@
   "language": "en",
   "contributors": [
     {
-      "name": "T. (Tobias) Smollett",
+      "name": "Tobias Smollett",
       "role": "author",
       "birthYear": 1721,
       "deathYear": 1771
@@ -18,7 +18,7 @@
   "status": "published",
   "visibility": "public",
   "publication": {
-    "firstPublished": "Not verified",
+    "firstPublished": "1771",
     "lastUpdated": "2026-10-12",
     "edition": 1,
     "editionLabel": "THIEPN Library Edition",
@@ -27,7 +27,7 @@
   },
   "cover": {
     "src": "/covers/public-domain/pd-pg-2160.webp",
-    "alt": "Cover of The Expedition of Humphry Clinker by T. (Tobias) Smollett"
+    "alt": "Cover of The Expedition of Humphry Clinker by Tobias Smollett"
   },
   "classification": {
     "subjects": [

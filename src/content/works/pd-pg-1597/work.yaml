@@ -7,7 +7,7 @@
   "language": "en",
   "contributors": [
     {
-      "name": "H. C. (Hans Christian) Andersen",
+      "name": "Hans Christian Andersen",
       "role": "author",
       "birthYear": 1805,
       "deathYear": 1875
@@ -27,7 +27,7 @@
   },
   "cover": {
     "src": "/covers/public-domain/pd-pg-1597.webp",
-    "alt": "Cover of Andersen's Fairy Tales by H. C. (Hans Christian) Andersen"
+    "alt": "Cover of Andersen's Fairy Tales by Hans Christian Andersen"
   },
   "classification": {
     "subjects": [

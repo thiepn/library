@@ -18,7 +18,7 @@
   "status": "published",
   "visibility": "public",
   "publication": {
-    "firstPublished": "Not verified",
+    "firstPublished": "1899",
     "lastUpdated": "2026-10-12",
     "edition": 1,
     "editionLabel": "THIEPN Library Edition",
@@ -27,7 +27,7 @@
   },
   "cover": {
     "src": "/covers/public-domain/pd-pg-219.webp",
-    "alt": "Cover for Heart of Darkness by Joseph Conrad"
+    "alt": "Cover of Heart of Darkness by Joseph Conrad"
   },
   "classification": {
     "subjects": [

@@ -7,7 +7,7 @@
   "language": "en",
   "contributors": [
     {
-      "name": "G. K. (Gilbert Keith) Chesterton",
+      "name": "Gilbert Keith Chesterton",
       "role": "author",
       "birthYear": 1874,
       "deathYear": 1936
@@ -18,7 +18,7 @@
   "status": "published",
   "visibility": "public",
   "publication": {
-    "firstPublished": "Not verified",
+    "firstPublished": "1874",
     "lastUpdated": "2026-10-12",
     "edition": 1,
     "editionLabel": "THIEPN Library Edition",
@@ -27,7 +27,7 @@
   },
   "cover": {
     "src": "/covers/public-domain/pd-pg-16769.webp",
-    "alt": "Cover of Orthodoxy by G. K. (Gilbert Keith) Chesterton"
+    "alt": "Cover of Orthodoxy by Gilbert Keith Chesterton"
   },
   "classification": {
     "subjects": [

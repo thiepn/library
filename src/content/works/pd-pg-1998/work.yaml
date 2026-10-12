@@ -7,7 +7,7 @@
   "language": "en",
   "contributors": [
     {
-      "name": "Friedrich Wilhelm Nietzsche",
+      "name": "Friedrich Nietzsche",
       "role": "author",
       "birthYear": 1844,
       "deathYear": 1900
@@ -24,7 +24,7 @@
   "status": "published",
   "visibility": "public",
   "publication": {
-    "firstPublished": "Not verified",
+    "firstPublished": "1896",
     "lastUpdated": "2026-10-12",
     "edition": 1,
     "editionLabel": "THIEPN Library Edition",
@@ -33,7 +33,7 @@
   },
   "cover": {
     "src": "/covers/public-domain/pd-pg-1998.webp",
-    "alt": "Cover of Thus Spake Zarathustra: A Book for All and None by Friedrich Wilhelm Nietzsche"
+    "alt": "Cover of Thus Spake Zarathustra: A Book for All and None by Friedrich Nietzsche"
   },
   "classification": {
     "subjects": [
