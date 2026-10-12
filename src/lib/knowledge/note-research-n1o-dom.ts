@@ -1,4 +1,5 @@
 import { listBookNotes } from './note-store';
+import { requestResearchView } from './note-research-n1q-view';
 import { completeResearchHandoff } from './note-research-n1o-handoff';
 import { findNotebookNotes, noteReferenceMarkdown } from './note-links';
 import { notebookTitle, type BookNoteDocumentV1 } from './note-model';
@@ -236,6 +237,7 @@ export function mountResearchN1O(
       return;
     }
     host.setDraft(host.draft().title,before+addition+after);
+    requestResearchView(root,'write','[data-research-synthesis-body]');
     synthesisBody.focus();
     synthesisBody.setSelectionRange(before.length+addition.length,before.length+addition.length);
     host.notify('Inserted into your synthesis draft. Save explicitly to commit the revision.');
