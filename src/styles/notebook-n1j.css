@@ -39,6 +39,12 @@
   }
   .book-notebook__research-toolbar select { flex: 1 1 220px; }
   .book-notebook__research-create input { flex: 1 1 180px; }
+  .book-notebook__research-create select {
+    flex: 1 1 180px; min-width: 0; max-width: 100%;
+    background: var(--canvas); color: var(--ink);
+    border: 1px solid var(--strong-rule); border-radius: 2px;
+    padding: 9px 11px; font: inherit; font-size: .9rem;
+  }
   .book-notebook__research-create input[data-research-new-description] { flex-grow: 1.5; }
   .book-notebook__research button,
   .book-notebook__discovery-add {
