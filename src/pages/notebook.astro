@@ -13,6 +13,7 @@ import '../styles/notebook-n1o.css';
 import '../styles/notebook-n1p.css';
 import '../styles/notebook-n1q.css';
 import '../styles/notebook-n1r.css';
+import '../styles/notebook-n1s.css';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const catalog = (await getWorks()).map((work) => ({
@@ -671,6 +672,16 @@ const catalog = (await getWorks()).map((work) => ({
                   Read source book
                 </a>
                 <span class="micro" role="status" aria-live="polite" data-n1r-section-status></span>
+                <div class="book-notebook__n1s-evidence" aria-label="Selected section evidence gaps">
+                  <div class="book-notebook__n1s-evidence-head">
+                    <strong>Evidence for this section</strong>
+                    <span class="micro" data-n1s-evidence-count>Select a heading to review its saved-note links.</span>
+                    <button type="button" data-n1s-evidence-export disabled>Export evidence worksheet</button>
+                  </div>
+                  <div class="book-notebook__n1s-evidence-list"
+                    data-n1s-evidence-list aria-label="Source links and grounded suggestions"></div>
+                  <p class="micro" data-n1s-evidence-status role="status" aria-live="polite"></p>
+                </div>
               </div>
             </section>
             <div class="book-notebook__n1k-preview-controls">
