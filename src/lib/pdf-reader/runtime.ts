@@ -48,7 +48,7 @@ export interface PdfReaderHandle {
 
 type SearchResult = { page: number; snippet: string };
 type SwipeGesture = { identifier: number; startX: number; startY: number };
-type PendingPdfSelection = { quote: string; rects: PdfAnnotationRect[] };
+type PendingPdfSelection = { quote: string; rects: PdfAnnotationRect[]; page: number };
 
 type PdfReaderElements = {
   topbar: HTMLElement;
@@ -311,7 +311,7 @@ class PdfReaderController {
       this.notebook.open('reading-note', {
         quote: pending.quote,
         anchor: { format: 'pdf', edition: this.candidate.identity.edition,
-          releaseVersion: this.candidate.identity.releaseVersion, page: this.page },
+          releaseVersion: this.candidate.identity.releaseVersion, page: pending.page },
       });
       this.dismissSelection();
     }, { signal: this.abort.signal });
@@ -693,7 +693,7 @@ class PdfReaderController {
         height: Math.min(1, Math.max(0.0001, rect.height / bounds.height)),
       }));
     if (!rects.length) return;
-    this.pendingSelection = { quote, rects };
+    this.pendingSelection = { quote, rects, page: this.page };
     this.elements.selectionQuote.textContent = quote.length > 180 ? `${quote.slice(0, 177)}…` : quote;
     this.elements.selectionActions.hidden = false;
   }
