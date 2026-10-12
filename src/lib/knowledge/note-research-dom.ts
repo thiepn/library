@@ -539,6 +539,27 @@ export function mountResearchWorkbench(
     activateCollection:id=>activate(id,true),
     notify,
   });
+  sessionControls=mountResearchN1L(root,{
+    active:()=>active,
+    notes:()=>all,
+    synthesis:()=>synthesis,
+    getDraft:()=>({title:synthTitle.value,body:synthBody.value}),
+    isDirty:()=>dirty(),
+    setDraft:(title,body)=>{
+      synthTitle.value=title;synthBody.value=body;
+      synthInput();
+    },
+    pins:()=>({...pins}),
+    setPins:(left,right)=>{
+      pins={left,right};
+      renderSources();renderSide('left');renderSide('right');
+      refinements?.onNotesChanged();
+    },
+    bookTitle:workId=>host.bookTitle(workId),
+    sourceHref:note=>host.sourceHref(note),
+    openNote:note=>host.openNote(note),
+    notify,
+  });
   void refresh();
   return {
     refresh,addNote,addNotes,dispose(){
@@ -546,6 +567,7 @@ export function mountResearchWorkbench(
       for(const off of events)off();
       unsubscribe();
       refinements?.dispose();
+      sessionControls?.dispose();
       window.removeEventListener('beforeunload',beforeUnload);
     },
   };
