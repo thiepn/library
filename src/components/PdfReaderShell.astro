@@ -5,6 +5,7 @@ interface Props {
   backLabel?: string;
   fallbackHref?: string;
   metadata?: string;
+  notebookHref?: string;
 }
 
 const {
@@ -13,6 +14,7 @@ const {
   backLabel = 'Back to Library',
   fallbackHref,
   metadata = 'Integrated PDF reader',
+  notebookHref,
 } = Astro.props;
 ---
 <main class="pdf-reader" data-pdf-reader-root data-pdf-panel="closed" aria-busy="true">
@@ -26,6 +28,8 @@ const {
     </div>
 
     <nav class="pdf-reader__tools" aria-label="PDF tools">
+      <a data-pdf-notebook href={notebookHref || '#'} hidden={!notebookHref}
+        aria-label="Open book notebook">Notebook</a>
       <button type="button" data-pdf-search-toggle aria-haspopup="dialog" aria-controls="pdf-search-panel" aria-expanded="false">Search</button>
       <button type="button" data-pdf-bookmark-toggle aria-haspopup="dialog" aria-controls="pdf-bookmarks-panel" aria-expanded="false">Saved</button>
       <button type="button" data-pdf-annotation-toggle aria-haspopup="dialog" aria-controls="pdf-annotations-panel" aria-expanded="false">Notes</button>
