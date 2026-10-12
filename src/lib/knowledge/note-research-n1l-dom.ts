@@ -15,6 +15,7 @@ export interface ResearchN1LHost {
   notes():readonly BookNoteDocumentV1[];
   synthesis():BookNoteDocumentV1|undefined;
   getDraft():{title:string;body:string};
+  isDirty():boolean;
   setDraft(title:string,body:string):void;
   pins():{left:string;right:string};
   setPins(left:string,right:string):void;
@@ -225,6 +226,10 @@ export function mountResearchN1L(root:HTMLElement,host:ResearchN1LHost):Research
     const active=host.active();
     if(!active)return;
     const format=exportFormat.value;
+    if(format!=='session' && host.isDirty()){
+      host.notify('Save your current synthesis first. Exports include only saved notebook revisions, not unsaved editor text.');
+      return;
+    }
     const sources=orderedSources();
     const saved=host.synthesis();
     const title=filename(active.name);
