@@ -649,7 +649,7 @@ export function mountResearchN1L(root:HTMLElement,host:ResearchN1LHost):Research
   bind('[data-research-session-revisit]','click',()=>mark('revisit'));
   bind('[data-research-session-open]','click',()=>{
     const doc=session&&sourceById().get(session.cursor);
-    if(doc)void host.openNote(doc);
+    if(doc)openCandidate(doc);
     else host.notify('This session source is unavailable on this device.');
   });
   bind('[data-research-session-clear]','click',()=>{
