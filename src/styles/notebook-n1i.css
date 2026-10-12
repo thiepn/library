@@ -188,3 +188,32 @@
     .book-notebook__outline nav { max-height: 120px; }
   }
 }
+
+
+@layer notebook {
+  .book-notebook__history {
+    display: flex; flex-wrap: wrap; align-items: center;
+    gap: 9px 13px; border: 1px solid var(--rule);
+    padding: 9px 11px; background: var(--surface);
+  }
+  .book-notebook__history button {
+    border: 1px solid var(--strong-rule);
+    color: var(--ink); background: var(--canvas);
+    padding: 7px 12px; min-height: 36px; cursor: pointer;
+    font: inherit; font-size: .82rem; border-radius: 2px;
+  }
+  .book-notebook__history button:disabled { opacity: .4; cursor: not-allowed; }
+  .book-notebook__history button:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 2px;
+  }
+  .book-notebook__history .micro { margin: 0; flex: 1 1 180px; }
+  @media (max-width: 620px) {
+    .book-notebook__history {
+      display: grid; grid-template-columns: 1fr 1fr;
+    }
+    .book-notebook__history .micro {
+      grid-column: 1 / -1;
+      grid-row: 1;
+    }
+  }
+}
