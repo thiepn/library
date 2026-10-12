@@ -2,6 +2,7 @@ import {
   multiSourceComparisonMarkdown, conciseSourceReferences, type ComparisonSource,
 } from './note-research-n1p-writing';
 import { notebookTitle, type BookNoteDocumentV1 } from './note-model';
+import { noteReferenceMarkdown } from './note-links';
 import { loadResearchCollections, describeResearchSource,
   type ResearchCollection } from './note-research';
 import {
@@ -126,6 +127,7 @@ export function mountResearchN1P(
       name.append(
         element('strong',notebookTitle(item.note)),
         element('span',host.bookTitle(item.note.workId)+' · '+item.collectionName),
+        element('small',describeResearchSource(item.note.anchor,item.note.chapterKey)),
         element('small',item.state==='revisit'?'Needs revisit':item.state==='reviewed'?'Self-marked reviewed':'Pending'),
       );
       const controls=document.createElement('div');
@@ -143,10 +145,22 @@ export function mountResearchN1P(
       controls.append(
         action('Open',()=>{void host.openNote(item.note);}),
         action('Study in collection',()=>{void openReviewSource(item);}),
+        action('Copy citation',()=>{
+          void navigator.clipboard.writeText(noteReferenceMarkdown(item.note))
+            .then(()=>{status.textContent='Stable note reference copied.';},
+              ()=>{status.textContent='Clipboard unavailable. Open the note to copy its reference.';});
+        }),
         action('Reviewed',()=>process('reviewed')),
         action('Revisit',()=>process('revisit')),
       );
       if(item.state!=='pending')controls.append(action('Reset',()=>process('pending')));
+      const reader=host.sourceHref(item.note);
+      if(reader){
+        const link=document.createElement('a');
+        link.href=reader;link.textContent='Open book';
+        link.title='Opens the existing book reader; exact original location is listed on this card.';
+        controls.append(link);
+      }
       row.append(name,controls);queue.append(row);
     }
   }
@@ -346,7 +360,7 @@ export function mountResearchN1P(
     const source=selectedSource(),href=source?host.sourceHref(source):undefined;
     if(!href){status.textContent='The original reader link is unavailable for this note.';return;}
     if(host.isDirty()&&!window.confirm(
-      'Your synthesis has unsaved edits. Download a draft copy before leaving? Choose Cancel to stay.'))return;
+      'Your synthesis has unsaved edits. Cancel to stay and download or save the draft before leaving this page.'))return;
     window.location.assign(href);
   });
   bind('[data-n1p-go-synthesis]','click',()=>{
