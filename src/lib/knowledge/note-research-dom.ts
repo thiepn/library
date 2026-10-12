@@ -97,6 +97,11 @@ export function mountResearchWorkbench(
     events.push(()=>control.removeEventListener(type,cb));
   };
   const dirty=()=>!!synthesis && (synthTitle.value!==savedTitle || synthBody.value!==savedBody);
+  const adoptSynthesis=(note:BookNoteDocumentV1|undefined)=>{
+    synthesis=note;
+    savedTitle=note?.title??'';savedBody=note?.bodyMarkdown??'';
+    synthTitle.value=savedTitle;synthBody.value=savedBody;
+  };
   const guardSwitch=():boolean=>{
     if(!dirty())return true;
     return window.confirm('The research synthesis has unsaved changes. Leave this collection without saving them?');
@@ -240,12 +245,12 @@ export function mountResearchWorkbench(
     if(!force && id!==activeId && !guardSwitch()){
       select.value=activeId;return;
     }
-    activeId=id;pins={left:'',right:''};synthesis=undefined;
+    activeId=id;pins={left:'',right:''};adoptSynthesis(undefined);
     active=loadResearchCollections().find(c=>c.id===id);
     if(active){
       pins.left=available()[0]?.id??'';
       pins.right=available()[1]?.id??'';
-      if(active.synthesisId)synthesis=await getBookNote(active.synthesisId);
+      if(active.synthesisId)adoptSynthesis(await getBookNote(active.synthesisId));
     }
     renderDetail();
   }
@@ -270,7 +275,7 @@ export function mountResearchWorkbench(
       if(activeId && !localActive)activeId='';
       if(localActive?.synthesisId) {
         const fresh=all.find(n=>n.id===localActive.synthesisId);
-        if(fresh && (!synthesis || !dirty()))synthesis=fresh;
+        if(fresh && (!synthesis || !dirty()))adoptSynthesis(fresh);
         else if(fresh && synthesis && fresh.revision!==synthesis.revision && dirty())
           synthState.textContent='This synthesis changed in another tab. Export your draft or reload.';
       }
@@ -336,7 +341,7 @@ export function mountResearchWorkbench(
       bodyMarkdown:researchSynthesisBody(collection,sources().filter(s=>collection.noteIds.includes(s.note.id))),
     }).then(note=>{
       updateResearchCollection(collection.id,c=>({...c,synthesisId:note.id}));
-      synthesis=note;
+      adoptSynthesis(note);
       renderDetail();
       notify('Research synthesis created as a native, revision-controlled Library note.');
     }).catch(error=>notify(error instanceof Error?error.message:'Could not create synthesis.'))
@@ -356,7 +361,7 @@ export function mountResearchWorkbench(
     setStatusBusy(true);
     void updateBookNote(current.id,current.revision,{title,bodyMarkdown:body})
       .then(saved=>{
-        synthesis=saved;savedTitle=saved.title;savedBody=saved.bodyMarkdown;
+        adoptSynthesis(saved);
         synthState.textContent='Saved locally · revision '+saved.revision;
         notify('Synthesis saved to your authoritative Library notebook.');
       })
@@ -375,9 +380,7 @@ export function mountResearchWorkbench(
     if(dirty()&&!window.confirm('Discard unsaved synthesis text and reload the last saved note?'))return;
     void getBookNote(synthesis.id).then(fresh=>{
       if(!fresh){notify('The native synthesis note is no longer available.');return;}
-      synthesis=fresh;
-      savedTitle=fresh.title;savedBody=fresh.bodyMarkdown;
-      synthTitle.value=fresh.title;synthBody.value=fresh.bodyMarkdown;
+      adoptSynthesis(fresh);
       renderSynthesis();
       notify('Reloaded the last saved synthesis revision.');
     }).catch(error=>notify(error instanceof Error?error.message:'Reload unavailable.'));
