@@ -136,7 +136,7 @@ export function mountReaderNotebook(options: CaptureOptions): CaptureHandle {
     if (dirty() && !await save()) return;
     ++epoch; clear(); dialog.close();
     context = undefined; record = undefined; draft = false;
-    if (opener.isConnected) opener.focus({ preventScroll: true });
+    if (opener.isConnected && !opener.closest('[hidden]') && opener.getClientRects().length > 0) opener.focus({ preventScroll: true });
     else button.focus({ preventScroll: true });
   }
   button.addEventListener('click', () => open());
