@@ -1,0 +1,126 @@
+@layer notebook {
+  .book-notebook__n1k-section-head {
+    display:flex;align-items:center;justify-content:space-between;
+    gap:12px 22px;flex-wrap:wrap;
+  }
+  .book-notebook__n1k-section-head h4,
+  .book-notebook__n1k-section-head h5 { margin:0; }
+  .book-notebook__n1k-source-navigation {
+    display:flex;align-items:center;gap:7px;
+    flex-wrap:wrap;
+  }
+  .book-notebook__n1k-source-navigation .micro {
+    white-space:nowrap;font-variant-numeric:tabular-nums;margin:0;
+  }
+  .book-notebook__bibliography {
+    display:grid;gap:13px;
+    padding:20px 22px;
+    border-bottom:1px solid var(--rule);
+    background:var(--canvas);
+  }
+  .book-notebook__bibliography h4 {
+    font-size:1rem;line-height:1.35;
+  }
+  .book-notebook__bibliography .micro {margin:5px 0 0;}
+  .book-notebook__reference-list {
+    display:grid;gap:0;max-height:470px;overflow:auto;
+    border:1px solid var(--rule);
+  }
+  .book-notebook__reference-row {
+    display:grid;grid-template-columns:minmax(0,1fr) auto;
+    align-items:center;gap:12px;
+    padding:10px 13px;
+    border-bottom:1px solid var(--rule);
+  }
+  .book-notebook__reference-row:last-child {border-bottom:0;}
+  .book-notebook__reference-row strong {font-size:.88rem;overflow-wrap:anywhere;}
+  .book-notebook__reference-row p {
+    margin:4px 0 0;font-size:.78rem;color:var(--secondary);
+    overflow-wrap:anywhere;
+  }
+  .book-notebook__reference-row a {
+    display:inline-flex;align-items:center;padding:8px 10px;
+    font-size:.8rem;text-decoration:none;
+    color:var(--ink);border:1px solid var(--strong-rule);
+    min-height:38px;box-sizing:border-box;
+  }
+  .book-notebook__reference-row a:hover {background:var(--surface);}
+  .book-notebook__n1k-writing-tools {
+    display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+    padding:12px;border:1px solid var(--rule);
+    background:var(--surface);
+  }
+  .book-notebook__draft-recovery {
+    display:grid;gap:9px;
+    border:1px solid var(--strong-rule);
+    padding:13px;background:var(--surface);
+  }
+  .book-notebook__draft-recovery >p {margin:0;}
+  .book-notebook__draft-recovery h5 {
+    font-size:.88rem;
+  }
+  .book-notebook__draft-recovery .micro {
+    overflow-wrap:anywhere;
+  }
+  .book-notebook__package-review {
+    display:grid;gap:10px;
+    padding:18px 22px;
+    border-top:1px solid var(--strong-rule);
+    background:var(--surface);
+  }
+  .book-notebook__package-review[hidden] {display:none!important;}
+  .book-notebook__package-review h3 {
+    font-size:1.07rem;margin:0;
+  }
+  .book-notebook__package-review p {margin:4px 0;}
+  .book-notebook__package-review [data-research-package-details] {
+    display:grid;gap:5px;padding:13px;
+    border:1px solid var(--rule);
+    background:var(--canvas);
+    max-height:300px;overflow-y:auto;
+    overflow-wrap:anywhere;font-size:.86rem;
+  }
+  .book-notebook__package-review [data-research-package-status] {
+    font-size:.83rem;overflow-wrap:anywhere;
+  }
+  .book-notebook__package-review button:disabled {
+    opacity:.42;cursor:not-allowed;
+  }
+  .book-notebook__research button:focus-visible,
+  .book-notebook__reference-row a:focus-visible {
+    outline:2px solid var(--accent);outline-offset:2px;
+  }
+  @media(max-width:820px) {
+    .book-notebook__reference-row {
+      grid-template-columns:minmax(0,1fr);
+      align-items:stretch;
+    }
+    .book-notebook__reference-row .book-notebook__research-source-actions {
+      justify-content:flex-start;
+    }
+    .book-notebook__bibliography {padding:14px;}
+  }
+  @media(max-width:620px) {
+    .book-notebook__n1k-source-navigation {
+      display:grid;grid-template-columns:1fr 1fr;
+      width:100%;
+    }
+    .book-notebook__n1k-source-navigation .micro {
+      grid-column:1/-1;grid-row:1;
+    }
+    .book-notebook__n1k-source-navigation button {
+      white-space:normal;
+    }
+    .book-notebook__n1k-writing-tools {
+      display:grid;grid-template-columns:1fr 1fr;
+    }
+    .book-notebook__n1k-writing-tools button {
+      white-space:normal;min-height:42px;
+    }
+    .book-notebook__package-review {padding:13px;}
+    .book-notebook__draft-recovery {padding:11px;}
+    .book-notebook__research-write-actions {
+      align-items:stretch;
+    }
+  }
+}
