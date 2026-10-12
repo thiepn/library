@@ -104,6 +104,11 @@ export function mountResearchN1P(
     const node=$(query);node.addEventListener(kind,cb);
     removes.push(()=>node.removeEventListener(kind,cb));
   };
+  const safeOpenNote=(note:BookNoteDocumentV1):void=>{
+    if(host.isDirty()&&!window.confirm(
+      'You have unsaved synthesis writing. Save or download a recovery copy before leaving the research editor? Cancel to keep the current draft open.'))return;
+    void host.openNote(note);
+  };
   const selectedSource=()=>{
     const id=host.pins().left;
     return host.notes().find(note=>note.id===id);
@@ -203,7 +208,7 @@ export function mountResearchN1P(
         }catch(error){status.textContent=error instanceof Error?error.message:'Review update unavailable.';}
       };
       controls.append(
-        action('Open',()=>{void host.openNote(item.note);}),
+        action('Open',()=>safeOpenNote(item.note)),
         action('Study in collection',()=>{void openReviewSource(item);}),
         action('Compare',()=>{void addReviewToBasket(item);}),
         action('Cite in synthesis',()=>{void citeReviewSource(item);}),
@@ -532,7 +537,7 @@ export function mountResearchN1P(
   });
   bind('[data-n1p-go-source]','click',()=>{
     const source=selectedSource();
-    if(source)void host.openNote(source);
+    if(source)safeOpenNote(source);
   });
   bind('[data-n1p-go-reader]','click',()=>{
     const source=selectedSource(),href=source?host.sourceHref(source):undefined;
@@ -544,7 +549,7 @@ export function mountResearchN1P(
     status.textContent='Original reader requested in a separate tab. Current synthesis draft remains open.';
   });
   bind('[data-n1p-go-synthesis]','click',()=>{
-    const note=host.synthesis();if(note)void host.openNote(note);
+    const note=host.synthesis();if(note)safeOpenNote(note);
   });
   bind('[data-n1p-focus-writing]','click',()=>{
     if(!host.synthesis())return;
