@@ -1,0 +1,345 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getWorks } from '../lib/content/repository';
+import '../styles/notebook.css';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const catalog = (await getWorks()).map((work) => ({
+  id: work.id, title: work.title, slug: work.slug,
+}));
+---
+<BaseLayout title="Book Notebook" description="Private, local-first book overviews, chapter summaries and reading notes." noindex>
+  <div class="page book-notebook" data-notebook-root data-base={base}>
+    <section class="section">
+      <header class="book-notebook__header">
+        <div>
+          <p class="eyebrow">Your reading knowledge</p>
+          <h1>Book Notebook</h1>
+          <p class="micro">Write in Markdown. Notes are saved locally without highlighting a passage.</p>
+        </div>
+        <a class="secondary-action" href={`${base}/knowledge`}>All knowledge</a>
+      </header>
+      <p class="book-notebook__warning" role="note">N1A: Notebook documents are stored on this device only. They are not yet included in Library JSON backups or Account cloud sync. Copy/export important notes until N1C adds portable recovery.</p>
+      <div class="book-notebook__selector">
+        <label for="notebook-book">Book</label>
+        <select id="notebook-book" data-notebook-book>
+          <option value="">Select a book…</option>
+        </select>
+        <a data-notebook-read href={`${base}/saved`} hidden>Read book</a>
+        <button type="button" class="secondary-action" data-notebook-export disabled>Export book as Markdown</button>
+      </div>
+      <p class="micro" data-notebook-count aria-live="polite"></p>
+      <div class="book-notebook__toolbar" aria-label="Create notebook content">
+        <button type="button" data-notebook-create="book-overview" disabled>Book overview</button>
+        <button type="button" data-notebook-create="chapter-summary" disabled>Chapter summary</button>
+        <button type="button" data-notebook-create="reading-note" disabled>Quick reading note</button>
+      </div>
+      <div class="book-notebook__chapter" data-notebook-chapter hidden>
+        <label for="notebook-chapter-key">Chapter ID, heading, or PDF page</label>
+        <input id="notebook-chapter-key" data-notebook-chapter-key maxlength="240" placeholder="e.g. Chapter 3 or Page 42" />
+        <button type="button" data-notebook-chapter-confirm>Create summary</button>
+        <button type="button" class="secondary-action" data-notebook-chapter-cancel>Cancel</button>
+      </div>
+      <p class="micro" role="status" aria-live="polite" data-notebook-status>Select a book to begin.</p>
+      <div class="book-notebook__layout">
+        <aside class="book-notebook__sidebar" aria-label="Book notes">
+          <h2>Notes</h2>
+          <div data-notebook-list></div>
+          <p class="micro" data-notebook-empty>No notes yet. Create a book overview or quick reading note.</p>
+          <a data-notebook-highlights href={`${base}/knowledge`} hidden>View this book’s highlights and bookmarks in Knowledge</a>
+        </aside>
+        <section class="book-notebook__editor" data-notebook-editor hidden aria-label="Markdown note editor">
+          <div class="book-notebook__editor-top">
+            <span data-notebook-kind></span>
+            <span class="micro" data-notebook-save-status aria-live="polite">Not saved</span>
+          </div>
+          <label for="notebook-title">Title</label>
+          <input id="notebook-title" data-notebook-title maxlength="200" autocomplete="off" />
+          <label for="notebook-body">Markdown note</label>
+          <textarea id="notebook-body" data-notebook-body maxlength="250000" spellcheck="true" placeholder="Write a thought, summary, question, or reflection…"></textarea>
+          <div class="book-notebook__editor-actions">
+            <button type="button" data-notebook-save>Save now</button>
+            <button type="button" class="secondary-action" data-notebook-copy>Copy Markdown</button>
+            <button type="button" class="secondary-action" data-notebook-close>Close</button>
+            <button type="button" class="text-action" data-notebook-delete hidden>Delete note</button>
+          </div>
+          <p class="micro">Plain Markdown stays editable and portable. No generated HTML is stored.</p>
+        </section>
+        <section class="book-notebook__welcome" data-notebook-welcome>
+          <h2>Start with a thought</h2>
+          <p>Keep a book overview, one summary per chapter, or as many free-form reading notes as you need. No folders or tags are required.</p>
+        </section>
+      </div>
+    </section>
+  </div>
+  <div hidden data-notebook-catalog={JSON.stringify(catalog)}></div>
+  <script>
+    import {
+      getPersonalBooks, personalReaderWorkId, type PersonalBookSummary,
+    } from '../lib/client/personal-books';
+    import {
+      createBookNote, deleteBookNote, listBookNotes, subscribeBookNotes,
+      updateBookNote, type NewBookNote,
+    } from '../lib/knowledge/note-store';
+    import {
+      bookNoteToMarkdown, normalizedChapterKey, notebookTitle,
+      type BookNoteDocumentV1, type BookNoteScope,
+    } from '../lib/knowledge/note-model';
+
+    interface BookEntry { id: string; title: string; slug?: string; personal?: PersonalBookSummary }
+    const root = document.querySelector<HTMLElement>('[data-notebook-root]');
+    if (root) {
+      const base = root.dataset.base ?? '/library';
+      const bookSelect = root.querySelector<HTMLSelectElement>('[data-notebook-book]')!;
+      const list = root.querySelector<HTMLElement>('[data-notebook-list]')!;
+      const empty = root.querySelector<HTMLElement>('[data-notebook-empty]')!;
+      const status = root.querySelector<HTMLElement>('[data-notebook-status]')!;
+      const count = root.querySelector<HTMLElement>('[data-notebook-count]')!;
+      const editor = root.querySelector<HTMLElement>('[data-notebook-editor]')!;
+      const welcome = root.querySelector<HTMLElement>('[data-notebook-welcome]')!;
+      const title = root.querySelector<HTMLInputElement>('[data-notebook-title]')!;
+      const body = root.querySelector<HTMLTextAreaElement>('[data-notebook-body]')!;
+      const saveStatus = root.querySelector<HTMLElement>('[data-notebook-save-status]')!;
+      const kindLabel = root.querySelector<HTMLElement>('[data-notebook-kind]')!;
+      const chapterPane = root.querySelector<HTMLElement>('[data-notebook-chapter]')!;
+      const chapterKeyInput = root.querySelector<HTMLInputElement>('[data-notebook-chapter-key]')!;
+      const exportButton = root.querySelector<HTMLButtonElement>('[data-notebook-export]')!;
+      const readLink = root.querySelector<HTMLAnchorElement>('[data-notebook-read]')!;
+      const highlightsLink = root.querySelector<HTMLAnchorElement>('[data-notebook-highlights]')!;
+      const removeButton = root.querySelector<HTMLButtonElement>('[data-notebook-delete]')!;
+      const books = new Map<string, BookEntry>();
+      const allNotes: BookNoteDocumentV1[] = [];
+      let selected: BookNoteDocumentV1 | undefined;
+      let draft: NewBookNote | undefined;
+      let savedTitle = '';
+      let savedBody = '';
+      let saveTimer: ReturnType<typeof setTimeout> | undefined;
+      let saving = false;
+      let loadNumber = 0;
+      let deletionArmed = false;
+
+      function dirty(): boolean {
+        return Boolean(draft || selected) && (title.value !== savedTitle || body.value !== savedBody);
+      }
+      function mark(message: string): void { saveStatus.textContent = message; }
+      function setStatus(message: string): void { status.textContent = message; }
+      function currentBook(): string { return bookSelect.value; }
+
+      function download(name: string, content: string): void {
+        const url = URL.createObjectURL(new Blob([content], { type: 'text/markdown;charset=utf-8' }));
+        const a = document.createElement('a'); a.href = url; a.download = name; a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 0);
+      }
+
+      function updateBookControls(): void {
+        const id = currentBook();
+        for (const btn of root.querySelectorAll<HTMLButtonElement>('[data-notebook-create]')) btn.disabled = !id;
+        exportButton.disabled = !id;
+        highlightsLink.hidden = !id;
+        highlightsLink.href = `${base}/knowledge?book=${encodeURIComponent(id)}`;
+        const entry = books.get(id);
+        readLink.hidden = !entry;
+        if (entry?.personal) {
+          const route = entry.personal.format === 'pdf' ? 'pdf' : 'read';
+          readLink.href = `${base}/personal/${route}?id=${encodeURIComponent(entry.personal.id)}`;
+        } else if (entry?.slug) readLink.href = `${base}/works/${encodeURIComponent(entry.slug)}/read`;
+      }
+
+      function hideEditor(): void {
+        editor.hidden = true; welcome.hidden = false;
+        selected = undefined; draft = undefined; savedTitle = ''; savedBody = '';
+        removeButton.hidden = true; deletionArmed = false; removeButton.textContent = 'Delete note';
+      }
+
+      function openEditor(doc?: BookNoteDocumentV1, pending?: NewBookNote): void {
+        if (saveTimer) clearTimeout(saveTimer);
+        selected = doc;
+        draft = pending;
+        savedTitle = doc?.title ?? '';
+        savedBody = doc?.bodyMarkdown ?? '';
+        title.value = doc?.title ?? pending?.title ?? '';
+        body.value = doc?.bodyMarkdown ?? '';
+        kindLabel.textContent = (doc?.scope ?? pending?.scope ?? 'reading-note').replace(/-/g, ' ');
+        mark(doc ? 'Saved locally' : 'Draft — not yet saved');
+        editor.hidden = false; welcome.hidden = true;
+        removeButton.hidden = !doc;
+        deletionArmed = false; removeButton.textContent = 'Delete note';
+        title.focus();
+      }
+
+      async function save(): Promise<boolean> {
+        if (saving) return false;
+        if (!selected && !draft) return true;
+        if (!dirty()) return true;
+        if (!title.value.trim() && !body.value.trim()) { mark('Empty draft — not saved'); return true; }
+        const writeTitle = title.value;
+        const writeBody = body.value;
+        if (saveTimer) clearTimeout(saveTimer);
+        saving = true; mark('Saving…');
+        try {
+          const next = selected
+            ? await updateBookNote(selected.id, selected.revision, { title: writeTitle, bodyMarkdown: writeBody })
+            : await createBookNote({ ...draft!, title: writeTitle, bodyMarkdown: writeBody });
+          selected = next; draft = undefined;
+          savedTitle = writeTitle; savedBody = writeBody;
+          removeButton.hidden = false;
+          mark('Saved locally');
+          void refresh();
+          if (dirty()) scheduleSave();
+          return true;
+        } catch (error) {
+          mark(error instanceof Error ? error.message : 'Save failed. Copy your note to keep it safe.');
+          return false;
+        } finally { saving = false; }
+      }
+      function scheduleSave(): void {
+        if (saveTimer) clearTimeout(saveTimer);
+        mark('Unsaved changes');
+        saveTimer = setTimeout(() => { void save(); }, 650);
+      }
+      async function switchEditor(doc?: BookNoteDocumentV1, pending?: NewBookNote): Promise<void> {
+        if (dirty() && !await save()) { setStatus('Save failed. Copy your current text before changing notes.'); return; }
+        openEditor(doc, pending);
+      }
+
+      function renderNotes(notes: BookNoteDocumentV1[]): void {
+        list.replaceChildren();
+        const groups: Array<{ label: string; scope: BookNoteScope }> = [
+          { label: 'Book overview', scope: 'book-overview' },
+          { label: 'Chapter summaries', scope: 'chapter-summary' },
+          { label: 'Reading notes', scope: 'reading-note' },
+        ];
+        for (const group of groups) {
+          const relevant = notes.filter((note) => note.scope === group.scope);
+          if (!relevant.length) continue;
+          const section = document.createElement('section');
+          const heading = document.createElement('h3'); heading.textContent = group.label; section.append(heading);
+          for (const note of relevant) {
+            const link = document.createElement('button'); link.type = 'button'; link.className = 'book-notebook__item';
+            link.textContent = notebookTitle(note);
+            link.setAttribute('aria-label', 'Edit ' + notebookTitle(note));
+            link.addEventListener('click', () => { void switchEditor(note); });
+            section.append(link);
+          }
+          list.append(section);
+        }
+        empty.hidden = notes.length > 0;
+        count.textContent = notes.length + (notes.length === 1 ? ' notebook note' : ' notebook notes');
+      }
+
+      async function refresh(): Promise<void> {
+        const id = currentBook(), nonce = ++loadNumber;
+        if (!id) { renderNotes([]); return; }
+        try {
+          const notes = await listBookNotes(id);
+          if (nonce !== loadNumber || id !== currentBook()) return;
+          allNotes.splice(0, allNotes.length, ...notes);
+          renderNotes(notes);
+        } catch { setStatus('Notebook storage unavailable. Your unsaved text is still available for copying.'); }
+      }
+
+      async function chooseBook(value: string): Promise<void> {
+        if (dirty() && !await save()) { bookSelect.value = selected?.workId ?? draft?.workId ?? ''; return; }
+        hideEditor(); bookSelect.value = value;
+        const url = new URL(location.href);
+        if (value) url.searchParams.set('work', value); else url.searchParams.delete('work');
+        history.replaceState(null, '', url);
+        updateBookControls(); await refresh();
+        setStatus(value ? 'Notebook ready on this device.' : 'Select a book to begin.');
+      }
+
+      async function initialize(): Promise<void> {
+        try {
+          const raw = document.querySelector<HTMLElement>('[data-notebook-catalog]')?.dataset.notebookCatalog ?? '[]';
+          for (const entry of JSON.parse(raw) as BookEntry[]) books.set(entry.id, entry);
+          for (const personal of await getPersonalBooks()) {
+            const id = personalReaderWorkId(personal);
+            books.set(id, { id, title: personal.title, personal });
+          }
+        } catch { setStatus('Some personal books could not be loaded; existing notebook notes remain available.'); }
+        const entries = [...books.values()].sort((a, b) => a.title.localeCompare(b.title));
+        for (const entry of entries) {
+          const option = new Option(entry.title, entry.id); bookSelect.append(option);
+        }
+        const requested = new URL(location.href).searchParams.get('work');
+        if (requested && !books.has(requested)) {
+          bookSelect.add(new Option('Unavailable book: ' + requested, requested));
+          setStatus('Source file unavailable. Your existing notes remain accessible.');
+        }
+        await chooseBook(requested ?? '');
+      }
+
+      root.querySelectorAll<HTMLButtonElement>('[data-notebook-create]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const scope = btn.dataset.notebookCreate as BookNoteScope;
+          if (!currentBook()) return;
+          if (scope === 'chapter-summary') {
+            chapterPane.hidden = false; chapterKeyInput.focus(); return;
+          }
+          if (scope === 'book-overview') {
+            const existing = allNotes.find((note) => note.scope === 'book-overview');
+            await switchEditor(existing, existing ? undefined : { workId: currentBook(), scope, title: 'Book overview' });
+          } else await switchEditor(undefined, { workId: currentBook(), scope, title: 'Reading note' });
+        });
+      });
+      root.querySelector('[data-notebook-chapter-confirm]')?.addEventListener('click', async () => {
+        const chapterKey = normalizedChapterKey(chapterKeyInput.value);
+        if (!chapterKey || !currentBook()) { setStatus('Enter a chapter heading or page reference.'); return; }
+        const existing = allNotes.find((note) => note.scope === 'chapter-summary' && note.chapterKey === chapterKey);
+        chapterPane.hidden = true;
+        await switchEditor(existing, existing ? undefined : {
+          workId: currentBook(), scope: 'chapter-summary', chapterKey, title: chapterKeyInput.value.trim(),
+        });
+      });
+      root.querySelector('[data-notebook-chapter-cancel]')?.addEventListener('click', () => { chapterPane.hidden = true; });
+      bookSelect.addEventListener('change', () => { void chooseBook(bookSelect.value); });
+      title.addEventListener('input', scheduleSave);
+      body.addEventListener('input', scheduleSave);
+      title.addEventListener('blur', () => { if (dirty()) void save(); });
+      body.addEventListener('blur', () => { if (dirty()) void save(); });
+      editor.addEventListener('keydown', (event) => {
+        if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
+          event.preventDefault(); void save();
+        }
+      });
+      root.querySelector('[data-notebook-save]')?.addEventListener('click', () => { void save(); });
+      root.querySelector('[data-notebook-close]')?.addEventListener('click', async () => {
+        if (dirty() && !await save()) return; hideEditor();
+        root.querySelector<HTMLButtonElement>('[data-notebook-create="reading-note"]')?.focus();
+      });
+      root.querySelector('[data-notebook-copy]')?.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText('# ' + title.value + '\n\n' + body.value + '\n');
+          mark('Copied to clipboard');
+        } catch { mark('Clipboard unavailable. Select and copy the editor text directly.'); }
+      });
+      removeButton.addEventListener('click', async () => {
+        if (!selected) return;
+        if (!deletionArmed) { deletionArmed = true; removeButton.textContent = 'Confirm delete'; return; }
+        try {
+          await deleteBookNote(selected.id, selected.revision);
+          hideEditor(); await refresh(); setStatus('Notebook note deleted; highlights remain untouched.');
+        } catch { setStatus('Delete failed. This note may have changed in another tab.'); }
+      });
+      exportButton.addEventListener('click', async () => {
+        if (!currentBook()) return;
+        const notes = await listBookNotes(currentBook());
+        const text = '# ' + (books.get(currentBook())?.title ?? currentBook()) + '\n\n'
+          + notes.map(bookNoteToMarkdown).join('\n---\n\n');
+        download('thiepn-notebook-' + currentBook().replace(/[^a-zA-Z0-9-]/g, '-') + '.md', text);
+        setStatus('Exported this book notebook as Markdown.');
+      });
+      window.addEventListener('beforeunload', (event) => {
+        if (!dirty()) return;
+        event.preventDefault();
+        event.returnValue = '';
+      });
+      const unsubscribe = subscribeBookNotes(() => {
+        if (dirty()) mark('Another tab changed the notebook. Save or copy your draft before reloading.');
+        else void refresh();
+      });
+      window.addEventListener('pagehide', unsubscribe, { once: true });
+      void initialize();
+    }
+  </script>
+</BaseLayout>
