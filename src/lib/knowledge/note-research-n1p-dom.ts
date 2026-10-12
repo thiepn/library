@@ -207,6 +207,7 @@ export function mountResearchN1P(
         action('Study in collection',()=>{void openReviewSource(item);}),
         action('Compare',()=>{void addReviewToBasket(item);}),
         action('Cite in synthesis',()=>{void citeReviewSource(item);}),
+        action('Cite in section',()=>{void citeReviewInSection(item);}),
         action('Writing prompt',()=>{void draftReviewPrompt(item);}),
         action('Copy citation',()=>{
           void navigator.clipboard.writeText(noteReferenceMarkdown(item.note))
@@ -264,6 +265,28 @@ export function mountResearchN1P(
     requestResearchView(root,'write','[data-n1p-comparison-items]');
     root.querySelector<HTMLElement>('[data-n1p-comparison-items]')
       ?.scrollIntoView({behavior:'smooth',block:'center'});
+  }
+  async function citeReviewInSection(item:ResearchQueueItem):Promise<void> {
+    if(host.active()?.id!==item.collectionId)await host.openCollection(item.collectionId);
+    if(disposed||host.active()?.id!==item.collectionId){
+      status.textContent='Collection switch canceled; unsaved writing was retained.';
+      return;
+    }
+    const note=host.notes().find(source=>source.id===item.note.id);
+    if(!note||!host.active()?.noteIds.includes(note.id)){
+      status.textContent='Saved source unavailable in this collection.';
+      return;
+    }
+    if(!host.synthesis()){
+      requestResearchView(root,'write','[data-research-make-synthesis]');
+      status.textContent='Create a native synthesis before citing into a heading.';
+      return;
+    }
+    requestResearchView(root,'write','[data-n1r-section-picker]');
+    root.dispatchEvent(new CustomEvent('library-research-cite-in-section',{
+      detail:{noteId:note.id,collectionId:item.collectionId},
+    }));
+    status.textContent='Source forwarded to the existing section citation editor. Choose a heading first if requested.';
   }
   async function citeReviewSource(item:ResearchQueueItem):Promise<void> {
     if(host.active()?.id!==item.collectionId)await openReviewSource(item);
