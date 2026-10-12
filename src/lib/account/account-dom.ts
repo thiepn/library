@@ -17,6 +17,7 @@ import {
   type LibrarySyncResult,
 } from './sync';
 import { isLibraryAutomaticSyncEnabled, setLibraryAutomaticSync } from './auto-sync';
+import { getLibraryCoreGrant, changeLibraryCoreGrant, requestLibrarySyncFromCore } from './core-coordination';
 import {
   isLibraryPersonalFileCloudEnabled,
   reconcileLibraryPersonalFiles,
@@ -111,6 +112,16 @@ async function render(userOverride?: LibraryAccountUser | null): Promise<Library
   hidden('[data-sync-enable]', enabled);
   hidden('[data-sync-enabled-actions]', !enabled);
   hidden('[data-auto-sync-section]', !enabled);
+  hidden('[data-core-coordinate-section]', !enabled);
+  const coreGrant = enabled ? getLibraryCoreGrant(user.id) : null;
+  const coreToggle = document.querySelector<HTMLInputElement>('[data-core-coordinate-toggle]');
+  if (coreToggle) coreToggle.checked = Boolean(coreGrant?.allowed);
+  const coreRequest = document.querySelector<HTMLButtonElement>('[data-core-coordinate-request]');
+  if (coreRequest) coreRequest.disabled = !enabled || !coreGrant?.allowed;
+  text('[data-core-coordinate-status]', !enabled
+    ? 'Enable native Library sync before allowing requests.'
+    : coreGrant?.allowed ? 'Core requests permitted for this owner on this device; Library decides actual sync results.'
+      : 'Core coordination is off. Native manual Library sync is unaffected.');
   const preference = document.querySelector<HTMLInputElement>('[data-auto-sync-checkbox]');
   if (preference) preference.checked = enabled && isLibraryAutomaticSyncEnabled(user.id);
   text('[data-auto-sync-status]', enabled
@@ -215,8 +226,40 @@ export function mountLibraryAccountPage(): () => void {
       ? 'Automatic checks enabled while this tab is visible and online.'
       : 'Automatic checks paused. Manual sync remains available.');
   });
+  document.querySelector<HTMLInputElement>('[data-core-coordinate-toggle]')?.addEventListener('change', (event) => {
+    const target = event.currentTarget as HTMLInputElement;
+    if (!user || !changeLibraryCoreGrant(user.id, target.checked)) {
+      target.checked = Boolean(user && getLibraryCoreGrant(user.id)?.allowed);
+      text('[data-core-coordinate-status]', 'Unable to update consent; no new Core request is authorized.');
+      return;
+    }
+    text('[data-core-coordinate-status]', target.checked
+      ? 'Requests allowed on this device. Native Library permissions remain authoritative.'
+      : 'Core coordination revoked on this device; native Library sync remains available.');
+    const request = document.querySelector<HTMLButtonElement>('[data-core-coordinate-request]');
+    if (request) request.disabled = !target.checked;
+  });
+  document.querySelector('[data-core-coordinate-request]')?.addEventListener('click', () => {
+    if (!user) return;
+    const ownerId = user.id;
+    const grant = getLibraryCoreGrant(ownerId);
+    setBusy(true);
+    text('[data-core-coordinate-status]', 'Asking Library to reconcile through the native Account engine…');
+    void requestLibrarySyncFromCore(ownerId, grant).then((result) => {
+      if (user?.id !== ownerId) return;
+      if (result.status === 'native') {
+        renderResult(result.result);
+        text('[data-core-coordinate-status]', 'Native Library result: ' + result.result.message);
+      } else text('[data-core-coordinate-status]', result.message);
+    }).catch(() => {
+      if (user?.id === ownerId) text('[data-core-coordinate-status]', 'Native Library request failed. Retry manually or inspect Account status.');
+    }).finally(() => { setBusy(false); });
+  });
   document.querySelector('[data-sync-pause]')?.addEventListener('click', () => {
     if (!user) return;
+    // Pausing native Library sync also rotates/revokes its optional Core grant.
+    // The owner must explicitly opt back into coordination after resuming.
+    changeLibraryCoreGrant(user.id, false);
     pauseLibrarySync(user.id);
     void render(user);
   });
