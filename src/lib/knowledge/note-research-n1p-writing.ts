@@ -2,6 +2,7 @@ import { notebookTitle, type BookNoteDocumentV1 } from './note-model';
 import { noteReferenceMarkdown } from './note-links';
 import { describeResearchSource } from './note-research';
 import { extractNotebookTopics } from './note-workspace';
+import { noteEvidenceExcerpts } from './note-evidence-workflows';
 
 export interface ComparisonSource {
   note:BookNoteDocumentV1;
@@ -30,6 +31,12 @@ export function multiSourceComparisonMarkdown(sources:readonly ComparisonSource[
       '   - My note revision: '+source.note.revision);
     const topics=extractNotebookTopics(source.note.bodyMarkdown);
     if(topics.length)rows.push('   - Explicit topics: '+topics.map(topic=>'#'+topic).join(', '));
+    const observations=noteEvidenceExcerpts(source.note.bodyMarkdown,2);
+    if(observations.length){
+      rows.push('   - Prompts drawn from my authored note (not quotations from the original book):');
+      for(const observation of observations)
+        rows.push('     - '+observation.replace(/[\r\n]/g,' ').slice(0,240));
+    }
   }
   rows.push('','### Agreements supported by the notes','','',
     '### Differences in arguments or evidence','','',
