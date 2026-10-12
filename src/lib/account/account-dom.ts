@@ -120,8 +120,12 @@ async function render(userOverride?: LibraryAccountUser | null): Promise<Library
   if (coreRequest) coreRequest.disabled = !enabled || !coreGrant?.allowed;
   text('[data-core-coordinate-status]', !enabled
     ? 'Enable native Library sync before allowing requests.'
-    : coreGrant?.allowed ? 'Core requests permitted for this owner on this device; Library decides actual sync results.'
+    : coreGrant?.allowed ? 'Core requests permitted on this device (local grant revision '
+        + coreGrant.revision + '). Library decides the actual sync results.'
       : 'Core coordination is off. Native manual Library sync is unaffected.');
+  text('[data-core-coordinate-guidance]', enabled
+    ? 'If results conflict, select Device or Cloud below before retrying. For offline recovery, use the native Library backup page.'
+    : 'Local Library records remain available. You can export and restore from the native backup page.');
   const preference = document.querySelector<HTMLInputElement>('[data-auto-sync-checkbox]');
   if (preference) preference.checked = enabled && isLibraryAutomaticSyncEnabled(user.id);
   text('[data-auto-sync-status]', enabled
@@ -189,16 +193,34 @@ export function mountLibraryAccountPage(): () => void {
   const act = async (operation: (current: LibraryAccountUser) => Promise<LibrarySyncResult>,
     conflictResolution = false) => {
     if (!user) return;
+    const startedAs = user.id;
+    const original = user;
     setBusy(true);
     try {
-      const result = await operation(user);
+      const result = await operation(original);
+      const current = await getVerifiedLibraryAccountUser();
+      if (disposed || current?.id !== startedAs || user?.id !== startedAs) {
+        // Account identity changed while native CAS was running. Never paint
+        // the previous owner's result or release its conflict hold.
+        user = current;
+        if (!disposed) await render(current);
+        return;
+      }
       renderResult(result);
       if (conflictResolution && ['pushed', 'pulled', 'synced'].includes(result.status)) {
         window.dispatchEvent(new CustomEvent('thiepn:library-conflict-resolved', {
-          detail: { ownerId: user.id },
+          detail: { ownerId: startedAs },
         }));
       }
-      await render(user);
+      await render(current);
+    } catch {
+      const current = await getVerifiedLibraryAccountUser().catch(() => null);
+      if (!disposed && current?.id === startedAs && user?.id === startedAs) {
+        text('[data-sync-status]', 'Native Library check failed. Local reading remains available; retry or export a manual backup.');
+      } else {
+        user = current;
+        if (!disposed) await render(current);
+      }
     } finally {
       setBusy(false);
     }
@@ -276,6 +298,9 @@ export function mountLibraryAccountPage(): () => void {
 
   const onSync = (event: Event) => {
     const detail = (event as CustomEvent<LibrarySyncResult>).detail;
+    // Native sync events carry no identity; never let an old account's event
+    // overwrite a new owner's status or unlock source-of-truth controls.
+    if (!user || readLibrarySyncMeta()?.userId !== user.id) return;
     if (detail) {
       renderResult(detail);
       if (detail.status === 'conflict' || detail.status === 'offline' || detail.status === 'error')
