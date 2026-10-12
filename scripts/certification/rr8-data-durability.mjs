@@ -50,8 +50,10 @@ if (present) {
 
   pass('RR8_DETERMINISTIC_BACKUP',
     portability.includes("LIBRARY_BACKUP_FORMAT = 'thiepn-library-backup'")
-      && portability.includes('LIBRARY_BACKUP_SCHEMA_VERSION = 1')
+      && portability.includes('LIBRARY_BACKUP_SCHEMA_VERSION = 2')
       && portability.includes('sortBy(')
+      && portability.includes('noteDocuments: category(sortBy(')
+      && portability.includes('decoded.schemaVersion === 1')
       && portability.includes('createLibraryBackupJson')
       && portability.includes('JSON.stringify(await createLibraryBackup(), null, 2)'),
     'Portable JSON uses a versioned envelope and stable record ordering');
