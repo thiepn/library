@@ -1654,11 +1654,14 @@ const catalog = (await getWorks()).map((work) => ({
       });
       root.querySelector('[data-notebook-add-research]')?.addEventListener('click', async () => {
         if (!selected && !draft) return;
+        if (!selected && !dirty()) {
+          setStatus('Write some content and save this draft before adding it to research.');
+          return;
+        }
         if (dirty() && !await save()) {
           setStatus('Save the current notebook text or download the editor draft before collecting it.');
           return;
         }
-        if (!selected && !await save()) return;
         if (selected) await research.addNote(selected.id);
       });
       root.querySelector('[data-notebook-save]')?.addEventListener('click', () => { void save(); });
