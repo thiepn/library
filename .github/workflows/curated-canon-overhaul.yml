@@ -77,8 +77,11 @@ jobs:
             src/content/works \
             src/publications/releases \
             src/publications/public-domain-ledger.json \
-            src/publications/curated-canon-status.json \
             public/covers/public-domain
+          # audit-canon.py generates this file during finalize, not ingest.
+          if test -f src/publications/curated-canon-status.json; then
+            git add src/publications/curated-canon-status.json
+          fi
           if ! git diff --cached --quiet; then
             git commit -m "Canon checkpoint: normalize metadata and stage curated works"
           fi
@@ -103,9 +106,9 @@ jobs:
             echo "### Curated canon ingest checkpoint"
             echo
             echo "- Existing public-domain metadata normalized"
-            echo "- Added this run: `${{ steps.ingest.outputs.added_count || '0' }}`"
-            echo "- Work IDs: `${{ steps.ingest.outputs.work_ids || '' }}`"
-            echo "- Checkpoint branch: `${{ steps.checkpoint.outputs.branch || 'not-created' }}`"
+            echo "- Added this run: ${{ steps.ingest.outputs.added_count || '0' }}"
+            echo "- Work IDs: ${{ steps.ingest.outputs.work_ids || '' }}"
+            echo "- Checkpoint branch: ${{ steps.checkpoint.outputs.branch || 'not-created' }}"
             echo "- New EPUB staging persisted before cover generation"
           } >> "$GITHUB_STEP_SUMMARY"
 
@@ -213,6 +216,7 @@ jobs:
             src/content/works \
             src/publications/releases \
             src/publications/public-domain-ledger.json \
+            src/publications/curated-canon-status.json \
             public/covers/public-domain
           if ! git diff --cached --quiet; then
             git commit -m "Library: finalize curated canon covers and releases"
