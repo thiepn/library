@@ -8,26 +8,28 @@ export interface NotebookHeading {
 }
 export function getNotebookHeadings(markdown: string): NotebookHeading[] {
   const entries: NotebookHeading[] = [];
-  const lines=markdown.replace(/\r\n?/g,'\n').split('\n');
-  let offset=0;
-  let inFence=false;
-  let fenceChar='';
-  let fenceLength=0;
-  for(let i=0;i<lines.length;i++) {
-    const line=lines[i];
-    const fence=line.match(/^\s*(\`{3,}|~{3,})/);
-    if(fence) {
-      const char=fence[1][0];
-      if(!inFence){inFence=true;fenceChar=char;fenceLength=fence[1].length;}
-      else if(char===fenceChar && fence[1].length>=fenceLength)inFence=false;
-    } else if(!inFence) {
+  let inFence=false,fenceChar='',fenceLength=0;
+  let cursor=0,lineNumber=0;
+  while(cursor<=markdown.length){
+    const start=cursor;
+    let end=cursor;
+    while(end<markdown.length&&markdown[end]!=='\r'&&markdown[end]!=='\n')end++;
+    const line=markdown.slice(start,end);
+    lineNumber++;
+    const fence=line.match(/^\s*(`{3,}|~{3,})/);
+    if(fence){
+      const marker=fence[1],char=marker[0];
+      if(!inFence){inFence=true;fenceChar=char;fenceLength=marker.length;}
+      else if(char===fenceChar&&marker.length>=fenceLength)inFence=false;
+    }else if(!inFence){
       const heading=line.match(/^\s{0,3}(#{1,6})\s+(.+?)\s*#*\s*$/);
       if(heading)entries.push({
         title:heading[2],level:heading[1].length,
-        offset:offset+line.indexOf(heading[1]),line:i+1,
+        offset:start+line.indexOf(heading[1]),line:lineNumber,
       });
     }
-    offset+=line.length+1;
+    if(end===markdown.length)break;
+    cursor=end+(markdown[end]==='\r'&&markdown[end+1]==='\n'?2:1);
   }
   return entries;
 }
