@@ -485,6 +485,9 @@ export async function getLibraryDbPortabilitySnapshot(): Promise<LibraryDbPortab
       request<unknown[]>(transaction.objectStore('noteDocuments').getAll()),
     ]);
     await completion;
+    if (noteValues.some((value) => !isBookNoteDocumentV1(value))) {
+      throw new Error('Notebook storage contains an invalid document. Export is blocked to prevent silent data loss.');
+    }
 
     const legacyByWork = new Map<string, StoredLegacyProgressRecordV1>();
     for (const value of [...legacyValues, ...progressValues]) {
