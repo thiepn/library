@@ -4,7 +4,8 @@ import { loadResearchCollections, describeResearchSource,
   type ResearchCollection } from './note-research';
 import {
   collectCrossBookReviewQueue, summarizeCrossBookQueue,
-  updateCrossBookReviewState, type QueueFilter, type ResearchQueueItem,
+  updateCrossBookReviewState, crossBookReviewPacketMarkdown,
+  type QueueFilter, type ResearchQueueItem,
 } from './note-cross-book-review';
 import { readResearchSession, newResearchSession, storeResearchSession } from './note-research-session';
 import { orderResearchCollections } from './note-continuity';
@@ -218,6 +219,13 @@ export function mountResearchN1P(
     status.textContent='Review queue started using existing session storage, without modifying notes.';
     host.refreshReview();
     renderQueue();
+  });
+  bind('[data-n1p-export-review]','click',()=>{
+    const text=crossBookReviewPacketMarkdown(loadResearchCollections(),host.notes(),
+      host.bookTitle,collectionSelect.value,filter.value as QueueFilter);
+    downloadMarkdown('research-review-'+safeFile(collectionSelect.value)
+      +'-'+filter.value+'.md',text);
+    status.textContent='Review checklist download requested. It contains self-reported flags, not mastery evidence.';
   });
   bind('[data-n1p-go-source]','click',()=>{
     const source=selectedSource();
