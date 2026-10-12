@@ -1167,6 +1167,165 @@ const catalog = (await getWorks()).map((work) => ({
       }
 
 
+
+      function filtersChanged(): void {
+        currentViewId = '';
+        savedView.value = '';
+        renderDiscover();
+        renderGraph();
+      }
+
+      function applyWorkspaceFilters(filters: NotebookViewFilters): void {
+        discoverQuery.value = filters.query;
+        discoverBook.value = filters.workId;
+        discoverTopic.value = filters.topic;
+        discoverScope.value = filters.scope;
+        discoverLinks.value = filters.mode;
+        discoverSort.value = filters.sort;
+        renderDiscover();
+        renderGraph();
+      }
+
+      root.querySelector('[data-view-save]')?.addEventListener('click', () => {
+        try {
+          const saved = saveNotebookView(savedViewName.value, currentWorkspaceFilters());
+          currentViewId = saved[0].id;
+          renderSavedViews();
+          savedView.value = currentViewId;
+          savedViewName.value = '';
+          savedViewStatus.textContent = 'Saved workspace: ' + saved[0].name
+            + '. Stored on this device only.';
+        } catch(error) {
+          savedViewStatus.textContent = error instanceof Error ? error.message : 'Cannot save this view.';
+        }
+      });
+
+      root.querySelector('[data-view-apply]')?.addEventListener('click', () => {
+        const view=readSavedNotebookViews().find(item => item.id === savedView.value);
+        if(!view){savedViewStatus.textContent='Choose a saved view first.';return;}
+        currentViewId=view.id;
+        const works=new Set(libraryNotes.map(note=>note.workId));
+        const topics=new Set(collectNotebookTopics(libraryNotes).map(topic=>topic.id));
+        applyWorkspaceFilters(filtersForSavedView(view,works,topics));
+        savedViewStatus.textContent='Opened "' + view.name
+          + '". Missing books or topics fall back to All.';
+      });
+
+      root.querySelector('[data-view-delete]')?.addEventListener('click', () => {
+        const selected=readSavedNotebookViews().find(item=>item.id===savedView.value);
+        if(!selected){savedViewStatus.textContent='Choose a saved view to remove.';return;}
+        if(!window.confirm('Remove saved view "'+selected.name+'"? Your notebook notes will not be deleted.'))return;
+        try {
+          deleteNotebookView(selected.id);
+          currentViewId='';
+          renderSavedViews();
+          savedViewStatus.textContent='Saved view removed; existing note filters remain available.';
+        } catch(error){savedViewStatus.textContent=error instanceof Error?error.message:'Cannot remove view.';}
+      });
+
+      root.querySelector('[data-view-clear]')?.addEventListener('click', () => {
+        currentViewId='';
+        savedView.value='';
+        applyWorkspaceFilters(defaultNotebookView());
+        savedViewStatus.textContent='Showing all notes, regardless of book, topic or connections.';
+      });
+
+      graphToggle.addEventListener('click', () => {
+        graphPanel.hidden=!graphPanel.hidden;
+        graphToggle.setAttribute('aria-expanded',String(!graphPanel.hidden));
+        graphToggle.textContent=graphPanel.hidden?'Explore graph':'Hide graph';
+        if(!graphPanel.hidden)renderGraph();
+      });
+      graphEdges.addEventListener('change',renderGraph);
+      graphZoom.addEventListener('input',renderGraph);
+      root.querySelector('[data-graph-reset]')?.addEventListener('click',()=>{
+        graphFocus=undefined;
+        graphZoom.value='100';
+        renderGraph();
+      });
+      graphPreviewButton.addEventListener('click',()=>{
+        const note=libraryNotes.find(item=>item.id===graphFocus);
+        if(note)showLinkedPreview(note);
+      });
+      graphOpenButton.addEventListener('click',()=>{
+        const note=libraryNotes.find(item=>item.id===graphFocus);
+        if(note)void openAnyNote(note);
+      });
+
+      async function mutateTopicEverywhere(removal: boolean): Promise<void> {
+        if(topicMutationBusy || saving)return;
+        const from=topicManage.value;
+        const to=removal?null:normalizeNotebookTopic(topicManageName.value);
+        if(!from){topicManageStatus.textContent='Choose an existing topic first.';return;}
+        if(!removal && (!to || to===from)){
+          topicManageStatus.textContent='Enter a different valid topic name.';return;
+        }
+        if(dirty() && !await save()){
+          topicManageStatus.textContent='Unable to save the open draft. Download it before proceeding.';
+          return;
+        }
+        let candidates: Array<{note: BookNoteDocumentV1; newBody:string}> = [];
+        try {
+          const current=await listBookNotes();
+          candidates=current.flatMap(note=>{
+            const edit=rewriteNotebookTopic(note.bodyMarkdown,from,to);
+            return edit.replacements ? [{note,newBody:edit.after}] : [];
+          });
+        } catch(error){
+          topicManageStatus.textContent=error instanceof Error?error.message:'Notebook storage unavailable.';
+          return;
+        }
+        if(!candidates.length){topicManageStatus.textContent='No saved notes contain that topic.';return;}
+        const action=removal?'remove #'+from:'rename #'+from+' to #'+to;
+        if(!window.confirm('This will '+action+' in '+candidates.length+
+          ' saved notes across your books. A local JSON backup download is requested first. Continue?'))return;
+        topicMutationBusy=true;
+        const buttons=root!.querySelectorAll<HTMLButtonElement>('[data-topic-rename],[data-topic-remove]');
+        buttons.forEach(button=>{button.disabled=true;});
+        let changed=0;
+        try {
+          // A V2 snapshot is requested before any local note mutation.
+          const backup=await createLibraryBackupJson();
+          const url=URL.createObjectURL(new Blob([backup],{type:'application/json;charset=utf-8'}));
+          const anchor=document.createElement('a');
+          anchor.href=url;
+          anchor.download='thiepn-library-before-topic-edit.json';
+          document.body.append(anchor);
+          anchor.click();anchor.remove();
+          window.setTimeout(()=>URL.revokeObjectURL(url),10000);
+          topicManageStatus.textContent='Backup download requested. Updating notes one at a time…';
+          for(const item of candidates) {
+            const next=await updateBookNote(item.note.id,item.note.revision,{
+              title:item.note.title,bodyMarkdown:item.newBody,
+            });
+            changed++;
+            if(selected?.id===next.id) {
+              selected=next;
+              body.value=next.bodyMarkdown;
+              savedTitle=next.title;savedBody=next.bodyMarkdown;
+              mark('Topic updated and saved locally.');
+              updateWritingStats();
+              renderOutline();
+            }
+          }
+          topicManageStatus.textContent=changed+' notes updated. The changes are stored locally.';
+          topicManageName.value='';
+        } catch(error) {
+          topicManageStatus.textContent=changed+' notes updated before stopping. '
+            +(error instanceof Error?error.message:'Unable to finish topic update.')
+            +' Remaining notes were not changed. Keep the safety backup.';
+        } finally {
+          topicMutationBusy=false;
+          buttons.forEach(button=>{button.disabled=false;});
+          void refresh();
+          void refreshNetwork();
+        }
+      }
+      root.querySelector('[data-topic-rename]')?.addEventListener('click',
+        ()=>{void mutateTopicEverywhere(false);});
+      root.querySelector('[data-topic-remove]')?.addEventListener('click',
+        ()=>{void mutateTopicEverywhere(true);});
+
       discoverQuery.addEventListener('input', renderDiscover);
       discoverBook.addEventListener('change', renderDiscover);
       discoverTopic.addEventListener('change', renderDiscover);
