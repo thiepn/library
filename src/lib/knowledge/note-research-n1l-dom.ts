@@ -1,5 +1,10 @@
 import { applyNotebookMarkdownTool, notebookWordCount, type MarkdownTool } from './note-links';
 import { getNotebookHeadings } from './note-outline';
+import { noteReferenceMarkdown } from './note-links';
+import {
+  getSectionEvidenceContext, sectionEvidenceReviewMarkdown,
+  type SectionEvidenceContext,
+} from './note-research-n1s-evidence';
 import { requestResearchView } from './note-research-n1q-view';
 import {
   researchSynthesisSections, moveSynthesisSection, synthesisSectionTemplate,
@@ -28,6 +33,7 @@ export interface ResearchN1LHost {
   bookTitle(id:string):string;
   sourceHref(note:BookNoteDocumentV1):string|undefined;
   openNote(note:BookNoteDocumentV1):Promise<void>;
+  collectNote(id:string):Promise<void>;
   notify(message:string):void;
 }
 export interface ResearchN1LController {
@@ -61,9 +67,16 @@ export function mountResearchN1L(root:HTMLElement,host:ResearchN1LHost):Research
   const sectionPin=$<HTMLButtonElement>('[data-n1r-section-pin]');
   const sectionOpen=$<HTMLButtonElement>('[data-n1r-section-open]');
   const sectionReader=$<HTMLAnchorElement>('[data-n1r-section-reader]');
+  const evidenceList=$<HTMLElement>('[data-n1s-evidence-list]');
+  const evidenceCount=$<HTMLElement>('[data-n1s-evidence-count]');
+  const evidenceStatus=$<HTMLElement>('[data-n1s-evidence-status]');
+  const evidenceExport=$<HTMLButtonElement>('[data-n1s-evidence-export]');
   const callbacks:Array<()=>void>=[];
   let session:ResearchSession|undefined;
   let selectedSectionStart:number|undefined;
+  let selectedSectionLabel='';
+  let evidenceRefresh:ReturnType<typeof setTimeout>|undefined;
+  let evidenceContext:SectionEvidenceContext|undefined;
   const bind=(sel:string,event:string,cb:EventListener)=>{
     const element=$(sel);element.addEventListener(event,cb);
     callbacks.push(()=>element.removeEventListener(event,cb));
@@ -147,6 +160,7 @@ export function mountResearchN1L(root:HTMLElement,host:ResearchN1LHost):Research
   }
   function onCollectionChanged():void {
     selectedSectionStart=undefined;
+    selectedSectionLabel='';
     const active=host.active();
     session=active?readResearchSession(active.id):undefined;
     if(session){
@@ -201,10 +215,16 @@ export function mountResearchN1L(root:HTMLElement,host:ResearchN1LHost):Research
         String(section.start),
       ));
     }
-    const chosen=sections.find(section=>section.start===previous);
-    // Keep the selected section through regular typing unless its heading moved.
+    const chosen=sections.find(section=>section.start===previous
+      &&section.title===selectedSectionLabel)
+      ??(selectedSectionLabel
+        ?[...sections].filter(section=>section.title===selectedSectionLabel)
+          .sort((a,b)=>Math.abs(a.start-(previous??0))-Math.abs(b.start-(previous??0)))[0]
+        :undefined);
+    // Explicit section selection survives source links or paragraphs inserted above it.
     sectionPicker.value=chosen?String(chosen.start):'';
-    if(!chosen)selectedSectionStart=undefined;
+    if(chosen)selectedSectionStart=chosen.start;
+    else {selectedSectionStart=undefined;selectedSectionLabel='';}
     sectionUp.disabled=!chosen||!sections.some(other=>other.parent===chosen.parent
       &&other.level===chosen.level&&other.start<chosen.start);
     sectionDown.disabled=!chosen||!sections.some(other=>other.parent===chosen.parent
@@ -212,6 +232,7 @@ export function mountResearchN1L(root:HTMLElement,host:ResearchN1LHost):Research
     sectionInsert.disabled=!doc;
     sectionExport.disabled=!doc||!chosen;
     renderSectionSourceOptions(chosen?.sourceIds??[]);
+    scheduleEvidence();
   }
   function renderSectionSourceOptions(ids:readonly string[]):void {
     const previous=sectionSource.value;
@@ -239,6 +260,141 @@ export function mountResearchN1L(root:HTMLElement,host:ResearchN1LHost):Research
     const number=Number(sectionPicker.value);
     selectedSectionStart=sectionPicker.value!==''&&Number.isFinite(number)
       ?number:undefined;
+    selectedSectionLabel=researchSynthesisSections(host.getDraft().body)
+      .find(section=>section.start===selectedSectionStart)?.title??'';
+    renderOutline();
+  }
+  function selectedContext():SectionEvidenceContext|undefined {
+    const active=host.active();
+    if(!active||selectedSectionStart===undefined)return undefined;
+    const body=host.getDraft().body;
+    const index=researchSynthesisSections(body)
+      .findIndex(section=>section.start===selectedSectionStart);
+    return index<0?undefined:getSectionEvidenceContext(body,index,active,host.notes(),12);
+  }
+  function scheduleEvidence():void {
+    if(evidenceRefresh)clearTimeout(evidenceRefresh);
+    evidenceRefresh=setTimeout(()=>{evidenceRefresh=undefined;renderEvidence();},180);
+  }
+  function renderEvidence():void {
+    const active=host.active();
+    evidenceContext=selectedContext();
+    const context=evidenceContext;
+    evidenceList.replaceChildren();
+    evidenceExport.disabled=!active||!context;
+    if(!context){
+      evidenceCount.textContent='Choose a synthesis section to inspect citations and related saved notes.';
+      return;
+    }
+    evidenceCount.textContent=context.inCollectionIds.length+' collected links · '
+      +context.outsideCollectionIds.length+' outside collection · '
+      +context.unavailableIds.length+' unavailable · '
+      +context.uncitedCollectionIds.length+' other collected sources';
+    const byId=sourceById();
+    const rowFor=(heading:string,detail:string,buttons:HTMLElement[]=[]):void=>{
+      const row=document.createElement('article');
+      row.className='book-notebook__n1s-evidence-row';
+      const copy=document.createElement('div');
+      copy.append(text('strong',heading),text('small',detail));
+      const actions=document.createElement('div');
+      actions.className='book-notebook__n1s-evidence-actions';
+      actions.append(...buttons);
+      row.append(copy,actions);evidenceList.append(row);
+    };
+    const btn=(label:string,callback:()=>void):HTMLButtonElement=>{
+      const button=document.createElement('button');
+      button.type='button';button.textContent=label;
+      button.addEventListener('click',callback);
+      return button;
+    };
+    if(!context.noteIds.length){
+      rowFor('No source links in this section',
+        'This is a reference gap, not an assessment of the claim. Choose a related note to inspect.');
+    }
+    for(const id of context.unavailableIds)
+      rowFor('Missing source note · '+id,'The original local note could not be found. Restore it through the established Library V2 process.');
+    for(const id of context.outsideCollectionIds){
+      const source=byId.get(id);
+      if(!source)continue;
+      rowFor('Cited outside collection · '+notebookTitle(source),
+        host.bookTitle(source.workId)+' · original revision '+source.revision,[
+          btn('Collect reference',()=>{void collectSource(source);}),
+          btn('Open note',()=>{void host.openNote(source);}),
+        ]);
+    }
+    for(const suggestion of context.suggestions){
+      const note=suggestion.note;
+      const actions:HTMLElement[]=[
+        btn('Pin / compare',()=>pinCandidate(note)),
+        btn('Open note',()=>{void host.openNote(note);}),
+      ];
+      if(!suggestion.inCollection)
+        actions.unshift(btn('Collect',()=>{void collectSource(note);}));
+      else actions.unshift(btn('Cite in section',()=>insertCitationInSection(note)));
+      const href=host.sourceHref(note);
+      if(href){
+        const link=document.createElement('a');
+        link.href=href;link.target='_blank';link.rel='noopener noreferrer';
+        link.textContent='Original reader';actions.push(link);
+      }
+      rowFor(host.bookTitle(note.workId)+' — '+notebookTitle(note),
+        suggestion.relation.join(' · ')+' · '+(suggestion.inCollection
+          ?'collected':'not yet collected'),actions);
+    }
+    if(!context.suggestions.length&&!context.unavailableIds.length
+      &&!context.outsideCollectionIds.length)
+      rowFor('No additional grounded suggestions',
+        'Shared #topic markers, authored note links or matching heading/title terms would surface candidates here.');
+  }
+  async function collectSource(note:BookNoteDocumentV1):Promise<void> {
+    const activeId=host.active()?.id;
+    if(!activeId)return;
+    try{
+      await host.collectNote(note.id);
+      if(host.active()?.id!==activeId){
+        evidenceStatus.textContent='Collection changed; source references were not inserted.';
+        return;
+      }
+      if(!host.active()?.noteIds.includes(note.id)){
+        evidenceStatus.textContent='Collection reference was not saved; original note remains unchanged.';
+        return;
+      }
+      evidenceStatus.textContent='Source added by stable ID. Inspect it before citing; the note itself is unchanged.';
+      renderEvidence();
+    }catch(error){
+      evidenceStatus.textContent=error instanceof Error?error.message:'Unable to collect this note.';
+    }
+  }
+  function pinCandidate(note:BookNoteDocumentV1):void {
+    if(!host.active()?.noteIds.includes(note.id)){
+      evidenceStatus.textContent='Collect this note first to pin it in the current research workspace.';
+      return;
+    }
+    const previous=host.pins();
+    host.setPins(note.id,previous.right===note.id?'':previous.right);
+    requestResearchView(root,'sources','[data-research-compare]');
+  }
+  function insertCitationInSection(note:BookNoteDocumentV1):void {
+    const current=selectedContext(),active=host.active();
+    if(!host.synthesis()||!active?.noteIds.includes(note.id)||!current)return;
+    const sections=researchSynthesisSections(host.getDraft().body);
+    const section=sections[current.sectionIndex];
+    if(!section)return;
+    const original=host.getDraft().body;
+    // Append within this section, never overwrite authored words or silently save.
+    const before=original.slice(0,section.end);
+    const after=original.slice(section.end);
+    const prefix=before.endsWith('\n')?'\n':'\n\n';
+    const addition=prefix+'Source to assess: '+noteReferenceMarkdown(note)+'\n';
+    const revised=before+addition+after;
+    if(revised.length>synthBody.maxLength){
+      evidenceStatus.textContent='Native synthesis text limit reached; no changes were made.';
+      return;
+    }
+    host.setDraft(host.getDraft().title,revised);
+    synthBody.focus();
+    synthBody.setSelectionRange(before.length+addition.length,before.length+addition.length);
+    evidenceStatus.textContent='Stable-ID citation added to the working synthesis. Inspect the original and save explicitly.';
     renderOutline();
   }
   function reviseSection(body:string,caret:number,message:string):void {
@@ -260,6 +416,13 @@ export function mountResearchN1L(root:HTMLElement,host:ResearchN1LHost):Research
     $<HTMLButtonElement>('[data-research-export-selected]').disabled=!active;
   }
 
+  bind('[data-n1s-evidence-export]','click',()=>{
+    const active=host.active(),context=selectedContext(),synthesis=host.synthesis();
+    if(!active||!context||!synthesis)return;
+    const markdown=sectionEvidenceReviewMarkdown(context,active,host.notes(),host.bookTitle);
+    download('section-evidence-'+filename(active.name)+'-'+(context.sectionIndex+1)+'.md',markdown);
+    evidenceStatus.textContent='Local evidence worksheet download requested. No native notebook record was changed.';
+  });
   bind('[data-n1r-section-picker]','change',selectSection);
   bind('[data-n1r-section-source]','change',updateSectionSourceActions);
   bind('[data-n1r-section-pin]','click',()=>{
@@ -431,5 +594,8 @@ export function mountResearchN1L(root:HTMLElement,host:ResearchN1LHost):Research
 
   renderSession();renderOutline();renderExportState();
   return {onCollectionChanged,onNotesChanged,onDraftChanged,onSaved,
-    dispose(){for(const off of callbacks)off();}};
+    dispose(){
+      if(evidenceRefresh)clearTimeout(evidenceRefresh);
+      for(const off of callbacks)off();
+    }};
 }
