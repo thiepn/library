@@ -4,7 +4,7 @@
     "jurisdiction": "Germany",
     "ordinaryTerm": "70 years after death, calculated to the end of the calendar year",
     "uncertaintyPolicy": "fail-closed",
-    "sourcePolicy": "Project Gutenberg machine-readable metadata and source EPUBs; text-only EPUB preferred"
+    "sourcePolicy": "Reader-facing editions may originate from independently verified public-domain sources. Source provenance is retained internally; Standard Ebooks production contributions are CC0."
   },
   "entries": [
     {
@@ -7505,130 +7505,32 @@
     }
   },
   "lastRun": {
-    "at": "2026-10-12T06:56:45Z",
-    "rankingMode": "curated-library-canon",
+    "at": "2026-10-12T07:09:24Z",
+    "rankingMode": "curated-standard-ebooks",
     "catalog": "src/publications/curated-canon.tsv",
-    "catalogEntries": 29,
-    "globallyEligible": 29,
     "copyrightCutoffYear": 1955,
-    "checkedCount": 14,
-    "candidateCheckLimit": 650,
-    "addedCount": 13,
-    "skippedCount": 16,
+    "checkedCount": 3,
+    "candidateCheckLimit": 220,
+    "addedCount": 0,
+    "skippedCount": 3,
     "recentSkips": [
       {
-        "gutenbergId": 65473,
         "title": "Gulliver's Travels",
         "author": "Jonathan Swift",
-        "curationMode": "curated-library-canon",
-        "reason": "ill Milo Winter died 1956, after automatic German cutoff 1955",
-        "checkedAt": "2026-10-12T06:55:33Z",
-        "copyrightCutoffYear": 1955
+        "sourcePage": "https://standardebooks.org/ebooks/jonathan-swift/gullivers-travels",
+        "reason": "no compatible EPUB link"
       },
       {
-        "position": 7,
         "title": "Notes from Underground",
         "author": "Fyodor Dostoevsky",
-        "rightsMode": "global",
-        "reason": "no English Project Gutenberg catalog match"
+        "sourcePage": "https://standardebooks.org/ebooks/fyodor-dostoevsky/notes-from-underground/constance-garnett",
+        "reason": "no compatible EPUB link"
       },
       {
-        "position": 8,
-        "title": "The Death of Ivan Ilyich",
-        "author": "Leo Tolstoy",
-        "rightsMode": "global",
-        "reason": "no English Project Gutenberg catalog match"
-      },
-      {
-        "position": 13,
         "title": "Pensées",
         "author": "Blaise Pascal",
-        "rightsMode": "global",
-        "reason": "best source match confidence too low (0.695)"
-      },
-      {
-        "position": 16,
-        "title": "On the Incarnation",
-        "author": "Athanasius",
-        "rightsMode": "global",
-        "reason": "no English Project Gutenberg catalog match"
-      },
-      {
-        "position": 17,
-        "title": "The Didache",
-        "author": "Anonymous",
-        "rightsMode": "global",
-        "reason": "best source match confidence too low (0.641)"
-      },
-      {
-        "position": 18,
-        "title": "The Mortification of Sin",
-        "author": "John Owen",
-        "rightsMode": "global",
-        "reason": "no English Project Gutenberg catalog match"
-      },
-      {
-        "position": 19,
-        "title": "Religious Affections",
-        "author": "Jonathan Edwards",
-        "rightsMode": "global",
-        "reason": "no English Project Gutenberg catalog match"
-      },
-      {
-        "position": 20,
-        "title": "Holiness",
-        "author": "J. C. Ryle",
-        "rightsMode": "global",
-        "reason": "no English Project Gutenberg catalog match"
-      },
-      {
-        "position": 21,
-        "title": "The Reformed Pastor",
-        "author": "Richard Baxter",
-        "rightsMode": "global",
-        "reason": "no English Project Gutenberg catalog match"
-      },
-      {
-        "position": 22,
-        "title": "All of Grace",
-        "author": "Charles H. Spurgeon",
-        "rightsMode": "global",
-        "reason": "no English Project Gutenberg catalog match"
-      },
-      {
-        "position": 24,
-        "title": "Christianity and Liberalism",
-        "author": "J. Gresham Machen",
-        "rightsMode": "global",
-        "reason": "no English Project Gutenberg catalog match"
-      },
-      {
-        "position": 25,
-        "title": "The Bondage of the Will",
-        "author": "Martin Luther",
-        "rightsMode": "global",
-        "reason": "no English Project Gutenberg catalog match"
-      },
-      {
-        "position": 26,
-        "title": "Missionary Methods: St. Paul's or Ours?",
-        "author": "Roland Allen",
-        "rightsMode": "global",
-        "reason": "no English Project Gutenberg catalog match"
-      },
-      {
-        "position": 28,
-        "title": "Autobiography of John G. Paton",
-        "author": "John G. Paton",
-        "rightsMode": "global",
-        "reason": "no English Project Gutenberg catalog match"
-      },
-      {
-        "position": 29,
-        "title": "Absolute Surrender",
-        "author": "Andrew Murray",
-        "rightsMode": "global",
-        "reason": "no English Project Gutenberg catalog match"
+        "sourcePage": "https://standardebooks.org/ebooks/blaise-pascal/pensees",
+        "reason": "no compatible EPUB link"
       }
     ]
   }
