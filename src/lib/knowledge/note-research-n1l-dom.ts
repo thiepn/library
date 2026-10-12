@@ -39,14 +39,12 @@ export function mountResearchN1L(root:HTMLElement,host:ResearchN1LHost):Research
   };
   const progress=$<HTMLElement>('[data-research-session-progress]');
   const queue=$<HTMLElement>('[data-research-session-queue]');
-  const searchCount=$<HTMLElement>('[data-research-search-count]');
   const exportFormat=$<HTMLSelectElement>('[data-research-export-format]');
   const synthBody=$<HTMLTextAreaElement>('[data-research-synthesis-body]');
   const outline=$<HTMLElement>('[data-research-outline]');
   const outlineCount=$<HTMLElement>('[data-research-outline-count]');
   const callbacks:Array<()=>void>=[];
   let session:ResearchSession|undefined;
-  let searchBookOptions:Array<{id:string;count:number}>=[];
   const bind=(sel:string,event:string,cb:EventListener)=>{
     const element=$(sel);element.addEventListener(event,cb);
     callbacks.push(()=>element.removeEventListener(event,cb));
@@ -147,6 +145,7 @@ export function mountResearchN1L(root:HTMLElement,host:ResearchN1LHost):Research
     if(session) {
       const aligned=alignResearchSession(session,sessionIds());
       if(aligned)store(aligned);
+      else session=undefined;
     }
     renderSession();renderExportState();
   }
@@ -179,7 +178,6 @@ export function mountResearchN1L(root:HTMLElement,host:ResearchN1LHost):Research
   function renderExportState():void {
     const active=host.active();
     $<HTMLButtonElement>('[data-research-export-selected]').disabled=!active;
-    searchCount.textContent=active?'Search your local saved notebook; collection notes stay unchanged.':'';
   }
 
   bind('[data-research-session-start]','click',()=>{
