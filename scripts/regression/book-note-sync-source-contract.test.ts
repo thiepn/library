@@ -50,3 +50,24 @@ test('N1D V2 source guard rejects missing fields, downgrade and duplicate notebo
     assert.ok(account.includes(contract), 'Missing fail-closed client capability: ' + contract);
   }
 });
+
+
+test('N1E migration preserves the last installed first-party SSO/deletion-lock RPC policy', () => {
+  const latestAuthMigration = readFileSync(
+    'supabase/migrations/20261006202154_library_first_party_sso_access.sql', 'utf8');
+  for (const contract of [
+    "public.is_thiepn_first_party_oauth_client_for_app('library')",
+    'LIBRARY_DELETION_IN_PROGRESS',
+    'public.library_file_deletion_authorizations',
+  ]) {
+    assert.ok(latestAuthMigration.includes(contract), 'Pre-existing auth restriction absent: ' + contract);
+    assert.ok(sql.includes(contract), 'N1E must preserve last installed auth contract: ' + contract);
+  }
+  assert.ok(
+    sql.indexOf("and not public.is_thiepn_first_party_oauth_client_for_app('library')")
+      < sql.indexOf("raise exception 'DELEGATED_OAUTH_RAW_DATA_DENIED'"),
+    'Unapproved delegated clients must still be denied');
+  assert.match(sql, /a\.user_id=v_user_id and a\.expires_at>now\(\)/);
+  assert.match(sql, /if exists \([\s\S]*?library_file_deletion_authorizations[\s\S]*?LIBRARY_DELETION_IN_PROGRESS/);
+  assert.match(sql, /security definer\s+set search_path=''/);
+});

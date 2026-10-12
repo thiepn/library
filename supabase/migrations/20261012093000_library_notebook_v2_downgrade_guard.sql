@@ -33,8 +33,17 @@ begin
   if coalesce(((select auth.jwt())->>'is_anonymous')::boolean,false) then
     raise exception 'ANONYMOUS_IDENTITY_NOT_SUPPORTED' using errcode='42501';
   end if;
-  if ((select auth.jwt())->>'client_id') is not null then
+  -- Keep the current Account first-party SSO and deletion safety contracts.
+  -- This function REPLACES the previous RPC, so copying the pre-SSO policy is unsafe.
+  if ((select auth.jwt())->>'client_id') is not null
+     and not public.is_thiepn_first_party_oauth_client_for_app('library') then
     raise exception 'DELEGATED_OAUTH_RAW_DATA_DENIED' using errcode='42501';
+  end if;
+  if exists (
+    select 1 from public.library_file_deletion_authorizations a
+    where a.user_id=v_user_id and a.expires_at>now()
+  ) then
+    raise exception 'LIBRARY_DELETION_IN_PROGRESS' using errcode='55000';
   end if;
   if not exists (
     select 1 from public.account_app_connections c
