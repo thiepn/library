@@ -54,7 +54,7 @@ export function normalizeNotebookTopic(value: string): string {
     .replace(/-+/g, '-').replace(/^-|-$/g, '').slice(0, 48);
 }
 
-const TOPIC_REGEX = /(^|[\s([{:;,])#topic\/([\p{L}\p{N}][\p{L}\p{N}-]{0,47})(?=$|[\s)\]}.,!?;:])/gmu;
+const TOPIC_REGEX = /(^|\s)#topic\/([\p{L}\p{N}][\p{L}\p{N}-]{0,47})(?=\s|$|[.,!?;:])/gmu;
 export function extractNotebookTopics(markdown: string): string[] {
   // Do not treat instructions inside fenced or inline code as organization metadata.
   const text = markdown.replace(/(^|\n)[ \t]*\`{3,}[^\n]*\n[\s\S]*?\n[ \t]*\`{3,}[^\n]*(?=\n|$)/g, '\n')
@@ -92,12 +92,17 @@ export function buildNotebookOverview(notes: readonly BookNoteDocumentV1[]): Not
   const topics = collectNotebookTopics(notes);
   let links = 0;
   let unlinked = 0;
+  const incoming = new Set<string>();
+  const outbound = new Map<string, number>();
+  // Build one graph index; do not rescan every Markdown body for every note.
   for (const note of notes) {
-    const outgoing = extractNotebookLinks(note.bodyMarkdown).filter(link => ids.has(link.id));
-    links += outgoing.length;
-    if (!outgoing.length && !notes.some(other =>
-      other.id !== note.id && extractNotebookLinks(other.bodyMarkdown).some(link => link.id === note.id)
-    )) unlinked++;
+    const resolved = extractNotebookLinks(note.bodyMarkdown).filter(link => ids.has(link.id));
+    links += resolved.length;
+    outbound.set(note.id, resolved.length);
+    for (const ref of resolved) incoming.add(ref.id);
+  }
+  for (const note of notes) {
+    if (!outbound.get(note.id) && !incoming.has(note.id)) unlinked++;
   }
   return {
     total: notes.length,
