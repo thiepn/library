@@ -18,6 +18,7 @@ import {
 } from './sync';
 import { isLibraryAutomaticSyncEnabled, setLibraryAutomaticSync } from './auto-sync';
 import { getLibraryCoreGrant, changeLibraryCoreGrant, requestLibrarySyncFromCore } from './core-coordination';
+import { inspectLibraryRecovery } from './recovery-inspection';
 import {
   isLibraryPersonalFileCloudEnabled,
   reconcileLibraryPersonalFiles,
@@ -144,7 +145,13 @@ async function render(userOverride?: LibraryAccountUser | null): Promise<Library
     : 'Connect this device in Library before cloud changes can be read or written.');
 
   if (enabled) {
-    renderResult(await reconcileLibraryAccountSync(user));
+    // Reading this settings panel must not cause cloud writes or launch a
+    // second reconciliation. The native runtime and explicit buttons own it.
+    const meta = readLibrarySyncMeta();
+    text('[data-sync-meta]', meta?.userId === user.id && meta.lastSyncedAt
+      ? 'Last confirmed native Library sync: ' + new Date(meta.lastSyncedAt).toLocaleString()
+      : 'No confirmed Library sync yet on this device.');
+    text('[data-sync-status]', 'Account connected. Use Sync now to check for changes; native Library decides the result.');
   } else {
     text('[data-sync-status]', 'Your local reading data will not be uploaded until you choose “Sync this device”.');
     const meta = readLibrarySyncMeta();
@@ -164,6 +171,7 @@ async function render(userOverride?: LibraryAccountUser | null): Promise<Library
 export function mountLibraryAccountPage(): () => void {
   let user: LibraryAccountUser | null = null;
   let disposed = false;
+  let lastNativeStatus: LibrarySyncResult['status'] | null = null;
 
   const refresh = async () => {
     if (disposed) return;
@@ -206,6 +214,7 @@ export function mountLibraryAccountPage(): () => void {
         if (!disposed) await render(current);
         return;
       }
+      lastNativeStatus = result.status;
       renderResult(result);
       if (conflictResolution && ['pushed', 'pulled', 'synced'].includes(result.status)) {
         window.dispatchEvent(new CustomEvent('thiepn:library-conflict-resolved', {
@@ -234,6 +243,39 @@ export function mountLibraryAccountPage(): () => void {
     });
   });
 
+  document.querySelector('[data-recovery-inspect]')?.addEventListener('click', () => {
+    void (async () => {
+      const current = await getVerifiedLibraryAccountUser();
+      if (disposed || !current || user?.id !== current.id) {
+        text('[data-recovery-inspection]', 'Account identity changed. Sign in again before inspecting recovery state.');
+        return;
+      }
+      const meta = readLibrarySyncMeta();
+      const result = inspectLibraryRecovery({
+        ownerId: current.id,
+        baselineOwner: meta?.userId ?? null,
+        nativeEnabled: isLibrarySyncEnabledForUser(current.id),
+        coreAllowed: Boolean(getLibraryCoreGrant(current.id)?.allowed),
+        lastSyncedAt: meta?.userId === current.id ? meta.lastSyncedAt ?? null : null,
+        latest: lastNativeStatus,
+        online: navigator.onLine,
+      });
+      text('[data-recovery-inspection]',
+        'Library ' + result.status.replaceAll('-', ' ') + ': ' + result.action +
+        ' External custody has not been certified.');
+      hidden('[data-recovery-conflict-actions]', result.status !== 'conflict');
+    })().catch(() =>
+      text('[data-recovery-inspection]', 'Unable to verify the Account. Native backup remains available without Core.'));
+  });
+  document.querySelector('[data-recovery-revoke]')?.addEventListener('click', () => {
+    if (!user) return;
+    const owner = user.id;
+    const revoked = changeLibraryCoreGrant(owner, false);
+    text('[data-recovery-inspection]', revoked
+      ? 'Core device grant revoked. Native Library sync, backup, and conflict chooser remain available.'
+      : 'Unable to persist Core revocation. Check browser storage permissions.');
+    void render(user);
+  });
   document.querySelector('[data-sync-enable]')?.addEventListener('click', () => void act(enableLibraryAccountSync));
   document.querySelector('[data-sync-now]')?.addEventListener('click', () => void act(reconcileLibraryAccountSync));
   document.querySelector<HTMLInputElement>('[data-auto-sync-checkbox]')?.addEventListener('change', (event) => {
@@ -302,6 +344,7 @@ export function mountLibraryAccountPage(): () => void {
     // overwrite a new owner's status or unlock source-of-truth controls.
     if (!user || readLibrarySyncMeta()?.userId !== user.id) return;
     if (detail) {
+      lastNativeStatus = detail.status;
       renderResult(detail);
       if (detail.status === 'conflict' || detail.status === 'offline' || detail.status === 'error')
         text('[data-sync-mode]', detail.status === 'conflict' ? 'Attention required: changes conflict' : detail.status === 'offline' ? 'Waiting for connection' : 'Sync needs attention');

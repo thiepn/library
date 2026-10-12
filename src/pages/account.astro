@@ -78,6 +78,19 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
           </div>
         </div>
 
+        <section class="sync-boundary" data-recovery-center aria-labelledby="library-recovery-heading">
+          <h3 id="library-recovery-heading">Recovery inspection</h3>
+          <p class="micro">Check this device's real Library Account baseline, native sync state, offline status and Core permission. Inspection does not initiate cloud writes or certify independent offsite custody.</p>
+          <div class="account-actions">
+            <button data-account-action data-recovery-inspect type="button">Inspect recovery state</button>
+            <button data-account-action data-recovery-revoke type="button">Revoke Core coordination</button>
+            <a href={`${base}/backup`}>Native Library backup &amp; restore</a>
+          </div>
+          <p data-recovery-inspection role="status" aria-live="polite">No recovery inspection performed. Local reading is available without a Core grant.</p>
+          <div data-recovery-conflict-actions hidden>
+            <p class="micro">Conflict recovery: export a backup before selecting the authoritative copy with the native chooser below.</p>
+          </div>
+        </section>
         <aside class="sync-conflict" data-sync-conflict hidden>
           <h3>Choose the source of truth</h3>
           <p>Changes were made both here and in the cloud. Automatic synchronization pauses to protect both versions. Review which copy should become authoritative.</p>
