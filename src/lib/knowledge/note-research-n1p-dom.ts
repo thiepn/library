@@ -3,6 +3,7 @@ import {
 } from './note-research-n1p-writing';
 import { notebookTitle, type BookNoteDocumentV1 } from './note-model';
 import { noteReferenceMarkdown } from './note-links';
+import { readResearchDraftCheckpoint } from './note-research-drafts';
 import { loadResearchCollections, describeResearchSource,
   type ResearchCollection } from './note-research';
 import {
@@ -78,6 +79,8 @@ export function mountResearchN1P(
   const openSynthesis=$<HTMLButtonElement>('[data-n1p-go-synthesis]');
   const focusWriting=$<HTMLButtonElement>('[data-n1p-focus-writing]');
   const saveCopy=$<HTMLButtonElement>('[data-n1p-download-working-copy]');
+  const copyWorking=$<HTMLButtonElement>('[data-n1p-copy-working-copy]');
+  const openRecovery=$<HTMLButtonElement>('[data-n1p-recovery-jump]');
   const writingArea=$<HTMLTextAreaElement>('[data-research-synthesis-body]');
   const basketSelect=$<HTMLSelectElement>('[data-n1p-compare-select]');
   const basketList=$<HTMLElement>('[data-n1p-comparison-items]');
@@ -85,6 +88,7 @@ export function mountResearchN1P(
   const basketStatus=$<HTMLElement>('[data-n1p-compare-status]');
   const basketInsert=$<HTMLButtonElement>('[data-n1p-compare-insert]');
   const basketCopy=$<HTMLButtonElement>('[data-n1p-compare-copy]');
+  const basketExport=$<HTMLButtonElement>('[data-n1p-compare-export]');
   const removes:Array<()=>void>=[];
   let disposed=false;
   let reviewToken=0;
@@ -112,7 +116,8 @@ export function mountResearchN1P(
     const notes=host.notes();
     const summary=summarizeCrossBookQueue(collections,notes);
     count.textContent=summary.revisit+' revisit · '+summary.pending+' pending · '
-      +summary.reviewed+' reviewed across '+summary.books+' books';
+      +summary.reviewed+' reviewed across '+summary.books+' books'
+      +(summary.unavailable?' · '+summary.unavailable+' unavailable source(s)':'');
     const filtered=collectCrossBookReviewQueue(collections,notes,collectionSelect.value,
       filter.value as QueueFilter,90);
     if(!filtered.length){
@@ -225,6 +230,7 @@ export function mountResearchN1P(
     $<HTMLButtonElement>('[data-n1p-compare-add]').disabled=!basketSelect.value||basketIds.length>=6;
     basketInsert.disabled=references.length<2||!host.synthesis();
     basketCopy.disabled=references.length<1;
+    basketExport.disabled=references.length<2;
   }
   function addToBasket():void {
     const id=basketSelect.value;
@@ -270,9 +276,14 @@ export function mountResearchN1P(
     openSynthesis.disabled=!synthesis;
     focusWriting.disabled=!synthesis;
     saveCopy.disabled=!synthesis;
+    copyWorking.disabled=!synthesis;
+    openRecovery.disabled=!synthesis;
+    const checkpoint=collection&&synthesis
+      ?readResearchDraftCheckpoint(collection.id,synthesis.id):undefined;
     info.textContent=collection
       ?collection.name+' · '+collection.noteIds.length+' sources · '
         +(synthesis?'Synthesis revision '+synthesis.revision:'No synthesis')
+        +(checkpoint?' · session recovery draft available':'')
       :'Select a collection';
     path.replaceChildren();
     if(!source){
