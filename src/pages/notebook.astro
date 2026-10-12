@@ -6,6 +6,7 @@ import '../styles/notebook-n1h.css';
 import '../styles/notebook-n1i.css';
 import '../styles/notebook-n1j.css';
 import '../styles/notebook-n1k.css';
+import '../styles/notebook-n1l.css';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const catalog = (await getWorks()).map((work) => ({
@@ -207,6 +208,14 @@ const catalog = (await getWorks()).map((work) => ({
             <div class="book-notebook__research-collection-actions">
               <button type="button" data-research-export-markdown>Export grouped Markdown</button>
               <button type="button" data-research-export-package>Export complete research package</button>
+              <label for="research-export-format">Export as</label>
+              <select id="research-export-format" data-research-export-format>
+                <option value="brief">Research brief</option>
+                <option value="dossier">Full research dossier</option>
+                <option value="references">References only</option>
+                <option value="session">Session review checklist</option>
+              </select>
+              <button type="button" data-research-export-selected>Download selected</button>
               <button type="button" data-research-delete>Remove collection</button>
             </div>
           </div>
@@ -214,7 +223,21 @@ const catalog = (await getWorks()).map((work) => ({
             <label for="research-find-note">Add existing notes</label>
             <input id="research-find-note" data-research-find type="search"
               placeholder="Search titles, books, text and topics" autocomplete="off" />
+            <div class="book-notebook__n1l-discovery-bar">
+              <label for="research-search-book">Search book</label>
+              <select id="research-search-book" data-research-search-book>
+                <option value="all">Every book</option>
+              </select>
+              <span class="micro" data-research-search-count></span>
+            </div>
             <div data-research-search-results class="book-notebook__research-search-results"></div>
+            <section class="book-notebook__n1l-suggestions" aria-labelledby="research-suggestions-title">
+              <div class="book-notebook__n1l-heading">
+                <h4 id="research-suggestions-title">Related source suggestions</h4>
+                <p class="micro">Grounded in your own explicit note links or shared topic markers. Nothing is added automatically.</p>
+              </div>
+              <div data-research-suggestions class="book-notebook__research-search-results"></div>
+            </section>
           </div>
           <div class="book-notebook__research-sources">
             <div class="book-notebook__n1k-section-head">
@@ -233,6 +256,25 @@ const catalog = (await getWorks()).map((work) => ({
             <div data-research-source-filter-count class="micro" role="status"></div>
             <div data-research-sources class="book-notebook__research-sources-list"></div>
           </div>
+          <section class="book-notebook__n1l-session" aria-labelledby="research-session-title">
+            <div class="book-notebook__n1l-heading">
+              <div>
+                <h4 id="research-session-title">Research review session</h4>
+                <p class="micro">Private tab-only reading queue. Reviewed/revisit flags are self-reported and never count as assessed progress.</p>
+              </div>
+              <span class="micro" data-research-session-progress>No session started</span>
+            </div>
+            <div class="book-notebook__n1l-session-actions">
+              <button type="button" data-research-session-start>Start / restart</button>
+              <button type="button" data-research-session-previous>Previous</button>
+              <button type="button" data-research-session-next>Next to review</button>
+              <button type="button" data-research-session-reviewed>Mark reviewed</button>
+              <button type="button" data-research-session-revisit>Needs revisit</button>
+              <button type="button" data-research-session-open>Open current note</button>
+              <button type="button" data-research-session-clear>End session</button>
+            </div>
+            <div data-research-session-queue class="book-notebook__n1l-session-queue" aria-label="Source review queue"></div>
+          </section>
           <div class="book-notebook__research-compare" aria-label="Side-by-side source reading">
             <article>
               <header><h4>Source A</h4><span data-research-left-caption class="micro">Select a source</span></header>
@@ -269,6 +311,23 @@ const catalog = (await getWorks()).map((work) => ({
             <label for="research-synthesis-body">Synthesis Markdown</label>
             <textarea id="research-synthesis-body" data-research-synthesis-body
               maxlength="250000" rows="12" disabled></textarea>
+            <div class="book-notebook__n1l-writing-tools" role="toolbar" aria-label="Synthesis Markdown formatting">
+              <button type="button" data-research-md-tool="bold" aria-label="Bold selection">Bold</button>
+              <button type="button" data-research-md-tool="italic" aria-label="Italic selection">Italic</button>
+              <button type="button" data-research-md-tool="heading" aria-label="Insert heading">Heading</button>
+              <button type="button" data-research-md-tool="bullet" aria-label="Insert bullet list">Bullets</button>
+              <button type="button" data-research-md-tool="number" aria-label="Insert numbered list">Numbers</button>
+              <button type="button" data-research-md-tool="quote" aria-label="Insert blockquote">Quote</button>
+              <button type="button" data-research-md-tool="checkbox" aria-label="Insert task">Task</button>
+              <button type="button" data-research-md-tool="code" aria-label="Inline code">Code</button>
+            </div>
+            <section class="book-notebook__n1l-outline" aria-labelledby="research-synthesis-outline-title">
+              <div class="book-notebook__n1l-heading">
+                <h5 id="research-synthesis-outline-title">Synthesis outline</h5>
+                <span class="micro" data-research-outline-count>No headings</span>
+              </div>
+              <nav data-research-outline aria-label="Jump to synthesis heading"></nav>
+            </section>
             <div class="book-notebook__n1k-preview-controls">
               <button type="button" data-research-toggle-preview aria-expanded="false"
                 aria-controls="research-live-preview">Show writing preview</button>
