@@ -452,6 +452,13 @@ const workCatalog = (await getWorks()).map((work) => ({
           article.append(quote);
         }
 
+        if (item.source === 'book-note') {
+          const content = document.createElement('p');
+          content.className = 'knowledge-card__note';
+          content.textContent = item.note.trim() || 'Empty notebook entry.';
+          article.append(content);
+        }
+
         let editButton: HTMLButtonElement | undefined;
         if (item.kind !== 'bookmark' && item.source !== 'book-note') {
           const note = document.createElement('p');
