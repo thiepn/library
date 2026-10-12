@@ -28,6 +28,26 @@ const catalog = (await getWorks()).map((work) => ({
         <a data-notebook-read href={`${base}/saved`} hidden>Read book</a>
         <button type="button" class="secondary-action" data-notebook-export disabled>Export book as Markdown</button>
       </div>
+      <section class="book-notebook__discover" aria-labelledby="notebook-discover-heading">
+        <div class="book-notebook__discover-head">
+          <div>
+            <h2 id="notebook-discover-heading">Explore across books</h2>
+            <p class="micro">Find connections in every notebook saved on this device.</p>
+          </div>
+          <p class="micro" data-discover-count role="status" aria-live="polite"></p>
+        </div>
+        <div class="book-notebook__discover-filters">
+          <label for="notebook-discover-query">Search all notes</label>
+          <input id="notebook-discover-query" type="search" autocomplete="off"
+            placeholder="A theme, author, chapter, or phrase" data-discover-query />
+          <label for="notebook-discover-book">From book</label>
+          <select id="notebook-discover-book" data-discover-book>
+            <option value="all">All books</option>
+          </select>
+        </div>
+        <div class="book-notebook__discover-results" data-discover-results></div>
+        <p class="micro" data-discover-empty hidden>No matching notebook notes.</p>
+      </section>
       <p class="micro" data-notebook-count aria-live="polite"></p>
       <div class="book-notebook__toolbar" aria-label="Create notebook content">
         <button type="button" data-notebook-create="book-overview" disabled>Book overview</button>
@@ -74,7 +94,30 @@ const catalog = (await getWorks()).map((work) => ({
           <label for="notebook-title">Title</label>
           <input id="notebook-title" data-notebook-title maxlength="200" autocomplete="off" />
           <label for="notebook-body">Markdown note</label>
+          <div class="book-notebook__writing-bar" role="toolbar" aria-label="Markdown writing tools">
+            <button type="button" data-markdown-tool="bold" title="Bold (Ctrl+B)" aria-label="Bold selection"><strong>B</strong></button>
+            <button type="button" data-markdown-tool="italic" title="Italic (Ctrl+I)" aria-label="Italic selection"><em>I</em></button>
+            <button type="button" data-markdown-tool="heading" title="Heading" aria-label="Insert heading">H2</button>
+            <button type="button" data-markdown-tool="bullet" title="Bullet list" aria-label="Insert bullet list">• List</button>
+            <button type="button" data-markdown-tool="number" title="Numbered list" aria-label="Insert numbered list">1. List</button>
+            <button type="button" data-markdown-tool="quote" title="Block quote" aria-label="Insert quote">Quote</button>
+            <button type="button" data-markdown-tool="checkbox" title="Task list" aria-label="Insert task list">Task</button>
+            <button type="button" data-markdown-tool="code" title="Inline code" aria-label="Inline code">Code</button>
+            <button type="button" data-notebook-add-link aria-expanded="false" aria-controls="notebook-link-picker">Link note</button>
+          </div>
+          <div class="book-notebook__link-picker" id="notebook-link-picker" data-notebook-link-picker hidden>
+            <label for="notebook-link-search">Link to a note from any book</label>
+            <input type="search" id="notebook-link-search" data-notebook-link-search
+              placeholder="Search notes to link…" autocomplete="off" />
+            <div class="book-notebook__link-results" data-notebook-link-results></div>
+            <button type="button" data-notebook-link-close>Close link picker</button>
+          </div>
           <textarea id="notebook-body" data-notebook-body maxlength="250000" spellcheck="true" placeholder="Write a thought, summary, question, or reflection…"></textarea>
+          <div class="book-notebook__writing-meta">
+            <span data-notebook-words aria-live="polite">0 words</span>
+            <span data-notebook-characters>0 characters</span>
+            <button type="button" data-notebook-focus aria-pressed="false">Focus writing</button>
+          </div>
           <div class="book-notebook__editor-actions">
             <button type="button" data-notebook-save>Save now</button>
             <button type="button" class="secondary-action" data-notebook-copy>Copy Markdown</button>
@@ -82,7 +125,15 @@ const catalog = (await getWorks()).map((work) => ({
             <button type="button" class="secondary-action" data-notebook-close>Close</button>
             <button type="button" class="text-action" data-notebook-delete hidden>Delete note</button>
           </div>
-          <p class="micro">Plain Markdown stays editable and portable. No generated HTML is stored.</p>
+          <p class="micro">Plain Markdown stays editable and portable. Use [[note:ID|Title]] to link saved notes by stable ID.</p>
+          <section class="book-notebook__relations" aria-labelledby="notebook-relations-heading">
+            <h3 id="notebook-relations-heading">Connected notes</h3>
+            <div class="book-notebook__relation-columns">
+              <div><h4>References in this note</h4><div data-notebook-outgoing></div></div>
+              <div><h4>Notes linking here</h4><div data-notebook-backlinks></div></div>
+            </div>
+            <p class="micro" data-notebook-source></p>
+          </section>
         </section>
         <section class="book-notebook__welcome" data-notebook-welcome>
           <h2>Start with a thought</h2>
@@ -102,6 +153,11 @@ const catalog = (await getWorks()).map((work) => ({
     } from '../lib/knowledge/note-store';
     import { bookNotebookToObsidianMarkdown } from '../lib/knowledge/note-export';
     import { downloadNotebookRecovery } from '../lib/knowledge/note-recovery';
+    import {
+      findNotebookNotes, notebookConnections, notebookWordCount,
+      noteReferenceMarkdown, applyNotebookMarkdownTool, insertNotebookReference,
+      type MarkdownTool,
+    } from '../lib/knowledge/note-links';
     import {
       normalizedChapterKey, notebookTitle,
       type BookNoteDocumentV1, type BookNoteScope,
@@ -132,8 +188,25 @@ const catalog = (await getWorks()).map((work) => ({
       const readLink = root.querySelector<HTMLAnchorElement>('[data-notebook-read]')!;
       const highlightsLink = root.querySelector<HTMLAnchorElement>('[data-notebook-highlights]')!;
       const removeButton = root.querySelector<HTMLButtonElement>('[data-notebook-delete]')!;
+      const discoverQuery = root.querySelector<HTMLInputElement>('[data-discover-query]')!;
+      const discoverBook = root.querySelector<HTMLSelectElement>('[data-discover-book]')!;
+      const discoverResults = root.querySelector<HTMLElement>('[data-discover-results]')!;
+      const discoverCount = root.querySelector<HTMLElement>('[data-discover-count]')!;
+      const discoverEmpty = root.querySelector<HTMLElement>('[data-discover-empty]')!;
+      const linkPicker = root.querySelector<HTMLElement>('[data-notebook-link-picker]')!;
+      const linkSearch = root.querySelector<HTMLInputElement>('[data-notebook-link-search]')!;
+      const linkResults = root.querySelector<HTMLElement>('[data-notebook-link-results]')!;
+      const linkToggle = root.querySelector<HTMLButtonElement>('[data-notebook-add-link]')!;
+      const outgoing = root.querySelector<HTMLElement>('[data-notebook-outgoing]')!;
+      const backlinks = root.querySelector<HTMLElement>('[data-notebook-backlinks]')!;
+      const sourceInfo = root.querySelector<HTMLElement>('[data-notebook-source]')!;
+      const wordCount = root.querySelector<HTMLElement>('[data-notebook-words]')!;
+      const characterCount = root.querySelector<HTMLElement>('[data-notebook-characters]')!;
+      const focusToggle = root.querySelector<HTMLButtonElement>('[data-notebook-focus]')!;
       const books = new Map<string, BookEntry>();
       const allNotes: BookNoteDocumentV1[] = [];
+      let libraryNotes: BookNoteDocumentV1[] = [];
+      let networkRequest = 0;
       let selected: BookNoteDocumentV1 | undefined;
       let draft: NewBookNote | undefined;
       let savedTitle = '';
@@ -149,6 +222,18 @@ const catalog = (await getWorks()).map((work) => ({
       function mark(message: string): void { saveStatus.textContent = message; }
       function setStatus(message: string): void { status.textContent = message; }
       function currentBook(): string { return bookSelect.value; }
+      function bookName(id: string): string { return books.get(id)?.title ?? id; }
+      function notebookNoteUrl(note: BookNoteDocumentV1): string {
+        return base + '/notebook?work=' + encodeURIComponent(note.workId)
+          + '&note=' + encodeURIComponent(note.id);
+      }
+      function linkLabel(note: BookNoteDocumentV1): string {
+        return notebookTitle(note) + ' · ' + bookName(note.workId);
+      }
+      function paragraph(container: HTMLElement, message: string): void {
+        const p = document.createElement('p'); p.className = 'micro'; p.textContent = message;
+        container.append(p);
+      }
 
       function download(name: string, content: string): void {
         const url = URL.createObjectURL(new Blob([content], { type: 'text/markdown;charset=utf-8' }));
@@ -177,6 +262,9 @@ const catalog = (await getWorks()).map((work) => ({
         editor.hidden = true; welcome.hidden = false;
         selected = undefined; draft = undefined; savedTitle = ''; savedBody = '';
         removeButton.hidden = true; deletionArmed = false; removeButton.textContent = 'Delete note';
+        linkPicker.hidden = true; linkToggle.setAttribute('aria-expanded', 'false');
+        editor.classList.remove('book-notebook__editor--focus');
+        focusToggle.setAttribute('aria-pressed', 'false');
       }
 
       function openEditor(doc?: BookNoteDocumentV1, pending?: NewBookNote): void {
@@ -192,6 +280,15 @@ const catalog = (await getWorks()).map((work) => ({
         editor.hidden = false; welcome.hidden = true;
         removeButton.hidden = !doc;
         deletionArmed = false; removeButton.textContent = 'Delete note';
+        if (doc) {
+          const url = new URL(location.href);
+          url.searchParams.set('work', doc.workId);
+          url.searchParams.set('note', doc.id);
+          history.replaceState(null, '', url);
+        }
+        updateWritingStats();
+        renderConnections();
+        renderNotes(allNotes);
         title.focus();
       }
 
@@ -212,7 +309,12 @@ const catalog = (await getWorks()).map((work) => ({
           savedTitle = writeTitle; savedBody = writeBody;
           removeButton.hidden = false;
           mark('Saved locally');
+          const url = new URL(location.href);
+          url.searchParams.set('work', next.workId);
+          url.searchParams.set('note', next.id);
+          history.replaceState(null, '', url);
           void refresh();
+          void refreshNetwork();
           if (dirty()) scheduleSave();
           return true;
         } catch (error) {
@@ -293,6 +395,7 @@ const catalog = (await getWorks()).map((work) => ({
         scopeFilter.value = 'all';
         const url = new URL(location.href);
         if (value) url.searchParams.set('work', value); else url.searchParams.delete('work');
+        url.searchParams.delete('note');
         history.replaceState(null, '', url);
         updateBookControls(); await refresh();
         setStatus(value ? 'Notebook ready on this device.' : 'Select a book to begin.');
@@ -311,13 +414,15 @@ const catalog = (await getWorks()).map((work) => ({
         for (const entry of entries) {
           const option = new Option(entry.title, entry.id); bookSelect.append(option);
         }
-        const requested = new URL(location.href).searchParams.get('work');
+        const initialParams = new URL(location.href).searchParams;
+        const requested = initialParams.get('work');
+        const desiredNote = initialParams.get('note');
         if (requested && !books.has(requested)) {
           bookSelect.add(new Option('Unavailable book: ' + requested, requested));
           setStatus('Source file unavailable. Your existing notes remain accessible.');
         }
         await chooseBook(requested ?? '');
-        const desiredNote = new URL(location.href).searchParams.get('note');
+        await refreshNetwork();
         if (desiredNote && requested) {
           const match = allNotes.find((item) => item.id === desiredNote);
           if (match) openEditor(match);
@@ -352,7 +457,11 @@ const catalog = (await getWorks()).map((work) => ({
       scopeFilter.addEventListener('change', () => renderNotes(allNotes));
       sortBy.addEventListener('change', () => renderNotes(allNotes));
       title.addEventListener('input', scheduleSave);
-      body.addEventListener('input', scheduleSave);
+      body.addEventListener('input', () => {
+        scheduleSave();
+        updateWritingStats();
+        renderConnections();
+      });
       title.addEventListener('blur', () => { if (dirty()) void save(); });
       body.addEventListener('blur', () => { if (dirty()) void save(); });
       editor.addEventListener('keydown', (event) => {
@@ -415,6 +524,7 @@ const catalog = (await getWorks()).map((work) => ({
       const unsubscribe = subscribeBookNotes(() => {
         if (dirty()) mark('Another tab changed the notebook. Save or copy your draft before reloading.');
         else void refresh();
+        void refreshNetwork();
       });
       window.addEventListener('pagehide', unsubscribe, { once: true });
       void initialize();
