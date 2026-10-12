@@ -132,6 +132,11 @@ const catalog = (await getWorks()).map((work) => ({
               <div><h4>References in this note</h4><div data-notebook-outgoing></div></div>
               <div><h4>Notes linking here</h4><div data-notebook-backlinks></div></div>
             </div>
+            <div class="book-notebook__suggested">
+              <h4>Possible connections</h4>
+              <p class="micro">Based on words shared across your own notes, not AI-generated conclusions.</p>
+              <div data-notebook-suggestions></div>
+            </div>
             <p class="micro" data-notebook-source></p>
             <div class="book-notebook__source-actions">
               <a data-notebook-source-reader hidden>Open original book</a>
@@ -160,6 +165,7 @@ const catalog = (await getWorks()).map((work) => ({
     import {
       findNotebookNotes, notebookConnections, notebookWordCount,
       noteReferenceMarkdown, applyNotebookMarkdownTool, insertNotebookReference,
+      suggestRelatedNotebookNotes,
       type MarkdownTool,
     } from '../lib/knowledge/note-links';
     import {
@@ -203,6 +209,7 @@ const catalog = (await getWorks()).map((work) => ({
       const linkToggle = root.querySelector<HTMLButtonElement>('[data-notebook-add-link]')!;
       const outgoing = root.querySelector<HTMLElement>('[data-notebook-outgoing]')!;
       const backlinks = root.querySelector<HTMLElement>('[data-notebook-backlinks]')!;
+      const suggestions = root.querySelector<HTMLElement>('[data-notebook-suggestions]')!;
       const sourceInfo = root.querySelector<HTMLElement>('[data-notebook-source]')!;
       const sourceReader = root.querySelector<HTMLAnchorElement>('[data-notebook-source-reader]')!;
       const sourceCopy = root.querySelector<HTMLButtonElement>('[data-notebook-source-copy]')!;
@@ -421,6 +428,7 @@ const catalog = (await getWorks()).map((work) => ({
       function renderConnections(): void {
         outgoing.replaceChildren();
         backlinks.replaceChildren();
+        suggestions.replaceChildren();
         sourceInfo.textContent = '';
         sourceReader.hidden = true;
         sourceCopy.disabled = !selected;
@@ -447,6 +455,12 @@ const catalog = (await getWorks()).map((work) => ({
             (link.crossBook ? 'Another book · ' : '') + bookName(link.target.workId)));
         }
         if (!graph.inbound.length) paragraph(backlinks, 'No notes link here yet.');
+        const suggested = suggestRelatedNotebookNotes(selected, libraryNotes, body.value);
+        for (const item of suggested) {
+          suggestions.append(connectedButton(item.note,
+            'Shared words: ' + item.sharedTerms.join(', ')));
+        }
+        if (!suggested.length) paragraph(suggestions, 'No strong word overlap found yet.');
         sourceReader.hidden = readLink.hidden;
         if (!readLink.hidden) sourceReader.href = readLink.href;
         const anchor = selected.anchor;
