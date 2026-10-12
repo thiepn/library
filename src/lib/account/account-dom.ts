@@ -20,6 +20,11 @@ import { isLibraryAutomaticSyncEnabled, setLibraryAutomaticSync } from './auto-s
 import { getLibraryCoreGrant, changeLibraryCoreGrant, requestLibrarySyncFromCore } from './core-coordination';
 import { inspectLibraryRecovery } from './recovery-inspection';
 import {
+  createLibraryRecoveryIncidentHistory,
+  describeNativeLibraryRecovery,
+  type LibraryRecoveryAction,
+} from './recovery-incidents';
+import {
   isLibraryPersonalFileCloudEnabled,
   reconcileLibraryPersonalFiles,
   type PersonalFileCloudResult,
@@ -172,6 +177,29 @@ export function mountLibraryAccountPage(): () => void {
   let user: LibraryAccountUser | null = null;
   let disposed = false;
   let lastNativeStatus: LibrarySyncResult['status'] | null = null;
+  const incidents = createLibraryRecoveryIncidentHistory();
+  const showIncidents = (owner: string | null) => {
+    const entries = incidents.forOwner(owner).slice(-5).reverse();
+    const node = document.querySelector<HTMLOListElement>('[data-recovery-history]');
+    if (!node) return;
+    node.replaceChildren();
+    for (const entry of entries) {
+      const item = document.createElement('li');
+      item.textContent = new Date(entry.observedAt).toLocaleTimeString() + ' · ' +
+        entry.action + ' → ' + entry.outcome + ' · baseline ' +
+        (entry.baselineRevision ?? 'unknown') + ' · cloud ' +
+        (entry.reportedCloudRevision ?? 'unknown');
+      node.append(item);
+    }
+    text('[data-recovery-history-empty]', entries.length
+      ? 'Last native Library observations in this tab (not an independent audit).'
+      : 'No native recovery incidents recorded in this tab.');
+  };
+  const record = (owner: string | null, action: LibraryRecoveryAction,
+    outcome: string, baseline: number | null, cloud: number | null) => {
+    incidents.record(owner, action, outcome, baseline, cloud);
+    showIncidents(owner);
+  };
 
   const refresh = async () => {
     if (disposed) return;
@@ -184,6 +212,7 @@ export function mountLibraryAccountPage(): () => void {
         if (disposed || initial.status === 'redirecting') return;
       }
       user = await render();
+      showIncidents(user?.id ?? null);
     } catch (error) {
       // Identity verification can be unavailable behind tracking blockers or
       // during an outage. Never display stale private state, but retain the
@@ -203,6 +232,12 @@ export function mountLibraryAccountPage(): () => void {
     if (!user) return;
     const startedAs = user.id;
     const original = user;
+    const baselineMeta = readLibrarySyncMeta();
+    const beforeRevision = baselineMeta?.userId === startedAs
+      ? baselineMeta.revision ?? null : null;
+    const action: LibraryRecoveryAction = operation === chooseThisDeviceForLibrarySync
+      ? 'choose-device' : operation === chooseCloudForLibrarySync
+        ? 'choose-cloud' : 'native-sync';
     setBusy(true);
     try {
       const result = await operation(original);
@@ -219,6 +254,10 @@ export function mountLibraryAccountPage(): () => void {
       // Rendering Account controls is observational. Only the original
       // operation result may set conflict/status UI for this verified owner.
       renderResult(result);
+      record(startedAs, action, result.status, beforeRevision, result.revision ?? null);
+      const cas = describeNativeLibraryRecovery(result, beforeRevision);
+      text('[data-recovery-cas]', cas.original + ' · ' + cas.remote +
+        '. ' + cas.action + ' External custody NOT TESTED.');
       if (conflictResolution && ['pushed', 'pulled', 'synced'].includes(result.status)) {
         window.dispatchEvent(new CustomEvent('thiepn:library-conflict-resolved', {
           detail: { ownerId: startedAs },
@@ -266,6 +305,8 @@ export function mountLibraryAccountPage(): () => void {
         'Library ' + result.status.replaceAll('-', ' ') + ': ' + result.action +
         ' External custody has not been certified.');
       hidden('[data-recovery-conflict-actions]', result.status !== 'conflict');
+      record(current.id, 'inspect', result.status, meta?.userId === current.id
+        ? meta.revision ?? null : null, null);
     })().catch(() =>
       text('[data-recovery-inspection]', 'Unable to verify the Account. Native backup remains available without Core.'));
   });
@@ -273,10 +314,14 @@ export function mountLibraryAccountPage(): () => void {
     if (!user) return;
     const owner = user.id;
     const revoked = changeLibraryCoreGrant(owner, false);
+    if (revoked) record(owner, 'core-revoked', 'device grant revoked', null, null);
     text('[data-recovery-inspection]', revoked
       ? 'Core device grant revoked. Native Library sync, backup, and conflict chooser remain available.'
       : 'Unable to persist Core revocation. Check browser storage permissions.');
     void render(user);
+  });
+  document.querySelector('[data-recovery-backup]')?.addEventListener('click', () => {
+    if (user) record(user.id, 'native-backup', 'native backup page opened', null, null);
   });
   document.querySelector('[data-sync-enable]')?.addEventListener('click', () => void act(enableLibraryAccountSync));
   document.querySelector('[data-sync-now]')?.addEventListener('click', () => void act(reconcileLibraryAccountSync));
@@ -348,6 +393,10 @@ export function mountLibraryAccountPage(): () => void {
     if (detail) {
       lastNativeStatus = detail.status;
       renderResult(detail);
+      const meta = readLibrarySyncMeta();
+      record(user.id, 'native-sync', detail.status,
+        meta?.userId === user.id ? meta.revision ?? null : null,
+        detail.revision ?? null);
       if (detail.status === 'conflict' || detail.status === 'offline' || detail.status === 'error')
         text('[data-sync-mode]', detail.status === 'conflict' ? 'Attention required: changes conflict' : detail.status === 'offline' ? 'Waiting for connection' : 'Sync needs attention');
       // Avoid displaying a stale success indicator when the event signals an error.
@@ -386,5 +435,6 @@ export function mountLibraryAccountPage(): () => void {
     window.removeEventListener('thiepn:library-runtime', onRuntime);
     window.removeEventListener('thiepn:library-personal-files', onPersonalFiles);
     unsubscribeAuth();
+    incidents.clear();
   };
 }

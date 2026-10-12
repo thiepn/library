@@ -84,9 +84,12 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
           <div class="account-actions">
             <button data-account-action data-recovery-inspect type="button">Inspect recovery state</button>
             <button data-account-action data-recovery-revoke type="button">Revoke Core coordination</button>
-            <a href={`${base}/backup`}>Native Library backup &amp; restore</a>
+            <a data-recovery-backup href={`${base}/backup`}>Native Library backup &amp; restore</a>
           </div>
           <p data-recovery-inspection role="status" aria-live="polite">No recovery inspection performed. Local reading is available without a Core grant.</p>
+          <p class="micro" data-recovery-cas>Native CAS revisions are displayed after an original Library sync or conflict choice.</p>
+          <p class="micro" data-recovery-history-empty>No native recovery incidents recorded in this tab.</p>
+          <ol data-recovery-history aria-label="Local recovery incident history"></ol>
           <div data-recovery-conflict-actions hidden>
             <p class="micro">Conflict recovery: export a backup before selecting the authoritative copy with the native chooser below.</p>
           </div>
