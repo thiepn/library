@@ -71,6 +71,11 @@ export function mountResearchViews(
 ):ResearchViewController {
   const tabs=root.querySelector<HTMLElement>('[data-n1q-tabs]');
   const indicator=root.querySelector<HTMLElement>('[data-n1q-view-state]');
+  const exportKind=root.querySelector<HTMLSelectElement>('[data-n1q-export-format]');
+  const exportRun=root.querySelector<HTMLButtonElement>('[data-n1q-export-run]');
+  const exportStatus=root.querySelector<HTMLElement>('[data-n1q-export-status]');
+  if(!exportKind||!exportRun||!exportStatus)
+    throw new Error('Unified research export chooser is missing.');
   if(!tabs||!indicator)throw new Error('Unified research workspace navigation is missing.');
   const citeSelect=root.querySelector<HTMLSelectElement>('[data-n1q-citation-source]');
   const citeCount=root.querySelector<HTMLElement>('[data-n1q-citation-count]');
@@ -140,6 +145,41 @@ export function mountResearchViews(
     node.addEventListener(event,callback);
     callbacks.push(()=>node.removeEventListener(event,callback));
   };
+  const exportOptions:Record<string,{target:string;needsCollection:boolean;draft:boolean}>={
+    handoff:{target:'[data-n1o-export-handoff]',needsCollection:true,draft:false},
+    knowledge:{target:'[data-n1m-export-knowledge]',needsCollection:true,draft:false},
+    evidence:{target:'[data-n1o-export-evidence]',needsCollection:true,draft:false},
+    bibliography:{target:'[data-research-export-bibliography]',needsCollection:true,draft:false},
+    'research-package':{target:'[data-research-export-package]',needsCollection:true,draft:false},
+    catalogue:{target:'[data-n1m-export-catalogue]',needsCollection:false,draft:false},
+    index:{target:'[data-research-export-index]',needsCollection:false,draft:false},
+    review:{target:'[data-n1p-export-review]',needsCollection:false,draft:true},
+    draft:{target:'[data-research-download-draft]',needsCollection:true,draft:true},
+  };
+  bindCitation(exportRun,'click',()=>{
+    const option=exportOptions[exportKind.value];
+    if(!option)return;
+    if(option.needsCollection&&!host.active()){
+      exportStatus.textContent='Choose a research collection before exporting this material.';
+      return;
+    }
+    if(option.draft&&exportKind.value==='draft'&&!host.synthesis()){
+      exportStatus.textContent='Create a native synthesis note before downloading its current editor draft.';
+      return;
+    }
+    if(!option.draft&&host.dirty()){
+      exportStatus.textContent='Save the current synthesis first; this export includes saved notebook revisions only. Use the draft output for unsaved text.';
+      return;
+    }
+    const target=root.querySelector<HTMLButtonElement>(option.target);
+    if(!target||target.disabled){
+      exportStatus.textContent='The selected export is not available in this workspace.';
+      return;
+    }
+    target.click();
+    exportStatus.textContent='Handed off to the existing '+exportKind.selectedOptions[0]?.textContent
+      +' export action. No notebook changes are made by this chooser.';
+  });
   bindCitation(citeSelect,'change',updateCitations);
   bindCitation(citeInsert,'click',()=>{
     const note=chosen();if(!note||!host.synthesis())return;
