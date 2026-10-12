@@ -1,5 +1,8 @@
-run: 2026-10-05-r6
-mode: full-catalog-overhaul
+run: 2026-10-12-final-essentials
+mode: one-time-essential-canon
 catalog: src/publications/curated-canon.tsv
+selected-books: 29
+previous-run: 2026-10-05-r6
 checkpointed: true
-blocking-metadata-network: false
+rights: germany-conservative-fail-closed
+stop-after-curated: true

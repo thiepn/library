@@ -10,7 +10,7 @@ on:
       max_books:
         description: Maximum new globally eligible books to add in this run
         required: false
-        default: '300'
+        default: '29'
 
 permissions:
   contents: write
@@ -58,7 +58,7 @@ jobs:
       - name: Ingest every resolvable globally eligible curated classic
         id: ingest
         env:
-          MAX_BOOKS: ${{ github.event.inputs.max_books || '300' }}
+          MAX_BOOKS: ${{ github.event.inputs.max_books || '29' }}
         run: |
           set -euo pipefail
           python3 scripts/public-domain/run-canon.py \
