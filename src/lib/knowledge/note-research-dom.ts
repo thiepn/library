@@ -28,6 +28,7 @@ export interface ResearchWorkbench {
   dispose(): void;
 }
 type Side = 'left'|'right';
+const ACTIVE_RESEARCH_TAB_KEY='thiepn.library.research.active-tab.v1';
 const filename = (value:string) =>
   value.normalize('NFKD').replace(/[^a-zA-Z0-9_-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60)
   || 'research';
@@ -352,6 +353,10 @@ export function mountResearchWorkbench(
       select.value=activeId;return;
     }
     activeId=id;pins={left:'',right:''};adoptSynthesis(undefined);
+    try {
+      if(id)sessionStorage.setItem(ACTIVE_RESEARCH_TAB_KEY,id);
+      else sessionStorage.removeItem(ACTIVE_RESEARCH_TAB_KEY);
+    } catch { /* An unavailable tab store must not block research work. */ }
     active=loadResearchCollections().find(c=>c.id===id);
     if(active){
       pins.left=available()[0]?.id??'';
@@ -393,6 +398,14 @@ export function mountResearchWorkbench(
       all=fetched;
       searchIndex=indexResearchNotes(all,host.bookTitle);
       renderBookFacets();
+      if(!activeId){
+        let recent='';
+        try{recent=sessionStorage.getItem(ACTIVE_RESEARCH_TAB_KEY)??'';}catch{}
+        if(recent && loadResearchCollections().some(c=>c.id===recent)){
+          await activate(recent,true);
+          return;
+        }
+      }
       const localActive=loadResearchCollections().find(c=>c.id===activeId);
       if(activeId && !localActive)activeId='';
       if(localActive?.synthesisId) {
