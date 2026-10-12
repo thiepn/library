@@ -528,7 +528,10 @@ const catalog = (await getWorks()).map((work) => ({
                 <h3 id="n1n-note-workspaces-heading">This note in your knowledge</h3>
                 <p class="micro" data-n1n-source-context>Open a saved note to browse its research connections.</p>
               </div>
-              <button type="button" data-n1n-copy-note-link disabled>Copy direct note link</button>
+              <div class="book-notebook__n1n-source-actions">
+                <a data-n1n-open-source href="" hidden>Open source reader</a>
+                <button type="button" data-n1n-copy-note-link disabled>Copy direct note link</button>
+              </div>
             </div>
             <div data-n1n-memberships class="book-notebook__n1n-memberships"></div>
             <div class="book-notebook__n1n-membership-add">
@@ -836,6 +839,26 @@ const catalog = (await getWorks()).map((work) => ({
       function setStatus(message: string): void { status.textContent = message; }
       function currentBook(): string { return bookSelect.value; }
       function bookName(id: string): string { return books.get(id)?.title ?? id; }
+      function sourceHrefForNote(note: BookNoteDocumentV1): string | undefined {
+        const entry=books.get(note.workId);
+        if(!entry)return undefined;
+        if(entry.personal){
+          const isPdf=entry.personal.format==='pdf';
+          const route=isPdf?'pdf':'read';
+          const origin=`${base}/personal/${route}?id=${encodeURIComponent(entry.personal.id)}`;
+          const annotation=!isPdf&&note.anchor?.format==='epub'
+            ?note.sourceAnnotations.find(source=>source.format==='epub'):undefined;
+          return annotation?origin+'&annotation='+encodeURIComponent(annotation.id):origin;
+        }
+        if(!entry.slug)return undefined;
+        const origin=`${base}/works/${encodeURIComponent(entry.slug)}`;
+        if(note.anchor?.format==='pdf')
+          return entry.hasPdf?origin+'/pdf':undefined;
+        const annotation=note.anchor?.format==='epub'
+          ?note.sourceAnnotations.find(source=>source.format==='epub'):undefined;
+        return origin+'/read'
+          +(annotation?'?annotation='+encodeURIComponent(annotation.id):'');
+      }
       function linkLabel(note: BookNoteDocumentV1): string {
         return notebookTitle(note) + ' · ' + bookName(note.workId);
       }
@@ -1996,33 +2019,14 @@ const catalog = (await getWorks()).map((work) => ({
       const researchRoot = root.querySelector<HTMLElement>('[data-research-root]')!;
       const research = mountResearchWorkbench(researchRoot, {
         bookTitle: workId => bookName(workId),
-        sourceHref: note => {
-          const entry = books.get(note.workId);
-          if (!entry) return undefined;
-          if (entry.personal) {
-            const isPdf = entry.personal.format === 'pdf';
-            const route = isPdf ? 'pdf' : 'read';
-            const origin = `${base}/personal/${route}?id=${encodeURIComponent(entry.personal.id)}`;
-            const annotation = !isPdf && note.anchor?.format === 'epub'
-              ? note.sourceAnnotations.find(source => source.format === 'epub') : undefined;
-            return annotation ? origin + '&annotation=' + encodeURIComponent(annotation.id) : origin;
-          }
-          if (!entry.slug) return undefined;
-          const origin = `${base}/works/${encodeURIComponent(entry.slug)}`;
-          if (note.anchor?.format === 'pdf') {
-            return entry.hasPdf ? origin + '/pdf' : undefined;
-          }
-          const annotation = note.anchor?.format === 'epub'
-            ? note.sourceAnnotations.find(source => source.format === 'epub') : undefined;
-          return origin + '/read'
-            + (annotation ? '?annotation=' + encodeURIComponent(annotation.id) : '');
-        },
+        sourceHref: note => sourceHrefForNote(note),
         openNote: note => openAnyNote(note),
       });
       notebookNavigation = mountNotebookNavigation(root,{
         selected:()=>selected,
         notes:()=>libraryNotes,
         bookTitle:workId=>bookName(workId),
+        sourceHref:note=>sourceHrefForNote(note),
         openNote:note=>openAnyNote(note),
         openCollection:async id=>{
           await research.openCollection(id);
