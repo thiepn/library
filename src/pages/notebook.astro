@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { getWorks } from '../lib/content/repository';
 import '../styles/notebook.css';
 import '../styles/notebook-n1h.css';
+import '../styles/notebook-n1i.css';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const catalog = (await getWorks()).map((work) => ({
@@ -51,6 +52,41 @@ const catalog = (await getWorks()).map((work) => ({
           </section>
         </div>
       </section>
+      <section class="book-notebook__graph-workspace" aria-labelledby="notebook-graph-heading">
+        <div class="book-notebook__graph-header">
+          <div>
+            <p class="eyebrow">Explore ideas</p>
+            <h2 id="notebook-graph-heading">Note relationships</h2>
+            <p class="micro">Solid lines are links you wrote. Dashed lines represent shared topic markers, not inferred facts.</p>
+          </div>
+          <button type="button" data-graph-expand aria-expanded="false" aria-controls="notebook-graph-panel">Explore graph</button>
+        </div>
+        <div id="notebook-graph-panel" data-graph-panel hidden>
+          <div class="book-notebook__graph-controls">
+            <label><input type="checkbox" data-graph-topic-edges /> Show shared-topic connections</label>
+            <label for="notebook-graph-zoom">Zoom</label>
+            <input id="notebook-graph-zoom" type="range" min="75" max="175" value="100" step="5" data-graph-zoom />
+            <button type="button" data-graph-reset>Show all</button>
+          </div>
+          <div class="book-notebook__graph-layout">
+            <svg data-graph-canvas class="book-notebook__graph-canvas" viewBox="0 0 960 600"
+              role="img" aria-label="Interactive graph of connected notebook notes"></svg>
+            <aside class="book-notebook__graph-details" aria-live="polite">
+              <h3 data-graph-selected-title>Choose a note</h3>
+              <p data-graph-selected-book class="micro">Select a circle or a note below to explore links.</p>
+              <p data-graph-selected-stats class="micro"></p>
+              <div data-graph-neighbors class="book-notebook__graph-neighbors"></div>
+              <div class="book-notebook__graph-actions">
+                <button type="button" data-graph-preview disabled>Preview note</button>
+                <button type="button" data-graph-open disabled>Open in editor</button>
+              </div>
+            </aside>
+          </div>
+          <p class="micro" role="status" data-graph-status></p>
+          <div class="book-notebook__graph-accessible" data-graph-accessible
+            aria-label="Notes in the relationship graph"></div>
+        </div>
+      </section>
       <div class="book-notebook__selector">
         <label for="notebook-book">Book</label>
         <select id="notebook-book" data-notebook-book>
@@ -78,6 +114,44 @@ const catalog = (await getWorks()).map((work) => ({
           <label for="notebook-discover-topic">Topic</label>
           <select id="notebook-discover-topic" data-discover-topic>
             <option value="all">All topics</option>
+          </select>
+        </div>
+        <div class="book-notebook__saved-views" aria-label="Saved notebook workspaces">
+          <div class="book-notebook__saved-views-heading">
+            <h3>Saved views</h3>
+            <p class="micro">Local to this browser. They do not change your notebook data or Account sync.</p>
+          </div>
+          <div class="book-notebook__saved-views-controls">
+            <label for="notebook-saved-view">Open view</label>
+            <select id="notebook-saved-view" data-saved-view><option value="">Current filters</option></select>
+            <button type="button" data-view-apply>Apply</button>
+            <button type="button" data-view-delete>Remove view</button>
+            <label for="notebook-view-name">Save as</label>
+            <input id="notebook-view-name" data-view-name maxlength="64" placeholder="e.g. Connected philosophy notes" />
+            <button type="button" data-view-save>Save these filters</button>
+            <button type="button" data-view-clear>Clear filters</button>
+          </div>
+          <p class="micro" role="status" aria-live="polite" data-view-status></p>
+        </div>
+        <div class="book-notebook__advanced-filters">
+          <label for="notebook-discover-scope">Type</label>
+          <select id="notebook-discover-scope" data-discover-scope>
+            <option value="all">Every note type</option>
+            <option value="reading-note">Reading notes</option>
+            <option value="chapter-summary">Chapter summaries</option>
+            <option value="book-overview">Book overview</option>
+          </select>
+          <label for="notebook-discover-links">Connections</label>
+          <select id="notebook-discover-links" data-discover-links>
+            <option value="all">All notes</option>
+            <option value="connected">With links</option>
+            <option value="unconnected">Without links</option>
+          </select>
+          <label for="notebook-discover-sort">Sort</label>
+          <select id="notebook-discover-sort" data-discover-sort>
+            <option value="recent">Recently edited</option>
+            <option value="oldest">Oldest first</option>
+            <option value="title">Title A–Z</option>
           </select>
         </div>
         <div class="book-notebook__discover-results" data-discover-results></div>
@@ -167,6 +241,13 @@ const catalog = (await getWorks()).map((work) => ({
             <article class="book-notebook__reading-preview" data-notebook-reading-preview
               aria-label="Markdown reading preview" hidden></article>
           </div>
+          <section class="book-notebook__outline" aria-labelledby="notebook-outline-heading">
+            <div class="book-notebook__outline-header">
+              <h3 id="notebook-outline-heading">Note outline</h3>
+              <span class="micro" data-outline-count>No headings</span>
+            </div>
+            <nav data-notebook-outline aria-label="Jump to Markdown headings"></nav>
+          </section>
           <div class="book-notebook__writing-meta">
             <span data-notebook-words aria-live="polite">0 words</span>
             <span data-notebook-characters>0 characters</span>
@@ -183,6 +264,19 @@ const catalog = (await getWorks()).map((work) => ({
               <button type="button" data-notebook-topic-add>Add topic</button>
             </div>
             <div data-notebook-current-topics class="book-notebook__topic-cloud"></div>
+            <details class="book-notebook__topic-manager">
+              <summary>Manage topics across books</summary>
+              <p class="micro">Rename or remove a topic from saved notes. A complete local JSON backup is downloaded before changes, and edits stop if another tab changed a note.</p>
+              <div class="book-notebook__topic-manage-row">
+                <label for="notebook-topic-manage-select">Existing topic</label>
+                <select id="notebook-topic-manage-select" data-topic-manage-select><option value="">Choose topic…</option></select>
+                <label for="notebook-topic-manage-name">New name</label>
+                <input id="notebook-topic-manage-name" data-topic-manage-name maxlength="64" placeholder="Rename to…" />
+                <button type="button" data-topic-rename>Rename across books</button>
+                <button type="button" data-topic-remove>Remove topic</button>
+              </div>
+              <p class="micro" role="status" data-topic-manage-status></p>
+            </details>
           </div>
           <div class="book-notebook__editor-actions">
             <button type="button" data-notebook-save>Save now</button>
@@ -241,6 +335,14 @@ const catalog = (await getWorks()).map((work) => ({
     import { bookNotebookToObsidianMarkdown } from '../lib/knowledge/note-export';
     import { downloadNotebookRecovery } from '../lib/knowledge/note-recovery';
     import { renderNotebookPreview } from '../lib/knowledge/note-preview';
+    import { buildNoteGraph, graphNeighbors, type NoteGraphData } from '../lib/knowledge/note-graph';
+    import { getNotebookHeadings, rewriteNotebookTopic } from '../lib/knowledge/note-outline';
+    import {
+      readSavedNotebookViews, saveNotebookView, deleteNotebookView, filtersForSavedView,
+      notebookViewConnectionIds, defaultNotebookView,
+      type NotebookViewFilters,
+    } from '../lib/knowledge/note-views';
+    import { createLibraryBackupJson } from '../lib/client/library-portability';
     import {
       NOTEBOOK_TEMPLATES, buildNotebookOverview, collectNotebookTopics,
       extractNotebookTopics, insertNotebookText, normalizeNotebookTopic,
