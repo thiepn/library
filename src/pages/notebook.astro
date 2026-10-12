@@ -621,10 +621,14 @@ const catalog = (await getWorks()).map((work) => ({
                   <option value="">Choose a collected source…</option>
                 </select>
                 <button type="button" data-n1q-citation-insert disabled>Insert stable link</button>
-                <button type="button" data-n1q-citation-next disabled>Next use in synthesis</button>
+                <button type="button" data-n1q-citation-previous disabled>Previous citation</button>
+                <button type="button" data-n1q-citation-next disabled>Next citation</button>
                 <button type="button" data-n1q-citation-open disabled>Open saved note</button>
                 <button type="button" data-n1q-citation-pin disabled>Pin source A</button>
+                <button type="button" data-n1r-citation-copy disabled>Copy labeled reference</button>
+                <a data-n1r-citation-reader href="" hidden target="_blank" rel="noopener noreferrer">Open book reader</a>
               </div>
+              <p class="micro" data-n1r-citation-context></p>
               <p class="micro" role="status" aria-live="polite" data-n1q-citation-status></p>
             </section>
             <section class="book-notebook__n1l-outline" aria-labelledby="research-synthesis-outline-title">
