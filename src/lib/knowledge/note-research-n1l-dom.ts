@@ -1,5 +1,6 @@
 import { applyNotebookMarkdownTool, notebookWordCount, type MarkdownTool } from './note-links';
 import { getNotebookHeadings } from './note-outline';
+import { requestResearchView } from './note-research-n1q-view';
 import {
   researchSynthesisSections, moveSynthesisSection, synthesisSectionTemplate,
   insertSynthesisSection, sectionWritingPacketMarkdown,
@@ -56,6 +57,10 @@ export function mountResearchN1L(root:HTMLElement,host:ResearchN1LHost):Research
   const sectionDown=$<HTMLButtonElement>('[data-n1r-section-down]');
   const sectionInsert=$<HTMLButtonElement>('[data-n1r-section-insert]');
   const sectionExport=$<HTMLButtonElement>('[data-n1r-section-export]');
+  const sectionSource=$<HTMLSelectElement>('[data-n1r-section-source]');
+  const sectionPin=$<HTMLButtonElement>('[data-n1r-section-pin]');
+  const sectionOpen=$<HTMLButtonElement>('[data-n1r-section-open]');
+  const sectionReader=$<HTMLAnchorElement>('[data-n1r-section-reader]');
   const callbacks:Array<()=>void>=[];
   let session:ResearchSession|undefined;
   let selectedSectionStart:number|undefined;
@@ -141,6 +146,7 @@ export function mountResearchN1L(root:HTMLElement,host:ResearchN1LHost):Research
     }
   }
   function onCollectionChanged():void {
+    selectedSectionStart=undefined;
     const active=host.active();
     session=active?readResearchSession(active.id):undefined;
     if(session){
@@ -160,7 +166,7 @@ export function mountResearchN1L(root:HTMLElement,host:ResearchN1LHost):Research
       if(aligned)store(aligned);
       else session=undefined;
     }
-    renderSession();renderExportState();
+    renderSession();renderOutline();renderExportState();
   }
   function renderOutline():void {
     outline.replaceChildren();
@@ -205,6 +211,29 @@ export function mountResearchN1L(root:HTMLElement,host:ResearchN1LHost):Research
       &&other.level===chosen.level&&other.start>chosen.start);
     sectionInsert.disabled=!doc;
     sectionExport.disabled=!doc||!chosen;
+    renderSectionSourceOptions(chosen?.sourceIds??[]);
+  }
+  function renderSectionSourceOptions(ids:readonly string[]):void {
+    const previous=sectionSource.value;
+    sectionSource.replaceChildren(new Option('Choose a section citation…',''));
+    const saved=new Map(host.notes().map(note=>[note.id,note]));
+    for(const id of ids){
+      const note=saved.get(id);
+      const label=note
+        ?host.bookTitle(note.workId)+' — '+notebookTitle(note)+' · revision '+note.revision
+        :'Unavailable local note · '+id;
+      sectionSource.add(new Option(label,id));
+    }
+    sectionSource.value=ids.includes(previous)?previous:'';
+    updateSectionSourceActions();
+  }
+  function updateSectionSourceActions():void {
+    const note=host.notes().find(item=>item.id===sectionSource.value);
+    sectionPin.disabled=!note||!host.active()?.noteIds.includes(note.id);
+    sectionOpen.disabled=!note;
+    const href=note?host.sourceHref(note):undefined;
+    sectionReader.hidden=!href;
+    if(href)sectionReader.href=href;
   }
   function selectSection():void {
     const number=Number(sectionPicker.value);
@@ -232,6 +261,25 @@ export function mountResearchN1L(root:HTMLElement,host:ResearchN1LHost):Research
   }
 
   bind('[data-n1r-section-picker]','change',selectSection);
+  bind('[data-n1r-section-source]','change',updateSectionSourceActions);
+  bind('[data-n1r-section-pin]','click',()=>{
+    const note=host.notes().find(item=>item.id===sectionSource.value);
+    const collection=host.active();
+    if(!note||!collection?.noteIds.includes(note.id))return;
+    const existing=host.pins();
+    const other=existing.right!==note.id
+      ?existing.right:collection.noteIds.find(id=>id!==note.id)??'';
+    host.setPins(note.id,other);
+    requestResearchView(root,'sources','[data-research-compare]');
+    sectionStatus.textContent='Cited note pinned to Source A; no notebook content changed.';
+  });
+  bind('[data-n1r-section-open]','click',()=>{
+    const note=host.notes().find(item=>item.id===sectionSource.value);
+    if(!note)return;
+    if(host.isDirty()&&!window.confirm(
+      'The synthesis has unsaved writing. Save or download a draft before opening the source note? Cancel to stay in the editor.'))return;
+    void host.openNote(note);
+  });
   for(const [direction,button] of [[-1,sectionUp],[1,sectionDown]] as const){
     const cb=()=>{
       if(!host.synthesis()||selectedSectionStart===undefined)return;
