@@ -727,6 +727,164 @@ const catalog = (await getWorks()).map((work) => ({
         });
       }
 
+
+      function currentWorkspaceFilters(): NotebookViewFilters {
+        return {
+          query: discoverQuery.value,
+          workId: discoverBook.value,
+          topic: discoverTopic.value,
+          scope: discoverScope.value as NotebookViewFilters['scope'],
+          sort: discoverSort.value as NotebookViewFilters['sort'],
+          mode: discoverLinks.value as NotebookViewFilters['mode'],
+        };
+      }
+
+      function workspaceNotes(): BookNoteDocumentV1[] {
+        const filters = currentWorkspaceFilters();
+        const joined = notebookViewConnectionIds(
+          libraryNotes, note => extractNotebookLinks(note.bodyMarkdown).map(link => link.id));
+        const filtered = libraryNotes.filter(note =>
+          (filters.workId === 'all' || filters.workId === note.workId)
+          && (filters.topic === 'all' || extractNotebookTopics(note.bodyMarkdown).includes(filters.topic))
+          && (filters.scope === 'all' || note.scope === filters.scope)
+          && (filters.mode === 'all' || (filters.mode === 'connected') === joined.has(note.id)));
+        const searched = findNotebookNotes(filtered, bookName, filters.query, 200);
+        if (filters.sort === 'title')
+          return searched.sort((a,b) => notebookTitle(a).localeCompare(notebookTitle(b)));
+        if (filters.sort === 'oldest')
+          return searched.sort((a,b) => a.createdAt.localeCompare(b.createdAt));
+        return searched.sort((a,b) => b.updatedAt.localeCompare(a.updatedAt));
+      }
+
+      function renderSavedViews(): void {
+        const previous = savedView.value || currentViewId;
+        savedView.replaceChildren(new Option('Current filters', ''));
+        for (const view of readSavedNotebookViews())
+          savedView.add(new Option(view.name, view.id));
+        savedView.value = [...savedView.options].some(option => option.value === previous)
+          ? previous : '';
+        currentViewId = savedView.value;
+      }
+
+      function showGraphNode(id: string): void {
+        const node = graphModel.nodes.find(entry => entry.id === id);
+        const doc = libraryNotes.find(note => note.id === id);
+        if (!node || !doc) return;
+        graphFocus = id;
+        graphSelectedTitle.textContent = notebookTitle(doc);
+        graphSelectedBook.textContent = bookName(doc.workId);
+        graphSelectedStats.textContent = node.incoming + ' incoming · ' + node.outgoing
+          + ' outgoing references · ' + node.topics.length + ' topics';
+        graphNeighborsList.replaceChildren();
+        const adjacent = graphNeighbors(graphModel, id);
+        for (const other of graphModel.nodes.filter(n => n.id !== id && adjacent.has(n.id)).slice(0,20)) {
+          const button = document.createElement('button');
+          button.type = 'button'; button.textContent = other.title;
+          button.addEventListener('click', () => { showGraphNode(other.id); renderGraph(); });
+          graphNeighborsList.append(button);
+        }
+        if (adjacent.size < 2) paragraph(graphNeighborsList, 'No visible neighbors. Try the shared-topic option.');
+        graphOpenButton.disabled = false;
+        graphPreviewButton.disabled = false;
+      }
+
+      function renderGraph(): void {
+        if (graphPanel.hidden) return;
+        const options = {
+          limit: 70, includeSharedTopics: graphEdges.checked,
+          ...(graphFocus ? {focus:graphFocus}:{}),
+        };
+        graphModel = buildNoteGraph(workspaceNotes(), options);
+        if (graphFocus && !graphModel.nodes.some(node => node.id === graphFocus))graphFocus = undefined;
+        graphCanvas.replaceChildren();
+        graphAccessible.replaceChildren();
+        const zoom = Math.max(.75,Math.min(1.75, Number(graphZoom.value)/100));
+        graphCanvas.setAttribute('viewBox', [
+          480-480/zoom,300-300/zoom,960/zoom,600/zoom,
+        ].join(' '));
+        const ns = 'http://www.w3.org/2000/svg';
+        const nodeById = new Map(graphModel.nodes.map(node => [node.id,node]));
+        const near = graphFocus ? graphNeighbors(graphModel,graphFocus) : null;
+        for(const edge of graphModel.edges) {
+          const source = nodeById.get(edge.source),target = nodeById.get(edge.target);
+          if(!source || !target)continue;
+          const line=document.createElementNS(ns,'line');
+          line.setAttribute('x1',String(source.x));
+          line.setAttribute('y1',String(source.y));
+          line.setAttribute('x2',String(target.x));
+          line.setAttribute('y2',String(target.y));
+          line.setAttribute('class',edge.kind === 'reference'
+            ? 'notebook-graph__reference' : 'notebook-graph__topic');
+          if (near && !near.has(edge.source) && !near.has(edge.target))
+            line.setAttribute('opacity','.2');
+          graphCanvas.append(line);
+        }
+        for(const node of graphModel.nodes) {
+          const group=document.createElementNS(ns,'g');
+          group.setAttribute('class','notebook-graph__node' +
+            (graphFocus===node.id?' is-selected':'') +
+            (near && !near.has(node.id)?' is-muted':''));
+          group.setAttribute('role','button');
+          group.setAttribute('tabindex','0');
+          group.setAttribute('aria-label','Select '+node.title+' from '+bookName(node.workId));
+          group.setAttribute('transform','translate('+node.x+' '+node.y+')');
+          const circle=document.createElementNS(ns,'circle');
+          circle.setAttribute('r',graphFocus===node.id?'20':'16');
+          const title=document.createElementNS(ns,'title');
+          title.textContent=node.title+' — '+bookName(node.workId);
+          const label=document.createElementNS(ns,'text');
+          label.setAttribute('y','-25');
+          label.setAttribute('text-anchor','middle');
+          label.textContent=node.title.length>19?node.title.slice(0,18)+'…':node.title;
+          group.append(title,circle,label);
+          const select=()=>{showGraphNode(node.id);renderGraph();};
+          group.addEventListener('click',select);
+          group.addEventListener('keydown',e=>{
+            if(e.key==='Enter' || e.key===' '){e.preventDefault();select();}
+          });
+          graphCanvas.append(group);
+          const button=document.createElement('button');
+          button.type='button';button.textContent=node.title+' — '+bookName(node.workId);
+          button.addEventListener('click',()=>{showGraphNode(node.id);renderGraph();});
+          graphAccessible.append(button);
+        }
+        graphStatus.textContent=graphModel.nodes.length+' notes · '+graphModel.edges.length
+          +' visible connections'+(graphModel.omitted?' · '+graphModel.omitted+' hidden by graph limit':'');
+        if(graphFocus)showGraphNode(graphFocus);
+        else {
+          graphSelectedTitle.textContent='Choose a note';
+          graphSelectedBook.textContent='Select a circle or a note in the list.';
+          graphSelectedStats.textContent='';
+          graphNeighborsList.replaceChildren();
+          graphOpenButton.disabled=true;graphPreviewButton.disabled=true;
+        }
+      }
+
+      function renderOutline(): void {
+        const headings=getNotebookHeadings(body.value);
+        outline.replaceChildren();
+        outlineCount.textContent=headings.length
+          ? headings.length+' headings' : 'No headings';
+        headings.forEach((heading,index)=>{
+          const button=document.createElement('button');
+          button.type='button';button.className='book-notebook__outline-link';
+          button.style.setProperty('--outline-indent', String(heading.level-1));
+          button.textContent=heading.title;
+          button.title='Line '+heading.line;
+          button.addEventListener('click',()=>{
+            if (previewMode === 'read' || previewMode === 'split') {
+              const target=readingPreview.querySelectorAll('h2,h3,h4,h5,h6')[index];
+              if(target){target.scrollIntoView({behavior:'smooth',block:'center'});return;}
+            }
+            setWritingView('write');
+            body.focus();
+            body.setSelectionRange(heading.offset,heading.offset);
+          });
+          outline.append(button);
+        });
+        if(!headings.length)paragraph(outline,'Use #, ##, or ### in your Markdown to create a navigable outline.');
+      }
+
       function renderDashboard(): void {
         const overview = buildNotebookOverview(libraryNotes);
         const values: Record<string, number> = {
