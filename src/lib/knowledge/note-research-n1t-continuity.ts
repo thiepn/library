@@ -15,7 +15,6 @@ export interface ResearchSectionGap {
   missingIds:string[];
   outsideIds:string[];
   collectedSourceIds:string[];
-  candidateCount:number;
   gapReasons:string[];
 }
 export function researchSectionAgenda(
@@ -36,7 +35,7 @@ export function researchSectionAgenda(
     if(outsideIds.length)gapReasons.push(outsideIds.length+' links outside this collection');
     return {
       section,missingIds,outsideIds,collectedSourceIds,
-      candidateCount:0,gapReasons,
+      gapReasons,
     };
   });
 }
