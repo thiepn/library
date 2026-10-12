@@ -1,4 +1,6 @@
-import { listBookNotes } from './note-store';
+import {
+  multiSourceComparisonMarkdown, conciseSourceReferences, type ComparisonSource,
+} from './note-research-n1p-writing';
 import { notebookTitle, type BookNoteDocumentV1 } from './note-model';
 import { loadResearchCollections, describeResearchSource,
   type ResearchCollection } from './note-research';
@@ -15,6 +17,7 @@ export interface ResearchN1PHost {
   notes():readonly BookNoteDocumentV1[];
   synthesis():BookNoteDocumentV1|undefined;
   draft():{title:string;body:string};
+  setDraft(title:string,body:string):void;
   isDirty():boolean;
   pins():{left:string;right:string};
   setPins(left:string,right:string):void;
@@ -75,9 +78,17 @@ export function mountResearchN1P(
   const focusWriting=$<HTMLButtonElement>('[data-n1p-focus-writing]');
   const saveCopy=$<HTMLButtonElement>('[data-n1p-download-working-copy]');
   const writingArea=$<HTMLTextAreaElement>('[data-research-synthesis-body]');
+  const basketSelect=$<HTMLSelectElement>('[data-n1p-compare-select]');
+  const basketList=$<HTMLElement>('[data-n1p-comparison-items]');
+  const basketCount=$<HTMLElement>('[data-n1p-compare-count]');
+  const basketStatus=$<HTMLElement>('[data-n1p-compare-status]');
+  const basketInsert=$<HTMLButtonElement>('[data-n1p-compare-insert]');
+  const basketCopy=$<HTMLButtonElement>('[data-n1p-compare-copy]');
   const removes:Array<()=>void>=[];
   let disposed=false;
   let reviewToken=0;
+  let lastBasketCollection='';
+  let basketIds:string[]=[];
   const bind=(query:string,kind:string,cb:EventListener)=>{
     const node=$(query);node.addEventListener(kind,cb);
     removes.push(()=>node.removeEventListener(kind,cb));
@@ -155,6 +166,86 @@ export function mountResearchN1P(
       ?.scrollIntoView({behavior:'smooth',block:'start'});
     status.textContent='Source selected in its collection. You can read, cite or compare it.';
   }
+  function basketCandidates():BookNoteDocumentV1[] {
+    const lookup=new Map(host.notes().map(note=>[note.id,note]));
+    return host.active()?.noteIds.flatMap(id=>{
+      const note=lookup.get(id);
+      return note?[note]:[];
+    })??[];
+  }
+  function basketSources():ComparisonSource[] {
+    const lookup=new Map(basketCandidates().map(note=>[note.id,note]));
+    return basketIds.flatMap(id=>{
+      const note=lookup.get(id);
+      return note?[{note,bookTitle:host.bookTitle(note.workId)}]:[];
+    });
+  }
+  function renderBasket():void {
+    const previous=basketSelect.value;
+    const candidates=basketCandidates();
+    const present=new Set(candidates.map(note=>note.id));
+    basketIds=basketIds.filter(id=>present.has(id));
+    basketSelect.replaceChildren(new Option('Choose a collected note…',''));
+    for(const note of candidates.filter(note=>!basketIds.includes(note.id)))
+      basketSelect.add(new Option(host.bookTitle(note.workId)+' — '+notebookTitle(note),note.id));
+    basketSelect.value=[...basketSelect.options].some(o=>o.value===previous)?previous:'';
+    basketList.replaceChildren();
+    const references=basketSources();
+    basketCount.textContent=references.length+' / 6 sources';
+    if(!references.length){
+      basketList.append(element('p','Add two or more different saved notes, potentially from different books.'));
+    }
+    for(const [index,source] of references.entries()){
+      const row=document.createElement('div');
+      row.className='book-notebook__n1p-comparison-item';
+      const desc=document.createElement('div');
+      desc.append(
+        element('strong',(index+1)+'. '+notebookTitle(source.note)),
+        element('small',source.bookTitle+' · '+describeResearchSource(source.note.anchor,source.note.chapterKey)),
+      );
+      row.append(desc,action('Remove',()=>{
+        basketIds=basketIds.filter(id=>id!==source.note.id);renderBasket();
+      }));
+      basketList.append(row);
+    }
+    $<HTMLButtonElement>('[data-n1p-compare-add]').disabled=!basketSelect.value||basketIds.length>=6;
+    basketInsert.disabled=references.length<2||!host.synthesis();
+    basketCopy.disabled=references.length<1;
+  }
+  function addToBasket():void {
+    const id=basketSelect.value;
+    if(!id||basketIds.includes(id))return;
+    if(basketIds.length>=6){basketStatus.textContent='The comparison basket holds at most six sources.';return;}
+    if(!basketCandidates().some(note=>note.id===id)){
+      basketStatus.textContent='That note is no longer available in this collection.';return;
+    }
+    basketIds.push(id);renderBasket();
+    basketStatus.textContent='Source reference added. The original notebook record is unchanged.';
+  }
+  function insertComparison():void {
+    const sources=basketSources();
+    if(!host.synthesis()||sources.length<2)return;
+    try{
+      const markdown=multiSourceComparisonMarkdown(sources);
+      const old=host.draft().body;
+      const start=writingArea.selectionStart,end=writingArea.selectionEnd;
+      const prefix=start>0&&!old.slice(0,start).endsWith('\n')?'\n\n':'';
+      const suffix=end<old.length&&!old.slice(end).startsWith('\n')?'\n':'';
+      const addition=prefix+markdown+'\n'+suffix;
+      const next=old.slice(0,start)+addition+old.slice(end);
+      if(next.length>250000){
+        basketStatus.textContent='Synthesis Markdown limit reached. Export the current draft before adding more.';
+        return;
+      }
+      host.setDraft(host.draft().title,next);
+      writingArea.focus();
+      writingArea.setSelectionRange(start+addition.length,start+addition.length);
+      basketStatus.textContent='Comparison outline inserted into the native synthesis draft. Save to commit.';
+    }catch(error){
+      basketStatus.textContent=error instanceof Error?error.message:'Cannot build a comparison outline.';
+    }
+  }
+
   function renderContinuity():void {
     const source=selectedSource();
     const collection=host.active();
@@ -191,14 +282,34 @@ export function mountResearchN1P(
     path.append(text,element('span','→'),next);
   }
   function onCollectionChanged():void {
-    renderCollectionChoices();renderQueue();renderContinuity();
+    const collectionId=host.active()?.id??'';
+    if(collectionId!==lastBasketCollection){
+      lastBasketCollection=collectionId;
+      basketIds=[];
+      basketStatus.textContent='';
+    }
+    renderCollectionChoices();renderQueue();renderContinuity();renderBasket();
   }
   function onNotesChanged():void {
-    renderQueue();renderContinuity();
+    renderQueue();renderContinuity();renderBasket();
   }
   function onDraftChanged():void {
-    renderContinuity();
+    renderContinuity();renderBasket();
   }
+  bind('[data-n1p-compare-select]','change',renderBasket);
+  bind('[data-n1p-compare-add]','click',addToBasket);
+  bind('[data-n1p-compare-clear]','click',()=>{
+    basketIds=[];renderBasket();
+    basketStatus.textContent='Comparison basket cleared; source notes were unchanged.';
+  });
+  bind('[data-n1p-compare-insert]','click',insertComparison);
+  bind('[data-n1p-compare-copy]','click',()=>{
+    const sources=basketSources();
+    if(!sources.length)return;
+    void navigator.clipboard.writeText(conciseSourceReferences(sources))
+      .then(()=>{basketStatus.textContent='Source references copied with recorded locations.';},
+        ()=>{basketStatus.textContent='Clipboard unavailable. Open the source notes to copy references.';});
+  });
   bind('[data-n1p-review-collection]','change',renderQueue);
   bind('[data-n1p-review-filter]','change',renderQueue);
   bind('[data-n1p-review-start]','click',()=>{
