@@ -248,7 +248,7 @@ export function mountLibraryAccountPage(): () => void {
       paused: 'Automatic checks are paused on this device.',
     };
     if (detail.state && labels[detail.state]) {
-      text('[data-auto-sync-live]', labels[detail.state]);
+      text('[data-auto-sync-live]', labels[detail.state] ?? '');
       if (detail.state === 'conflict') hidden('[data-sync-conflict]', false);
     }
   };
