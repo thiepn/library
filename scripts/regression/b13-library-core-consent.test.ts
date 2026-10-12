@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { readLibraryCoreGrant } from '../../src/lib/account/core-coordination';
+import { readLibraryCoreGrant } from '../../src/lib/account/core-consent';
 
 test('B13 native Library Core consent stays denied without matching owner and revision', () => {
   const owner = '11111111-1111-4111-8111-111111111111';

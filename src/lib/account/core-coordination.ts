@@ -8,27 +8,8 @@ import {
 } from './sync';
 
 export const LIBRARY_CORE_COORDINATION_KEY = 'thiepn.library.core-coordination.v1';
-type DeviceGrant = {
-  schemaVersion: 1;
-  ownerId: string;
-  allowed: boolean;
-  revision: number;
-};
-const ownerKey = (ownerId: string) => LIBRARY_CORE_COORDINATION_KEY + ':' + ownerId;
-
-export function readLibraryCoreGrant(raw: string | null, ownerId: string): DeviceGrant | null {
-  if (!ownerId || !raw || raw.length > 1024) return null;
-  try {
-    const value: unknown = JSON.parse(raw);
-    if (!value || typeof value !== 'object') return null;
-    const grant = value as Partial<DeviceGrant>;
-    if (grant.schemaVersion !== 1 || grant.ownerId !== ownerId ||
-      typeof grant.allowed !== 'boolean' || !Number.isSafeInteger(grant.revision) ||
-      (grant.revision ?? 0) < 1)
-      return null;
-    return grant as DeviceGrant;
-  } catch { return null; }
-}
+export { readLibraryCoreGrant } from './core-consent';
+import { ownerKey, readLibraryCoreGrant, type DeviceGrant } from './core-consent';
 export function getLibraryCoreGrant(ownerId: string): DeviceGrant | null {
   try { return readLibraryCoreGrant(localStorage.getItem(ownerKey(ownerId)), ownerId); }
   catch { return null; }
