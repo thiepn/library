@@ -1,5 +1,6 @@
 import type { BookNoteDocumentV1 } from './note-model';
 import { notebookTitle } from './note-model';
+import { noteReferenceMarkdown } from './note-links';
 import {
   researchCitationLocations, citationCountForNote, nextResearchCitation,
   previousResearchCitation,
@@ -227,8 +228,7 @@ export function mountResearchViews(
   });
   bindCitation(citeCopy,'click',()=>{
     const note=chosen();if(!note)return;
-    const reference='[[note:'+note.id+'|'
-      +notebookTitle(note).replace(/[\]\r\n|]/g,' ').trim().slice(0,120)+']]';
+    const reference=noteReferenceMarkdown(note);
     void navigator.clipboard.writeText(reference)
       .then(()=>{citeStatus.textContent='Stable-ID reference copied from the saved note.';},
         ()=>{citeStatus.textContent='Clipboard unavailable; use Insert stable link.';});
