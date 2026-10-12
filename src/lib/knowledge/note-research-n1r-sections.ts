@@ -104,7 +104,7 @@ export function insertSynthesisSection(
 export function sectionWritingPacketMarkdown(
   body:string,index:number,notes:readonly BookNoteDocumentV1[],
   bookTitle:(workId:string)=>string,
-  options?:{savedRevision?:number;collectionName?:string},
+  options?:{savedRevision?:number;collectionName?:string;dirty?:boolean},
 ):string {
   const section=researchSynthesisSections(body)[index];
   if(!section)throw new Error('Select a synthesis section first.');
@@ -118,6 +118,7 @@ export function sectionWritingPacketMarkdown(
     '',
     '- Collection: '+(options?.collectionName??'not specified'),
     '- Native synthesis base revision: '+(options?.savedRevision??'not created'),
+    '- Current content: '+(options?.dirty?'unsaved writing draft':'current editor copy'),
     '- Section heading level: '+section.level,
     '- Cited saved-note IDs: '+section.sourceIds.length,
     '',
