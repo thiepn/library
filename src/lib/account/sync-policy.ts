@@ -1,4 +1,4 @@
-import type { LibraryBackupV1 } from '../client/library-portability';
+import type { LibraryBackup } from '../client/library-portability';
 
 export interface LibrarySyncBaseline {
   revision: number;
@@ -18,7 +18,7 @@ function recordCount(value: unknown): number {
   return Array.isArray(records) ? records.length : 0;
 }
 
-export function backupHasMeaningfulLibraryState(backup: LibraryBackupV1): boolean {
+export function backupHasMeaningfulLibraryState(backup: LibraryBackup): boolean {
   const main = backup.state.main;
   const pdf = backup.state.pdf;
   const personal = backup.state.personalBooks;
@@ -31,6 +31,7 @@ export function backupHasMeaningfulLibraryState(backup: LibraryBackupV1): boolea
       + recordCount(main.bookmarks)
       + recordCount(main.annotations)
       + recordCount(main.readingActivity)
+      + recordCount(main.noteDocuments)
     ) > 0)
     || (pdf && (
       recordCount(pdf.progress)
