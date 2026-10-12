@@ -67,15 +67,26 @@ export function updateCrossBookReviewState(
 export function summarizeCrossBookQueue(
   collections:readonly ResearchCollection[],
   notes:readonly BookNoteDocumentV1[],
-):{pending:number;revisit:number;reviewed:number;books:number;collections:number} {
-  const all=collectCrossBookReviewQueue(collections,notes,'all','all',300);
-  return {
-    pending:all.filter(item=>item.state==='pending').length,
-    revisit:all.filter(item=>item.state==='revisit').length,
-    reviewed:all.filter(item=>item.state==='reviewed').length,
-    books:new Set(all.map(item=>item.note.workId)).size,
-    collections:new Set(all.map(item=>item.collectionId)).size,
-  };
+):{pending:number;revisit:number;reviewed:number;books:number;collections:number;unavailable:number} {
+  // Count every available session entry, not only the display window of 90/300.
+  const present=new Map(notes.map(note=>[note.id,note]));
+  const works=new Set<string>();
+  let pending=0,revisit=0,reviewed=0,unavailable=0,participating=0;
+  for(const collection of collections){
+    const session=readResearchSession(collection.id);
+    if(!session)continue;
+    participating++;
+    for(const row of session.entries){
+      const note=present.get(row.id);
+      if(!note){unavailable++;continue;}
+      works.add(note.workId);
+      if(row.state==='pending')pending++;
+      else if(row.state==='revisit')revisit++;
+      else reviewed++;
+    }
+  }
+  return {pending,revisit,reviewed,books:works.size,
+    collections:participating,unavailable};
 }
 
 
