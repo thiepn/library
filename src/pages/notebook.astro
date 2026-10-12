@@ -4,7 +4,7 @@ import { getWorks } from '../lib/content/repository';
 import '../styles/notebook.css';
 import '../styles/notebook-n1h.css';
 import '../styles/notebook-n1i.css';
-import '../styles/notebook-n1i.css';
+import '../styles/notebook-n1j.css';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const catalog = (await getWorks()).map((work) => ({
@@ -157,6 +157,88 @@ const catalog = (await getWorks()).map((work) => ({
         </div>
         <div class="book-notebook__discover-results" data-discover-results></div>
         <p class="micro" data-discover-empty hidden>No matching notebook notes.</p>
+      </section>
+      <section class="book-notebook__research" data-research-root aria-labelledby="notebook-research-title">
+        <header class="book-notebook__research-head">
+          <div>
+            <p class="eyebrow">Study workbench</p>
+            <h2 id="notebook-research-title">Research collections</h2>
+            <p class="micro">Group existing notes across books, compare sources, and write a native Library synthesis.</p>
+          </div>
+          <div class="book-notebook__research-count" data-research-summary>Local-only collections</div>
+        </header>
+        <div class="book-notebook__research-toolbar">
+          <label for="research-collection">Open collection</label>
+          <select id="research-collection" data-research-select><option value="">Choose a collection…</option></select>
+          <button type="button" data-research-export-index>Export collection index</button>
+          <button type="button" data-research-import-index>Import index</button>
+          <input type="file" accept=".json,application/json" data-research-index-file hidden />
+        </div>
+        <div class="book-notebook__research-create">
+          <label for="research-new-name">New collection</label>
+          <input id="research-new-name" maxlength="100" data-research-new-name placeholder="e.g. Discipleship in four books" />
+          <label for="research-new-description">Purpose</label>
+          <input id="research-new-description" maxlength="800" data-research-new-description
+            placeholder="Question or project goal (optional)" />
+          <button type="button" data-research-create>Create collection</button>
+        </div>
+        <p class="micro" role="status" aria-live="polite" data-research-status></p>
+        <div data-research-detail hidden>
+          <div class="book-notebook__research-details">
+            <div>
+              <h3 data-research-name></h3>
+              <p data-research-description class="micro"></p>
+            </div>
+            <div class="book-notebook__research-collection-actions">
+              <button type="button" data-research-export-markdown>Export grouped Markdown</button>
+              <button type="button" data-research-delete>Remove collection</button>
+            </div>
+          </div>
+          <div class="book-notebook__research-pick">
+            <label for="research-find-note">Add existing notes</label>
+            <input id="research-find-note" data-research-find type="search"
+              placeholder="Search titles, books, text and topics" autocomplete="off" />
+            <div data-research-search-results class="book-notebook__research-search-results"></div>
+          </div>
+          <div class="book-notebook__research-sources">
+            <h4>Collected source notes</h4>
+            <p class="micro">Pin any two notes for a side-by-side comparison. Unavailable notes keep their original IDs.</p>
+            <div data-research-sources class="book-notebook__research-sources-list"></div>
+          </div>
+          <div class="book-notebook__research-compare" aria-label="Side-by-side source reading">
+            <article>
+              <header><h4>Source A</h4><span data-research-left-caption class="micro">Select a source</span></header>
+              <div data-research-left-preview class="book-notebook__research-preview"></div>
+              <div data-research-left-actions class="book-notebook__research-reader-actions"></div>
+            </article>
+            <article>
+              <header><h4>Source B</h4><span data-research-right-caption class="micro">Select a source</span></header>
+              <div data-research-right-preview class="book-notebook__research-preview"></div>
+              <div data-research-right-actions class="book-notebook__research-reader-actions"></div>
+            </article>
+          </div>
+          <div class="book-notebook__research-write">
+            <div class="book-notebook__research-write-head">
+              <div>
+                <h4>Research synthesis</h4>
+                <p class="micro">Stored as an ordinary revision-controlled notebook note, not an unsynced collection memo.</p>
+              </div>
+              <span data-research-synthesis-state class="micro">No synthesis created</span>
+            </div>
+            <button type="button" data-research-make-synthesis>Create synthesis note from sources</button>
+            <label for="research-synthesis-title">Synthesis title</label>
+            <input id="research-synthesis-title" data-research-synthesis-title maxlength="200" disabled />
+            <label for="research-synthesis-body">Synthesis Markdown</label>
+            <textarea id="research-synthesis-body" data-research-synthesis-body
+              maxlength="250000" rows="12" disabled></textarea>
+            <div class="book-notebook__research-write-actions">
+              <button type="button" data-research-save-synthesis disabled>Save synthesis</button>
+              <button type="button" data-research-open-synthesis disabled>Open in notebook editor</button>
+              <button type="button" data-research-reload-synthesis disabled>Reload saved version</button>
+            </div>
+          </div>
+        </div>
+        <p class="micro">Collections and saved views remain on this browser; export the collection index separately when moving devices. Notebook notes and synthesis remain in the existing V2 Library backup.</p>
       </section>
       <p class="micro" data-notebook-count aria-live="polite"></p>
       <div class="book-notebook__toolbar" aria-label="Create notebook content">
