@@ -924,7 +924,7 @@ const catalog = (await getWorks()).map((work) => ({
         headings.forEach((heading,index)=>{
           const button=document.createElement('button');
           button.type='button';button.className='book-notebook__outline-link';
-          button.style.setProperty('--outline-indent', String(heading.level-1));
+          button.style.paddingLeft=String(10 + (heading.level - 1) * 8) + 'px';
           button.textContent=heading.title;
           button.title='Line '+heading.line;
           button.addEventListener('click',()=>{
