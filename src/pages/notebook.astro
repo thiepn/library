@@ -11,6 +11,7 @@ import '../styles/notebook-n1m.css';
 import '../styles/notebook-n1n.css';
 import '../styles/notebook-n1o.css';
 import '../styles/notebook-n1p.css';
+import '../styles/notebook-n1q.css';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const catalog = (await getWorks()).map((work) => ({
@@ -210,6 +211,18 @@ const catalog = (await getWorks()).map((work) => ({
           <button type="button" data-research-import-package>Review research package</button>
           <input type="file" accept=".json,application/json" data-research-package-file hidden />
         </div>
+        <nav class="book-notebook__n1q-tabs" data-n1q-tabs
+          aria-label="Research workspace views">
+          <button type="button" data-n1q-view="browse" aria-pressed="true"
+            aria-keyshortcuts="Alt+Shift+1">1 · Discover</button>
+          <button type="button" data-n1q-view="sources" aria-pressed="false"
+            aria-keyshortcuts="Alt+Shift+2">2 · Sources</button>
+          <button type="button" data-n1q-view="write" aria-pressed="false"
+            aria-keyshortcuts="Alt+Shift+3">3 · Write</button>
+          <button type="button" data-n1q-view="review" aria-pressed="false"
+            aria-keyshortcuts="Alt+Shift+4">4 · Review</button>
+          <span class="micro" data-n1q-view-state aria-live="polite">Discover notes and collections</span>
+        </nav>
         <div class="book-notebook__research-create">
           <label for="research-new-name">New collection</label>
           <input id="research-new-name" maxlength="100" data-research-new-name placeholder="e.g. Discipleship in four books" />
@@ -278,6 +291,8 @@ const catalog = (await getWorks()).map((work) => ({
           <div data-n1o-quick-results class="book-notebook__n1o-quick-results"
             aria-label="Research navigation results"></div>
         </section>
+        <details class="book-notebook__n1q-disclosure" data-n1q-workspaces>
+          <summary>Collection directory and catalogue</summary>
         <section class="book-notebook__n1m-library" aria-labelledby="research-collection-library-title">
           <div class="book-notebook__n1m-heading">
             <div>
@@ -291,6 +306,7 @@ const catalog = (await getWorks()).map((work) => ({
           </div>
           <div data-n1m-collection-results class="book-notebook__n1m-workspaces"></div>
         </section>
+        </details>
         <div data-research-detail hidden>
           <div class="book-notebook__research-details">
             <div>
@@ -311,6 +327,8 @@ const catalog = (await getWorks()).map((work) => ({
               <button type="button" data-research-delete>Remove collection</button>
             </div>
           </div>
+          <details class="book-notebook__n1q-disclosure" data-n1q-organize>
+            <summary>Collection settings and source reuse</summary>
           <section class="book-notebook__n1m-organization" aria-labelledby="research-organize-title">
             <div class="book-notebook__n1m-heading">
               <div>
@@ -335,6 +353,7 @@ const catalog = (await getWorks()).map((work) => ({
             </div>
             <p class="micro" data-n1m-organization-status role="status"></p>
           </section>
+          </details>
           <div class="book-notebook__research-pick">
             <label for="research-find-note">Add existing notes</label>
             <input id="research-find-note" data-research-find type="search"
