@@ -603,6 +603,7 @@ export function mountResearchWorkbench(
     sourceHref:note=>host.sourceHref(note),
     openNote:note=>host.openNote(note),
     collectNote:id=>addNote(id),
+    refreshCrossBookQueue:()=>integration?.onNotesChanged(),
     notify,
   });
   knowledge=mountKnowledgeWorkbench(root,{
