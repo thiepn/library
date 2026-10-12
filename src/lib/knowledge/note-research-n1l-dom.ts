@@ -1,6 +1,7 @@
 import { applyNotebookMarkdownTool, notebookWordCount, type MarkdownTool } from './note-links';
 import { getNotebookHeadings } from './note-outline';
 import { noteReferenceMarkdown } from './note-links';
+import { sourceLinkedComparison, comparisonWorkingCopy } from './note-research-n1t-comparison';
 import {
   getSectionEvidenceContext, sectionEvidenceReviewMarkdown,
   type SectionEvidenceContext,
@@ -72,6 +73,12 @@ export function mountResearchN1L(root:HTMLElement,host:ResearchN1LHost):Research
   const evidenceCount=$<HTMLElement>('[data-n1s-evidence-count]');
   const evidenceStatus=$<HTMLElement>('[data-n1s-evidence-status]');
   const evidenceExport=$<HTMLButtonElement>('[data-n1s-evidence-export]');
+  const compareA=$<HTMLSelectElement>('[data-n1t-first-source]');
+  const compareB=$<HTMLSelectElement>('[data-n1t-second-source]');
+  const comparePin=$<HTMLButtonElement>('[data-n1t-compare-pin]');
+  const compareInsert=$<HTMLButtonElement>('[data-n1t-compare-insert]');
+  const compareExport=$<HTMLButtonElement>('[data-n1t-compare-export]');
+  const compareStatus=$<HTMLElement>('[data-n1t-compare-status]');
   const callbacks:Array<()=>void>=[];
   let session:ResearchSession|undefined;
   let selectedSectionStart:number|undefined;
@@ -283,6 +290,7 @@ export function mountResearchN1L(root:HTMLElement,host:ResearchN1LHost):Research
     const context=evidenceContext;
     evidenceList.replaceChildren();
     evidenceExport.disabled=!active||!context;
+    refreshComparisonChoices(context);
     if(!context){
       evidenceCount.textContent='Choose a synthesis section to inspect citations and related saved notes.';
       return;
@@ -350,6 +358,88 @@ export function mountResearchN1L(root:HTMLElement,host:ResearchN1LHost):Research
       rowFor('No additional grounded suggestions',
         'Shared #topic markers, authored note links or matching heading/title terms would surface candidates here.');
   }
+  function collectedComparisonNotes():BookNoteDocumentV1[] {
+    const selected=host.active()?.noteIds??[];
+    const records=sourceById();
+    return selected.flatMap(id=>{
+      const note=records.get(id);
+      return note&&note.id!==host.active()?.synthesisId?[note]:[];
+    });
+  }
+  function selectedComparisonPair():{first:BookNoteDocumentV1;second:BookNoteDocumentV1}|undefined {
+    const docs=new Map(collectedComparisonNotes().map(note=>[note.id,note]));
+    const first=docs.get(compareA.value),second=docs.get(compareB.value);
+    return first&&second&&first.id!==second.id?{first,second}:undefined;
+  }
+  function refreshComparisonChoices(context:SectionEvidenceContext|undefined):void {
+    const records=collectedComparisonNotes();
+    const oldA=compareA.value,oldB=compareB.value;
+    const options=[compareA,compareB];
+    for(const select of options){
+      select.replaceChildren(new Option('Choose collected source…',''));
+      for(const note of records){
+        select.add(new Option(host.bookTitle(note.workId)+' — '+notebookTitle(note)
+          +' (r'+note.revision+')',note.id));
+      }
+    }
+    const priority=context?.inCollectionIds??[];
+    const suggested=context?.suggestions.filter(candidate=>candidate.inCollection)
+      .map(candidate=>candidate.note.id)??[];
+    compareA.value=records.some(note=>note.id===oldA)?oldA
+      :records.find(note=>priority.includes(note.id))?.id
+        ??records.find(note=>suggested.includes(note.id))?.id
+        ??records[0]?.id??'';
+    compareB.value=records.some(note=>note.id===oldB&&note.id!==compareA.value)
+      ?oldB:records.find(note=>note.id!==compareA.value
+        &&(priority.includes(note.id)||suggested.includes(note.id)))?.id
+        ??records.find(note=>note.id!==compareA.value)?.id??'';
+    updateCompareButtons();
+  }
+  function updateCompareButtons():void {
+    const pair=selectedComparisonPair();
+    comparePin.disabled=!pair;
+    compareInsert.disabled=!pair||!host.synthesis()||!selectedContext();
+    compareExport.disabled=!pair||!host.synthesis();
+  }
+  bind('[data-n1t-first-source]','change',updateCompareButtons);
+  bind('[data-n1t-second-source]','change',updateCompareButtons);
+  bind('[data-n1t-compare-pin]','click',()=>{
+    const pair=selectedComparisonPair();
+    if(!pair)return;
+    host.setPins(pair.first.id,pair.second.id);
+    requestResearchView(root,'sources','[data-research-compare]');
+    compareStatus.textContent='Two independently saved note sources pinned to the existing reading comparison.';
+  });
+  bind('[data-n1t-compare-insert]','click',()=>{
+    const pair=selectedComparisonPair();
+    const active=host.active(),synthesis=host.synthesis();
+    const section=selectedContext();
+    if(!pair||!active||!synthesis||!section)return;
+    try{
+      const body=host.getDraft().body;
+      const composed=sourceLinkedComparison(pair,host.bookTitle);
+      const edit=insertSynthesisSection(body,section.sectionIndex,composed.markdown,
+        synthBody.maxLength);
+      host.setDraft(host.getDraft().title,edit.body);
+      requestResearchView(root,'write','[data-research-synthesis-body]');
+      synthBody.focus();synthBody.setSelectionRange(edit.caret,edit.caret);
+      compareStatus.textContent='Source-qualified comparison inserted into your draft. Verify original passages and save explicitly.';
+    }catch(error){
+      compareStatus.textContent=error instanceof Error?error.message:'Unable to insert comparison.';
+    }
+  });
+  bind('[data-n1t-compare-export]','click',()=>{
+    const pair=selectedComparisonPair(),active=host.active(),synthesis=host.synthesis();
+    if(!pair||!active||!synthesis)return;
+    try{
+      const markdown=comparisonWorkingCopy(pair,host.bookTitle,active,synthesis.revision);
+      download('source-comparison-'+filename(active.name)+'.md',markdown);
+      compareStatus.textContent='Source comparison copy exported; no native revision was saved.';
+    }catch(error){
+      compareStatus.textContent=error instanceof Error?error.message:'Comparison export unavailable.';
+    }
+  });
+
   function openCandidate(note:BookNoteDocumentV1):void {
     if(host.isDirty()&&!window.confirm(
       'You have unsaved synthesis text. Save or download a working copy before navigating to the source note? Cancel to keep writing.'))return;
