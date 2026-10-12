@@ -26,7 +26,6 @@ as $function$
 declare
   v_user_id uuid := (select auth.uid());
   v_row public.library_sync_state%rowtype;
-  v_existing_version integer;
   v_incoming_version integer;
   v_notes jsonb;
 begin
@@ -70,7 +69,8 @@ begin
   if p_state->>'format' is distinct from 'thiepn-library-backup' then
     raise exception 'INVALID_LIBRARY_BACKUP_FORMAT' using errcode='22023';
   end if;
-  if p_state->>'schemaVersion' not in ('1','2') then
+  if p_state->>'schemaVersion' is null or p_state->>'schemaVersion' not in ('1','2')
+     or jsonb_typeof(p_state->'state') is distinct from 'object' then
     raise exception 'UNSUPPORTED_LIBRARY_BACKUP_VERSION' using errcode='22023';
   end if;
   v_incoming_version := (p_state->>'schemaVersion')::integer;
