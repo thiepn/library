@@ -16,7 +16,7 @@ export function getLibraryCoreGrant(ownerId: string): DeviceGrant | null {
 }
 /** This grant only allows requests to native Library, never Core data export. */
 export function changeLibraryCoreGrant(ownerId: string, allowed: boolean): boolean {
-  if (!ownerId || !isLibrarySyncEnabledForUser(ownerId)) return false;
+  if (!ownerId || (allowed && !isLibrarySyncEnabledForUser(ownerId))) return false;
   try {
     const old = getLibraryCoreGrant(ownerId);
     if (old?.revision === Number.MAX_SAFE_INTEGER) return false;

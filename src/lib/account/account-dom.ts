@@ -257,6 +257,9 @@ export function mountLibraryAccountPage(): () => void {
   });
   document.querySelector('[data-sync-pause]')?.addEventListener('click', () => {
     if (!user) return;
+    // Pausing native Library sync also rotates/revokes its optional Core grant.
+    // The owner must explicitly opt back into coordination after resuming.
+    changeLibraryCoreGrant(user.id, false);
     pauseLibrarySync(user.id);
     void render(user);
   });
