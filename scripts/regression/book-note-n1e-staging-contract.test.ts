@@ -1,9 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 
 test('N1E disposable PostgreSQL witness does not connect to real Account or external databases', () => {
-  const script = readFileSync('scripts/qualification/book-notes-n1e-disposable-postgres.mjs', 'utf8');
+  const target = 'scripts/qualification/book-notes-n1e-disposable-postgres.mjs';
+  execFileSync(process.execPath, ['--check', target], { stdio: 'pipe' });
+  const script = readFileSync(target, 'utf8');
   for (const expected of [
     'mkdtempSync(', "'initdb'", "'pg_ctl'", "'psql'",
     "listen_addresses=''", 'PGHOST:socket', "PGDATABASE:'postgres'",
