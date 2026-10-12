@@ -227,6 +227,10 @@ const catalog = (await getWorks()).map((work) => ({
               </div>
             </div>
             <p class="micro">Pin any two notes for a side-by-side comparison. Unavailable notes keep their original IDs.</p>
+            <label for="research-filter-sources">Find within this collection</label>
+            <input type="search" id="research-filter-sources" data-research-filter-sources
+              placeholder="Filter by book, title, chapter, or topic" autocomplete="off" />
+            <div data-research-source-filter-count class="micro" role="status"></div>
             <div data-research-sources class="book-notebook__research-sources-list"></div>
           </div>
           <div class="book-notebook__research-compare" aria-label="Side-by-side source reading">
@@ -265,9 +269,17 @@ const catalog = (await getWorks()).map((work) => ({
             <label for="research-synthesis-body">Synthesis Markdown</label>
             <textarea id="research-synthesis-body" data-research-synthesis-body
               maxlength="250000" rows="12" disabled></textarea>
+            <div class="book-notebook__n1k-preview-controls">
+              <button type="button" data-research-toggle-preview aria-expanded="false"
+                aria-controls="research-live-preview">Show writing preview</button>
+              <span class="micro" data-research-writing-stats></span>
+            </div>
+            <article class="book-notebook__research-live-preview" id="research-live-preview"
+              data-research-live-preview aria-label="Read-only synthesis Markdown preview" hidden></article>
             <div class="book-notebook__n1k-writing-tools">
               <button type="button" data-research-insert-source disabled>Insert pinned source reference</button>
               <button type="button" data-research-insert-questions disabled>Insert research questions</button>
+              <button type="button" data-research-insert-comparison disabled>Insert two-source comparison</button>
               <button type="button" data-research-download-draft disabled>Download current draft</button>
               <button type="button" data-research-copy-draft disabled>Copy draft Markdown</button>
             </div>
