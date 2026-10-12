@@ -43,6 +43,7 @@ const metadata = `PDF · edition ${release.edition} · ${Math.max(1, Math.round(
   <PdfReaderShell
     title={work.title}
     backHref={backHref}
+    notebookHref={`${base}/notebook?work=${encodeURIComponent(work.id)}`}
     backLabel={`Back to ${work.title}`}
     fallbackHref={localizedPdf.url}
     metadata={metadata}
