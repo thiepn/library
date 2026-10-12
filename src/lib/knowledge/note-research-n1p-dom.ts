@@ -335,6 +335,31 @@ export function mountResearchN1P(
       .then(()=>{basketStatus.textContent='Source references copied with recorded locations.';},
         ()=>{basketStatus.textContent='Clipboard unavailable. Open the source notes to copy references.';});
   });
+  bind('[data-n1p-compare-export]','click',()=>{
+    const collection=host.active(),sources=basketSources();
+    if(!collection||sources.length<2){
+      basketStatus.textContent='Choose at least two available source notes to export a comparison.';
+      return;
+    }
+    try{
+      const outline=multiSourceComparisonMarkdown(sources);
+      const markdown=[
+        '# Research comparison draft — '+collection.name.replace(/[\r\n#]/g,' ').trim(),
+        '',
+        '> Manually exported source-backed writing outline, not an authoritative Library note.',
+        '> Original book quotations and scholarly claims have not been independently verified.',
+        '',
+        'Collection ID: '+collection.id,
+        'Source count: '+sources.length,
+        '',
+        outline,'',
+      ].join('\n');
+      downloadMarkdown('research-comparison-'+safeFile(collection.name)+'.md',markdown);
+      basketStatus.textContent='Comparison outline download requested. Notebook notes were not modified.';
+    }catch(error){
+      basketStatus.textContent=error instanceof Error?error.message:'Comparison export unavailable.';
+    }
+  });
   bind('[data-n1p-review-collection]','change',renderQueue);
   bind('[data-n1p-review-filter]','change',renderQueue);
   bind('[data-n1p-review-start]','click',()=>{
@@ -370,9 +395,11 @@ export function mountResearchN1P(
   bind('[data-n1p-go-reader]','click',()=>{
     const source=selectedSource(),href=source?host.sourceHref(source):undefined;
     if(!href){status.textContent='The original reader link is unavailable for this note.';return;}
-    if(host.isDirty()&&!window.confirm(
-      'Your synthesis has unsaved edits. Cancel to stay and download or save the draft before leaving this page.'))return;
-    window.location.assign(href);
+    // Keep synthesis and session checkpoints in the current browser tab.
+    const link=document.createElement('a');
+    link.href=href;link.target='_blank';link.rel='noopener noreferrer';
+    link.click();
+    status.textContent='Original reader requested in a separate tab. Current synthesis draft remains open.';
   });
   bind('[data-n1p-go-synthesis]','click',()=>{
     const note=host.synthesis();if(note)void host.openNote(note);
@@ -381,6 +408,30 @@ export function mountResearchN1P(
     if(!host.synthesis())return;
     writingArea.focus();
     writingArea.scrollIntoView({behavior:'smooth',block:'center'});
+  });
+  bind('[data-n1p-recovery-jump]','click',()=>{
+    const collection=host.active(),note=host.synthesis();
+    if(!collection||!note)return;
+    const checkpoint=readResearchDraftCheckpoint(collection.id,note.id);
+    const recovery=root.querySelector<HTMLElement>('[data-research-checkpoint-status]');
+    recovery?.scrollIntoView({behavior:'smooth',block:'center'});
+    if(checkpoint){
+      root.querySelector<HTMLButtonElement>('[data-research-restore-checkpoint]')?.focus();
+      status.textContent='Session checkpoint found. Restore explicitly, inspect the text, then save through the native notebook.';
+    }else{
+      root.querySelector<HTMLButtonElement>('[data-research-download-draft]')?.focus();
+      status.textContent='No stored tab checkpoint for this synthesis. Download the current writing draft for manual recovery.';
+    }
+  });
+  bind('[data-n1p-copy-working-copy]','click',()=>{
+    const synthesis=host.synthesis();
+    if(!synthesis)return;
+    const draft=host.draft();
+    const markdown='# '+draft.title.replace(/[\r\n#]/g,' ').trim()
+      +'\n\n'+draft.body+'\n';
+    void navigator.clipboard.writeText(markdown)
+      .then(()=>{status.textContent='Current writing copied; clipboard text is not a confirmed notebook save.';},
+        ()=>{status.textContent='Clipboard unavailable. Download the current draft instead.';});
   });
   bind('[data-n1p-download-working-copy]','click',()=>{
     const collection=host.active(),synthesis=host.synthesis();
