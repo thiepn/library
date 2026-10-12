@@ -33,6 +33,7 @@ import {
   type PdfProgressRecord,
   type PdfReaderSettings,
 } from '../pdf-reader/state';
+import { isBookNoteDocumentV1, type BookNoteDocumentV1 } from '../knowledge/note-model';
 import { isReaderAnnotationRecordV2, type ReaderAnnotationRecordV2 } from '../reader/annotation-store';
 import { isReaderBookmarkRecordV2, type ReaderBookmarkRecordV2 } from '../reader/bookmark-store';
 import {
@@ -43,7 +44,7 @@ import {
 } from '../reader/settings';
 
 export const LIBRARY_BACKUP_FORMAT = 'thiepn-library-backup' as const;
-export const LIBRARY_BACKUP_SCHEMA_VERSION = 1 as const;
+export const LIBRARY_BACKUP_SCHEMA_VERSION = 2 as const;
 const COLLECTION_SCHEMA_VERSION = 1 as const;
 const SITE_SETTINGS_KEY = 'thiepn.library.settings.v1';
 const LEGACY_READER_SETTINGS_KEY = 'thiepn.library.reader.v1';
@@ -63,6 +64,7 @@ export interface PortableMainStateV1 {
   bookmarks?: CollectionV1<ReaderBookmarkRecordV2>;
   annotations?: CollectionV1<PortableAnnotationRecord>;
   readingActivity?: CollectionV1<ReadingActivityRecordV1>;
+  noteDocuments?: CollectionV1<BookNoteDocumentV1>;
 }
 
 export interface PortablePdfStateV1 {
@@ -99,7 +101,7 @@ export interface PortablePersonalBooksStateV1 {
 
 export interface LibraryBackupV1 {
   format: typeof LIBRARY_BACKUP_FORMAT;
-  schemaVersion: typeof LIBRARY_BACKUP_SCHEMA_VERSION;
+  schemaVersion: 1;
   exportedAt: string;
   state: {
     main?: PortableMainStateV1;
@@ -109,8 +111,14 @@ export interface LibraryBackupV1 {
   };
 }
 
+export interface LibraryBackupV2 extends Omit<LibraryBackupV1, 'schemaVersion' | 'state'> {
+  schemaVersion: 2;
+  state: LibraryBackupV1['state'];
+}
+export type LibraryBackup = LibraryBackupV1 | LibraryBackupV2;
+
 export interface LibraryRestoreResult {
-  schemaVersion: 1;
+  schemaVersion: 1 | 2;
   restoredCategories: string[];
   personalBooksNeedingFiles: number;
 }
@@ -230,10 +238,11 @@ function sanitizeMainForExport(snapshot: Awaited<ReturnType<typeof getLibraryDbP
     bookmarks: category(sortBy(snapshot.bookmarks.filter(isReaderBookmarkRecordV2), (record) => record.id)),
     annotations: category(sortBy(snapshot.annotations.filter(isPortableAnnotationRecord), (record) => record.id)),
     readingActivity: category(sortBy(snapshot.readingActivity.filter(isReadingActivityRecordV1), (record) => record.workId)),
+    noteDocuments: category(sortBy(snapshot.noteDocuments.filter(isBookNoteDocumentV1), (record) => record.id)),
   };
 }
 
-export async function createLibraryBackup(): Promise<LibraryBackupV1> {
+export async function createLibraryBackup(): Promise<LibraryBackupV2> {
   const [main, pdf, personalBooks] = await Promise.all([
     getLibraryDbPortabilitySnapshot(),
     getPdfReaderStateSnapshot(),
@@ -299,6 +308,12 @@ function validateMain(value: unknown): asserts value is PortableMainStateV1 {
     const collection = value.annotations;
     if (!isCollection(collection, isPortableAnnotationRecord)) throw new Error('Invalid annotation backup records.');
     assertUniqueRecords(collection.records, (record) => record.id, 'annotation');
+  }
+  if (value.noteDocuments !== undefined) {
+    const collection = value.noteDocuments;
+    if (!isCollection(collection, isBookNoteDocumentV1)) throw new Error('Invalid notebook document backup records.');
+    assertUniqueRecords(collection.records, (record) => record.id, 'notebook document');
+    assertUniqueRecords(collection.records.filter((r) => r.scopeKey !== undefined), (record) => `${record.workId}:${record.scopeKey}`, 'notebook singleton');
   }
   if (value.readingActivity !== undefined) {
     const collection = value.readingActivity;
@@ -366,7 +381,7 @@ function validatePersonalBooks(value: unknown): asserts value is PortablePersona
   assertUniqueRecords(records, (record) => record.sha256, 'personal-book content');
 }
 
-export function parseLibraryBackupJson(raw: string): LibraryBackupV1 {
+export function parseLibraryBackupJson(raw: string): LibraryBackup {
   let decoded: unknown;
   try {
     decoded = JSON.parse(raw);
@@ -376,17 +391,23 @@ export function parseLibraryBackupJson(raw: string): LibraryBackupV1 {
   if (!isRecord(decoded) || decoded.format !== LIBRARY_BACKUP_FORMAT) {
     throw new Error('This file is not a Thiepn Library backup. No Library data was changed.');
   }
-  if (decoded.schemaVersion !== LIBRARY_BACKUP_SCHEMA_VERSION) {
+  if (decoded.schemaVersion !== 1 && decoded.schemaVersion !== LIBRARY_BACKUP_SCHEMA_VERSION) {
     throw new Error(`Unsupported Library backup schema version: ${String(decoded.schemaVersion)}.`);
   }
   if (typeof decoded.exportedAt !== 'string' || !isRecord(decoded.state)) throw new Error('The Library backup header is incomplete.');
 
   const state = decoded.state;
   if (state.main !== undefined) validateMain(state.main);
+  if (decoded.schemaVersion === 2 && (!isRecord(state.main) || state.main.noteDocuments === undefined)) {
+    throw new Error('V2 backups must include an explicit notebook document collection. No data was changed.');
+  }
+  if (decoded.schemaVersion === 1 && isRecord(state.main) && state.main.noteDocuments !== undefined) {
+    throw new Error('V1 backups cannot contain V2 notebook documents. No data was changed.');
+  }
   if (state.pdf !== undefined) validatePdf(state.pdf);
   if (state.settings !== undefined) validateSettings(state.settings);
   if (state.personalBooks !== undefined) validatePersonalBooks(state.personalBooks);
-  return decoded as unknown as LibraryBackupV1;
+  return decoded as unknown as LibraryBackup;
 }
 
 function mainPatch(main: PortableMainStateV1): LibraryDbPortabilityPatch {
@@ -397,10 +418,11 @@ function mainPatch(main: PortableMainStateV1): LibraryDbPortabilityPatch {
     ...(main.bookmarks ? { bookmarks: main.bookmarks.records } : {}),
     ...(main.annotations ? { annotations: main.annotations.records } : {}),
     ...(main.readingActivity ? { readingActivity: main.readingActivity.records } : {}),
+    ...(main.noteDocuments ? { noteDocuments: main.noteDocuments.records } : {}),
   };
 }
 
-function categoryNames(backup: LibraryBackupV1): string[] {
+function categoryNames(backup: LibraryBackup): string[] {
   const names: string[] = [];
   const main = backup.state.main;
   if (main?.favorites) names.push('favorites');
@@ -409,6 +431,7 @@ function categoryNames(backup: LibraryBackupV1): string[] {
   if (main?.bookmarks) names.push('EPUB bookmarks');
   if (main?.annotations) names.push('annotations');
   if (main?.readingActivity) names.push('reading activity');
+  if (main?.noteDocuments) names.push('notebook documents');
   const pdf = backup.state.pdf;
   if (pdf?.progress) names.push('PDF progress');
   if (pdf?.bookmarks) names.push('PDF bookmarks');
@@ -483,7 +506,7 @@ export async function restoreLibraryBackupJson(raw: string): Promise<LibraryRest
   }
 
   return {
-    schemaVersion: 1,
+    schemaVersion: backup.schemaVersion,
     restoredCategories: categoryNames(backup),
     personalBooksNeedingFiles,
   };
