@@ -39,8 +39,18 @@ const hex=(bytes:ArrayBuffer):string=>
 async function digest(text:string):Promise<string> {
   return hex(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text)));
 }
+function canonical(value:unknown):unknown {
+  if(Array.isArray(value))return value.map(canonical);
+  if(value && typeof value==='object'){
+    const object=value as Record<string,unknown>;
+    const sorted:Record<string,unknown>={};
+    for(const key of Object.keys(object).sort())sorted[key]=canonical(object[key]);
+    return sorted;
+  }
+  return value;
+}
 function snapshotKey(note:BookNoteDocumentV1):string {
-  return JSON.stringify(note);
+  return JSON.stringify(canonical(note));
 }
 function validCollection(value:unknown):value is ResearchCollection {
   try {
@@ -78,7 +88,10 @@ export async function exportResearchPackage(
     format:RESEARCH_PACKAGE_FORMAT,version:1,exportedAt:new Date().toISOString(),
     collection,manifest,notes,
   };
-  return JSON.stringify(packageData,null,2)+'\n';
+  const encoded=JSON.stringify(packageData,null,2)+'\n';
+  if(encoded.length>10_000_000)
+    throw new Error('This research package exceeds 10 MB. Split the collection before exporting.');
+  return encoded;
 }
 export async function parseResearchPackage(raw:string):Promise<ResearchPackageV1> {
   if(raw.length>10_000_000)throw new Error('Research package exceeds the 10 MB reading limit.');
