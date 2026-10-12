@@ -34,6 +34,7 @@ export interface ResearchN1LHost {
   sourceHref(note:BookNoteDocumentV1):string|undefined;
   openNote(note:BookNoteDocumentV1):Promise<void>;
   collectNote(id:string):Promise<void>;
+  refreshCrossBookQueue():void;
   notify(message:string):void;
 }
 export interface ResearchN1LController {
@@ -319,18 +320,21 @@ export function mountResearchN1L(root:HTMLElement,host:ResearchN1LHost):Research
       rowFor('Cited outside collection · '+notebookTitle(source),
         host.bookTitle(source.workId)+' · original revision '+source.revision,[
           btn('Collect reference',()=>{void collectSource(source);}),
-          btn('Open note',()=>{void host.openNote(source);}),
+          btn('Open note',()=>openCandidate(source)),
         ]);
     }
     for(const suggestion of context.suggestions){
       const note=suggestion.note;
       const actions:HTMLElement[]=[
         btn('Pin / compare',()=>pinCandidate(note)),
-        btn('Open note',()=>{void host.openNote(note);}),
+        btn('Open note',()=>openCandidate(note)),
       ];
       if(!suggestion.inCollection)
         actions.unshift(btn('Collect',()=>{void collectSource(note);}));
-      else actions.unshift(btn('Cite in section',()=>insertCitationInSection(note)));
+      else {
+        actions.unshift(btn('Cite in section',()=>insertCitationInSection(note)));
+        actions.push(btn('Review later',()=>queueForReview(note)));
+      }
       const href=host.sourceHref(note);
       if(href){
         const link=document.createElement('a');
@@ -345,6 +349,30 @@ export function mountResearchN1L(root:HTMLElement,host:ResearchN1LHost):Research
       &&!context.outsideCollectionIds.length)
       rowFor('No additional grounded suggestions',
         'Shared #topic markers, authored note links or matching heading/title terms would surface candidates here.');
+  }
+  function openCandidate(note:BookNoteDocumentV1):void {
+    if(host.isDirty()&&!window.confirm(
+      'You have unsaved synthesis text. Save or download a working copy before navigating to the source note? Cancel to keep writing.'))return;
+    void host.openNote(note);
+  }
+  function queueForReview(note:BookNoteDocumentV1):void {
+    const active=host.active();
+    if(!active?.noteIds.includes(note.id)){
+      evidenceStatus.textContent='Collect the source before adding it to this collection review session.';
+      return;
+    }
+    const ids=sessionIds();
+    const prior=session?.collectionId===active.id?session:readResearchSession(active.id);
+    const aligned=prior?alignResearchSession(prior,ids):newResearchSession(active.id,ids);
+    if(!aligned||!aligned.entries.some(row=>row.id===note.id)){
+      evidenceStatus.textContent='This source is not available for a temporary research review.';
+      return;
+    }
+    store(markResearchSession({...aligned,cursor:note.id},'revisit'));
+    renderSession();
+    host.refreshCrossBookQueue();
+    requestResearchView(root,'review','[data-research-session-queue]');
+    evidenceStatus.textContent='Marked for revisit in this tab-only session. No mastery credit or note mutation.';
   }
   async function collectSource(note:BookNoteDocumentV1):Promise<void> {
     const activeId=host.active()?.id;
