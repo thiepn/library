@@ -386,6 +386,30 @@ const catalog = (await getWorks()).map((work) => ({
       const discoverQuery = root.querySelector<HTMLInputElement>('[data-discover-query]')!;
       const discoverBook = root.querySelector<HTMLSelectElement>('[data-discover-book]')!;
       const discoverTopic = root.querySelector<HTMLSelectElement>('[data-discover-topic]')!;
+      const discoverScope = root.querySelector<HTMLSelectElement>('[data-discover-scope]')!;
+      const discoverLinks = root.querySelector<HTMLSelectElement>('[data-discover-links]')!;
+      const discoverSort = root.querySelector<HTMLSelectElement>('[data-discover-sort]')!;
+      const savedView = root.querySelector<HTMLSelectElement>('[data-saved-view]')!;
+      const savedViewName = root.querySelector<HTMLInputElement>('[data-view-name]')!;
+      const savedViewStatus = root.querySelector<HTMLElement>('[data-view-status]')!;
+      const outline = root.querySelector<HTMLElement>('[data-notebook-outline]')!;
+      const outlineCount = root.querySelector<HTMLElement>('[data-outline-count]')!;
+      const topicManage = root.querySelector<HTMLSelectElement>('[data-topic-manage-select]')!;
+      const topicManageName = root.querySelector<HTMLInputElement>('[data-topic-manage-name]')!;
+      const topicManageStatus = root.querySelector<HTMLElement>('[data-topic-manage-status]')!;
+      const graphPanel = root.querySelector<HTMLElement>('[data-graph-panel]')!;
+      const graphToggle = root.querySelector<HTMLButtonElement>('[data-graph-expand]')!;
+      const graphCanvas = root.querySelector<SVGSVGElement>('[data-graph-canvas]')!;
+      const graphZoom = root.querySelector<HTMLInputElement>('[data-graph-zoom]')!;
+      const graphEdges = root.querySelector<HTMLInputElement>('[data-graph-topic-edges]')!;
+      const graphStatus = root.querySelector<HTMLElement>('[data-graph-status]')!;
+      const graphAccessible = root.querySelector<HTMLElement>('[data-graph-accessible]')!;
+      const graphSelectedTitle = root.querySelector<HTMLElement>('[data-graph-selected-title]')!;
+      const graphSelectedBook = root.querySelector<HTMLElement>('[data-graph-selected-book]')!;
+      const graphSelectedStats = root.querySelector<HTMLElement>('[data-graph-selected-stats]')!;
+      const graphNeighborsList = root.querySelector<HTMLElement>('[data-graph-neighbors]')!;
+      const graphPreviewButton = root.querySelector<HTMLButtonElement>('[data-graph-preview]')!;
+      const graphOpenButton = root.querySelector<HTMLButtonElement>('[data-graph-open]')!;
       const discoverResults = root.querySelector<HTMLElement>('[data-discover-results]')!;
       const discoverCount = root.querySelector<HTMLElement>('[data-discover-count]')!;
       const discoverEmpty = root.querySelector<HTMLElement>('[data-discover-empty]')!;
@@ -433,6 +457,10 @@ const catalog = (await getWorks()).map((work) => ({
       let deletionArmed = false;
       let previewMode: 'write' | 'split' | 'read' = 'write';
       let linkedPreviewNote: BookNoteDocumentV1 | undefined;
+      let graphFocus: string | undefined;
+      let graphModel: NoteGraphData = { nodes: [], edges: [], omitted: 0, workCount: 0 };
+      let topicMutationBusy = false;
+      let currentViewId = '';
       for (const template of NOTEBOOK_TEMPLATES)
         templateSelect.add(new Option(template.label + ' — ' + template.description, template.id));
 
