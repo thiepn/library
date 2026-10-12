@@ -83,6 +83,9 @@ try{
     'ALTER TABLE public.library_sync_state ENABLE ROW LEVEL SECURITY',
     'GRANT USAGE ON SCHEMA public,auth TO authenticated',
     'GRANT SELECT ON public.library_sync_state TO authenticated',
+    // In production these relations have their own read/RLS contracts; the isolated
+    // fixture grants read so the latest Library RLS policy can evaluate its predicates.
+    'GRANT SELECT ON public.account_app_connections,public.account_app_grants TO authenticated',
     "INSERT INTO public.account_app_connections VALUES ('"+user.a+"','library','connected'),('"+user.b+"','library','connected'),('"+user.noWrite+"','library','connected')",
     "INSERT INTO public.account_app_grants VALUES ('"+user.a+"','library','app_data.read','granted'),('"+user.a+"','library','app_data.write','granted'),('"+user.b+"','library','app_data.read','granted'),('"+user.b+"','library','app_data.write','granted'),('"+user.noWrite+"','library','app_data.read','granted')"
   ].join(';\n')+';');
