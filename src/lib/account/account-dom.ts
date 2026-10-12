@@ -215,13 +215,15 @@ export function mountLibraryAccountPage(): () => void {
         return;
       }
       lastNativeStatus = result.status;
+      await render(current);
+      // Rendering Account controls is observational. Only the original
+      // operation result may set conflict/status UI for this verified owner.
       renderResult(result);
       if (conflictResolution && ['pushed', 'pulled', 'synced'].includes(result.status)) {
         window.dispatchEvent(new CustomEvent('thiepn:library-conflict-resolved', {
           detail: { ownerId: startedAs },
         }));
       }
-      await render(current);
     } catch {
       const current = await getVerifiedLibraryAccountUser().catch(() => null);
       if (!disposed && current?.id === startedAs && user?.id === startedAs) {
