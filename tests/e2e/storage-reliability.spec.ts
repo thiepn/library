@@ -186,7 +186,7 @@ test('@rr5 personal EPUB and PDF readers reopen offline while private files rema
 
   const epubCard = page.locator('[data-personal-book]').filter({ has: page.getByRole('heading', { level: 3, name: 'RR5 Offline EPUB' }) });
   const pdfCard = page.locator('[data-personal-book]').filter({ has: page.getByRole('heading', { level: 3, name: 'RR5 Personal Offline' }) });
-  const epubHref = await epubCard.locator('a.personal-book__action').getAttribute('href');
+  const epubHref = await epubCard.locator('a.personal-book__action[href*="/personal/read?id="]').getAttribute('href');
   const pdfHref = await pdfCard.locator('a.personal-book__action').getAttribute('href');
   expect(epubHref).toBeTruthy();
   expect(pdfHref).toBeTruthy();
