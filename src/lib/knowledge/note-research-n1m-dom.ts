@@ -6,7 +6,8 @@ import { describeResearchSource, loadResearchCollections,
   copyResearchNoteToCollection, type ResearchCollection, type ResearchSource,
 } from './note-research';
 import { consolidateResearch, makeResearchReviewPrompts,
-  researchKnowledgeMarkdown, type KnowledgeConsolidation, type SourceCoverage,
+  researchKnowledgeMarkdown, researchNotebookCatalogueMarkdown,
+  type KnowledgeConsolidation, type SourceCoverage,
 } from './note-consolidation';
 import { researchCitationMarkdown, researchReferences } from './note-references';
 
@@ -54,6 +55,7 @@ export function mountKnowledgeWorkbench(
   const coverage=$<HTMLElement>('[data-n1m-coverage]');
   const sections=$<HTMLElement>('[data-n1m-sections]');
   const prompts=$<HTMLElement>('[data-n1m-prompts]');
+  const related=$<HTMLElement>('[data-n1m-related-collections]');
   const synthBody=$<HTMLTextAreaElement>('[data-research-synthesis-body]');
   const listeners:Array<()=>void>=[];
   let scheduled:ReturnType<typeof setTimeout>|undefined;
@@ -294,12 +296,27 @@ export function mountKnowledgeWorkbench(
       article.append(buttons);prompts.append(article);
     }
   }
+  function renderRelatedCollections(result:KnowledgeConsolidation):void {
+    related.replaceChildren();
+    if(!result.otherCollections.length){
+      related.append(el('p','No other collections currently reuse these source notes.'));
+      return;
+    }
+    for(const item of result.otherCollections.slice(0,10)){
+      const row=el('div');
+      row.className='book-notebook__n1m-related-row';
+      row.append(el('span',item.name+' · '+item.shared+' shared source(s)'),
+        action('Open collection',()=>{void host.chooseCollection(item.id);}));
+      related.append(row);
+    }
+  }
   function renderOverview():void {
     const result=overview();
-    for(const element of [stats,topics,coverage,sections,prompts])element.replaceChildren();
+    for(const element of [stats,topics,coverage,sections,prompts,related])element.replaceChildren();
     if(!result)return;
     renderStats(result);renderTopics(result);renderCoverage(result);
     renderSections(result);renderPrompts(result);
+    renderRelatedCollections(result);
   }
   function onCollectionChanged():void {
     updateOrganization();renderCollections();renderOverview();
@@ -315,6 +332,10 @@ export function mountKnowledgeWorkbench(
   bind('[data-n1m-collection-filter]','input',()=>renderCollections());
   bind('[data-n1m-save-organization]','click',()=>{
     const active=host.active();if(!active)return;
+    if(host.isDirty()){
+      organizationStatus.textContent='Save or export your open synthesis draft before changing collection details.';
+      return;
+    }
     try{
       renameResearchCollection(active.id,name.value,description.value);
       organizationStatus.textContent='Collection details saved locally. Native notes were not changed.';
@@ -325,6 +346,10 @@ export function mountKnowledgeWorkbench(
   });
   bind('[data-n1m-duplicate]','click',()=>{
     const active=host.active();if(!active)return;
+    if(host.isDirty()){
+      organizationStatus.textContent='Save the current synthesis before switching to a duplicated collection.';
+      return;
+    }
     if(!window.confirm('Duplicate collection references? The new collection will not own the original synthesis.'))return;
     try{
       const created=duplicateResearchCollection(active.id);
@@ -343,6 +368,14 @@ export function mountKnowledgeWorkbench(
       organizationStatus.textContent='Source reference copied. Source note and collection synthesis were not modified.';
       renderCollections();
     }catch(error){organizationStatus.textContent=error instanceof Error?error.message:'Unable to copy source reference.';}
+  });
+  bind('[data-n1m-export-catalogue]','click',()=>{
+    void listBookNotes().then(notes=>{
+      const markdown=researchNotebookCatalogueMarkdown(loadResearchCollections(),
+        notes,workId=>host.bookTitle(workId));
+      download('thiepn-research-collection-catalogue.md',markdown);
+      host.notify('All-collection catalogue downloaded. Actual notebook content remains managed by Library V2 backup.');
+    }).catch(error=>host.notify(error instanceof Error?error.message:'Cannot export the collection catalogue.'));
   });
   bind('[data-n1m-export-knowledge]','click',()=>{
     const collection=host.active();if(!collection)return;
