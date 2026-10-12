@@ -1,3 +1,5 @@
+import { isBookNoteDocumentV1, type BookNoteDocumentV1 } from '../knowledge/note-model';
+
 const DB_NAME = 'thiepn-library';
 const DB_VERSION = 11;
 const CHANNEL = 'thiepn-library';
@@ -94,6 +96,7 @@ export interface LibraryDbPortabilitySnapshot {
   bookmarks: unknown[];
   annotations: unknown[];
   readingActivity: ReadingActivityRecordV1[];
+  noteDocuments: BookNoteDocumentV1[];
 }
 
 export type LibraryDbPortabilityPatch = Partial<LibraryDbPortabilitySnapshot>;
@@ -470,17 +473,21 @@ export async function deleteAnnotation(id: string): Promise<void> {
 export async function getLibraryDbPortabilitySnapshot(): Promise<LibraryDbPortabilitySnapshot> {
   const db = await openLibraryDb();
   try {
-    const transaction = db.transaction(['favorites', 'progress', 'legacyProgress', 'bookmarks', 'annotations', 'readingActivity'], 'readonly');
+    const transaction = db.transaction(['favorites', 'progress', 'legacyProgress', 'bookmarks', 'annotations', 'readingActivity', 'noteDocuments'], 'readonly');
     const completion = transactionCompletion(transaction);
-    const [favoriteValues, progressValues, legacyValues, bookmarks, annotations, activityValues] = await Promise.all([
+    const [favoriteValues, progressValues, legacyValues, bookmarks, annotations, activityValues, noteValues] = await Promise.all([
       request<unknown[]>(transaction.objectStore('favorites').getAll()),
       request<unknown[]>(transaction.objectStore('progress').getAll()),
       request<unknown[]>(transaction.objectStore('legacyProgress').getAll()),
       request<unknown[]>(transaction.objectStore('bookmarks').getAll()),
       request<unknown[]>(transaction.objectStore('annotations').getAll()),
       request<unknown[]>(transaction.objectStore('readingActivity').getAll()),
+      request<unknown[]>(transaction.objectStore('noteDocuments').getAll()),
     ]);
     await completion;
+    if (noteValues.some((value) => !isBookNoteDocumentV1(value))) {
+      throw new Error('Notebook storage contains an invalid document. Export is blocked to prevent silent data loss.');
+    }
 
     const legacyByWork = new Map<string, StoredLegacyProgressRecordV1>();
     for (const value of [...legacyValues, ...progressValues]) {
@@ -497,6 +504,7 @@ export async function getLibraryDbPortabilitySnapshot(): Promise<LibraryDbPortab
       bookmarks,
       annotations,
       readingActivity: activityValues.filter(isReadingActivityRecordV1),
+      noteDocuments: noteValues.filter(isBookNoteDocumentV1),
     };
   } finally {
     db.close();
@@ -511,6 +519,7 @@ export async function replaceLibraryDbPortabilitySnapshot(patch: LibraryDbPortab
   if (patch.bookmarks) requested.add('bookmarks');
   if (patch.annotations) requested.add('annotations');
   if (patch.readingActivity) requested.add('readingActivity');
+  if (patch.noteDocuments) requested.add('noteDocuments');
   if (requested.size === 0) return;
 
   const db = await openLibraryDb();
@@ -529,6 +538,7 @@ export async function replaceLibraryDbPortabilitySnapshot(patch: LibraryDbPortab
     if (patch.bookmarks) replace('bookmarks', patch.bookmarks);
     if (patch.annotations) replace('annotations', patch.annotations);
     if (patch.readingActivity) replace('readingActivity', patch.readingActivity);
+    if (patch.noteDocuments) replace('noteDocuments', patch.noteDocuments);
 
     try {
       await Promise.all(operations);

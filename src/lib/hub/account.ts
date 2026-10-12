@@ -1,4 +1,4 @@
-import { parseLibraryBackupJson, type LibraryBackupV1 } from '../client/library-portability';
+import { parseLibraryBackupJson, type LibraryBackup } from '../client/library-portability';
 import {
   THIEPN_ACCOUNT_URL,
   getThiepnAccountPublishableKey,
@@ -19,7 +19,7 @@ export type HubAccountReadStatus =
 
 export interface HubAccountReadResult {
   status: HubAccountReadStatus;
-  snapshot?: LibraryBackupV1;
+  snapshot?: LibraryBackup;
 }
 
 function isObject(value: unknown): value is Record<string, unknown> {

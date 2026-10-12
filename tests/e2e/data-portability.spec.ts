@@ -181,7 +181,8 @@ test('@rr8 full backup round-trips reading state without embedding personal file
 
   const backup = await exportBackup(page);
   expect(backup.format).toBe('thiepn-library-backup');
-  expect(backup.schemaVersion).toBe(1);
+  expect(backup.schemaVersion).toBe(2);
+  expect(backup.state.main.noteDocuments).toEqual({ schemaVersion: 1, records: [] });
   expect(backup.state.main.favorites.records).toEqual([expect.objectContaining({ schemaVersion: 1, workId: 'rr8-favorite' })]);
   expect(backup.state.main.epubProgress.records[0]).toMatchObject({ workId: 'rr8-epub', releaseVersion: 'r7', furthestPercentage: 0.61 });
   expect(backup.state.pdf.progress.records[0]).toMatchObject({ page: 2, furthestPage: 5 });
