@@ -294,12 +294,14 @@ const catalog = (await getWorks()).map((work) => ({
         editor.hidden = false; welcome.hidden = true;
         removeButton.hidden = !doc;
         deletionArmed = false; removeButton.textContent = 'Delete note';
+        const url = new URL(location.href);
         if (doc) {
-          const url = new URL(location.href);
           url.searchParams.set('work', doc.workId);
           url.searchParams.set('note', doc.id);
-          history.replaceState(null, '', url);
+        } else {
+          url.searchParams.delete('note');
         }
+        history.replaceState(null, '', url);
         updateWritingStats();
         renderConnections();
         renderNotes(allNotes);
