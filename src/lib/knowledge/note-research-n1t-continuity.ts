@@ -65,6 +65,7 @@ export function appendReferenceInSection(
 export function sourceComparisonForSection(
   left:BookNoteDocumentV1,right:BookNoteDocumentV1,
   bookTitle:(id:string)=>string,
+  readerLink?:(note:BookNoteDocumentV1)=>string|undefined,
 ):string {
   if(left.id===right.id)throw new Error('Choose two different saved notes.');
   const lines=[
@@ -79,6 +80,9 @@ export function sourceComparisonForSection(
       '- Recorded location: '+describeResearchSource(note.anchor,note.chapterKey)
         .replace(/[\r\n]/g,' '),
       '- Saved note revision: '+note.revision,
+      ...(readerLink?.(note)?[
+        '- Original reader: '+readerLink(note)!.replace(/[\r\n]/g,' '),
+      ]:[]),
       ...(excerpts.length?[
         '- My notebook observations to evaluate:',
         ...excerpts.map(value=>'  - '+value.replace(/[\r\n]/g,' ').slice(0,230)),
