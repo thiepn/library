@@ -125,7 +125,7 @@ test('@n1c aborts notebook and favorite writes together after an injected notebo
   await page.evaluate(() => {
     const original = IDBObjectStore.prototype.put;
     let once = true;
-    IDBObjectStore.prototype.put = function(value: any, key?: IDBValidKey) {
+    IDBObjectStore.prototype.put = function(this: IDBObjectStore, value: any, key?: IDBValidKey) {
       if (this.name === 'noteDocuments' && once) {
         once = false;
         throw new Error('N1C_SYNTHETIC_NOTE_WRITE_FAILURE');
