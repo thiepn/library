@@ -1,0 +1,136 @@
+@layer notebook {
+  .book-notebook__n1p-review,
+  .book-notebook__n1p-workflow {
+    display:grid;gap:13px;
+    min-width:0;padding:18px 22px;
+    border-bottom:1px solid var(--rule);
+    background:var(--canvas);
+  }
+  .book-notebook__n1p-review {
+    border-top:1px solid var(--rule);
+    background:var(--surface);
+  }
+  .book-notebook__n1p-review-controls {
+    display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap;
+    padding:11px;border:1px solid var(--rule);
+    background:var(--canvas);
+  }
+  .book-notebook__n1p-review-controls label {
+    font-weight:650;font-size:.8rem;
+  }
+  .book-notebook__n1p-review-controls select {
+    min-height:40px;min-width:0;
+    flex:1 1 160px;
+    border:1px solid var(--strong-rule);
+    border-radius:2px;padding:8px 10px;
+    color:var(--ink);background:var(--canvas);
+    font:inherit;font-size:.84rem;
+  }
+  .book-notebook__n1p-review button,
+  .book-notebook__n1p-workflow button {
+    font:inherit;font-size:.8rem;
+    min-height:38px;
+    padding:8px 11px;cursor:pointer;
+    background:var(--canvas);
+    color:var(--ink);
+    border:1px solid var(--strong-rule);
+    border-radius:2px;
+  }
+  .book-notebook__n1p-review button:hover:not(:disabled),
+  .book-notebook__n1p-workflow button:hover:not(:disabled) {
+    background:var(--surface);
+  }
+  .book-notebook__n1p-review button:disabled,
+  .book-notebook__n1p-workflow button:disabled {
+    opacity:.45;cursor:not-allowed;
+  }
+  .book-notebook__n1p-review-queue {
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:8px;
+    max-height:445px;overflow-y:auto;
+  }
+  .book-notebook__n1p-review-entry {
+    display:grid;gap:12px;align-content:space-between;
+    padding:11px;
+    border:1px solid var(--rule);
+    background:var(--canvas);min-width:0;
+  }
+  .book-notebook__n1p-review-details {
+    display:grid;gap:4px;min-width:0;
+  }
+  .book-notebook__n1p-review-details strong {
+    font-size:.88rem;line-height:1.3;overflow-wrap:anywhere;
+  }
+  .book-notebook__n1p-review-details span,
+  .book-notebook__n1p-review-details small {
+    color:var(--secondary);
+    font-size:.75rem;overflow-wrap:anywhere;
+  }
+  .book-notebook__n1p-review-actions {
+    display:flex;gap:6px;flex-wrap:wrap;
+  }
+  .book-notebook__n1p-review-actions button {
+    min-height:34px;font-size:.76rem;
+    padding:7px 9px;
+  }
+  .book-notebook__n1p-review > .micro {
+    margin:0;min-height:1.3em;
+  }
+  .book-notebook__n1p-workflow-actions {
+    display:flex;gap:7px;flex-wrap:wrap;
+    padding:11px;border:1px solid var(--rule);
+    background:var(--surface);
+  }
+  .book-notebook__n1p-source-path {
+    display:flex;align-items:center;gap:12px;
+    border:1px solid var(--rule);
+    padding:14px;min-width:0;
+    overflow-wrap:anywhere;
+  }
+  .book-notebook__n1p-flow-step {
+    flex:1 1 0;
+    min-width:0;display:grid;gap:4px;
+  }
+  .book-notebook__n1p-flow-step strong {
+    font-size:.88rem;
+  }
+  .book-notebook__n1p-flow-step span,
+  .book-notebook__n1p-flow-step small {
+    font-size:.77rem;color:var(--secondary);
+  }
+  .book-notebook__n1p-source-path >span {
+    flex:0 0 auto;color:var(--secondary);
+    font-size:1.3rem;
+  }
+  .book-notebook__n1p-review :is(button,select):focus-visible,
+  .book-notebook__n1p-workflow button:focus-visible {
+    outline:2px solid var(--accent);outline-offset:2px;
+  }
+  @media(max-width:960px) {
+    .book-notebook__n1p-review-queue {grid-template-columns:1fr;}
+  }
+  @media(max-width:650px) {
+    .book-notebook__n1p-review,
+    .book-notebook__n1p-workflow {padding:13px;}
+    .book-notebook__n1p-review-controls {
+      display:grid;grid-template-columns:1fr 1fr;
+    }
+    .book-notebook__n1p-review-controls select,
+    .book-notebook__n1p-review-controls button {
+      grid-column:1/-1;width:100%;
+    }
+    .book-notebook__n1p-workflow-actions {
+      display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+    .book-notebook__n1p-workflow-actions button {
+      white-space:normal;min-width:0;
+    }
+    .book-notebook__n1p-source-path {
+      display:grid;gap:8px;
+    }
+    .book-notebook__n1p-source-path >span {
+      transform:rotate(90deg);justify-self:start;
+    }
+  }
+}
