@@ -348,7 +348,7 @@ const catalog = (await getWorks()).map((work) => ({
       extractNotebookTopics, insertNotebookText, normalizeNotebookTopic,
     } from '../lib/knowledge/note-workspace';
     import {
-      findNotebookNotes, notebookConnections, notebookWordCount,
+      findNotebookNotes, notebookConnections, notebookWordCount, extractNotebookLinks,
       noteReferenceMarkdown, applyNotebookMarkdownTool, insertNotebookReference,
       suggestRelatedNotebookNotes,
       type MarkdownTool,
@@ -514,6 +514,8 @@ const catalog = (await getWorks()).map((work) => ({
         linkPicker.hidden = true; linkToggle.setAttribute('aria-expanded', 'false');
         editor.classList.remove('book-notebook__editor--focus');
         focusToggle.setAttribute('aria-pressed', 'false');
+        outline.replaceChildren();
+        outlineCount.textContent='No note open';
       }
 
       function openEditor(doc?: BookNoteDocumentV1, pending?: NewBookNote): void {
@@ -539,6 +541,7 @@ const catalog = (await getWorks()).map((work) => ({
         history.replaceState(null, '', url);
         updateWritingStats();
         setWritingView(previewMode);
+        renderOutline();
         renderConnections();
         renderNotes(allNotes);
         title.focus();
@@ -1042,15 +1045,12 @@ const catalog = (await getWorks()).map((work) => ({
 
       function renderDiscover(): void {
         discoverResults.replaceChildren();
-        const filter = discoverBook.value;
-        const topic = discoverTopic.value;
-        const filtered = libraryNotes.filter(note =>
-          (filter === 'all' || note.workId === filter)
-          && (topic === 'all' || extractNotebookTopics(note.bodyMarkdown).includes(topic)));
-        const candidates = findNotebookNotes(filtered, bookName, discoverQuery.value, 30);
+        const candidates = workspaceNotes().slice(0, 60);
         discoverCount.textContent = libraryNotes.length + ' notes across '
           + new Set(libraryNotes.map(note => note.workId)).size + ' books';
         discoverEmpty.hidden = candidates.length > 0;
+        savedViewStatus.textContent = candidates.length + ' matching notes'
+          + (currentViewId ? ' · saved workspace active' : '');
         for (const note of candidates) {
           const button = connectedWithPreview(note);
           button.classList.add('book-notebook__discover-item');
@@ -1089,8 +1089,10 @@ const catalog = (await getWorks()).map((work) => ({
             discoverTopic.add(new Option('#' + item.id + ' (' + item.count + ')', item.id));
           discoverTopic.value = [...discoverTopic.options].some(option => option.value === currentTopic)
             ? currentTopic : 'all';
+          renderSavedViews();
           renderDashboard();
           renderDiscover();
+          renderGraph();
           renderLinkChoices();
           renderConnections();
         } catch {
@@ -1168,6 +1170,9 @@ const catalog = (await getWorks()).map((work) => ({
       discoverQuery.addEventListener('input', renderDiscover);
       discoverBook.addEventListener('change', renderDiscover);
       discoverTopic.addEventListener('change', renderDiscover);
+      discoverScope.addEventListener('change', renderDiscover);
+      discoverLinks.addEventListener('change', renderDiscover);
+      discoverSort.addEventListener('change', renderDiscover);
       root.querySelectorAll<HTMLButtonElement>('[data-notebook-view]').forEach(button => {
         button.addEventListener('click', () => {
           const mode = button.dataset.notebookView;
@@ -1309,6 +1314,7 @@ const catalog = (await getWorks()).map((work) => ({
       body.addEventListener('input', () => {
         scheduleSave();
         updateWritingStats();
+        renderOutline();
         renderConnections();
         renderReadingView();
       });
