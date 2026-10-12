@@ -26,7 +26,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         <article class="backup-card">
           <p class="eyebrow">Restore</p>
           <h2>Restore a backup</h2>
-          <p>Every category present in the selected backup replaces that category in this browser. Categories omitted from a partial backup are left unchanged.</p>
+          <p>Every category present in the selected backup replaces that category in this browser. Categories omitted from a partial or legacy V1 backup are left unchanged. V2 requires the complete notebook collection, which is restored atomically with other main-state records.</p>
           <p>The complete file is validated before anything changes. If a write fails, Library attempts to restore the state that existed before the import.</p>
           <input type="file" accept=".json,application/json" data-library-backup-input hidden />
           <button type="button" class="backup-action" data-library-backup-restore>Choose backup</button>
