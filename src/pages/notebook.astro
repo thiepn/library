@@ -390,7 +390,10 @@ const catalog = (await getWorks()).map((work) => ({
                 <h4 id="n1o-evidence-heading">Evidence desk</h4>
                 <p class="micro">Use your own saved note text as writing evidence. These excerpts are not claimed to be verified book quotations.</p>
               </div>
-              <button type="button" data-n1o-export-evidence>Export evidence review</button>
+              <div class="book-notebook__n1o-actions">
+                <button type="button" data-n1o-export-evidence>Export evidence review</button>
+                <button type="button" data-n1o-export-handoff>Export complete handoff</button>
+              </div>
             </div>
             <div class="book-notebook__n1o-evidence-stats" data-n1o-evidence-summary
               role="status" aria-live="polite"></div>
