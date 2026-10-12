@@ -233,6 +233,7 @@ const catalog = (await getWorks()).map((work) => ({
             <select id="n1q-export-format" data-n1q-export-format>
               <option value="handoff">Complete saved research handoff</option>
               <option value="knowledge">Knowledge summary</option>
+              <option value="ledger">Saved section citation ledger</option>
               <option value="section">Current synthesis section working copy</option>
               <option value="comparison">Source comparison writing outline</option>
               <option value="evidence">Evidence coverage review</option>
@@ -522,6 +523,7 @@ const catalog = (await getWorks()).map((work) => ({
               <div class="book-notebook__n1o-actions">
                 <button type="button" data-n1o-export-evidence>Export evidence review</button>
                 <button type="button" data-n1o-export-handoff>Export complete handoff</button>
+                <button type="button" data-n1t-export-ledger disabled>Export saved section citations</button>
               </div>
             </div>
             <div class="book-notebook__n1o-evidence-stats" data-n1o-evidence-summary
