@@ -7,6 +7,7 @@ import '../styles/notebook-n1i.css';
 import '../styles/notebook-n1j.css';
 import '../styles/notebook-n1k.css';
 import '../styles/notebook-n1l.css';
+import '../styles/notebook-n1m.css';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const catalog = (await getWorks()).map((work) => ({
@@ -199,6 +200,18 @@ const catalog = (await getWorks()).map((work) => ({
           <button type="button" data-research-create>Create collection</button>
         </div>
         <p class="micro" role="status" aria-live="polite" data-research-status></p>
+        <section class="book-notebook__n1m-library" aria-labelledby="research-collection-library-title">
+          <div class="book-notebook__n1m-heading">
+            <div>
+              <h3 id="research-collection-library-title">Your research workspaces</h3>
+              <p class="micro">Search locally across collection names, descriptions, source books and topics.</p>
+            </div>
+            <label for="research-collection-filter">Find a collection</label>
+            <input id="research-collection-filter" type="search" data-n1m-collection-filter
+              placeholder="Topic, book, collection…" autocomplete="off" />
+          </div>
+          <div data-n1m-collection-results class="book-notebook__n1m-workspaces"></div>
+        </section>
         <div data-research-detail hidden>
           <div class="book-notebook__research-details">
             <div>
@@ -219,6 +232,30 @@ const catalog = (await getWorks()).map((work) => ({
               <button type="button" data-research-delete>Remove collection</button>
             </div>
           </div>
+          <section class="book-notebook__n1m-organization" aria-labelledby="research-organize-title">
+            <div class="book-notebook__n1m-heading">
+              <div>
+                <h4 id="research-organize-title">Organize this collection</h4>
+                <p class="micro">Edit the collection index only. Source notes, anchors, revisions and synthesis remain unchanged.</p>
+              </div>
+              <button type="button" data-n1m-duplicate>Duplicate source collection</button>
+            </div>
+            <div class="book-notebook__n1m-organize-controls">
+              <label for="n1m-name">Collection name</label>
+              <input id="n1m-name" data-n1m-name maxlength="100" />
+              <label for="n1m-description">Research purpose</label>
+              <textarea id="n1m-description" data-n1m-description maxlength="800" rows="2"></textarea>
+              <button type="button" data-n1m-save-organization>Save collection details</button>
+            </div>
+            <div class="book-notebook__n1m-organize-controls">
+              <label for="n1m-copy-note">Source to reuse</label>
+              <select id="n1m-copy-note" data-n1m-copy-note><option value="">Choose note…</option></select>
+              <label for="n1m-copy-destination">Destination</label>
+              <select id="n1m-copy-destination" data-n1m-copy-destination><option value="">Choose another collection…</option></select>
+              <button type="button" data-n1m-copy-reference>Copy source reference</button>
+            </div>
+            <p class="micro" data-n1m-organization-status role="status"></p>
+          </section>
           <div class="book-notebook__research-pick">
             <label for="research-find-note">Add existing notes</label>
             <input id="research-find-note" data-research-find type="search"
@@ -296,6 +333,39 @@ const catalog = (await getWorks()).map((work) => ({
               <button type="button" data-research-export-bibliography>Export bibliography</button>
             </div>
             <div data-research-bibliography class="book-notebook__reference-list"></div>
+          </section>
+          <section class="book-notebook__n1m-consolidation" aria-labelledby="research-knowledge-title">
+            <div class="book-notebook__n1m-heading">
+              <div>
+                <h4 id="research-knowledge-title">Knowledge overview</h4>
+                <p class="micro">Source coverage is based on explicit note links, not on automated judgments of correctness or mastery.</p>
+              </div>
+              <button type="button" data-n1m-export-knowledge>Export knowledge summary</button>
+            </div>
+            <div class="book-notebook__n1m-statistics" data-n1m-stats></div>
+            <div class="book-notebook__n1m-overview-grid">
+              <section aria-label="Research themes">
+                <h5>Themes across books</h5>
+                <div data-n1m-topics class="book-notebook__n1m-topics"></div>
+              </section>
+              <section aria-label="Sources used in synthesis">
+                <h5>Source-to-synthesis references</h5>
+                <div data-n1m-coverage class="book-notebook__n1m-coverage"></div>
+              </section>
+            </div>
+            <div class="book-notebook__n1m-overview-grid">
+              <section aria-label="Saved synthesis navigation">
+                <h5>Synthesis sections</h5>
+                <div data-n1m-sections class="book-notebook__n1m-sections"></div>
+              </section>
+              <section aria-label="Reusable research reflection">
+                <div class="book-notebook__n1m-heading">
+                  <h5>Review and strengthen your argument</h5>
+                  <button type="button" data-n1m-export-questions>Export review questions</button>
+                </div>
+                <div data-n1m-prompts class="book-notebook__n1m-prompts"></div>
+              </section>
+            </div>
           </section>
           <div class="book-notebook__research-write">
             <div class="book-notebook__research-write-head">
