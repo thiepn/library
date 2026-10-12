@@ -463,6 +463,7 @@ export function mountResearchWorkbench(
     },
     sourceHref:note=>host.sourceHref(note),
     bookTitle:workId=>host.bookTitle(workId),
+    openNote:note=>host.openNote(note),
     pins:()=>({...pins}),
     setPins:(left,right)=>{
       pins={left,right};
