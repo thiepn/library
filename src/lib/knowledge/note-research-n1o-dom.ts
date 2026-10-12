@@ -1,4 +1,5 @@
 import { listBookNotes } from './note-store';
+import { completeResearchHandoff } from './note-research-n1o-handoff';
 import { findNotebookNotes, noteReferenceMarkdown } from './note-links';
 import { notebookTitle, type BookNoteDocumentV1 } from './note-model';
 import { loadResearchCollections, type ResearchCollection } from './note-research';
@@ -20,6 +21,7 @@ export interface ResearchN1OHost {
   sourceHref(note:BookNoteDocumentV1):string|undefined;
   openNote(note:BookNoteDocumentV1):Promise<void>;
   openCollection(id:string):Promise<void>;
+  collectNote(id:string):Promise<void>;
   notify(message:string):void;
 }
 export interface ResearchN1OController {
@@ -83,6 +85,7 @@ export function mountResearchN1O(
   const disposers:Array<()=>void>=[];
   let refreshTimer:ReturnType<typeof setTimeout>|undefined;
   let busyExport=false;
+  let busyHandoff=false;
   const bind=(selector:string,event:string,callback:EventListener)=>{
     const control=$(selector);control.addEventListener(event,callback);
     disposers.push(()=>control.removeEventListener(event,callback));
@@ -152,6 +155,19 @@ export function mountResearchN1O(
       info.append(simple('strong',item.name),simple('small',item.label));
       row.append(simple('span',item.kind==='collection'?'Workspace':'Note'),
         info,createButton('Open',item.open));
+      if(item.kind==='note'){
+        const note=notes.find(entry=>entry.id===item.id);
+        if(note){
+          row.append(createButton('Copy ref',()=>{
+            void navigator.clipboard.writeText(noteReferenceMarkdown(note))
+              .then(()=>host.notify('Stable note reference copied.'),
+                ()=>host.notify('Clipboard unavailable.'));
+          }));
+          if(host.active()&&!host.active()!.noteIds.includes(note.id)){
+            row.append(createButton('Collect',()=>{void host.collectNote(note.id);}));
+          }
+        }
+      }
       hubResults.append(row);
     }
   }
@@ -251,7 +267,8 @@ export function mountResearchN1O(
       const row=document.createElement('div');
       row.className='book-notebook__n1o-audit-item';
       row.append(simple('span','Linked outside collection: '+notebookTitle(note)),
-        createButton('Open note',()=>{void host.openNote(note);}));
+        createButton('Open note',()=>{void host.openNote(note);}),
+        createButton('Collect',()=>{void host.collectNote(note.id);}));
       auditList.append(row);
     }
     for(const id of audit.unavailableIds.slice(0,12))
@@ -362,6 +379,25 @@ export function mountResearchN1O(
     )).finally(()=>{busyExport=false;});
   });
 
+  bind('[data-n1o-export-handoff]','click',()=>{
+    if(busyHandoff)return;
+    const active=host.active();
+    if(!active){host.notify('Select a collection to export its complete handoff.');return;}
+    if(host.isDirty()){
+      host.notify('Save synthesis changes before exporting. A complete handoff includes saved revisions only.');
+      return;
+    }
+    busyHandoff=true;
+    void listBookNotes().then(notes=>{
+      const latest=loadResearchCollections().find(c=>c.id===active.id);
+      if(!latest)throw new Error('Collection unavailable. Nothing was exported.');
+      const report=completeResearchHandoff(latest,notes,host.bookTitle,host.sourceHref);
+      download('research-handoff-'+filename(latest.name)+'.md',report);
+      host.notify('Complete research handoff download requested with saved notes and revision metadata.');
+    }).catch(error=>host.notify(
+      error instanceof Error?error.message:'Could not create a complete handoff.',
+    )).finally(()=>{busyHandoff=false;});
+  });
   const onPreference=()=>renderHub();
   window.addEventListener('library-notebook-preferences-changed',onPreference);
   onCollectionChanged();
