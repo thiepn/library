@@ -9,6 +9,7 @@ import {
   isLibraryAccountConnectionActive,
   type LibraryAccountUser,
 } from './supabase';
+import { summarizeCopy, compareNotes, type CopySummary, type NoteComparison } from './sync-review';
 import {
   backupHasMeaningfulLibraryState,
   decideLibrarySync,
@@ -370,6 +371,98 @@ export async function chooseCloudForLibrarySync(user: LibraryAccountUser): Promi
     return await applyCloud(user.id, cloud);
   } catch (error) {
     const result: LibrarySyncResult = { status: 'error', message: describeError(error) };
+    emitSync(result);
+    return result;
+  }
+}
+
+export interface LibraryConflictReview {
+  userId: string;
+  localHash: string;
+  cloudHash: string | null;
+  cloudRevision: number | null;
+  cloudUpdatedAt?: string;
+  device: CopySummary;
+  cloud?: CopySummary;
+  noteChanges?: NoteComparison;
+}
+
+async function reviewedCopies(user: LibraryAccountUser) {
+  if (!isLibrarySyncEnabledForUser(user.id))
+    throw new Error('Private sync is not enabled on this device.');
+  if (!(await isLibraryAccountConnectionActive()))
+    throw new Error('This Library account is no longer connected.');
+  await assertNotebookSyncProtocol();
+  const [local, cloud] = await Promise.all([createLibraryBackup(), readCloudState()]);
+  return { local, cloud };
+}
+
+/** Preview only. Never changes either copy. */
+export async function previewLibraryConflict(user: LibraryAccountUser): Promise<LibraryConflictReview> {
+  const { local, cloud } = await reviewedCopies(user);
+  return {
+    userId: user.id,
+    localHash: await hashBackup(local),
+    cloudHash: cloud ? await hashBackup(cloud.state) : null,
+    cloudRevision: cloud?.revision ?? null,
+    ...(cloud?.updated_at ? { cloudUpdatedAt: cloud.updated_at } : {}),
+    device: summarizeCopy(local),
+    ...(cloud ? {
+      cloud: summarizeCopy(cloud.state),
+      noteChanges: compareNotes(
+        local.state.main?.noteDocuments?.records ?? [],
+        cloud.state.state.main?.noteDocuments?.records ?? [],
+      ),
+    } : {}),
+  };
+}
+
+function downloadJsonBackup(backup: LibraryBackup, fileName: string): void {
+  const url = URL.createObjectURL(new Blob([JSON.stringify(backup, null, 2) + '\n'],
+    { type: 'application/json;charset=utf-8' }));
+  try {
+    const link = document.createElement('a');
+    link.href = url; link.download = fileName; document.body.append(link); link.click(); link.remove();
+  } finally { window.setTimeout(() => URL.revokeObjectURL(url), 10000); }
+}
+
+/** This local backup remains usable when Account is offline or V2 sync is blocked. */
+export async function downloadLocalConflictBackup(): Promise<void> {
+  downloadJsonBackup(await createLibraryBackup(), 'thiepn-library-device-safety-copy.json');
+}
+
+export async function downloadCloudConflictBackup(user: LibraryAccountUser): Promise<void> {
+  const { cloud } = await reviewedCopies(user);
+  if (!cloud) throw new Error('There is no cloud copy to download.');
+  downloadJsonBackup(cloud.state, 'thiepn-library-cloud-rev-' + cloud.revision + '.json');
+}
+
+/** A review is a one-time snapshot: re-read both copies before either direction. */
+export async function resolveReviewedLibraryConflict(
+  user: LibraryAccountUser, review: LibraryConflictReview, choice: 'device' | 'cloud',
+): Promise<LibrarySyncResult> {
+  try {
+    if (review.userId !== user.id) throw new Error('Account changed. Start a new review.');
+    const { local, cloud } = await reviewedCopies(user);
+    const localHash = await hashBackup(local);
+    const cloudHash = cloud ? await hashBackup(cloud.state) : null;
+    if (localHash !== review.localHash || cloudHash !== review.cloudHash ||
+        (cloud?.revision ?? null) !== review.cloudRevision) {
+      const result: LibrarySyncResult = { status: 'conflict',
+        message: 'A copy changed since your review. Review both versions again before continuing.' };
+      emitSync(result);
+      return result;
+    }
+    if (choice === 'device') return await pushLocal(user.id, cloud, local);
+    if (!cloud) throw new Error('There is no cloud copy to restore.');
+    return await applyCloud(user.id, cloud);
+  } catch (error) {
+    const message = describeError(error);
+    const result: LibrarySyncResult = {
+      status: /LIBRARY_SYNC_CONFLICT|40001/i.test(message) ? 'conflict' : 'error',
+      message: /LIBRARY_SYNC_CONFLICT|40001/i.test(message)
+        ? 'Another device changed the cloud. Review both versions again.' : message,
+    };
     emitSync(result);
     return result;
   }
