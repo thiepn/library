@@ -43,7 +43,7 @@ export function collectCrossBookReviewQueue(
   return items.sort((a,b)=>priority[a.state]-priority[b.state]
     ||a.collectionName.localeCompare(b.collectionName)
     ||a.position-b.position)
-    .slice(0,Math.max(1,Math.min(300,limit)));
+    .slice(0,Math.max(1,Math.min(3600,limit)));
 }
 export function updateCrossBookReviewState(
   collection:ResearchCollection,
