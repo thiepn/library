@@ -134,6 +134,44 @@ export function updateResearchCollection(
   writeAll(next);
   return updated;
 }
+/** Organize the reference index only; never modifies native notebook documents. */
+export function renameResearchCollection(
+  id:string,name:string,description:string,workflowId?:string,
+):ResearchCollection {
+  const title=name.normalize('NFKC').trim().slice(0,100);
+  if(!title)throw new Error('Enter a collection name.');
+  if(description.length>800)throw new Error('Collection descriptions are limited to 800 characters.');
+  if(workflowId!==undefined && !RESEARCH_WORKFLOWS.some(item=>item.id===workflowId))
+    throw new Error('Unknown research workflow.');
+  return updateResearchCollection(id,c=>({
+    ...c,name:title,description:description.trim(),
+    ...(workflowId?{workflowId}:{}),
+  }));
+}
+
+/** Creates a second collection referencing the same notes, but with no synthesis writer ownership. */
+export function duplicateResearchCollection(id:string):ResearchCollection {
+  const original=loadResearchCollections().find(c=>c.id===id);
+  if(!original)throw new Error('Research collection unavailable.');
+  const copy=createResearchCollection(
+    (original.name+' — copy').slice(0,100),original.description,
+    original.workflowId??'open-research',
+  );
+  return setResearchCollectionNotes(copy.id,original.noteIds);
+}
+
+/** Copy a stable source note reference between collections without copying note content. */
+export function copyResearchNoteToCollection(
+  sourceId:string,targetCollectionId:string,
+):ResearchCollection {
+  if(!validId(sourceId))throw new Error('Invalid source-note reference.');
+  return updateResearchCollection(targetCollectionId,c=>{
+    if(c.noteIds.includes(sourceId))return c;
+    if(c.noteIds.length>=MAX_ENTRIES)throw new Error('Destination collection has reached 120 notes.');
+    return {...c,noteIds:[...c.noteIds,sourceId]};
+  });
+}
+
 export function setResearchCollectionNotes(id:string,noteIds:readonly string[]):ResearchCollection {
   const dedup=[...new Set(noteIds)];
   if(dedup.length>MAX_ENTRIES)throw new Error('A collection supports at most 120 notes.');
