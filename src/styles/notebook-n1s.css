@@ -1,0 +1,77 @@
+@layer notebook {
+  /* N1S lives inside N1R's existing synthesis outline; no parallel research panel. */
+  .book-notebook__n1s-evidence {
+    display:grid;gap:10px;
+    grid-column:1/-1;width:100%;min-width:0;
+    padding:13px 14px;
+    border:1px solid var(--rule);
+    background:var(--canvas);
+  }
+  .book-notebook__n1s-evidence-head {
+    display:flex;flex-wrap:wrap;align-items:center;gap:9px 14px;
+  }
+  .book-notebook__n1s-evidence-head strong {
+    font-size:.88rem;font-weight:650;
+  }
+  .book-notebook__n1s-evidence-head .micro {
+    flex:1 1 210px;line-height:1.4;
+    color:var(--secondary);margin:0;
+  }
+  .book-notebook__n1s-evidence-list {
+    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+    max-height:390px;overflow-y:auto;
+    gap:8px;
+  }
+  .book-notebook__n1s-evidence-row {
+    display:grid;gap:9px;
+    padding:10px 11px;
+    border:1px solid var(--rule);
+    background:var(--surface);min-width:0;
+  }
+  .book-notebook__n1s-evidence-row >div:first-child {
+    display:grid;gap:5px;min-width:0;
+  }
+  .book-notebook__n1s-evidence-row strong {
+    font-size:.83rem;
+    overflow-wrap:anywhere;
+  }
+  .book-notebook__n1s-evidence-row small {
+    font-size:.75rem;line-height:1.5;
+    color:var(--secondary);
+    overflow-wrap:anywhere;
+  }
+  .book-notebook__n1s-evidence-actions {
+    display:flex;flex-wrap:wrap;gap:5px;align-items:end;
+  }
+  .book-notebook__n1s-evidence-actions :is(button,a),
+  .book-notebook__n1s-evidence-head button {
+    font:inherit;font-size:.77rem;
+    min-height:36px;padding:7px 9px;
+    border:1px solid var(--strong-rule);
+    border-radius:2px;
+    background:var(--canvas);color:var(--ink);
+    text-decoration:none;
+    cursor:pointer;
+    box-sizing:border-box;
+  }
+  .book-notebook__n1s-evidence-actions a {
+    display:inline-flex;align-items:center;
+  }
+  .book-notebook__n1s-evidence-head button:disabled {
+    opacity:.45;cursor:not-allowed;
+  }
+  .book-notebook__n1s-evidence :is(button,a):focus-visible {
+    outline:2px solid var(--accent);outline-offset:2px;
+  }
+  .book-notebook__n1s-evidence >p.micro {
+    margin:0;min-height:1.2em;
+    overflow-wrap:anywhere;
+  }
+  @media(max-width:850px){
+    .book-notebook__n1s-evidence-list {grid-template-columns:1fr;}
+  }
+  @media(max-width:680px){
+    .book-notebook__n1s-evidence {padding:11px;}
+    .book-notebook__n1s-evidence-head button {width:100%;}
+  }
+}
