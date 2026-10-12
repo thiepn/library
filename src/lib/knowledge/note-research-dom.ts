@@ -643,6 +643,10 @@ export function mountResearchWorkbench(
     notes:()=>all,
     synthesis:()=>synthesis,
     draft:()=>({title:synthTitle.value,body:synthBody.value}),
+    setDraft:(title,body)=>{
+      synthTitle.value=title;synthBody.value=body;
+      synthInput();
+    },
     isDirty:()=>dirty(),
     pins:()=>({...pins}),
     setPins:(left,right)=>{
