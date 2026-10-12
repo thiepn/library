@@ -23,6 +23,7 @@ export interface ResearchN1OHost {
   openNote(note:BookNoteDocumentV1):Promise<void>;
   openCollection(id:string):Promise<void>;
   collectNote(id:string):Promise<void>;
+  pinSource(id:string):void;
   notify(message:string):void;
 }
 export interface ResearchN1OController {
@@ -91,6 +92,11 @@ export function mountResearchN1O(
     const control=$(selector);control.addEventListener(event,callback);
     disposers.push(()=>control.removeEventListener(event,callback));
   };
+  const safeOpen=(note:BookNoteDocumentV1):void=>{
+    if(host.isDirty()&&!window.confirm(
+      'Unsaved synthesis writing is open. Save or export your current draft before leaving this workspace? Cancel to continue writing.'))return;
+    void host.openNote(note);
+  };
   const available=()=>host.active()
     ?collectResearchEvidence(host.active()!,host.notes(),host.bookTitle).sources:[];
   function chosenSource():ResearchEvidence|undefined {
@@ -140,7 +146,7 @@ export function mountResearchN1O(
       for(const note of matching)items.push({
         kind:'note',id:note.id,name:notebookTitle(note),
         label:host.bookTitle(note.workId)+(prefs.recentNoteIds.includes(note.id)?' · Recently opened':''),
-        open:()=>{void host.openNote(note);},
+        open:()=>safeOpen(note),
       });
     }
     hubResults.replaceChildren();
@@ -166,6 +172,19 @@ export function mountResearchN1O(
           }));
           if(host.active()&&!host.active()!.noteIds.includes(note.id)){
             row.append(createButton('Collect',()=>{void host.collectNote(note.id);}));
+          }else if(host.active()?.noteIds.includes(note.id)){
+            row.append(createButton('Pin',()=>{
+              host.pinSource(note.id);
+              requestResearchView(root,'sources','[data-research-compare]');
+            }));
+          }
+          const reader=host.sourceHref(note);
+          if(reader){
+            const link=document.createElement('a');
+            link.href=reader;link.target='_blank';link.rel='noopener noreferrer';
+            link.textContent='Original reader';
+            link.title='Open this saved note’s recorded book source in another tab';
+            row.append(link);
           }
         }
       }
@@ -269,7 +288,7 @@ export function mountResearchN1O(
       const row=document.createElement('div');
       row.className='book-notebook__n1o-audit-item';
       row.append(simple('span','Linked outside collection: '+notebookTitle(note)),
-        createButton('Open note',()=>{void host.openNote(note);}),
+        createButton('Open note',()=>safeOpen(note)),
         createButton('Collect',()=>{void host.collectNote(note.id);}));
       auditList.append(row);
     }
@@ -307,7 +326,7 @@ export function mountResearchN1O(
   bind('[data-n1o-evidence-excerpt]','change',renderSourceDetails);
   bind('[data-n1o-open-evidence]','click',()=>{
     const evidence=chosenSource();
-    if(evidence)void host.openNote(evidence.note);
+    if(evidence)safeOpen(evidence.note);
   });
   bind('[data-n1o-copy-evidence]','click',()=>{
     const evidence=chosenSource();
