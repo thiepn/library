@@ -633,6 +633,25 @@ const catalog = (await getWorks()).map((work) => ({
                 <span class="micro" data-research-outline-count>No headings</span>
               </div>
               <nav data-research-outline aria-label="Jump to synthesis heading"></nav>
+              <div class="book-notebook__n1r-section-tools" aria-label="Synthesis section actions">
+                <label for="n1r-section-picker">Working section</label>
+                <select id="n1r-section-picker" data-n1r-section-picker>
+                  <option value="">Whole synthesis / append at end</option>
+                </select>
+                <button type="button" data-n1r-section-up disabled>Move up</button>
+                <button type="button" data-n1r-section-down disabled>Move down</button>
+                <label for="n1r-section-template">Insert</label>
+                <select id="n1r-section-template" data-n1r-section-template>
+                  <option value="claim">Claim and evidence</option>
+                  <option value="counter">Alternative interpretation</option>
+                  <option value="comparison">Compare two accounts</option>
+                  <option value="question">Open question</option>
+                  <option value="reading">Reading takeaway</option>
+                </select>
+                <button type="button" data-n1r-section-insert disabled>Insert after section</button>
+                <button type="button" data-n1r-section-export disabled>Export section copy</button>
+                <span class="micro" role="status" aria-live="polite" data-n1r-section-status></span>
+              </div>
             </section>
             <div class="book-notebook__n1k-preview-controls">
               <button type="button" data-research-toggle-preview aria-expanded="false"
