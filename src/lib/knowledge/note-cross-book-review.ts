@@ -1,5 +1,5 @@
 import type { BookNoteDocumentV1 } from './note-model';
-import type { ResearchCollection } from './note-research';
+import { describeResearchSource, type ResearchCollection } from './note-research';
 import {
   alignResearchSession, readResearchSession, newResearchSession, storeResearchSession,
   markResearchSession, type ResearchTriage,
@@ -101,36 +101,60 @@ export function crossBookReviewPacketMarkdown(
   collectionId='all',
   filter:QueueFilter='all',
 ):string {
-  const items=collectCrossBookReviewQueue(collections,notes,collectionId,filter,300);
-  const groups=new Map<string,ResearchQueueItem[]>();
-  for(const item of items){
-    const group=groups.get(item.collectionName)??[];
-    group.push(item);
-    groups.set(item.collectionName,group);
+  const byId=new Map(notes.map(note=>[note.id,note]));
+  const selected=collections.filter(collection=>
+    collectionId==='all'||collection.id===collectionId);
+  let entries=0,missing=0,groups=0;
+  const content:string[]=[];
+  // This traverses every bounded session entry, not the 90-card UI window.
+  for(const collection of selected){
+    const session=readResearchSession(collection.id);
+    if(!session)continue;
+    const matching=session.entries.filter(row=>filter==='all'||row.state===filter);
+    if(!matching.length)continue;
+    groups++;
+    content.push('## '+collection.name.replace(/[\r\n#]+/g,' ').trim(),'',
+      '- Stable collection ID: '+collection.id,
+      '- Session started: '+session.startedAt,
+      '- Session updated: '+session.updatedAt,
+      '- Entries for selected filter: '+matching.length,'');
+    for(const row of matching){
+      entries++;
+      const note=byId.get(row.id);
+      const check=row.state==='reviewed'?'- [x] ':'- [ ] ';
+      if(!note){
+        missing++;
+        content.push(check+'Unavailable local source · '+row.state
+          +' · note:'+row.id,
+          '  - No original text, book identity, or revision was inferred.','');
+        continue;
+      }
+      content.push(
+        check+workTitle(note.workId)+' — '
+          +note.title.replace(/[\r\n]/g,' ').trim()
+          +' · '+row.state+' · note:'+note.id,
+        '  - Work ID: '+note.workId
+          +' · revision: '+note.revision
+          +' · updated: '+note.updatedAt,
+        '  - Recorded source: '
+          +describeResearchSource(note.anchor,note.chapterKey)
+            .replace(/[\r\n]/g,' '),
+      );
+    }
+    content.push('');
   }
   const rows=[
     '# Cross-book research review','',
-    '> THIEPN Library · exported temporary, self-reported review checklist.',
-    '> No note text, mastery credit, assessed results, V2 backups or signing authority are included.',
-    '',
-    '- Source entries: '+items.length,
+    '> THIEPN Library · portable temporary, self-reported review checklist.',
+    '> No source-note prose, mastery credit, assessment, V2 backup or signature is included.',
+    '> Unavailable references are listed explicitly rather than silently discarded.','',
+    '- Entries exported: '+entries,
+    '- Included collections: '+groups,
+    '- Unavailable local note references: '+missing,
     '- Selected collection: '+(collectionId==='all'?'All collections':collectionId),
     '- Review filter: '+filter,'',
+    ...content,
   ];
-  for(const [collectionName,group] of groups){
-    rows.push('## '+collectionName.replace(/[\r\n#]+/g,' ').trim(),'');
-    for(const item of group){
-      rows.push(
-        (item.state==='reviewed'?'- [x] ':'- [ ] ')
-        +workTitle(item.note.workId)+' — '+item.note.title.replace(/[\r\n]/g,' ').trim()
-        +' · '+item.state+' · note:'+item.note.id,
-        '  - Work ID: '+item.note.workId
-        +' · note revision: '+item.note.revision
-        +' · updated: '+item.note.updatedAt,
-      );
-    }
-    rows.push('');
-  }
-  if(!groups.size)rows.push('_No review entries match the selected filters._','');
+  if(!groups)rows.push('_No review entries match the selected filters._','');
   return rows.join('\n');
 }
