@@ -60,6 +60,7 @@ const catalog = (await getWorks()).map((work) => ({
           <div class="book-notebook__editor-actions">
             <button type="button" data-notebook-save>Save now</button>
             <button type="button" class="secondary-action" data-notebook-copy>Copy Markdown</button>
+            <button type="button" class="secondary-action" data-notebook-recover>Download editor draft</button>
             <button type="button" class="secondary-action" data-notebook-close>Close</button>
             <button type="button" class="text-action" data-notebook-delete hidden>Delete note</button>
           </div>
@@ -82,6 +83,7 @@ const catalog = (await getWorks()).map((work) => ({
       updateBookNote, type NewBookNote,
     } from '../lib/knowledge/note-store';
     import { bookNotebookToObsidianMarkdown } from '../lib/knowledge/note-export';
+    import { downloadNotebookRecovery } from '../lib/knowledge/note-recovery';
     import {
       normalizedChapterKey, notebookTitle,
       type BookNoteDocumentV1, type BookNoteScope,
@@ -319,6 +321,18 @@ const catalog = (await getWorks()).map((work) => ({
           mark('Copied to clipboard');
         } catch { mark('Clipboard unavailable. Select and copy the editor text directly.'); }
       });
+      root.querySelector('[data-notebook-recover]')?.addEventListener('click', () => {
+        const note = selected ?? draft;
+        if (!note) return;
+        downloadNotebookRecovery({
+          workId: note.workId, scope: note.scope,
+          title: title.value, bodyMarkdown: body.value,
+          ...(selected ? { id: selected.id } : {}),
+          ...(note.chapterKey ? { chapterKey: note.chapterKey } : {}),
+          ...(note.anchor ? { anchor: note.anchor } : {}),
+        });
+        mark('Editor draft downloaded separately. This is not a confirmed save.');
+      });
       removeButton.addEventListener('click', async () => {
         if (!selected) return;
         if (!deletionArmed) { deletionArmed = true; removeButton.textContent = 'Confirm delete'; return; }
@@ -329,10 +343,19 @@ const catalog = (await getWorks()).map((work) => ({
       });
       exportButton.addEventListener('click', async () => {
         if (!currentBook()) return;
-        const notes = await listBookNotes(currentBook());
-        const text = bookNotebookToObsidianMarkdown(currentBook(), books.get(currentBook())?.title ?? currentBook(), notes);
-        download('thiepn-notebook-' + currentBook().replace(/[^a-zA-Z0-9-]/g, '-') + '.md', text);
-        setStatus('Exported this book notebook as Obsidian-compatible Markdown, including source identifiers.');
+        // Never issue a successful-looking export that silently excludes unsaved editor changes.
+        if (dirty() && !await save()) {
+          setStatus('Save did not finish. Download the editor draft before exporting this book.');
+          return;
+        }
+        try {
+          const notes = await listBookNotes(currentBook());
+          const text = bookNotebookToObsidianMarkdown(currentBook(), books.get(currentBook())?.title ?? currentBook(), notes);
+          download('thiepn-notebook-' + currentBook().replace(/[^a-zA-Z0-9-]/g, '-') + '.md', text);
+          setStatus('Exported this book notebook as Obsidian-compatible Markdown, including source identifiers.');
+        } catch (error) {
+          setStatus(error instanceof Error ? error.message : 'Unable to export. Download your editor draft instead.');
+        }
       });
       window.addEventListener('beforeunload', (event) => {
         if (!dirty()) return;
