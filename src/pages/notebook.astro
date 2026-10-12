@@ -661,6 +661,15 @@ const catalog = (await getWorks()).map((work) => ({
                 </select>
                 <button type="button" data-n1r-section-insert disabled>Insert after section</button>
                 <button type="button" data-n1r-section-export disabled>Export section copy</button>
+                <label for="n1r-section-source">Cited note</label>
+                <select id="n1r-section-source" data-n1r-section-source>
+                  <option value="">Choose a section citation…</option>
+                </select>
+                <button type="button" data-n1r-section-pin disabled>Pin cited note</button>
+                <button type="button" data-n1r-section-open disabled>Open cited note</button>
+                <a data-n1r-section-reader href="" target="_blank" rel="noopener noreferrer" hidden>
+                  Read source book
+                </a>
                 <span class="micro" role="status" aria-live="polite" data-n1r-section-status></span>
               </div>
             </section>
