@@ -277,8 +277,15 @@ export function mountResearchN1P(
   function insertInDraft(markdown:string):boolean {
     if(!host.synthesis())return false;
     const old=host.draft().body;
-    const from=Math.max(0,Math.min(old.length,writingArea.selectionStart));
-    const to=Math.max(from,Math.min(old.length,writingArea.selectionEnd));
+    // Queue actions often originate in Review rather than in the editor.
+    // Append in that case instead of replacing a stale hidden-textarea selection.
+    const caretInsideEditor=document.activeElement===writingArea;
+    const from=caretInsideEditor
+      ?Math.max(0,Math.min(old.length,writingArea.selectionStart))
+      :old.length;
+    const to=caretInsideEditor
+      ?Math.max(from,Math.min(old.length,writingArea.selectionEnd))
+      :old.length;
     const prefix=from>0&&!old.slice(0,from).endsWith('\n')?'\n\n':'';
     const suffix=to<old.length&&!old.slice(to).startsWith('\n')?'\n':'';
     const addition=prefix+markdown.trimEnd()+'\n'+suffix;
