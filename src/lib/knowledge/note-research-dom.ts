@@ -9,6 +9,7 @@ import { mountResearchN1L, type ResearchN1LController } from './note-research-n1
 import { mountKnowledgeWorkbench, type KnowledgeWorkbench } from './note-research-n1m-dom';
 import { mountResearchN1O, type ResearchN1OController } from './note-research-n1o-dom';
 import { mountResearchN1P, type ResearchN1PController } from './note-research-n1p-dom';
+import { mountResearchViews, type ResearchViewController } from './note-research-n1q-view';
 import { extractNotebookTopics } from './note-workspace';
 import { mountResearchRefinements, type ResearchRefinements } from './note-research-n1k-dom';
 import { readNotebookContinuity, rememberResearchCollection, orderResearchCollections } from './note-continuity';
@@ -115,6 +116,7 @@ export function mountResearchWorkbench(
   let knowledge:KnowledgeWorkbench | undefined;
   let workflow:ResearchN1OController | undefined;
   let integration:ResearchN1PController | undefined;
+  let views:ResearchViewController | undefined;
   let searchIndex:ResearchSearchIndexEntry[]=[];
   const events:Array<()=>void>=[];
   const notify=(message:string)=>{notice.textContent=message;};
@@ -361,6 +363,7 @@ export function mountResearchWorkbench(
     knowledge?.onNotesChanged();
     workflow?.onNotesChanged();
     integration?.onNotesChanged();
+    views?.onCollectionChanged();
   }
   async function activate(id:string,force=false):Promise<void> {
     if(!force && id!==activeId && !guardSwitch()){
@@ -384,6 +387,7 @@ export function mountResearchWorkbench(
     knowledge?.onCollectionChanged();
     workflow?.onCollectionChanged();
     integration?.onCollectionChanged();
+    views?.onCollectionChanged();
   }
   async function addNotes(noteIds:readonly string[]):Promise<void> {
     if(!active){notify('Create or select a collection first.');root.scrollIntoView({behavior:'smooth'});return;}
@@ -512,6 +516,7 @@ export function mountResearchWorkbench(
     knowledge?.onDraftChanged();
     workflow?.onDraftChanged();
     integration?.onDraftChanged();
+    views?.onDraftChanged();
   };
   bind('[data-research-synthesis-title]','input',synthInput);
   bind('[data-research-synthesis-body]','input',synthInput);
@@ -528,6 +533,7 @@ export function mountResearchWorkbench(
         knowledge?.onDraftChanged();
         workflow?.onDraftChanged();
         integration?.onDraftChanged();
+        views?.onDraftChanged();
         synthState.textContent='Saved locally · revision '+saved.revision;
         notify('Synthesis saved to your authoritative Library notebook.');
       })
@@ -574,7 +580,7 @@ export function mountResearchWorkbench(
       pins={left,right};
       renderSources();renderSide('left');renderSide('right');
     },
-    activateCollection:id=>activate(id,true),
+    activateCollection:id=>activate(id),
     notify,
   });
   sessionControls=mountResearchN1L(root,{
@@ -661,6 +667,11 @@ export function mountResearchWorkbench(
     refreshReview:()=>sessionControls?.onCollectionChanged(),
     notify,
   });
+  views=mountResearchViews(root,{
+    active:()=>active,
+    synthesis:()=>synthesis,
+    dirty,
+  });
   void refresh();
   return {
     refresh,addNote,addNotes,
@@ -675,6 +686,7 @@ export function mountResearchWorkbench(
       knowledge?.dispose();
       workflow?.dispose();
       integration?.dispose();
+      views?.dispose();
       window.removeEventListener('beforeunload',beforeUnload);
     },
   };
