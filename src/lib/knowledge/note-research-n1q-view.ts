@@ -2,6 +2,7 @@ import type { BookNoteDocumentV1 } from './note-model';
 import { notebookTitle } from './note-model';
 import {
   researchCitationLocations, citationCountForNote, nextResearchCitation,
+  previousResearchCitation,
   insertResearchNoteLink,
 } from './note-research-n1q-citations';
 
@@ -67,6 +68,7 @@ export function mountResearchViews(
     openNote(note:BookNoteDocumentV1):Promise<void>;
     pinSource(id:string):void;
     bookTitle(workId:string):string;
+    sourceHref(note:BookNoteDocumentV1):string|undefined;
   },
 ):ResearchViewController {
   const tabs=root.querySelector<HTMLElement>('[data-n1q-tabs]');
@@ -83,10 +85,15 @@ export function mountResearchViews(
   const synthBody=root.querySelector<HTMLTextAreaElement>('[data-research-synthesis-body]');
   const citeInsert=root.querySelector<HTMLButtonElement>('[data-n1q-citation-insert]');
   const citeNext=root.querySelector<HTMLButtonElement>('[data-n1q-citation-next]');
+  const citePrevious=root.querySelector<HTMLButtonElement>('[data-n1q-citation-previous]');
+  const citeCopy=root.querySelector<HTMLButtonElement>('[data-n1r-citation-copy]');
+  const citeReader=root.querySelector<HTMLAnchorElement>('[data-n1r-citation-reader]');
+  const citeContext=root.querySelector<HTMLElement>('[data-n1r-citation-context]');
   const citeOpen=root.querySelector<HTMLButtonElement>('[data-n1q-citation-open]');
   const citePin=root.querySelector<HTMLButtonElement>('[data-n1q-citation-pin]');
   if(!citeSelect||!citeCount||!citeStatus||!synthBody
-    ||!citeInsert||!citeNext||!citeOpen||!citePin)
+    ||!citeInsert||!citeNext||!citePrevious||!citeCopy||!citeReader||!citeContext
+    ||!citeOpen||!citePin)
     throw new Error('Inline synthesis citation navigator is missing.');
   const controls=new Map<ResearchView,HTMLButtonElement>();
   for(const view of modes){
@@ -138,8 +145,18 @@ export function mountResearchViews(
       +' · '+sources.length+' available collection sources';
     citeInsert.disabled=!current||!host.synthesis();
     citeNext.disabled=!current||!uses||!host.synthesis();
+    citePrevious.disabled=citeNext.disabled;
     citeOpen.disabled=!current;
     citePin.disabled=!current;
+    citeCopy.disabled=!current;
+    const href=current?host.sourceHref(current):undefined;
+    citeReader.hidden=!href;
+    if(href)citeReader.href=href;
+    citeContext.textContent=current
+      ?host.bookTitle(current.workId)+' · Note revision '+current.revision
+        +' · '+uses+' link(s) in this synthesis'
+        +' · Source anchor '+(current.anchor?.format??'not recorded')
+      :'Select a collected note to see its saved source and citation status.';
   }
   const bindCitation=(node:HTMLElement,event:string,callback:EventListener)=>{
     node.addEventListener(event,callback);
@@ -195,6 +212,24 @@ export function mountResearchViews(
     }catch(error){
       citeStatus.textContent=error instanceof Error?error.message:'Cannot insert citation.';
     }
+  });
+  bindCitation(citePrevious,'click',()=>{
+    const note=chosen();if(!note)return;
+    const location=previousResearchCitation(researchCitationLocations(host.draft().body),
+      note.id,synthBody.selectionStart);
+    if(!location){citeStatus.textContent='No authored citation exists for this note.';return;}
+    show('write','[data-research-synthesis-body]');
+    synthBody.focus();
+    synthBody.setSelectionRange(location.start,location.end);
+    citeStatus.textContent='Located the previous authored citation; no note content changed.';
+  });
+  bindCitation(citeCopy,'click',()=>{
+    const note=chosen();if(!note)return;
+    const reference='[[note:'+note.id+'|'
+      +notebookTitle(note).replace(/[\]\r\n|]/g,' ').trim().slice(0,120)+']]';
+    void navigator.clipboard.writeText(reference)
+      .then(()=>{citeStatus.textContent='Stable-ID reference copied from the saved note.';},
+        ()=>{citeStatus.textContent='Clipboard unavailable; use Insert stable link.';});
   });
   bindCitation(citeNext,'click',()=>{
     const note=chosen();if(!note)return;
