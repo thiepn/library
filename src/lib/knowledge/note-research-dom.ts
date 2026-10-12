@@ -18,6 +18,7 @@ export interface ResearchWorkbenchHost {
 export interface ResearchWorkbench {
   refresh(): Promise<void>;
   addNote(noteId: string): Promise<void>;
+  addNotes(noteIds: readonly string[]): Promise<void>;
   dispose(): void;
 }
 type Side = 'left'|'right';
@@ -221,6 +222,20 @@ export function mountResearchWorkbench(
           button('Copy link',()=>copyNoteLink(note)),
         );
       }
+      const move=(direction:-1|1)=>{
+        if(!active)return;
+        const index=active.noteIds.indexOf(id), next=index+direction;
+        if(next<0||next>=active.noteIds.length)return;
+        try {
+          const ids=[...active.noteIds];
+          [ids[index],ids[next]]=[ids[next],ids[index]];
+          active=setResearchCollectionNotes(active.id,ids);
+          renderDetail();notify('Source order updated for this collection.');
+        } catch(error){notify(error instanceof Error?error.message:'Cannot reorder sources.');}
+      };
+      if(active.noteIds.indexOf(id)>0)actions.append(button('↑ Earlier',()=>move(-1)));
+      if(active.noteIds.indexOf(id)<active.noteIds.length-1)
+        actions.append(button('↓ Later',()=>move(1)));
       actions.append(button('Remove',()=>{
         if(!active)return;
         try {
@@ -270,16 +285,21 @@ export function mountResearchWorkbench(
     }
     renderDetail();
   }
-  async function addNote(noteId:string):Promise<void> {
+  async function addNotes(noteIds:readonly string[]):Promise<void> {
     if(!active){notify('Create or select a collection first.');root.scrollIntoView({behavior:'smooth'});return;}
-    if(!byId(noteId)){notify('The selected note is unavailable on this device.');return;}
+    const unique=[...new Set(noteIds)].filter(id=>!!byId(id) && !active!.noteIds.includes(id));
+    if(!unique.length){notify('All selected source notes are already collected or unavailable.');return;}
     try {
-      if(active.noteIds.includes(noteId)){notify('This note is already in the collection.');return;}
-      active=setResearchCollectionNotes(active.id,[...active.noteIds,noteId]);
-      if(!pins.left)pins.left=noteId;
-      else if(!pins.right)pins.right=noteId;
-      renderDetail();notify('Added to '+active.name+'. The original note was not changed.');
-    } catch(error){notify(error instanceof Error?error.message:'Unable to add note.');}
+      const previous=active.noteIds.length;
+      active=setResearchCollectionNotes(active.id,[...active.noteIds,...unique]);
+      if(!pins.left)pins.left=active.noteIds[0]??'';
+      if(!pins.right)pins.right=active.noteIds[1]??'';
+      renderDetail();
+      notify((active.noteIds.length-previous)+' notes added to '+active.name+'. Original notes remain unchanged.');
+    } catch(error){notify(error instanceof Error?error.message:'Unable to collect sources.');}
+  }
+  async function addNote(noteId:string):Promise<void> {
+    return addNotes([noteId]);
   }
   async function refresh():Promise<void> {
     const token=++revision;
@@ -408,7 +428,7 @@ export function mountResearchWorkbench(
   const unsubscribe=subscribeBookNotes(()=>{void refresh();});
   void refresh();
   return {
-    refresh,addNote,dispose(){
+    refresh,addNote,addNotes,dispose(){
       disposed=true;
       for(const off of events)off();
       unsubscribe();
