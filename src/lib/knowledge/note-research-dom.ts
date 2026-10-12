@@ -3,7 +3,7 @@ import { renderNotebookPreview } from './note-preview';
 import { notebookTitle, type BookNoteDocumentV1 } from './note-model';
 import { findNotebookNotes } from './note-links';
 import {
-  createResearchCollection, deleteResearchCollection,
+  createResearchCollection, deleteResearchCollection, RESEARCH_WORKFLOWS,
   describeResearchSource, exportResearchCollectionIndex, groupedResearchMarkdown,
   importResearchCollectionIndex, loadResearchCollections, researchSynthesisBody,
   setResearchCollectionNotes, updateResearchCollection,
@@ -47,6 +47,7 @@ export function mountResearchWorkbench(
   const description=$<HTMLElement>('[data-research-description]');
   const newName=$<HTMLInputElement>('[data-research-new-name]');
   const newDescription=$<HTMLInputElement>('[data-research-new-description]');
+  const newWorkflow=$<HTMLSelectElement>('[data-research-new-workflow]');
   const search=$<HTMLInputElement>('[data-research-find]');
   const results=$<HTMLElement>('[data-research-search-results]');
   const sourcesList=$<HTMLElement>('[data-research-sources]');
@@ -238,7 +239,8 @@ export function mountResearchWorkbench(
     detail.hidden=!active;
     if(!active){sourcesList.replaceChildren();return;}
     name.textContent=active.name;
-    description.textContent=active.description||'No project description';
+    description.textContent=(active.description||'No project description')+' · Workflow: '
+      +(RESEARCH_WORKFLOWS.find(w=>w.id===active?.workflowId)?.label??'Open research');
     renderSources();renderSearch();renderSide('left');renderSide('right');renderSynthesis();
   }
   async function activate(id:string,force=false):Promise<void> {
@@ -286,8 +288,8 @@ export function mountResearchWorkbench(
   bind('[data-research-create]','click',()=>{
     if(!guardSwitch())return;
     try {
-      const created=createResearchCollection(newName.value,newDescription.value);
-      newName.value='';newDescription.value='';
+      const created=createResearchCollection(newName.value,newDescription.value,newWorkflow.value);
+      newName.value='';newDescription.value='';newWorkflow.value='open-research';
       void activate(created.id,true).then(()=>notify('Collection created locally. Add source notes to begin.'));
     } catch(error){notify(error instanceof Error?error.message:'Unable to create collection.');}
   });
