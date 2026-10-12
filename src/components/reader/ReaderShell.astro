@@ -14,6 +14,7 @@ interface Props {
   fallbackWebHref?: string;
   fallbackPdfHref?: string;
   fallbackEpubHref?: string;
+  notebookHref?: string;
 }
 
 const {
@@ -27,6 +28,7 @@ const {
   fallbackWebHref,
   fallbackPdfHref,
   fallbackEpubHref,
+  notebookHref,
 } = Astro.props;
 ---
 <div class="reader-shell" data-reader-shell data-reader-status="loading" data-reader-controls="visible" data-reader-flow="paginated" data-reader-spread-preference="auto" data-reader-spread="single" data-reader-font-family="publisher" data-reader-alignment="left">
@@ -34,6 +36,14 @@ const {
     <div class="reader-shell__cluster reader-shell__cluster--start">
       <a class="reader-shell__icon-button" href={backHref} aria-label={backLabel} title={backLabel}>
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7" /></svg>
+      </a>
+      <a class="reader-shell__icon-button" data-reader-notebook
+        href={notebookHref || '#'}
+        hidden={!notebookHref}
+        aria-label="Open book notebook" title="Open book notebook">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M5 4.5c2.5-1.4 4.8-1.4 7 .1 2.2-1.5 4.5-1.5 7-.1v15c-2.5-1.4-4.8-1.4-7 .1-2.2-1.5-4.5-1.5-7-.1zM12 4.6v15" />
+        </svg>
       </a>
     </div>
 
