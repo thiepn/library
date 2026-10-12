@@ -1,4 +1,4 @@
-run: 2026-10-12-final-essentials
+run: 2026-10-12-final-essentials-checkpoint-repair
 mode: one-time-essential-canon
 catalog: src/publications/curated-canon.tsv
 selected-books: 29

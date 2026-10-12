@@ -4,12 +4,13 @@ The Public Domain Autopilot is the Library's unattended acquisition pipeline for
 
 ## Schedule
 
-- Runs weekly through GitHub Actions.
-- Default batch: 10 new books.
+- Recurring acquisition was deliberately stopped on 2026-10-12 after the owner selected a final 29-book essential canon.
+- The weekly GitHub Actions schedule is disabled; only explicitly authorized manual maintenance or one-time curated acquisition is allowed.
+- The existing official-popularity pipeline remains available for troubleshooting but must not resume recurring or bulk imports.
 - Durable discovery starts from Project Gutenberg's official machine-readable catalog.
 - Up to two Gutendex popularity pages are optional ranking enrichment only.
 - Manual `workflow_dispatch` remains available for maintenance or a larger one-off batch.
-- An authorized hourly Library Autopilot Supervisor handles verified promotion branches, CI, merge recovery, and failed-run repair without requiring routine user action.
+- The former hourly Library Autopilot Supervisor is disabled; no recurring automatic promotion is authorized.
 
 ## Selection
 
