@@ -1,6 +1,7 @@
 import { listBookNotes } from './note-store';
 import { requestResearchView } from './note-research-n1q-view';
 import { completeResearchHandoff } from './note-research-n1o-handoff';
+import { researchSectionCitationLedger } from './note-research-n1t-ledger';
 import { findNotebookNotes, noteReferenceMarkdown } from './note-links';
 import { notebookTitle, type BookNoteDocumentV1 } from './note-model';
 import { loadResearchCollections, type ResearchCollection } from './note-research';
@@ -83,11 +84,13 @@ export function mountResearchN1O(
   const counterButton=$<HTMLButtonElement>('[data-n1o-write-counter]');
   const compareButton=$<HTMLButtonElement>('[data-n1o-write-source-review]');
   const writingHelp=$<HTMLElement>('[data-n1o-writing-help]');
+  const exportLedger=$<HTMLButtonElement>('[data-n1t-export-ledger]');
   const synthesisBody=$<HTMLTextAreaElement>('[data-research-synthesis-body]');
   const disposers:Array<()=>void>=[];
   let refreshTimer:ReturnType<typeof setTimeout>|undefined;
   let busyExport=false;
   let busyHandoff=false;
+  let busyLedger=false;
   const bind=(selector:string,event:string,callback:EventListener)=>{
     const control=$(selector);control.addEventListener(event,callback);
     disposers.push(()=>control.removeEventListener(event,callback));
@@ -219,6 +222,7 @@ export function mountResearchN1O(
     renderSourceDetails();
   }
   function renderSourceDetails():void {
+    exportLedger.disabled=!host.synthesis()||busyLedger;
     const source=chosenSource();
     insertButton.disabled=!source||!host.synthesis();
     copyButton.disabled=!source;
@@ -400,6 +404,30 @@ export function mountResearchN1O(
     )).finally(()=>{busyExport=false;});
   });
 
+  bind('[data-n1t-export-ledger]','click',()=>{
+    if(busyLedger)return;
+    const active=host.active();
+    if(!active){host.notify('Choose a research collection before exporting a saved citation ledger.');return;}
+    if(host.isDirty()){
+      host.notify('Save the current writing first. The citation ledger represents saved note revisions only.');
+      return;
+    }
+    busyLedger=true;exportLedger.disabled=true;
+    void listBookNotes().then(all=>{
+      const latest=loadResearchCollections().find(item=>item.id===active.id);
+      if(!latest?.synthesisId)throw new Error('This research collection has no saved native synthesis.');
+      const saved=all.find(note=>note.id===latest.synthesisId);
+      if(!saved)throw new Error('Saved synthesis is unavailable. Restore original notes using Library V2 backup.');
+      const packet=researchSectionCitationLedger(latest,saved,all,host.bookTitle,host.sourceHref);
+      download('section-citations-'+filename(latest.name)+'.md',packet);
+      host.notify('Saved synthesis citation ledger download requested; current unsaved drafts were not included.');
+    }).catch(error=>host.notify(
+      error instanceof Error?error.message:'Section citation export unavailable.',
+    )).finally(()=>{
+      busyLedger=false;
+      exportLedger.disabled=!host.synthesis();
+    });
+  });
   bind('[data-n1o-export-handoff]','click',()=>{
     if(busyHandoff)return;
     const active=host.active();
