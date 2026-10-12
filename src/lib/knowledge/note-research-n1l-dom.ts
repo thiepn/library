@@ -7,6 +7,10 @@ import {
 } from './note-research-n1s-evidence';
 import { requestResearchView } from './note-research-n1q-view';
 import {
+  researchSectionAgenda, nextSectionGap, appendReferenceInSection,
+  sourceComparisonForSection, researchContinuityMarkdown,
+} from './note-research-n1t-continuity';
+import {
   researchSynthesisSections, moveSynthesisSection, synthesisSectionTemplate,
   insertSynthesisSection, sectionWritingPacketMarkdown,
   type SynthesisSectionTemplate,
@@ -72,6 +76,9 @@ export function mountResearchN1L(root:HTMLElement,host:ResearchN1LHost):Research
   const evidenceCount=$<HTMLElement>('[data-n1s-evidence-count]');
   const evidenceStatus=$<HTMLElement>('[data-n1s-evidence-status]');
   const evidenceExport=$<HTMLButtonElement>('[data-n1s-evidence-export]');
+  const nextGap=$<HTMLButtonElement>('[data-n1t-next-gap]');
+  const comparePins=$<HTMLButtonElement>('[data-n1t-compare-pins]');
+  const exportContinuity=$<HTMLButtonElement>('[data-n1t-export-continuity]');
   const callbacks:Array<()=>void>=[];
   let session:ResearchSession|undefined;
   let selectedSectionStart:number|undefined;
@@ -283,6 +290,14 @@ export function mountResearchN1L(root:HTMLElement,host:ResearchN1LHost):Research
     const context=evidenceContext;
     evidenceList.replaceChildren();
     evidenceExport.disabled=!active||!context;
+    const agenda=active?researchSectionAgenda(host.getDraft().body,active,host.notes()):[];
+    nextGap.disabled=!agenda.some(row=>row.gapReasons.length);
+    exportContinuity.disabled=!host.synthesis()||!active;
+    const pair=host.pins();
+    comparePins.disabled=!host.synthesis()||!active
+      ||!pair.left||!pair.right||pair.left===pair.right
+      ||!active.noteIds.includes(pair.left)||!active.noteIds.includes(pair.right)
+      ||!sourceById().has(pair.left)||!sourceById().has(pair.right);
     if(!context){
       evidenceCount.textContent='Choose a synthesis section to inspect citations and related saved notes.';
       return;
@@ -349,6 +364,76 @@ export function mountResearchN1L(root:HTMLElement,host:ResearchN1LHost):Research
       &&!context.outsideCollectionIds.length)
       rowFor('No additional grounded suggestions',
         'Shared #topic markers, authored note links or matching heading/title terms would surface candidates here.');
+  }
+  function selectedSectionIndex():number {
+    if(selectedSectionStart===undefined)return -1;
+    return researchSynthesisSections(host.getDraft().body)
+      .findIndex(section=>section.start===selectedSectionStart);
+  }
+  function goToNextGap():void {
+    const collection=host.active(),synthesis=host.synthesis();
+    if(!collection||!synthesis)return;
+    const agenda=researchSectionAgenda(host.getDraft().body,collection,host.notes());
+    const next=nextSectionGap(agenda,selectedSectionIndex());
+    if(!next){
+      evidenceStatus.textContent='No explicit citation/link gaps detected. This does not verify the claims.';
+      return;
+    }
+    selectedSectionStart=next.section.start;
+    selectedSectionLabel=next.section.title;
+    renderOutline();
+    requestResearchView(root,'write','[data-n1s-evidence-list]');
+    evidenceStatus.textContent='Next source-navigation issue: '+next.gapReasons.join('; ')+'.';
+    synthBody.setSelectionRange(next.section.start,next.section.start);
+  }
+  function insertPinnedComparison():void {
+    const collection=host.active(),synthesis=host.synthesis();
+    if(!collection||!synthesis)return;
+    const {left,right}=host.pins();
+    const byId=sourceById(),a=byId.get(left),b=byId.get(right);
+    if(!a||!b||!collection.noteIds.includes(left)||!collection.noteIds.includes(right)){
+      evidenceStatus.textContent='Pin two available notes from the same selected collection first.';
+      return;
+    }
+    try {
+      const scaffold=sourceComparisonForSection(a,b,host.bookTitle);
+      const activeIndex=selectedSectionIndex();
+      const inserted=insertSynthesisSection(host.getDraft().body,activeIndex,
+        scaffold,synthBody.maxLength);
+      const title=host.getDraft().title;
+      selectedSectionStart=undefined;selectedSectionLabel='';
+      host.setDraft(title,inserted.body);
+      requestResearchView(root,'write','[data-research-synthesis-body]');
+      synthBody.focus();
+      synthBody.setSelectionRange(inserted.caret,inserted.caret);
+      evidenceStatus.textContent='Comparison outline inserted in the native synthesis draft; inspect the books and save explicitly.';
+    }catch(error){
+      evidenceStatus.textContent=error instanceof Error?error.message:'Comparison unavailable.';
+    }
+  }
+  function appendSelectedSource(noteId:string):void {
+    const collection=host.active(),synthesis=host.synthesis(),note=sourceById().get(noteId);
+    if(!collection||!synthesis||!note||!collection.noteIds.includes(noteId)){
+      evidenceStatus.textContent='Select a valid saved source from this research collection.';
+      return;
+    }
+    const index=selectedSectionIndex();
+    if(index<0){
+      requestResearchView(root,'write','[data-n1r-section-picker]');
+      evidenceStatus.textContent='Choose the destination synthesis heading before citing this source.';
+      sectionPicker.focus();
+      return;
+    }
+    try {
+      const change=appendReferenceInSection(host.getDraft().body,index,note,synthBody.maxLength);
+      host.setDraft(host.getDraft().title,change.body);
+      requestResearchView(root,'write','[data-research-synthesis-body]');
+      synthBody.focus();
+      synthBody.setSelectionRange(change.cursor,change.cursor);
+      evidenceStatus.textContent='Stable-ID citation inserted in the selected section. Check the original and save explicitly.';
+    }catch(error){
+      evidenceStatus.textContent=error instanceof Error?error.message:'Unable to insert section citation.';
+    }
   }
   function openCandidate(note:BookNoteDocumentV1):void {
     if(host.isDirty()&&!window.confirm(
@@ -444,6 +529,22 @@ export function mountResearchN1L(root:HTMLElement,host:ResearchN1LHost):Research
     $<HTMLButtonElement>('[data-research-export-selected]').disabled=!active;
   }
 
+  bind('[data-n1t-next-gap]','click',goToNextGap);
+  bind('[data-n1t-compare-pins]','click',insertPinnedComparison);
+  bind('[data-n1t-export-continuity]','click',()=>{
+    const collection=host.active(),synthesis=host.synthesis();
+    if(!collection||!synthesis)return;
+    const packet=researchContinuityMarkdown(collection,host.getDraft().body,
+      synthesis.revision,host.notes(),host.bookTitle,host.sourceHref,host.isDirty());
+    download('writing-continuity-'+filename(collection.name)+'.md',packet);
+    evidenceStatus.textContent='Research continuity working-copy download requested; saved notebook records unchanged.';
+  });
+  const receiveSource=(event:Event)=>{
+    const id=(event as CustomEvent<{noteId:string;collectionId:string}>).detail;
+    if(id?.collectionId===host.active()?.id && id.noteId)appendSelectedSource(id.noteId);
+  };
+  root.addEventListener('library-research-cite-in-section',receiveSource);
+  callbacks.push(()=>root.removeEventListener('library-research-cite-in-section',receiveSource));
   bind('[data-n1s-evidence-export]','click',()=>{
     const active=host.active(),context=selectedContext(),synthesis=host.synthesis();
     if(!active||!context||!synthesis)return;
