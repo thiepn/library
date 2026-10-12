@@ -42,7 +42,7 @@ export function mountReaderNotebook(options: CaptureOptions): CaptureHandle {
     '<p data-capture-status role="status" aria-live="polite"></p>',
     '<div class="reader-notebook__actions"><button type="button" data-capture-save>Save now</button>',
     '<button type="button" data-capture-copy>Copy Markdown</button><button type="button" data-capture-done>Done</button></div>',
-    '<p class="reader-notebook__warning">Local-only: notebook records are not yet in Account sync or JSON backups. Export important notes from Book Notebook until N1C.</p>',
+    '<p class="reader-notebook__warning">Notebook records are included in V2 JSON backup. Cloud sync is paused until the server V2 safety guard is enabled. Keep a manual backup.</p>',
   ].join('');
   document.body.append(dialog);
   const title = dialog.querySelector<HTMLInputElement>('[data-capture-title]')!;
