@@ -223,6 +223,27 @@ const catalog = (await getWorks()).map((work) => ({
             aria-keyshortcuts="Alt+Shift+4">4 · Review</button>
           <span class="micro" data-n1q-view-state aria-live="polite">Discover notes and collections</span>
         </nav>
+        <details class="book-notebook__n1q-export-hub">
+          <summary>Export and handoff options</summary>
+          <div class="book-notebook__n1q-export-fields">
+            <label for="n1q-export-format">Choose output</label>
+            <select id="n1q-export-format" data-n1q-export-format>
+              <option value="handoff">Complete saved research handoff</option>
+              <option value="knowledge">Knowledge summary</option>
+              <option value="evidence">Evidence coverage review</option>
+              <option value="bibliography">Source bibliography</option>
+              <option value="research-package">Research package JSON</option>
+              <option value="catalogue">All-collection catalogue</option>
+              <option value="index">Collection index JSON</option>
+              <option value="review">Temporary review checklist</option>
+              <option value="draft">Current unsaved writing draft</option>
+            </select>
+            <button type="button" data-n1q-export-run>Prepare selected export</button>
+            <span class="micro" role="status" aria-live="polite" data-n1q-export-status>
+              Reports use saved note revisions unless explicitly marked as a writing draft.
+            </span>
+          </div>
+        </details>
         <div class="book-notebook__research-create">
           <label for="research-new-name">New collection</label>
           <input id="research-new-name" maxlength="100" data-research-new-name placeholder="e.g. Discipleship in four books" />
