@@ -1,4 +1,5 @@
 import { createBookNote, listBookNotes, updateBookNote } from './note-store';
+import { downloadNotebookRecovery } from './note-recovery';
 import { normalizedChapterKey, type BookNoteDocumentV1, type BookNoteScope, type SourceAnchorV1 } from './note-model';
 
 export interface CaptureContext {
@@ -41,7 +42,7 @@ export function mountReaderNotebook(options: CaptureOptions): CaptureHandle {
     '<label for="reader-notebook-body">Markdown note</label><textarea id="reader-notebook-body" data-capture-body maxlength="250000" placeholder="Write a thought or summary…"></textarea>',
     '<p data-capture-status role="status" aria-live="polite"></p>',
     '<div class="reader-notebook__actions"><button type="button" data-capture-save>Save now</button>',
-    '<button type="button" data-capture-copy>Copy Markdown</button><button type="button" data-capture-done>Done</button></div>',
+    '<button type="button" data-capture-copy>Copy Markdown</button><button type="button" data-capture-recover>Download draft</button><button type="button" data-capture-done>Done</button></div>',
     '<p class="reader-notebook__warning">Notebook records are included in V2 JSON backup. Cloud sync is paused until the server V2 safety guard is enabled. Keep a manual backup.</p>',
   ].join('');
   document.body.append(dialog);
@@ -83,7 +84,7 @@ export function mountReaderNotebook(options: CaptureOptions): CaptureHandle {
       if (dirty()) schedule();
       return true;
     } catch (error) {
-      setStatus(error instanceof Error ? error.message : 'Save failed. Copy your text before closing.');
+      setStatus(error instanceof Error ? error.message : 'Save failed. Download your draft or copy the text before closing.');
       return false;
     } finally { saving = false; }
   }
@@ -97,6 +98,10 @@ export function mountReaderNotebook(options: CaptureOptions): CaptureHandle {
       : next === 'chapter-summary' ? context.chapterLabel + ' — summary' : 'Reading note';
     title.value = defaultTitle; body.value = selected?.quote && next === 'reading-note' ? quoteMarkdown(selected.quote) : '';
     savedTitle = defaultTitle; savedBody = '';
+    // Block editing only while an existing singleton is being loaded; never overwrite typed text.
+    const loadingSingleton = next !== 'reading-note';
+    title.disabled = loadingSingleton;
+    body.disabled = loadingSingleton;
     modeButtons.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.captureScope === next)));
     setStatus('Draft — not yet saved');
     source.textContent = context.chapterLabel + ' · ' + context.anchor.format.toUpperCase();
@@ -116,11 +121,18 @@ export function mountReaderNotebook(options: CaptureOptions): CaptureHandle {
         }
       } catch {
         // Never create a second singleton when the existing-record lookup failed.
-        draft = false;
-        setStatus('Cannot load this notebook. Copy any text before closing.');
+        if (seq === epoch) {
+          draft = false;
+          setStatus('Cannot load this notebook. Download your draft before closing.');
+        }
+      } finally {
+        if (seq === epoch) {
+          title.disabled = false;
+          body.disabled = false;
+          body.focus({ preventScroll: true });
+        }
       }
-    }
-    body.focus({ preventScroll: true });
+    } else body.focus({ preventScroll: true });
   }
   function open(kind: BookNoteScope = 'reading-note', selection?: { quote: string; anchor: SourceAnchorV1 }) {
     if (dialog.open || destroyed) return;
@@ -135,6 +147,7 @@ export function mountReaderNotebook(options: CaptureOptions): CaptureHandle {
   async function close() {
     if (dirty() && !await save()) return;
     ++epoch; clear(); dialog.close();
+    title.disabled = false; body.disabled = false;
     context = undefined; record = undefined; draft = false;
     if (opener.isConnected && !opener.closest('[hidden]') && opener.getClientRects().length > 0) opener.focus({ preventScroll: true });
     else button.focus({ preventScroll: true });
@@ -150,6 +163,16 @@ export function mountReaderNotebook(options: CaptureOptions): CaptureHandle {
       setStatus('Copied');
     } catch { setStatus('Clipboard unavailable. Select and copy the text directly.'); }
   });
+  dialog.querySelector('[data-capture-recover]')!.addEventListener('click', () => {
+    if (!context) return;
+    downloadNotebookRecovery({
+      workId: context.workId, scope, title: title.value, bodyMarkdown: body.value,
+      ...(record ? { id: record.id } : {}),
+      ...(scope === 'chapter-summary' ? { chapterKey: context.chapterKey } : {}),
+      ...(context.anchor ? { anchor: context.anchor } : {}),
+    });
+    setStatus('Draft downloaded separately. This is not a confirmed save.');
+  });
   modeButtons.forEach(b => b.addEventListener('click', () => {
     const next = b.dataset.captureScope as BookNoteScope;
     if (next && next !== scope) void changeScope(next);
@@ -164,7 +187,14 @@ export function mountReaderNotebook(options: CaptureOptions): CaptureHandle {
     }
     event.stopPropagation(); // Arrow/page shortcuts must not reach the underlying reader.
   });
+  const warnUnsavedUnload = (event: BeforeUnloadEvent) => {
+    if (!dirty()) return;
+    event.preventDefault();
+    event.returnValue = '';
+  };
+  window.addEventListener('beforeunload', warnUnsavedUnload);
   return { get isOpen() { return dialog.open; }, open, destroy() {
+    window.removeEventListener('beforeunload', warnUnsavedUnload);
     destroyed = true; ++epoch; clear();
     if (dialog.open) dialog.close();
     dialog.remove(); button.remove();
