@@ -4,6 +4,7 @@ import { loadResearchCollections, describeResearchSource, type ResearchCollectio
 import { researchDossierMarkdown } from './note-research-handoff';
 import { consolidateResearch, researchKnowledgeMarkdown } from './note-consolidation';
 import { auditResearchCitations, evidenceReviewMarkdown } from './note-evidence-workflows';
+import { researchContinuityMarkdown } from './note-research-n1t-continuity';
 
 /**
  * Human-readable, source-qualified working research file, NOT a signed custody
@@ -60,6 +61,11 @@ export function completeResearchHandoff(
     '','---','',
     evidenceReviewMarkdown(collection,audit,synthesis).trim(),
     '','---','',
+    ...(synthesis?[
+      researchContinuityMarkdown(collection,synthesis.bodyMarkdown,
+        synthesis.revision,local,workTitle,readerLink,false).trim(),
+      '','---','',
+    ]:[]),
     researchDossierMarkdown(collection,sources,synthesis).trim(),
     '');
   return rows.join('\n');
