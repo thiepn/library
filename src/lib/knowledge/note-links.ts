@@ -153,3 +153,46 @@ export function insertNotebookReference(value:string,from:number,to:number,refer
   return { value:value.slice(0,start)+reference+value.slice(end),
     selectionStart:start+reference.length,selectionEnd:start+reference.length };
 }
+
+
+export interface SuggestedNote {
+  note: BookNoteDocumentV1;
+  sharedTerms: string[];
+  score: number;
+}
+
+/**
+ * Transparent lexical suggestions, not inferred understanding or AI mastery.
+ * The reading data stays local; short generic words receive no weight.
+ */
+export function suggestRelatedNotebookNotes(
+  active: BookNoteDocumentV1,
+  all: readonly BookNoteDocumentV1[],
+  currentDraft = active.bodyMarkdown,
+  limit = 5,
+): SuggestedNote[] {
+  const ignored = new Set([
+    'the','and','for','with','from','that','this','was','are','you','your','has',
+    'der','die','das','dem','den','und','oder','mit','von','zur','zum','eine',
+    'einer','einen','nicht','auch','dass','sind','ist','des','auf','für',
+    'chapter','note','notes','book','reading','page','summary','über','nach',
+  ]);
+  const words = (text:string): Set<string> => new Set(
+    normalize(text).match(/[\p{L}\p{N}]{4,}/gu)?.filter(token=>!ignored.has(token)) ?? [],
+  );
+  const titleTerms=words(active.title+' '+(active.chapterKey??''));
+  const contentTerms=words(currentDraft.slice(0,5000));
+  const own=new Set([...titleTerms,...contentTerms]);
+  if(own.size<2)return [];
+  return all.filter(note=>note.id!==active.id).flatMap(note=>{
+    const otherTitle=words(note.title+' '+(note.chapterKey??''));
+    const otherBody=words(note.bodyMarkdown.slice(0,5000));
+    const common=[...own].filter(token=>otherTitle.has(token)||otherBody.has(token));
+    if(common.length<2)return [];
+    const score=common.reduce((total,token)=>
+      total+(titleTerms.has(token)?3:1)+(otherTitle.has(token)?3:1),0)
+      +(active.workId!==note.workId?1:0);
+    return [{note,sharedTerms:common.slice(0,4),score}];
+  }).sort((a,b)=>b.score-a.score || b.note.updatedAt.localeCompare(a.note.updatedAt))
+    .slice(0,Math.max(1,Math.min(12,limit)));
+}
