@@ -1,4 +1,5 @@
 import { listBookNotes } from './note-store';
+import { requestResearchView } from './note-research-n1q-view';
 import { readNotebookContinuity, orderResearchCollections, NOTEBOOK_CONTINUITY_KEY } from './note-continuity';
 import { notebookTitle, type BookNoteDocumentV1 } from './note-model';
 import { extractNotebookTopics } from './note-workspace';
@@ -102,11 +103,13 @@ export function mountKnowledgeWorkbench(
   }
   function scrollToSource(source:SourceCoverage):void {
     host.pinSource(source.id);
+    requestResearchView(root,'sources','[data-research-compare]');
     const panel=$<HTMLElement>('[data-research-compare]');
     panel.scrollIntoView({behavior:'smooth',block:'start'});
   }
   function jumpToPosition(offset:number):void {
     if(!host.synthesis())return;
+    requestResearchView(root,'write','[data-research-synthesis-body]');
     synthBody.focus();
     synthBody.setSelectionRange(offset,offset);
     const prior=synthBody.value.slice(0,offset);
@@ -130,6 +133,7 @@ export function mountKnowledgeWorkbench(
       host.notify('The synthesis note has reached its text limit.');return;
     }
     host.setDraft(host.draft().title,replacement);
+    requestResearchView(root,'write','[data-research-synthesis-body]');
     synthBody.focus();
     synthBody.setSelectionRange(a+insertion.length,a+insertion.length);
   }
@@ -223,6 +227,7 @@ export function mountKnowledgeWorkbench(
       const show=action('Filter sources',()=>{
         const filter=$<HTMLInputElement>('[data-research-filter-sources]');
         filter.value=topic.id;filter.dispatchEvent(new Event('input',{bubbles:true}));
+        requestResearchView(root,'sources','[data-research-filter-sources]');
         filter.scrollIntoView({behavior:'smooth',block:'center'});
       });
       item.append(show);topics.append(item);
