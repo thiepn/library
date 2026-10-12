@@ -3,6 +3,8 @@ import {
 } from './note-research-n1p-writing';
 import { notebookTitle, type BookNoteDocumentV1 } from './note-model';
 import { noteReferenceMarkdown } from './note-links';
+import { extractNotebookTopics } from './note-workspace';
+import { synthesisSectionTemplate } from './note-research-n1r-sections';
 import { requestResearchView } from './note-research-n1q-view';
 import { readResearchDraftCheckpoint } from './note-research-drafts';
 import { loadResearchCollections, describeResearchSource,
@@ -72,6 +74,8 @@ export function mountResearchN1P(
   const queue=$<HTMLElement>('[data-n1p-review-queue]');
   const count=$<HTMLElement>('[data-n1p-review-count]');
   const status=$<HTMLElement>('[data-n1p-review-status]');
+  const reviewSearch=$<HTMLInputElement>('[data-n1r-review-search]');
+  const reviewNext=$<HTMLButtonElement>('[data-n1r-review-next]');
   const info=$<HTMLElement>('[data-n1p-flow-info]');
   const path=$<HTMLElement>('[data-n1p-source-path]');
   const start=$<HTMLButtonElement>('[data-n1p-review-start]');
@@ -111,6 +115,22 @@ export function mountResearchN1P(
     collectionSelect.value=[...collectionSelect.options].some(o=>o.value===old)?old:'all';
     start.disabled=!host.active()?.noteIds.length;
   }
+  const matchReviewQuery=(item:ResearchQueueItem,query:string[]):boolean=>{
+    if(!query.length)return true;
+    const words=[
+      notebookTitle(item.note),host.bookTitle(item.note.workId),
+      item.collectionName,describeResearchSource(item.note.anchor,item.note.chapterKey),
+      ...extractNotebookTopics(item.note.bodyMarkdown),
+    ].join(' ').normalize('NFKC').toLocaleLowerCase();
+    return query.every(term=>words.includes(term));
+  };
+  const currentReviewMatches=()=>{
+    const words=reviewSearch.value.normalize('NFKC').toLocaleLowerCase()
+      .split(/\s+/).filter(Boolean).slice(0,10);
+    return collectCrossBookReviewQueue(loadResearchCollections(),host.notes(),
+      collectionSelect.value,filter.value as QueueFilter,3600)
+      .filter(item=>matchReviewQuery(item,words));
+  };
   function renderQueue():void {
     queue.replaceChildren();
     const collections=loadResearchCollections();
@@ -119,13 +139,15 @@ export function mountResearchN1P(
     count.textContent=summary.revisit+' revisit · '+summary.pending+' pending · '
       +summary.reviewed+' reviewed across '+summary.books+' books'
       +(summary.unavailable?' · '+summary.unavailable+' unavailable source(s)':'');
-    const filtered=collectCrossBookReviewQueue(collections,notes,collectionSelect.value,
-      filter.value as QueueFilter,90);
+    const filtered=currentReviewMatches();
+    reviewNext.disabled=!filtered.some(item=>item.state==='revisit'||item.state==='pending');
     if(!filtered.length){
       queue.append(element('p','No notes in this view. Start a collection session, or change the status filter.'));
       return;
     }
-    for(const item of filtered){
+    if(filtered.length>90)
+      status.textContent='Showing the first 90 matching review entries of '+filtered.length+'. Narrow the search to reach other sources.';
+    for(const item of filtered.slice(0,90)){
       const row=document.createElement('article');
       row.className='book-notebook__n1p-review-entry';
       const name=document.createElement('div');
@@ -153,6 +175,7 @@ export function mountResearchN1P(
         action('Study in collection',()=>{void openReviewSource(item);}),
         action('Compare',()=>{void addReviewToBasket(item);}),
         action('Cite in synthesis',()=>{void citeReviewSource(item);}),
+        action('Writing prompt',()=>{void draftReviewPrompt(item);}),
         action('Copy citation',()=>{
           void navigator.clipboard.writeText(noteReferenceMarkdown(item.note))
             .then(()=>{status.textContent='Stable note reference copied.';},
@@ -232,6 +255,23 @@ export function mountResearchN1P(
     ].join('\n');
     if(insertInDraft(reference)){
       status.textContent='Stable-ID source citation inserted into the synthesis editor. Save explicitly to commit the note revision.';
+    }
+  }
+  async function draftReviewPrompt(item:ResearchQueueItem):Promise<void> {
+    if(host.active()?.id!==item.collectionId)await openReviewSource(item);
+    if(disposed||host.active()?.id!==item.collectionId)return;
+    const note=host.notes().find(candidate=>candidate.id===item.note.id);
+    if(!note||!host.active()?.noteIds.includes(note.id)){
+      status.textContent='The original saved review source is no longer available.';
+      return;
+    }
+    if(!host.synthesis()){
+      requestResearchView(root,'write','[data-research-make-synthesis]');
+      status.textContent='Create a native synthesis for this collection before inserting a reading prompt.';
+      return;
+    }
+    if(insertInDraft(synthesisSectionTemplate('reading',note))){
+      status.textContent='Source-linked reading takeaway inserted in your current synthesis draft. Review and save explicitly.';
     }
   }
   function insertInDraft(markdown:string):boolean {
@@ -418,6 +458,12 @@ export function mountResearchN1P(
   });
   bind('[data-n1p-review-collection]','change',renderQueue);
   bind('[data-n1p-review-filter]','change',renderQueue);
+  bind('[data-n1r-review-search]','input',renderQueue);
+  bind('[data-n1r-review-next]','click',()=>{
+    const next=currentReviewMatches().find(item=>item.state==='revisit'||item.state==='pending');
+    if(next)void openReviewSource(next);
+    else status.textContent='No pending or revisit sources match this filter.';
+  });
   bind('[data-n1p-review-start]','click',()=>{
     const active=host.active();
     if(!active)return;
