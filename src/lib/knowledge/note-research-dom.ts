@@ -627,6 +627,7 @@ export function mountResearchWorkbench(
     sourceHref:note=>host.sourceHref(note),
     openNote:note=>host.openNote(note),
     openCollection:id=>activate(id),
+    collectNote:id=>addNote(id),
     notify,
   });
   void refresh();
