@@ -1,4 +1,5 @@
 import { listBookNotes } from './note-store';
+import { readNotebookContinuity, orderResearchCollections, NOTEBOOK_CONTINUITY_KEY } from './note-continuity';
 import { notebookTitle, type BookNoteDocumentV1 } from './note-model';
 import { extractNotebookTopics } from './note-workspace';
 import { describeResearchSource, loadResearchCollections,
@@ -144,14 +145,15 @@ export function mountKnowledgeWorkbench(
         ...extractNotebookTopics(note.bodyMarkdown),
       ])].join(' ').normalize('NFKC').toLocaleLowerCase();
       return words.every(word=>haystack.includes(word));
-    }).sort((a,b)=>b.updatedAt.localeCompare(a.updatedAt)).slice(0,30);
+    });
+    const ordered=orderResearchCollections(matches).slice(0,30);
     libraryResults.replaceChildren();
-    if(!matches.length){
+    if(!ordered.length){
       libraryResults.append(el('p',all.length?'No collections match this search.':
         'Create a collection to organize research across your books.'));
       return;
     }
-    for(const c of matches){
+    for(const c of ordered){
       const card=el('div');card.className='book-notebook__n1m-workspace';
       if(host.active()?.id===c.id)card.dataset.active='true';
       const label=el('div');label.className='book-notebook__n1m-workspace-text';
@@ -231,7 +233,12 @@ export function mountKnowledgeWorkbench(
     if(!result.sources.length){
       coverage.append(el('p','Collect source notes to build your evidence map.'));return;
     }
-    for(const source of result.sources.slice(0,120)){
+    const preferences=readNotebookContinuity();
+    const orderedSources=preferences.showUncitedFirst
+      ?[...result.sources].sort((a,b)=>
+        Number(!b.cited&&!!b.note)-Number(!a.cited&&!!a.note))
+      :result.sources;
+    for(const source of orderedSources.slice(0,120)){
       const row=el('div');row.className='book-notebook__n1m-source';
       const info=el('div');
       info.append(el('strong',source.title),
@@ -408,11 +415,19 @@ export function mountKnowledgeWorkbench(
     download('review-questions-'+safeFilename(collection.name)+'.md',text);
     host.notify('Open-ended research questions downloaded. Nothing was graded or saved automatically.');
   });
+  const preferencesUpdated=()=>{renderCollections();renderOverview();updateCopyOptions();};
+  window.addEventListener('library-notebook-preferences-changed',preferencesUpdated);
+  const storageUpdated=(event:StorageEvent)=>{
+    if(event.key===NOTEBOOK_CONTINUITY_KEY)preferencesUpdated();
+  };
+  window.addEventListener('storage',storageUpdated);
   onCollectionChanged();
   return {
     onCollectionChanged,onNotesChanged,onDraftChanged,
     dispose(){
       if(scheduled)clearTimeout(scheduled);
+      window.removeEventListener('library-notebook-preferences-changed',preferencesUpdated);
+      window.removeEventListener('storage',storageUpdated);
       for(const off of listeners)off();
     },
   };
