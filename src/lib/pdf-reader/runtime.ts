@@ -1,3 +1,4 @@
+import { mountReaderNotebook, type CaptureHandle } from '../knowledge/reader-capture';
 import {
   getDocument,
   GlobalWorkerOptions,
@@ -258,6 +259,7 @@ class PdfReaderController {
   private readonly candidate: PdfCanonicalCandidate;
   private readonly elements: PdfReaderElements;
   private readonly device: PdfDeviceController;
+  private readonly notebook: CaptureHandle;
   private readonly abort = new AbortController();
   private loadingTask?: PDFDocumentLoadingTask;
   private document?: PDFDocumentProxy;
@@ -287,6 +289,32 @@ class PdfReaderController {
     this.elements = collectElements(root);
     this.device = new PdfDeviceController(root);
     this.device.start();
+    this.notebook = mountReaderNotebook({
+      toolbar: this.elements.topbar.querySelector<HTMLElement>('.pdf-reader__tools') ?? this.elements.topbar,
+      getContext: () => ({
+        workId: this.candidate.identity.workId,
+        chapterKey: this.candidate.identity.releaseVersion + ':page:' + this.page,
+        chapterLabel: 'Page ' + this.page,
+        anchor: { format: 'pdf', edition: this.candidate.identity.edition,
+          releaseVersion: this.candidate.identity.releaseVersion, page: this.page },
+      }),
+      onOpen: () => this.closeActivePanel(),
+    });
+    const quoteButton = document.createElement('button');
+    quoteButton.type = 'button';
+    quoteButton.dataset.pdfSelectionNotebook = '';
+    quoteButton.textContent = 'Notebook';
+    this.elements.selectionDismiss.parentElement?.insertBefore(quoteButton, this.elements.selectionDismiss);
+    quoteButton.addEventListener('click', () => {
+      const pending = this.pendingSelection;
+      if (!pending) return;
+      this.notebook.open('reading-note', {
+        quote: pending.quote,
+        anchor: { format: 'pdf', edition: this.candidate.identity.edition,
+          releaseVersion: this.candidate.identity.releaseVersion, page: this.page },
+      });
+      this.dismissSelection();
+    }, { signal: this.abort.signal });
     this.bind();
   }
 
@@ -359,6 +387,7 @@ class PdfReaderController {
     this.elements.viewport.addEventListener('touchcancel', () => { this.swipeGesture = undefined; }, { signal, passive: true });
 
     document.addEventListener('keydown', (event) => {
+      if (this.notebook.isOpen) return;
       const openPanel = !this.elements.searchPanel.hidden
         ? this.elements.searchPanel
         : !this.elements.bookmarkPanel.hidden
@@ -1042,6 +1071,7 @@ class PdfReaderController {
     if (this.destroyed) return;
     this.destroyed = true;
     this.openGeneration += 1;
+    this.notebook.destroy();
     this.device.destroy();
     this.abort.abort();
     this.resizeObserver?.disconnect();
