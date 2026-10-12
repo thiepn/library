@@ -28,7 +28,7 @@ const isObject = (value: unknown): value is Record<string, unknown> =>
 const validDate = (value: unknown): value is string =>
   typeof value === 'string' && Number.isFinite(Date.parse(value));
 const validEdition = (value: unknown): value is number =>
-  Number.isSafeInteger(value) && (value as number) >= 0;
+  typeof value === 'number' && Number.isSafeInteger(value) && value >= 0;
 
 export function isSourceAnchorV1(value: unknown): value is SourceAnchorV1 {
   if (!isObject(value)) return false;
@@ -42,7 +42,7 @@ export function isSourceAnchorV1(value: unknown): value is SourceAnchorV1 {
   if (value.format === 'pdf') {
     return validEdition(value.edition)
       && typeof value.releaseVersion === 'string' && value.releaseVersion.length > 0
-      && Number.isSafeInteger(value.page) && (value.page as number) >= 1;
+      && typeof value.page === 'number' && Number.isSafeInteger(value.page) && value.page >= 1;
   }
   return value.format === 'web' && typeof value.chapterId === 'string' && value.chapterId.length > 0;
 }
@@ -69,7 +69,7 @@ export function isBookNoteDocumentV1(value: unknown): value is BookNoteDocumentV
       && (item.format === 'epub' || item.format === 'pdf' || item.format === 'web')
       && typeof item.id === 'string' && item.id.length > 0 && item.id.length <= 200)) return false;
   return validDate(value.createdAt) && validDate(value.updatedAt)
-    && Number.isSafeInteger(value.revision) && (value.revision as number) >= 1;
+    && typeof value.revision === 'number' && Number.isSafeInteger(value.revision) && value.revision >= 1;
 }
 
 export function notebookTitle(doc: Pick<BookNoteDocumentV1, 'scope' | 'title'>): string {

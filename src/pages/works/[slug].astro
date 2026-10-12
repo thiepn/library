@@ -133,6 +133,7 @@ const primaryAction = readHref
             </a>
           )}
           <button class="secondary-action" type="button" data-save-work={work.id} aria-pressed="false">Add to My Library</button>
+          <a class="secondary-action" href={`${base}/notebook?work=${encodeURIComponent(work.id)}`}>Book Notebook</a>
         </div>
 
         <p class="micro" data-reading-activity hidden aria-live="polite"></p>

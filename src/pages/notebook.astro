@@ -155,7 +155,7 @@ const catalog = (await getWorks()).map((work) => ({
         if (saveTimer) clearTimeout(saveTimer);
         selected = doc;
         draft = pending;
-        savedTitle = doc?.title ?? '';
+        savedTitle = doc?.title ?? pending?.title ?? '';
         savedBody = doc?.bodyMarkdown ?? '';
         title.value = doc?.title ?? pending?.title ?? '';
         body.value = doc?.bodyMarkdown ?? '';
@@ -267,6 +267,11 @@ const catalog = (await getWorks()).map((work) => ({
           setStatus('Source file unavailable. Your existing notes remain accessible.');
         }
         await chooseBook(requested ?? '');
+        const desiredNote = new URL(location.href).searchParams.get('note');
+        if (desiredNote && requested) {
+          const match = allNotes.find((item) => item.id === desiredNote);
+          if (match) openEditor(match);
+        }
       }
 
       root.querySelectorAll<HTMLButtonElement>('[data-notebook-create]').forEach((btn) => {

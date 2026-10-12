@@ -32,7 +32,7 @@ async function withStore<T>(
       await completed;
       return value;
     } catch (error) {
-      if (transaction.readyState === 'active') transaction.abort();
+      try { transaction.abort(); } catch {}
       try { await completed; } catch {}
       throw error;
     }

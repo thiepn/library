@@ -19,7 +19,8 @@ const workCatalog = (await getWorks()).map((work) => ({
         <div>
           <p class="eyebrow">Your reading knowledge</p>
           <h1>Knowledge</h1>
-          <p class="knowledge-workspace__intro">Highlights, notes, and bookmarks from EPUBs and PDFs in one local-first workspace. Reader records remain authoritative; this page only derives a unified view.</p>
+          <p class="knowledge-workspace__intro">Highlights, bookmarks, and your independent Markdown book notes in one local-first workspace. Reader records remain authoritative.</p>
+          <a class="secondary-action" href={`${base}/notebook`}>Open Book Notebooks</a>
         </div>
         <p class="micro" data-knowledge-count>Loading knowledge…</p>
       </div>
@@ -47,6 +48,7 @@ const workCatalog = (await getWorks()).map((work) => ({
             <option value="epub">EPUB</option>
             <option value="pdf">PDF</option>
             <option value="web">Legacy web</option>
+            <option value="book">Book notes</option>
           </select>
         </label>
         <label>
@@ -128,6 +130,9 @@ const workCatalog = (await getWorks()).map((work) => ({
       type KnowledgeWorkspaceItem,
     } from '../lib/knowledge/workspace';
 
+    import { listBookNotes, deleteBookNote } from '../lib/knowledge/note-store';
+    import { type BookNoteDocumentV1, notebookTitle } from '../lib/knowledge/note-model';
+
     interface HostedWork {
       id: string;
       slug: string;
@@ -135,8 +140,8 @@ const workCatalog = (await getWorks()).map((work) => ({
       edition?: number;
       releaseVersion?: string;
     }
-    type KnowledgeSource = 'epub-annotation' | 'pdf-annotation' | 'legacy-annotation' | 'epub-bookmark' | 'pdf-bookmark';
-    type KnowledgeRecord = ReaderAnnotationRecordV2 | PdfAnnotationRecord | AnnotationRecord | ReaderBookmarkRecordV2 | PdfBookmarkRecord;
+    type KnowledgeSource = 'epub-annotation' | 'pdf-annotation' | 'legacy-annotation' | 'epub-bookmark' | 'pdf-bookmark' | 'book-note';
+    type KnowledgeRecord = ReaderAnnotationRecordV2 | PdfAnnotationRecord | AnnotationRecord | ReaderBookmarkRecordV2 | PdfBookmarkRecord | BookNoteDocumentV1;
     interface KnowledgeItem extends KnowledgeWorkspaceItem { source: KnowledgeSource; record: KnowledgeRecord; }
 
     const root = document.querySelector<HTMLElement>('[data-knowledge-workspace]');
@@ -319,6 +324,18 @@ const workCatalog = (await getWorks()).map((work) => ({
       };
     }
 
+    function normalizeBookNote(note: BookNoteDocumentV1): KnowledgeItem {
+      return {
+        key: `book-note:${note.id}`,
+        source: 'book-note', kind: 'note', format: 'book',
+        workId: note.workId, title: titleFor(note.workId),
+        location: note.scope === 'chapter-summary' ? (note.chapterKey ?? 'Chapter summary') : notebookTitle(note),
+        quote: '', note: note.bodyMarkdown, createdAt: note.createdAt, updatedAt: note.updatedAt,
+        href: `${base}/notebook?work=${encodeURIComponent(note.workId)}&note=${encodeURIComponent(note.id)}`,
+        record: note,
+      };
+    }
+
     function visibleItems(): KnowledgeItem[] {
       return filterKnowledgeWorkspace(items, {
         query: search?.value ?? '',
@@ -381,6 +398,9 @@ const workCatalog = (await getWorks()).map((work) => ({
         await deletePdfAnnotation(item.record.id, item.record.identity);
       } else if (item.source === 'legacy-annotation' && isLegacyAnnotation(item.record)) {
         await deleteAnnotation(item.record.id);
+      } else if (item.source === 'book-note') {
+        const record = item.record as BookNoteDocumentV1;
+        await deleteBookNote(record.id, record.revision);
       } else if (item.source === 'epub-bookmark') {
         const record = item.record as ReaderBookmarkRecordV2;
         await deleteReaderBookmark(record.id, record.workId);
@@ -433,7 +453,7 @@ const workCatalog = (await getWorks()).map((work) => ({
         }
 
         let editButton: HTMLButtonElement | undefined;
-        if (item.kind !== 'bookmark') {
+        if (item.kind !== 'bookmark' && item.source !== 'book-note') {
           const note = document.createElement('p');
           note.className = 'knowledge-card__note';
           note.textContent = item.note.trim() || 'No note attached.';
@@ -505,7 +525,7 @@ const workCatalog = (await getWorks()).map((work) => ({
           const open = document.createElement('a');
           open.className = 'primary-action';
           open.href = item.href;
-          open.textContent = 'Open in book';
+          open.textContent = item.source === 'book-note' ? 'Edit in notebook' : 'Open in book';
           actions.append(open);
         }
         if (editButton) actions.append(editButton);
@@ -555,7 +575,7 @@ const workCatalog = (await getWorks()).map((work) => ({
           try {
             await removeItem(item);
             await load();
-            if (status) status.textContent = item.kind === 'bookmark' ? 'Bookmark deleted.' : 'Annotation deleted.';
+            if (status) status.textContent = item.source === 'book-note' ? 'Notebook note deleted.' : item.kind === 'bookmark' ? 'Bookmark deleted.' : 'Annotation deleted.';
           } catch {
             if (status) status.textContent = 'Unable to delete this item.';
           } finally {
@@ -572,12 +592,13 @@ const workCatalog = (await getWorks()).map((work) => ({
     async function load(): Promise<void> {
       const revision = ++renderRevision;
       try {
-        const [mainAnnotations, pdfAnnotations, epubBookmarks, pdfBookmarks, personal] = await Promise.all([
+        const [mainAnnotations, pdfAnnotations, epubBookmarks, pdfBookmarks, personal, notebookDocs] = await Promise.all([
           getAllAnnotationRecords(),
           getPdfAnnotations(),
           getReaderBookmarks(),
           getPdfBookmarks(),
           getPersonalBooks(),
+          listBookNotes(),
         ]);
         if (revision !== renderRevision) return;
         personalTitles.clear();
@@ -596,6 +617,7 @@ const workCatalog = (await getWorks()).map((work) => ({
           ...pdfAnnotations.filter(isPdfAnnotationRecord).map(normalizePdfAnnotation),
           ...epubBookmarks.map(normalizeEpubBookmark),
           ...pdfBookmarks.filter(isPdfBookmarkRecord).map(normalizePdfBookmark),
+          ...notebookDocs.map(normalizeBookNote),
         ];
         updateBookOptions();
         // Refreshes may be triggered by cross-tab reader storage notifications.
@@ -633,6 +655,10 @@ const workCatalog = (await getWorks()).map((work) => ({
       unsubscribePdf();
     }, { once: true });
 
-    void load();
+    const queryBook = new URL(location.href).searchParams.get('book');
+    if (queryBook && book) {
+      const selectBook = () => { if ([...book.options].some((option) => option.value === queryBook)) { book.value = queryBook; render(); } };
+      void load().then(selectBook);
+    } else void load();
   </script>
 </BaseLayout>

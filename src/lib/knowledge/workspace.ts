@@ -1,4 +1,4 @@
-export type KnowledgeFormat = 'epub' | 'pdf' | 'web';
+export type KnowledgeFormat = 'epub' | 'pdf' | 'web' | 'book';
 export type KnowledgeKind = 'note' | 'highlight' | 'bookmark';
 export type KnowledgeSort = 'newest' | 'oldest' | 'book';
 
