@@ -235,8 +235,12 @@ export function mountResearchWorkbench(
       const actions=el('div');actions.className='book-notebook__research-source-actions';
       if(note) {
         actions.append(
-          button(pins.left===id?'Pinned A':'Pin A',()=>{pins.left=id;renderSources();renderSide('left');}),
-          button(pins.right===id?'Pinned B':'Pin B',()=>{pins.right=id;renderSources();renderSide('right');}),
+          button(pins.left===id?'Pinned A':'Pin A',()=>{
+            pins.left=id;renderSources();renderSide('left');refinements?.onNotesChanged();
+          }),
+          button(pins.right===id?'Pinned B':'Pin B',()=>{
+            pins.right=id;renderSources();renderSide('right');refinements?.onNotesChanged();
+          }),
           button('Edit',()=>{void host.openNote(note);}),
           button('Copy link',()=>copyNoteLink(note)),
         );
