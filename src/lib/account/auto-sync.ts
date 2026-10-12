@@ -14,14 +14,15 @@ export function parseAutoSyncPreference(raw: string | null, ownerId: string): bo
       ? v.enabled : true;
   } catch { return true; }
 }
+const ownerKey = (ownerId: string) => LIBRARY_AUTO_SYNC_PREFERENCE_KEY + ':' + ownerId;
 export function isLibraryAutomaticSyncEnabled(ownerId: string): boolean {
-  try { return parseAutoSyncPreference(localStorage.getItem(LIBRARY_AUTO_SYNC_PREFERENCE_KEY), ownerId); }
+  try { return parseAutoSyncPreference(localStorage.getItem(ownerKey(ownerId)), ownerId); }
   catch { return false; } // Fail closed when preference storage is unavailable.
 }
 export function setLibraryAutomaticSync(ownerId: string, enabled: boolean): boolean {
   if (!ownerId) return false;
   try {
-    localStorage.setItem(LIBRARY_AUTO_SYNC_PREFERENCE_KEY,
+    localStorage.setItem(ownerKey(ownerId),
       JSON.stringify({ version: 1, ownerId, enabled } satisfies Preference));
     window.dispatchEvent(new CustomEvent('thiepn:library-auto-sync', {
       detail: { ownerId, enabled },
