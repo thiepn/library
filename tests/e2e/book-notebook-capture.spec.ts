@@ -86,3 +86,46 @@ test('@n1b PDF selected quotation creates a page-anchored notebook note without 
     bodyMarkdown: '> The selected text\n\nA PDF reflection.',
   }));
 });
+
+
+test('@n1b legacy web reader captures chapter-scoped quotation without rewriting progress', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium-desktop', 'Canonical legacy-web qualification in Chromium.');
+  await page.goto('/library/works/how-to-love-god/read/preface');
+  const article = page.locator('[data-work-id="how-to-love-god"][data-chapter-id="preface"]');
+  await expect(article).toBeVisible();
+  await article.locator('.reader-prose p').first().evaluate(paragraph => {
+    const t = [...paragraph.childNodes].find(n => n.nodeType === Node.TEXT_NODE);
+    if (!t?.textContent) throw new Error('No chapter quotation text');
+    const range = document.createRange(), selection = window.getSelection();
+    range.setStart(t, 0);
+    range.setEnd(t, Math.min(28, t.textContent.length));
+    selection?.removeAllRanges(); selection?.addRange(range);
+    paragraph.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+  });
+  await page.locator('[data-web-selection-notebook]').click();
+  await expect(page.locator('[data-reader-notebook]')).toBeVisible();
+  await expect(page.locator('[data-capture-body]')).toHaveValue(/^> /);
+  await page.locator('[data-capture-body]').fill('> Quoted chapter text\n\nPersonal reflection');
+  await expect(page.locator('[data-capture-status]')).toHaveText('Saved locally', { timeout: 10_000 });
+  await page.locator('[data-capture-done]').click();
+  await expect(article).toBeVisible();
+  const note = await page.evaluate(async () => {
+    const db = await new Promise<IDBDatabase>((resolve, reject) => {
+      const request = indexedDB.open('thiepn-library', 11);
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    const tx = db.transaction('noteDocuments', 'readonly');
+    const notes = await new Promise<any[]>((resolve, reject) => {
+      const request = tx.objectStore('noteDocuments').getAll();
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    db.close();
+    return notes.find(value => value.workId === 'how-to-love-god');
+  });
+  expect(note).toMatchObject({
+    scope: 'reading-note', anchor: { format: 'web', chapterId: 'preface' },
+    bodyMarkdown: '> Quoted chapter text\n\nPersonal reflection',
+  });
+});
