@@ -150,6 +150,7 @@ export function mountResearchN1P(
       controls.append(
         action('Open',()=>{void host.openNote(item.note);}),
         action('Study in collection',()=>{void openReviewSource(item);}),
+        action('Compare',()=>{void addReviewToBasket(item);}),
         action('Copy citation',()=>{
           void navigator.clipboard.writeText(noteReferenceMarkdown(item.note))
             .then(()=>{status.textContent='Stable note reference copied.';},
@@ -184,6 +185,25 @@ export function mountResearchN1P(
     root.querySelector<HTMLElement>('[data-research-compare]')
       ?.scrollIntoView({behavior:'smooth',block:'start'});
     status.textContent='Source selected in its collection. You can read, cite or compare it.';
+  }
+  async function addReviewToBasket(item:ResearchQueueItem):Promise<void> {
+    if(host.active()?.id!==item.collectionId)await openReviewSource(item);
+    if(disposed||host.active()?.id!==item.collectionId)return;
+    if(!basketCandidates().some(note=>note.id===item.note.id)){
+      basketStatus.textContent='The source is no longer available in this collection.';
+      return;
+    }
+    if(basketIds.includes(item.note.id)){
+      basketStatus.textContent='This source is already in the comparison basket.';
+    }else if(basketIds.length>=6){
+      basketStatus.textContent='The comparison basket is full. Remove a source before adding another.';
+    }else{
+      basketIds.push(item.note.id);
+      renderBasket();
+      basketStatus.textContent='Source added to a collection-aware comparison basket. All note content remains unchanged.';
+    }
+    root.querySelector<HTMLElement>('[data-n1p-comparison-items]')
+      ?.scrollIntoView({behavior:'smooth',block:'center'});
   }
   function basketCandidates():BookNoteDocumentV1[] {
     const lookup=new Map(host.notes().map(note=>[note.id,note]));
