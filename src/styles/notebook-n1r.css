@@ -1,0 +1,89 @@
+@layer notebook {
+  /* N1R extends existing N1L and N1Q controls; no new dashboard panel. */
+  .book-notebook__n1r-section-tools {
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:8px;
+    padding:12px 0 0;
+    border-top:1px solid var(--rule);
+    min-width:0;
+  }
+  .book-notebook__n1r-section-tools label {
+    font-size:.78rem;font-weight:650;
+    flex:0 0 auto;
+  }
+  .book-notebook__n1r-section-tools select {
+    color:var(--ink);
+    background:var(--canvas);
+    border:1px solid var(--strong-rule);
+    border-radius:2px;
+    font:inherit;font-size:.82rem;
+    min-height:39px;padding:7px 10px;
+    min-width:0;flex:1 1 180px;
+    max-width:100%;
+  }
+  .book-notebook__n1r-section-tools button {
+    font:inherit;font-size:.8rem;
+    color:var(--ink);background:var(--canvas);
+    border:1px solid var(--strong-rule);
+    border-radius:2px;min-height:39px;
+    padding:7px 10px;cursor:pointer;
+  }
+  .book-notebook__n1r-section-tools button:disabled {
+    opacity:.45;cursor:not-allowed;
+  }
+  .book-notebook__n1r-section-tools >.micro {
+    flex:1 1 100%;
+    margin:0;min-height:1em;
+    overflow-wrap:anywhere;
+  }
+  .book-notebook__n1q-citations [data-n1r-citation-context] {
+    font-size:.77rem;line-height:1.5;
+    margin:0;
+    overflow-wrap:anywhere;
+    color:var(--secondary);
+  }
+  .book-notebook__n1q-citation-actions a[data-n1r-citation-reader] {
+    min-height:39px;padding:8px 11px;
+    border:1px solid var(--strong-rule);
+    border-radius:2px;
+    text-decoration:none;font-size:.78rem;
+    color:var(--ink);background:var(--canvas);
+    display:inline-flex;align-items:center;
+    box-sizing:border-box;
+  }
+  .book-notebook__n1q-citation-actions a[data-n1r-citation-reader][hidden] {
+    display:none!important;
+  }
+  .book-notebook__n1p-review-controls input[data-n1r-review-search] {
+    min-width:0;max-width:100%;
+    flex:2 1 240px;
+    background:var(--canvas);color:var(--ink);
+    border:1px solid var(--strong-rule);
+    border-radius:2px;font:inherit;font-size:.82rem;
+    min-height:40px;padding:8px 10px;
+  }
+  .book-notebook__n1r-section-tools :is(select,button):focus-visible,
+  .book-notebook__n1p-review-controls input:focus-visible,
+  .book-notebook__n1q-citation-actions a:focus-visible {
+    outline:2px solid var(--accent);outline-offset:2px;
+  }
+  @media(max-width:720px) {
+    .book-notebook__n1r-section-tools {
+      display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+    .book-notebook__n1r-section-tools label,
+    .book-notebook__n1r-section-tools select,
+    .book-notebook__n1r-section-tools >.micro {
+      grid-column:1/-1;
+      width:100%;
+    }
+    .book-notebook__n1r-section-tools button {
+      min-width:0;white-space:normal;
+    }
+    .book-notebook__n1p-review-controls input[data-n1r-review-search] {
+      grid-column:1/-1;width:100%;
+    }
+  }
+}
