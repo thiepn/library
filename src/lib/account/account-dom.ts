@@ -167,11 +167,22 @@ export function mountLibraryAccountPage(): () => void {
     }
   };
 
-  const act = async (operation: (current: LibraryAccountUser) => Promise<LibrarySyncResult>) => {
+  const act = async (
+    operation: (current: LibraryAccountUser) => Promise<LibrarySyncResult>,
+    ownerConflictChoice = false,
+  ) => {
     if (!user) return;
     setBusy(true);
     try {
+      const requestedOwner = user.id;
       const result = await operation(user);
+      const verified = await getVerifiedLibraryAccountUser();
+      if (ownerConflictChoice && verified?.id === requestedOwner &&
+          (result.status === 'pushed' || result.status === 'pulled')) {
+        window.dispatchEvent(new CustomEvent('thiepn:library-owner-conflict-resolved', {
+          detail: { ownerId: requestedOwner },
+        }));
+      }
       renderResult(result);
       await render(user);
     } finally {
@@ -206,8 +217,8 @@ export function mountLibraryAccountPage(): () => void {
     pauseLibrarySync(user.id);
     void render(user);
   });
-  document.querySelector('[data-use-device]')?.addEventListener('click', () => void act(chooseThisDeviceForLibrarySync));
-  document.querySelector('[data-use-cloud]')?.addEventListener('click', () => void act(chooseCloudForLibrarySync));
+  document.querySelector('[data-use-device]')?.addEventListener('click', () => void act(chooseThisDeviceForLibrarySync, true));
+  document.querySelector('[data-use-cloud]')?.addEventListener('click', () => void act(chooseCloudForLibrarySync, true));
   document.querySelector('[data-personal-files-sync]')?.addEventListener('click', () => {
     if (!user) return;
     setBusy(true);
@@ -225,11 +236,28 @@ export function mountLibraryAccountPage(): () => void {
       // Avoid displaying a stale success indicator when the event signals an error.
     }
   };
+  const onAutoSyncState = (event: Event) => {
+    const detail = (event as CustomEvent<{ ownerId?: string; state?: string }>).detail;
+    if (!user || detail?.ownerId !== user.id) return;
+    const labels: Record<string, string> = {
+      checking: 'Checking changes in Library…',
+      'up-to-date': 'Automatic check finished.',
+      conflict: 'Paused: choose how to resolve the conflict below.',
+      offline: 'Offline: local reading remains available.',
+      error: 'Automatic sync needs attention. You can retry manually.',
+      paused: 'Automatic checks are paused on this device.',
+    };
+    if (detail.state && labels[detail.state]) {
+      text('[data-auto-sync-live]', labels[detail.state] ?? '');
+      if (detail.state === 'conflict') hidden('[data-sync-conflict]', false);
+    }
+  };
   const onPersonalFiles = (event: Event) => {
     const detail = (event as CustomEvent<PersonalFileCloudResult>).detail;
     if (detail) renderPersonalFileResult(detail);
   };
   window.addEventListener('thiepn:library-sync', onSync);
+  window.addEventListener('thiepn:library-auto-sync-state', onAutoSyncState);
   window.addEventListener('thiepn:library-personal-files', onPersonalFiles);
 
   const unsubscribeAuth = subscribeLibraryAccountAuth(() => { void refresh(); });
@@ -238,6 +266,7 @@ export function mountLibraryAccountPage(): () => void {
   return () => {
     disposed = true;
     window.removeEventListener('thiepn:library-sync', onSync);
+    window.removeEventListener('thiepn:library-auto-sync-state', onAutoSyncState);
     window.removeEventListener('thiepn:library-personal-files', onPersonalFiles);
     unsubscribeAuth();
   };

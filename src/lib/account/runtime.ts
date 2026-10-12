@@ -11,6 +11,12 @@ import {
 import { reconcileLibraryPersonalFiles } from './personal-files';
 import { isLibraryAutomaticSyncEnabled } from './auto-sync';
 
+type AutoState = 'checking' | 'up-to-date' | 'conflict' | 'offline' | 'error' | 'paused';
+function report(ownerId: string, state: AutoState) {
+  window.dispatchEvent(new CustomEvent('thiepn:library-auto-sync-state', {
+    detail: { ownerId, state, checkedAt: Date.now() },
+  }));
+}
 export function mountLibraryAccountRuntime(): () => void {
   if (!hasThiepnAccountConfiguration()) return () => {};
 
@@ -31,17 +37,25 @@ export function mountLibraryAccountRuntime(): () => void {
       const user = await getVerifiedLibraryAccountUser();
       if (!user) return;
 
-      if (conflictPausedFor === user.id || !isLibraryAutomaticSyncEnabled(user.id)) return;
+      if (conflictPausedFor === user.id) { report(user.id, 'conflict'); return; }
+      if (!isLibraryAutomaticSyncEnabled(user.id)) { report(user.id, 'paused'); return; }
       if (isLibrarySyncEnabledForUser(user.id)) {
+        report(user.id, 'checking');
         const result = await reconcileLibraryAccountSync(user);
         if (result.status === 'conflict') {
           conflictPausedFor = user.id;
+          report(user.id, 'conflict');
           return;
         }
+        report(user.id,
+          ['synced', 'pushed', 'pulled'].includes(result.status) ? 'up-to-date'
+          : result.status === 'offline' ? 'offline' : result.status === 'error' ? 'error' : 'paused');
         if (result.status === 'synced' || result.status === 'pushed' || result.status === 'pulled') {
           // A former identity must never trigger another app-owned file pass.
           const current = await getVerifiedLibraryAccountUser();
-          if (current?.id !== user.id || disposed) return;
+          if (current?.id !== user.id || disposed ||
+              !isLibrarySyncEnabledForUser(user.id) ||
+              !isLibraryAutomaticSyncEnabled(user.id) || conflictPausedFor === user.id) return;
           await reconcileLibraryPersonalFiles(user);
         }
       }
@@ -79,16 +93,15 @@ export function mountLibraryAccountRuntime(): () => void {
   }, 30_000);
   const onAutoPreference = () => schedule(250);
   window.addEventListener('thiepn:library-auto-sync', onAutoPreference);
-  const onSyncResult = (event: Event) => {
-    const detail = (event as CustomEvent<{ status?: string }>).detail;
-    if (!detail) return;
-    if (conflictPausedFor && (detail.status === 'pushed' || detail.status === 'pulled' || detail.status === 'synced')) {
-      // User explicitly resolved a conflict through Library's existing UI.
+  // Never accept a generic 'synced' event as proof of owner conflict resolution.
+  const onOwnerConflictResolved = (event: Event) => {
+    const ownerId = (event as CustomEvent<{ ownerId?: string }>).detail?.ownerId;
+    if (ownerId && ownerId === conflictPausedFor) {
       conflictPausedFor = null;
       schedule(250);
     }
   };
-  window.addEventListener('thiepn:library-sync', onSyncResult);
+  window.addEventListener('thiepn:library-owner-conflict-resolved', onOwnerConflictResolved);
   const onOnline = () => schedule(250);
   const onFocus = () => schedule(500);
   const onVisibility = () => {
@@ -112,7 +125,7 @@ export function mountLibraryAccountRuntime(): () => void {
     disposed = true;
     if (timer !== undefined) window.clearTimeout(timer);
     window.clearInterval(periodic);
-    window.removeEventListener('thiepn:library-sync', onSyncResult);
+    window.removeEventListener('thiepn:library-owner-conflict-resolved', onOwnerConflictResolved);
     window.removeEventListener('thiepn:library-auto-sync', onAutoPreference);
     for (const channel of channels) channel.close();
     window.removeEventListener('online', onOnline);
