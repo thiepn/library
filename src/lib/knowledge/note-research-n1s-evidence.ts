@@ -2,7 +2,7 @@ import { notebookTitle, type BookNoteDocumentV1 } from './note-model';
 import { extractNotebookLinks, noteReferenceMarkdown } from './note-links';
 import { extractNotebookTopics } from './note-workspace';
 import { researchSynthesisSections } from './note-research-n1r-sections';
-import type { ResearchCollection } from './note-research';
+import { describeResearchSource, type ResearchCollection } from './note-research';
 
 /**
  * Local read-only suggestions, never evidence validation or relevance claims.
@@ -50,7 +50,7 @@ export function getSectionEvidenceContext(
   const headingTerms=words(section.title);
   const suggestions:SectionEvidenceSuggestion[]=[];
   for(const note of notes){
-    if(noteIds.includes(note.id))continue;
+    if(noteIds.includes(note.id)||note.id===collection.synthesisId)continue;
     const reasons:string[]=[];
     let score=0;
     const shared=extractNotebookTopics(note.bodyMarkdown).filter(topic=>topicSet.has(topic));
@@ -84,6 +84,7 @@ export function sectionEvidenceReviewMarkdown(
   collection:ResearchCollection,
   notes:readonly BookNoteDocumentV1[],
   bookTitle:(workId:string)=>string,
+  sourceHref?:(note:BookNoteDocumentV1)=>string|undefined,
 ):string {
   const byId=new Map(notes.map(note=>[note.id,note]));
   const rows=[
@@ -102,6 +103,7 @@ export function sectionEvidenceReviewMarkdown(
     const note=byId.get(id);
     rows.push(note?'- '+bookTitle(note.workId)+' — '+notebookTitle(note)
       +' · '+noteReferenceMarkdown(note)+' · revision '+note.revision
+      +' · recorded location '+describeResearchSource(note.anchor,note.chapterKey)
       +(context.outsideCollectionIds.includes(id)?' · outside selected collection':'')
       :'- Unavailable local source: note:'+id);
   }
@@ -111,7 +113,10 @@ export function sectionEvidenceReviewMarkdown(
     rows.push('- '+bookTitle(item.note.workId)+' — '+notebookTitle(item.note)
       +' · '+noteReferenceMarkdown(item.note)
       +' · '+(item.inCollection?'already collected':'not in selected collection'),
+      '  - Recorded location: '+describeResearchSource(item.note.anchor,item.note.chapterKey),
       '  - Why surfaced: '+item.relation.join('; '));
+    const href=sourceHref?.(item.note);
+    if(href)rows.push('  - Reader navigation: '+href.replace(/[\r\n]/g,' '));
   }
   if(!context.suggestions.length)rows.push('_No note-link, topic or title-term connections found._');
   rows.push('','## Writing review','',
