@@ -1,4 +1,5 @@
 import { notebookTitle, type BookNoteDocumentV1 } from './note-model';
+import { requestResearchView } from './note-research-n1q-view';
 import { listBookNotes } from './note-store';
 import { notebookWordCount } from './note-links';
 import { renderNotebookPreview } from './note-preview';
@@ -133,6 +134,7 @@ export function mountResearchRefinements(
     const id=sources[next].note.id;
     const second=sources[next+1]?.note.id??sources[next-1]?.note.id??'';
     host.setPins(id,second);
+    requestResearchView(root,'sources','[data-research-compare]');
     renderNavigation();
   }
   function renderBibliography():void {
@@ -183,6 +185,7 @@ export function mountResearchRefinements(
     }
     const next=before+addition+after;
     host.setDraft(synthTitle.value,next);
+    requestResearchView(root,'write','[data-research-synthesis-body]');
     synthBody.focus();
     synthBody.setSelectionRange(before.length+addition.length,before.length+addition.length);
     onDraftEdited();
