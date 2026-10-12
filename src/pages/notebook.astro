@@ -423,6 +423,7 @@ const catalog = (await getWorks()).map((work) => ({
     import { bookNotebookToObsidianMarkdown } from '../lib/knowledge/note-export';
     import { downloadNotebookRecovery } from '../lib/knowledge/note-recovery';
     import { renderNotebookPreview } from '../lib/knowledge/note-preview';
+    import { mountResearchWorkbench } from '../lib/knowledge/note-research-dom';
     import { buildNoteGraph, graphNeighbors, type NoteGraphData } from '../lib/knowledge/note-graph';
     import { getNotebookHeadings, rewriteNotebookTopic } from '../lib/knowledge/note-outline';
     import {
@@ -1193,6 +1194,13 @@ const catalog = (await getWorks()).map((work) => ({
           snippet.textContent = note.bodyMarkdown
             .replace(/\s+/g, ' ').trim().slice(0, 125) || 'No text yet';
           button.append(snippet);
+          const add = document.createElement('button');
+          add.type = 'button';
+          add.className = 'book-notebook__discovery-add';
+          add.textContent = 'Add to research';
+          add.setAttribute('aria-label', 'Add ' + notebookTitle(note) + ' to selected research collection');
+          add.addEventListener('click', () => { void research.addNote(note.id); });
+          button.append(add);
           discoverResults.append(button);
         }
       }
@@ -1302,6 +1310,7 @@ const catalog = (await getWorks()).map((work) => ({
         }
         await chooseBook(requested ?? '');
         await refreshNetwork();
+        await research.refresh();
         if (desiredNote && requested) {
           const match = allNotes.find((item) => item.id === desiredNote);
           if (match) openEditor(match);
@@ -1692,7 +1701,24 @@ const catalog = (await getWorks()).map((work) => ({
         else void refresh();
         void refreshNetwork();
       });
-      window.addEventListener('pagehide', unsubscribe, { once: true });
+      const researchRoot = root.querySelector<HTMLElement>('[data-research-root]')!;
+      const research = mountResearchWorkbench(researchRoot, {
+        bookTitle: workId => bookName(workId),
+        sourceHref: note => {
+          const entry = books.get(note.workId);
+          if (entry?.personal) {
+            const route = entry.personal.format === 'pdf' ? 'pdf' : 'read';
+            return `${base}/personal/${route}?id=${encodeURIComponent(entry.personal.id)}`;
+          }
+          if (entry?.slug) return `${base}/works/${encodeURIComponent(entry.slug)}/read`;
+          return undefined;
+        },
+        openNote: note => openAnyNote(note),
+      });
+      window.addEventListener('pagehide', () => {
+        unsubscribe();
+        research.dispose();
+      }, { once: true });
       void initialize();
     }
   </script>
