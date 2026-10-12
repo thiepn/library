@@ -225,6 +225,16 @@ export function mountLibraryAccountPage(): () => void {
       // Avoid displaying a stale success indicator when the event signals an error.
     }
   };
+  const onRuntime = (event: Event) => {
+    const detail = (event as CustomEvent<{ ownerId?: string; status: string; failures?: number }>).detail;
+    if (!detail || !user || detail.ownerId !== user.id) return;
+    const status = detail.status === 'checking' ? 'Checking for changes…'
+      : detail.status === 'conflict' ? 'Conflict detected. Automatic checks are paused until you choose a source.'
+      : detail.status === 'error' ? 'Automatic check failed; local reading remains available.'
+      : 'Latest automatic check: ' + detail.status;
+    text('[data-auto-sync-runtime]', status);
+  };
+  window.addEventListener('thiepn:library-runtime', onRuntime);
   const onPersonalFiles = (event: Event) => {
     const detail = (event as CustomEvent<PersonalFileCloudResult>).detail;
     if (detail) renderPersonalFileResult(detail);
@@ -238,6 +248,7 @@ export function mountLibraryAccountPage(): () => void {
   return () => {
     disposed = true;
     window.removeEventListener('thiepn:library-sync', onSync);
+    window.removeEventListener('thiepn:library-runtime', onRuntime);
     window.removeEventListener('thiepn:library-personal-files', onPersonalFiles);
     unsubscribeAuth();
   };

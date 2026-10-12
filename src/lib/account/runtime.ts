@@ -18,6 +18,7 @@ export function mountLibraryAccountRuntime(): () => void {
   let running = false;
   let disposed = false;
   let conflictPausedFor: string | null = null;
+  let consecutiveFailures = 0;
 
   const run = async () => {
     if (disposed || running || !navigator.onLine || document.visibilityState !== 'visible') return;
@@ -33,11 +34,15 @@ export function mountLibraryAccountRuntime(): () => void {
 
       if (conflictPausedFor === user.id || !isLibraryAutomaticSyncEnabled(user.id)) return;
       if (isLibrarySyncEnabledForUser(user.id)) {
+        window.dispatchEvent(new CustomEvent('thiepn:library-runtime', { detail: { ownerId: user.id, status: 'checking' } }));
         const result = await reconcileLibraryAccountSync(user);
         if (result.status === 'conflict') {
+          window.dispatchEvent(new CustomEvent('thiepn:library-runtime', { detail: { ownerId: user.id, status: 'conflict' } }));
           conflictPausedFor = user.id;
           return;
         }
+        consecutiveFailures = result.status === 'error' ? consecutiveFailures + 1 : 0;
+        window.dispatchEvent(new CustomEvent('thiepn:library-runtime', { detail: { ownerId: user.id, status: result.status, failures: consecutiveFailures } }));
         if (result.status === 'synced' || result.status === 'pushed' || result.status === 'pulled') {
           // A former identity must never trigger another app-owned file pass.
           const current = await getVerifiedLibraryAccountUser();
@@ -46,6 +51,8 @@ export function mountLibraryAccountRuntime(): () => void {
         }
       }
     } catch {
+      consecutiveFailures += 1;
+      window.dispatchEvent(new CustomEvent('thiepn:library-runtime', { detail: { status: 'error', failures: consecutiveFailures } }));
       // SSO and Account sync are optional and must never block local reading.
     } finally {
       running = false;
