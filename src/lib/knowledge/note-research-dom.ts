@@ -2,6 +2,7 @@ import { listBookNotes, createBookNote, updateBookNote, getBookNote, subscribeBo
 import { renderNotebookPreview } from './note-preview';
 import { notebookTitle, type BookNoteDocumentV1 } from './note-model';
 import { findNotebookNotes } from './note-links';
+import { mountResearchRefinements, type ResearchRefinements } from './note-research-n1k-dom';
 import {
   createResearchCollection, deleteResearchCollection, RESEARCH_WORKFLOWS,
   describeResearchSource, exportResearchCollectionIndex, groupedResearchMarkdown,
@@ -92,6 +93,7 @@ export function mountResearchWorkbench(
   let pins:Record<Side,string>={left:'',right:''};
   let disposed=false,revision=0;
   let busy=false;
+  let refinements:ResearchRefinements | undefined;
   const events:Array<()=>void>=[];
   const notify=(message:string)=>{notice.textContent=message;};
   const el=(tag:string,text?:string):HTMLElement=>{
@@ -271,6 +273,8 @@ export function mountResearchWorkbench(
     description.textContent=(active.description||'No project description')+' · Workflow: '
       +(RESEARCH_WORKFLOWS.find(w=>w.id===active?.workflowId)?.label??'Open research');
     renderSources();renderSearch();renderSide('left');renderSide('right');renderSynthesis();
+    refinements?.onNotesChanged();
+    refinements?.onSynthesisChanged();
   }
   async function activate(id:string,force=false):Promise<void> {
     if(!force && id!==activeId && !guardSwitch()){
@@ -284,6 +288,7 @@ export function mountResearchWorkbench(
       if(active.synthesisId)adoptSynthesis(await getBookNote(active.synthesisId));
     }
     renderDetail();
+    refinements?.onCollectionChanged();
   }
   async function addNotes(noteIds:readonly string[]):Promise<void> {
     if(!active){notify('Create or select a collection first.');root.scrollIntoView({behavior:'smooth'});return;}
@@ -387,6 +392,7 @@ export function mountResearchWorkbench(
     if(!synthesis)return;
     saveSynth.disabled=!dirty()||busy;
     synthState.textContent=dirty()?'Unsaved synthesis edits':'Saved locally · revision '+synthesis.revision;
+    refinements?.onDraftEdited();
   };
   bind('[data-research-synthesis-title]','input',synthInput);
   bind('[data-research-synthesis-body]','input',synthInput);
@@ -398,6 +404,7 @@ export function mountResearchWorkbench(
     void updateBookNote(current.id,current.revision,{title,bodyMarkdown:body})
       .then(saved=>{
         adoptSynthesis(saved);
+        refinements?.onSynthesisSaved();
         synthState.textContent='Saved locally · revision '+saved.revision;
         notify('Synthesis saved to your authoritative Library notebook.');
       })
@@ -426,12 +433,33 @@ export function mountResearchWorkbench(
   };
   window.addEventListener('beforeunload',beforeUnload);
   const unsubscribe=subscribeBookNotes(()=>{void refresh();});
+  refinements=mountResearchRefinements(root,{
+    active:()=>active,
+    notes:()=>all,
+    synthesis:()=>synthesis,
+    title:()=>synthTitle.value,
+    body:()=>synthBody.value,
+    setDraft:(title,body)=>{
+      synthTitle.value=title;synthBody.value=body;
+      synthInput();
+    },
+    sourceHref:note=>host.sourceHref(note),
+    bookTitle:workId=>host.bookTitle(workId),
+    pins:()=>({...pins}),
+    setPins:(left,right)=>{
+      pins={left,right};
+      renderSources();renderSide('left');renderSide('right');
+    },
+    activateCollection:id=>activate(id,true),
+    notify,
+  });
   void refresh();
   return {
     refresh,addNote,addNotes,dispose(){
       disposed=true;
       for(const off of events)off();
       unsubscribe();
+      refinements?.dispose();
       window.removeEventListener('beforeunload',beforeUnload);
     },
   };
