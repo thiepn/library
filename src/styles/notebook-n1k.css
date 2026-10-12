@@ -124,3 +124,66 @@
     }
   }
 }
+
+
+@layer notebook {
+  .book-notebook__research-sources input[type="search"] {
+    width:100%;box-sizing:border-box;
+    border:1px solid var(--strong-rule);
+    padding:10px 12px;
+    font:inherit;color:var(--ink);background:var(--canvas);
+    border-radius:2px;
+  }
+  .book-notebook__research-sources label {
+    font-weight:650;font-size:.8rem;
+  }
+  .book-notebook__research-sources [data-research-source-filter-count] {
+    margin:0;font-variant-numeric:tabular-nums;
+  }
+  .book-notebook__n1k-preview-controls {
+    display:flex;gap:11px;align-items:center;flex-wrap:wrap;
+  }
+  .book-notebook__n1k-preview-controls .micro {
+    margin:0;font-variant-numeric:tabular-nums;
+  }
+  .book-notebook__research-live-preview {
+    padding:20px 23px;border:1px solid var(--rule);
+    background:var(--surface);line-height:1.7;
+    max-height:520px;overflow:auto;
+    min-height:190px;overflow-wrap:anywhere;
+  }
+  .book-notebook__research-live-preview[hidden] {display:none!important;}
+  .book-notebook__research-live-preview > :first-child {margin-top:0;}
+  .book-notebook__research-live-preview h2,
+  .book-notebook__research-live-preview h3 {
+    font-size:1.1rem;margin:20px 0 8px;
+  }
+  .book-notebook__research-live-preview blockquote {
+    border-left:3px solid var(--strong-rule);
+    padding:5px 15px;margin:13px 0;
+  }
+  .book-notebook__research-live-preview pre {
+    white-space:pre-wrap;overflow-wrap:anywhere;
+    padding:12px;border:1px solid var(--rule);
+  }
+  .book-notebook__research-live-preview table {
+    display:block;max-width:100%;overflow-x:auto;
+    border-collapse:collapse;
+  }
+  .book-notebook__research-live-preview td,
+  .book-notebook__research-live-preview th {
+    border:1px solid var(--rule);padding:7px 10px;
+  }
+  .book-notebook__research-live-preview code {
+    font-size:.85em;
+  }
+  @media(max-width:620px) {
+    .book-notebook__research-live-preview {
+      min-height:140px;max-height:370px;padding:14px;
+    }
+    .book-notebook__n1k-preview-controls {
+      align-items:stretch;
+    }
+    .book-notebook__n1k-preview-controls button {width:100%;}
+  }
+}
