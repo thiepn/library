@@ -602,6 +602,7 @@ export function mountResearchWorkbench(
     bookTitle:workId=>host.bookTitle(workId),
     sourceHref:note=>host.sourceHref(note),
     openNote:note=>host.openNote(note),
+    collectNote:id=>addNote(id),
     notify,
   });
   knowledge=mountKnowledgeWorkbench(root,{
