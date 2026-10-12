@@ -1,5 +1,10 @@
 import { applyNotebookMarkdownTool, notebookWordCount, type MarkdownTool } from './note-links';
 import { getNotebookHeadings } from './note-outline';
+import {
+  researchSynthesisSections, moveSynthesisSection, synthesisSectionTemplate,
+  insertSynthesisSection, sectionWritingPacketMarkdown,
+  type SynthesisSectionTemplate,
+} from './note-research-n1r-sections';
 import { researchReferences, researchBibliographyMarkdown } from './note-references';
 import { researchBriefMarkdown, researchDossierMarkdown } from './note-research-handoff';
 import { describeResearchSource, type ResearchCollection, type ResearchSource } from './note-research';
@@ -44,8 +49,16 @@ export function mountResearchN1L(root:HTMLElement,host:ResearchN1LHost):Research
   const synthBody=$<HTMLTextAreaElement>('[data-research-synthesis-body]');
   const outline=$<HTMLElement>('[data-research-outline]');
   const outlineCount=$<HTMLElement>('[data-research-outline-count]');
+  const sectionPicker=$<HTMLSelectElement>('[data-n1r-section-picker]');
+  const sectionTemplate=$<HTMLSelectElement>('[data-n1r-section-template]');
+  const sectionStatus=$<HTMLElement>('[data-n1r-section-status]');
+  const sectionUp=$<HTMLButtonElement>('[data-n1r-section-up]');
+  const sectionDown=$<HTMLButtonElement>('[data-n1r-section-down]');
+  const sectionInsert=$<HTMLButtonElement>('[data-n1r-section-insert]');
+  const sectionExport=$<HTMLButtonElement>('[data-n1r-section-export]');
   const callbacks:Array<()=>void>=[];
   let session:ResearchSession|undefined;
+  let selectedSectionStart:number|undefined;
   const bind=(sel:string,event:string,cb:EventListener)=>{
     const element=$(sel);element.addEventListener(event,cb);
     callbacks.push(()=>element.removeEventListener(event,cb));
@@ -172,6 +185,44 @@ export function mountResearchN1L(root:HTMLElement,host:ResearchN1LHost):Research
       outline.append(btn);
     }
     if(!headings.length)outline.append(text('p','Use Markdown headings to navigate your synthesis.'));
+    const sections=doc?researchSynthesisSections(draft.body):[];
+    const previous=selectedSectionStart;
+    sectionPicker.replaceChildren(new Option('Whole synthesis / append at end',''));
+    for(const section of sections){
+      sectionPicker.add(new Option(
+        '  '.repeat(Math.max(0,section.level-1))+section.title
+          +' ('+section.sourceIds.length+' linked notes)',
+        String(section.start),
+      ));
+    }
+    const chosen=sections.find(section=>section.start===previous);
+    // Keep the selected section through regular typing unless its heading moved.
+    sectionPicker.value=chosen?String(chosen.start):'';
+    if(!chosen)selectedSectionStart=undefined;
+    sectionUp.disabled=!chosen||!sections.some(other=>other.parent===chosen.parent
+      &&other.level===chosen.level&&other.start<chosen.start);
+    sectionDown.disabled=!chosen||!sections.some(other=>other.parent===chosen.parent
+      &&other.level===chosen.level&&other.start>chosen.start);
+    sectionInsert.disabled=!doc;
+    sectionExport.disabled=!doc||!chosen;
+  }
+  function selectSection():void {
+    const number=Number(sectionPicker.value);
+    selectedSectionStart=sectionPicker.value!==''&&Number.isFinite(number)
+      ?number:undefined;
+    renderOutline();
+  }
+  function reviseSection(body:string,caret:number,message:string):void {
+    const title=host.getDraft().title;
+    if(body.length>synthBody.maxLength){
+      sectionStatus.textContent='The synthesis has reached the maximum native note length.';
+      return;
+    }
+    host.setDraft(title,body);
+    synthBody.focus();
+    synthBody.setSelectionRange(caret,caret);
+    sectionStatus.textContent=message+' Save synthesis to commit the revision.';
+    renderOutline();
   }
   function onDraftChanged():void {renderOutline();renderExportState();}
   function onSaved():void {renderOutline();renderExportState();}
@@ -179,6 +230,59 @@ export function mountResearchN1L(root:HTMLElement,host:ResearchN1LHost):Research
     const active=host.active();
     $<HTMLButtonElement>('[data-research-export-selected]').disabled=!active;
   }
+
+  bind('[data-n1r-section-picker]','change',selectSection);
+  for(const [direction,button] of [[-1,sectionUp],[1,sectionDown]] as const){
+    const cb=()=>{
+      if(!host.synthesis()||selectedSectionStart===undefined)return;
+      const textBody=host.getDraft().body;
+      const sections=researchSynthesisSections(textBody);
+      const index=sections.findIndex(section=>section.start===selectedSectionStart);
+      if(index<0)return;
+      const moved=moveSynthesisSection(textBody,index,direction);
+      if(!moved){sectionStatus.textContent='This section has no adjacent sibling at its level.';return;}
+      selectedSectionStart=moved.caret;
+      reviseSection(moved.body,moved.caret,
+        direction<0?'Section moved earlier':'Section moved later');
+    };
+    button.addEventListener('click',cb);
+    callbacks.push(()=>button.removeEventListener('click',cb));
+  }
+  bind('[data-n1r-section-insert]','click',()=>{
+    if(!host.synthesis())return;
+    const template=sectionTemplate.value as SynthesisSectionTemplate;
+    const source=host.notes().find(note=>note.id===host.pins().left);
+    const markdown=synthesisSectionTemplate(template,source);
+    const body=host.getDraft().body;
+    const sections=researchSynthesisSections(body);
+    const index=selectedSectionStart===undefined
+      ?-1:sections.findIndex(section=>section.start===selectedSectionStart);
+    try {
+      const inserted=insertSynthesisSection(body,index,markdown,synthBody.maxLength);
+      selectedSectionStart=undefined;
+      reviseSection(inserted.body,inserted.caret,'Source-linked writing section inserted');
+    }catch(error){
+      sectionStatus.textContent=error instanceof Error?error.message:'Unable to insert section.';
+    }
+  });
+  bind('[data-n1r-section-export]','click',()=>{
+    const active=host.active(),synthesis=host.synthesis();
+    if(!active||!synthesis||selectedSectionStart===undefined)return;
+    const draft=host.getDraft();
+    const sections=researchSynthesisSections(draft.body);
+    const index=sections.findIndex(section=>section.start===selectedSectionStart);
+    if(index<0){sectionStatus.textContent='Select an available heading.';return;}
+    try {
+      const markdown=sectionWritingPacketMarkdown(draft.body,index,
+        host.notes(),host.bookTitle,{
+          savedRevision:synthesis.revision,collectionName:active.name,
+        });
+      download('section-'+filename(active.name)+'-'+(index+1)+'.md',markdown);
+      sectionStatus.textContent='Current editor section exported as a working copy, not a saved notebook revision.';
+    }catch(error){
+      sectionStatus.textContent=error instanceof Error?error.message:'Section export unavailable.';
+    }
+  });
 
   bind('[data-research-session-start]','click',()=>{
     const active=host.active();
