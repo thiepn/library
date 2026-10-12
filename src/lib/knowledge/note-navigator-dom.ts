@@ -12,6 +12,7 @@ export interface NotebookNavigationHost {
   selected():BookNoteDocumentV1|undefined;
   notes():readonly BookNoteDocumentV1[];
   bookTitle(workId:string):string;
+  sourceHref(note:BookNoteDocumentV1):string|undefined;
   openNote(note:BookNoteDocumentV1):Promise<void>;
   openCollection(id:string):Promise<void>;
   activeCollection():string;
@@ -47,6 +48,7 @@ export function mountNotebookNavigation(
   const citationInsert=$<HTMLButtonElement>('[data-n1n-insert-reference]');
   const citationCopy=$<HTMLButtonElement>('[data-n1n-copy-reference]');
   const copyNoteLink=$<HTMLButtonElement>('[data-n1n-copy-note-link]');
+  const sourceLink=$<HTMLAnchorElement>('[data-n1n-open-source]');
   const status=$<HTMLElement>('[data-n1n-navigation-status]');
   const sort=$<HTMLSelectElement>('[data-n1n-collection-order]');
   const density=$<HTMLSelectElement>('[data-n1n-density]');
@@ -88,12 +90,16 @@ export function mountNotebookNavigation(
     if(!note){
       memberships.append(paragraph('Open a saved note to see which collections reuse it.'));
       add.disabled=true;copyNoteLink.disabled=true;
+      sourceLink.hidden=true;
       context.textContent='Save a note to access its research collections and source.';
       return;
     }
     copyNoteLink.disabled=false;
     const result=buildNotebookNavigator(note,host.notes(),loadResearchCollections());
     context.textContent=host.bookTitle(note.workId)+' · '+result.sourceLabel;
+    const href=host.sourceHref(note);
+    sourceLink.hidden=!href;
+    if(href)sourceLink.href=href;
     for(const entry of result.memberships){
       const row=document.createElement('div');
       row.className='book-notebook__n1n-membership';
