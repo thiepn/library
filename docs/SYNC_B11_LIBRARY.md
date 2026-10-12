@@ -1,0 +1,1 @@
+B11: The Account screen now receives foreground progress and conflict/error signals from the original B9 runtime. Events contain only owner ID and status, no reading records. Source-owned CAS conflict chooser and manual sync remain unchanged. No remote service modifications.
