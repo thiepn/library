@@ -99,6 +99,7 @@ export function mountResearchViews(
     panels.set(view,list);
   }
   let active:ResearchView='browse';
+  let mounted=false;
   const callbacks:Array<()=>void>=[];
   let citationRefresh:ReturnType<typeof setTimeout>|undefined;
   const availableSources=()=>{
@@ -218,7 +219,7 @@ export function mountResearchViews(
           }
         });
       }
-    }else{
+    }else if(mounted){
       // Avoid jumping away from an active edit without explicit user navigation.
       tabs.scrollIntoView({behavior:'smooth',block:'nearest'});
     }
@@ -246,6 +247,7 @@ export function mountResearchViews(
     root.removeEventListener('keydown',keys);
   });
   show('browse');
+  mounted=true;
   updateCitations();
   return {
     show,
