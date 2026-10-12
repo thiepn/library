@@ -104,10 +104,9 @@ export function mountNotebookNavigation(
     }
     if(!result.memberships.length)
       memberships.append(paragraph('This note is not yet referenced by a research collection.'));
-    for(const collection of orderResearchCollections(result.availableCollections.map(entry=>({
-      ...entry,updatedAt:loadResearchCollections().find(c=>c.id===entry.id)?.updatedAt??'',
-      noteIds:Array.from({length:Math.min(entry.sourceCount,120)},(_,i)=>String(i)),
-    })))){
+    const available=new Set(result.availableCollections.map(entry=>entry.id));
+    for(const collection of orderResearchCollections(loadResearchCollections())
+      .filter(collection=>available.has(collection.id))){
       addSelect.add(new Option(collection.name,collection.id));
     }
     add.disabled=!addSelect.value;
