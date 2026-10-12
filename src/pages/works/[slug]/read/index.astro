@@ -65,6 +65,7 @@ const pdfReaderHref = work.release?.artifacts.pdf
       title={publication.title}
       subtitle={publication.subtitle ?? ''}
       backHref={bookHref}
+      notebookHref={`${base}/notebook?work=${encodeURIComponent(work.id)}`}
       loadingMessage={`Opening ${publication.title}…`}
       fallbackWebHref={legacyFallbackHref ?? ''}
       fallbackPdfHref={publication.pdf?.url ?? ''}
