@@ -77,3 +77,49 @@ export function summarizeCrossBookQueue(
     collections:new Set(all.map(item=>item.collectionId)).size,
   };
 }
+
+
+/**
+ * A portable reading checklist, explicitly NOT a notebook backup or assessment.
+ * Contains only IDs and source descriptors from currently available saved notes.
+ */
+export function crossBookReviewPacketMarkdown(
+  collections:readonly ResearchCollection[],
+  notes:readonly BookNoteDocumentV1[],
+  workTitle:(workId:string)=>string,
+  collectionId='all',
+  filter:QueueFilter='all',
+):string {
+  const items=collectCrossBookReviewQueue(collections,notes,collectionId,filter,300);
+  const groups=new Map<string,ResearchQueueItem[]>();
+  for(const item of items){
+    const group=groups.get(item.collectionName)??[];
+    group.push(item);
+    groups.set(item.collectionName,group);
+  }
+  const rows=[
+    '# Cross-book research review','',
+    '> THIEPN Library · exported temporary, self-reported review checklist.',
+    '> No note text, mastery credit, assessed results, V2 backups or signing authority are included.',
+    '',
+    '- Source entries: '+items.length,
+    '- Selected collection: '+(collectionId==='all'?'All collections':collectionId),
+    '- Review filter: '+filter,'',
+  ];
+  for(const [collectionName,group] of groups){
+    rows.push('## '+collectionName.replace(/[\r\n#]+/g,' ').trim(),'');
+    for(const item of group){
+      rows.push(
+        (item.state==='reviewed'?'- [x] ':'- [ ] ')
+        +workTitle(item.note.workId)+' — '+item.note.title.replace(/[\r\n]/g,' ').trim()
+        +' · '+item.state+' · note:'+item.note.id,
+        '  - Work ID: '+item.note.workId
+        +' · note revision: '+item.note.revision
+        +' · updated: '+item.note.updatedAt,
+      );
+    }
+    rows.push('');
+  }
+  if(!groups.size)rows.push('_No review entries match the selected filters._','');
+  return rows.join('\n');
+}
