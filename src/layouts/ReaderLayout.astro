@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import '../styles/reader.css';
+import '../styles/reader-notebook.css';
 import '../styles/reader-device-ux.css';
 import type { ResolvedWork } from '../lib/content/repository';
 import type { ResolvedChapter } from '../lib/content/chapters';
@@ -93,6 +94,41 @@ const legacyCompatibility = Boolean(nativeReaderHref);
       </article>
     </main>
 
+    <script>
+      import { mountReaderNotebook } from '../lib/knowledge/reader-capture';
+      const chapter = document.querySelector<HTMLElement>('[data-work-id][data-chapter-id]');
+      const actions = document.querySelector<HTMLElement>('.reader-tools');
+      if (chapter?.dataset.workId && chapter.dataset.chapterId && actions) {
+        const workId = chapter.dataset.workId;
+        const chapterId = chapter.dataset.chapterId;
+        const anchor = { format: 'web' as const, chapterId };
+        const title = chapter.querySelector<HTMLElement>('.chapter-header h1')?.textContent?.trim() || chapterId;
+        const capture = mountReaderNotebook({
+          toolbar: actions,
+          getContext: () => ({workId, chapterKey: 'web:' + chapterId, chapterLabel: title, anchor}),
+        });
+        let selectedQuote = '';
+        const prose = chapter.querySelector<HTMLElement>('.reader-prose');
+        const captureSelection = () => {
+          const selection = window.getSelection();
+          if (!selection || selection.isCollapsed || !selection.rangeCount || !prose?.contains(selection.getRangeAt(0).commonAncestorContainer)) return;
+          selectedQuote = selection.toString().trim().slice(0, 1800);
+        };
+        chapter.addEventListener('mouseup', captureSelection);
+        chapter.addEventListener('keyup', captureSelection);
+        const quote = document.createElement('button');
+        quote.type = 'button'; quote.dataset.webSelectionNotebook = '';
+        quote.textContent = 'Quote to notebook';
+        actions.append(quote);
+        quote.addEventListener('click', () => {
+          captureSelection();
+          if (selectedQuote) capture.open('reading-note', { quote: selectedQuote, anchor });
+          else capture.open();
+          selectedQuote = '';
+        });
+        window.addEventListener('pagehide', () => { capture.destroy(); quote.remove(); }, { once: true });
+      }
+    </script>
     <script>
       import { registerLibraryPwa } from '../lib/client/pwa';
       void registerLibraryPwa();

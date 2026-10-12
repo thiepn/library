@@ -1,4 +1,5 @@
 import type { ReaderController, ReaderControllerState } from './controller';
+import { mountReaderNotebook, type CaptureHandle } from '../knowledge/reader-capture';
 import {
   deleteReaderAnnotation,
   getReaderAnnotationsForWork,
@@ -206,6 +207,8 @@ export class ReaderAnnotationsController {
   private readonly maxAnnotations: number;
   private readonly ui: AnnotationUi;
   private readonly highlighter: ReaderAnnotationHighlighter;
+  private readonly notebook: CaptureHandle;
+  private readonly notebookSelection: HTMLButtonElement;
   private readonly listeners = new Set<(state: ReaderAnnotationsState) => void>();
   private cleanups: Unsubscribe[] = [];
   private pendingSelection: PendingSelection | undefined;
@@ -236,6 +239,31 @@ export class ReaderAnnotationsController {
     this.maxAnnotations = Math.max(1, Math.min(4000, Math.round(options.maxAnnotations ?? READER_ANNOTATION_MAX_PER_RELEASE)));
     this.ui = createAnnotationUi(shell.root);
     this.highlighter = new ReaderAnnotationHighlighter(shell.viewport);
+    this.notebook = mountReaderNotebook({
+      toolbar: shell.root.querySelector<HTMLElement>('.reader-shell__cluster--end') ?? shell.root,
+      buttonClass: 'reader-shell__text-button',
+      onOpen: () => this.close(false),
+      getContext: () => {
+        const location = controller.snapshot.location;
+        if (!location?.href) return undefined;
+        return {
+          workId: this.identity.workId,
+          chapterKey: this.identity.releaseVersion + ':' + location.href,
+          chapterLabel: resolveChapterLabel(location, controller.snapshot.toc),
+          anchor: {
+            format: 'epub' as const, edition: this.identity.edition,
+            releaseVersion: this.identity.releaseVersion, chapterHref: location.href,
+            cfi: location.cfi,
+            chapterLabel: resolveChapterLabel(location, controller.snapshot.toc),
+          },
+        };
+      },
+    });
+    this.notebookSelection = document.createElement('button');
+    this.notebookSelection.type = 'button';
+    this.notebookSelection.dataset.readerSelectionNotebook = '';
+    this.notebookSelection.textContent = 'Notebook';
+    this.ui.selectionDismiss.parentElement?.insertBefore(this.notebookSelection, this.ui.selectionDismiss);
     this.renderChrome();
     this.renderList();
   }
@@ -256,6 +284,7 @@ export class ReaderAnnotationsController {
     this.ui.list.addEventListener('keydown', this.handleListKeydown);
     this.ui.selectionHighlight.addEventListener('click', this.handleSelectionHighlight);
     this.ui.selectionNote.addEventListener('click', this.handleSelectionNote);
+    this.notebookSelection.addEventListener('click', this.handleSelectionNotebook);
     this.ui.selectionDismiss.addEventListener('click', this.handleSelectionDismiss);
     this.ui.editorSave.addEventListener('click', this.handleEditorSave);
     this.ui.editorCancel.addEventListener('click', this.handleEditorCancel);
@@ -395,11 +424,13 @@ export class ReaderAnnotationsController {
     this.ui.list.removeEventListener('keydown', this.handleListKeydown);
     this.ui.selectionHighlight.removeEventListener('click', this.handleSelectionHighlight);
     this.ui.selectionNote.removeEventListener('click', this.handleSelectionNote);
+    this.notebookSelection.removeEventListener('click', this.handleSelectionNotebook);
     this.ui.selectionDismiss.removeEventListener('click', this.handleSelectionDismiss);
     this.ui.editorSave.removeEventListener('click', this.handleEditorSave);
     this.ui.editorCancel.removeEventListener('click', this.handleEditorCancel);
     this.ui.editorNote.removeEventListener('keydown', this.handleEditorKeydown);
     document.removeEventListener('keydown', this.handleDocumentKeydown, true);
+    this.notebook.destroy();
     this.highlighter.destroy();
     this.ui.panel.remove();
     this.ui.selectionBar.remove();
@@ -660,6 +691,20 @@ export class ReaderAnnotationsController {
   };
   private readonly handleSelectionHighlight = () => { void this.createFromSelection(''); };
   private readonly handleSelectionNote = () => this.beginNoteFromSelection();
+  private readonly handleSelectionNotebook = () => {
+    const pending = this.pendingSelection;
+    if (!pending?.location.href) return;
+    this.notebook.open('reading-note', {
+      quote: pending.selection.text,
+      anchor: {
+        format: 'epub', edition: this.identity.edition,
+        releaseVersion: this.identity.releaseVersion, chapterHref: pending.location.href,
+        chapterLabel: resolveChapterLabel(pending.location, this.controller.snapshot.toc),
+        cfi: pending.selection.cfiRange,
+      },
+    });
+    this.dismissSelection();
+  };
   private readonly handleSelectionDismiss = () => this.dismissSelection();
   private readonly handleEditorSave = () => { void this.saveEditor(); };
   private readonly handleEditorCancel = () => this.cancelEditor();
@@ -694,7 +739,7 @@ export class ReaderAnnotationsController {
     button.focus();
   };
   private readonly handleDocumentKeydown = (event: KeyboardEvent) => {
-    if (event.key !== 'Escape') return;
+    if (this.notebook.isOpen || event.key !== 'Escape') return;
     if (!this.ui.selectionBar.hidden) {
       event.preventDefault();
       this.dismissSelection();
