@@ -15,11 +15,41 @@ const catalog = (await getWorks()).map((work) => ({
         <div>
           <p class="eyebrow">Your reading knowledge</p>
           <h1>Book Notebook</h1>
-          <p class="micro">Write in Markdown. Notes are saved locally without highlighting a passage.</p>
+          <p class="micro">Write, connect, organize, and reread your ideas across books. All notebook content stays local.</p>
         </div>
         <a class="secondary-action" href={`${base}/knowledge`}>All knowledge</a>
       </header>
       <p class="book-notebook__warning" role="note">N1C: Notebook documents are included in Library V2 JSON backups and per-book Markdown export. Private Account synchronization is paused until the V2 server downgrade guard is independently enabled. Keep a manual backup. <a href={`${base}/backup`}>Open Backup &amp; restore</a>.</p>
+      <section class="book-notebook__dashboard" aria-labelledby="notebook-dashboard-heading">
+        <div class="book-notebook__dashboard-heading">
+          <div>
+            <p class="eyebrow">Your notebook</p>
+            <h2 id="notebook-dashboard-heading">Ideas at a glance</h2>
+          </div>
+          <a href={`${base}/backup`}>Back up notebook</a>
+        </div>
+        <div class="book-notebook__dashboard-stats" data-notebook-dashboard-stats aria-label="Notebook statistics">
+          <div><strong data-dashboard-stat="notes">0</strong><span>Notes</span></div>
+          <div><strong data-dashboard-stat="books">0</strong><span>Books</span></div>
+          <div><strong data-dashboard-stat="connections">0</strong><span>Connections</span></div>
+          <div><strong data-dashboard-stat="topics">0</strong><span>Topics</span></div>
+        </div>
+        <div class="book-notebook__dashboard-grid">
+          <section aria-labelledby="dashboard-recent-heading">
+            <h3 id="dashboard-recent-heading">Continue writing</h3>
+            <div class="book-notebook__dashboard-recent" data-dashboard-recent>
+              <p class="micro">Your recently edited notes will appear here.</p>
+            </div>
+          </section>
+          <section aria-labelledby="dashboard-topics-heading">
+            <h3 id="dashboard-topics-heading">Browse topics</h3>
+            <div class="book-notebook__topic-cloud" data-dashboard-topics>
+              <p class="micro">Add a topic in a note to organize ideas across books.</p>
+            </div>
+            <p class="micro" data-dashboard-unlinked></p>
+          </section>
+        </div>
+      </section>
       <div class="book-notebook__selector">
         <label for="notebook-book">Book</label>
         <select id="notebook-book" data-notebook-book>
@@ -43,6 +73,10 @@ const catalog = (await getWorks()).map((work) => ({
           <label for="notebook-discover-book">From book</label>
           <select id="notebook-discover-book" data-discover-book>
             <option value="all">All books</option>
+          </select>
+          <label for="notebook-discover-topic">Topic</label>
+          <select id="notebook-discover-topic" data-discover-topic>
+            <option value="all">All topics</option>
           </select>
         </div>
         <div class="book-notebook__discover-results" data-discover-results></div>
@@ -94,6 +128,14 @@ const catalog = (await getWorks()).map((work) => ({
           <label for="notebook-title">Title</label>
           <input id="notebook-title" data-notebook-title maxlength="200" autocomplete="off" />
           <label for="notebook-body">Markdown note</label>
+          <div class="book-notebook__template-tools">
+            <label for="notebook-template">Writing template</label>
+            <select id="notebook-template" data-notebook-template>
+              <option value="">Choose a template…</option>
+            </select>
+            <button type="button" data-notebook-insert-template>Insert template</button>
+            <p class="micro">Inserts headings at your cursor. It never replaces the entire note.</p>
+          </div>
           <div class="book-notebook__writing-bar" role="toolbar" aria-label="Markdown writing tools">
             <button type="button" data-markdown-tool="bold" title="Bold (Ctrl+B)" aria-label="Bold selection"><strong>B</strong></button>
             <button type="button" data-markdown-tool="italic" title="Italic (Ctrl+I)" aria-label="Italic selection"><em>I</em></button>
@@ -104,6 +146,8 @@ const catalog = (await getWorks()).map((work) => ({
             <button type="button" data-markdown-tool="checkbox" title="Task list" aria-label="Insert task list">Task</button>
             <button type="button" data-markdown-tool="code" title="Inline code" aria-label="Inline code">Code</button>
             <button type="button" data-notebook-add-link aria-expanded="false" aria-controls="notebook-link-picker">Link note</button>
+            <button type="button" data-notebook-insert-table>Table</button>
+            <button type="button" data-notebook-insert-divider>Divider</button>
           </div>
           <div class="book-notebook__link-picker" id="notebook-link-picker" data-notebook-link-picker hidden>
             <label for="notebook-link-search">Link to a note from any book</label>
@@ -112,11 +156,32 @@ const catalog = (await getWorks()).map((work) => ({
             <div class="book-notebook__link-results" data-notebook-link-results></div>
             <button type="button" data-notebook-link-close>Close link picker</button>
           </div>
-          <textarea id="notebook-body" data-notebook-body maxlength="250000" spellcheck="true" placeholder="Write a thought, summary, question, or reflection…"></textarea>
+          <div class="book-notebook__view-toolbar" role="group" aria-label="Reading and writing view">
+            <button type="button" data-notebook-view="write" aria-pressed="true">Write</button>
+            <button type="button" data-notebook-view="split" aria-pressed="false">Split</button>
+            <button type="button" data-notebook-view="read" aria-pressed="false">Read</button>
+          </div>
+          <div class="book-notebook__writing-surface" data-notebook-writing-surface>
+            <textarea id="notebook-body" data-notebook-body maxlength="250000" spellcheck="true" placeholder="Write a thought, summary, question, or reflection…"></textarea>
+            <article class="book-notebook__reading-preview" data-notebook-reading-preview
+              aria-label="Markdown reading preview" hidden></article>
+          </div>
           <div class="book-notebook__writing-meta">
             <span data-notebook-words aria-live="polite">0 words</span>
             <span data-notebook-characters>0 characters</span>
             <button type="button" data-notebook-focus aria-pressed="false">Focus writing</button>
+          </div>
+          <div class="book-notebook__topics-editor">
+            <div>
+              <label for="notebook-topic-input">Organize by topic</label>
+              <p class="micro">Topics are plain Markdown markers (#topic/name), visible in exports and readable in other editors.</p>
+            </div>
+            <div class="book-notebook__topic-add">
+              <input id="notebook-topic-input" data-notebook-topic-input
+                maxlength="64" placeholder="e.g. discipleship" autocomplete="off" />
+              <button type="button" data-notebook-topic-add>Add topic</button>
+            </div>
+            <div data-notebook-current-topics class="book-notebook__topic-cloud"></div>
           </div>
           <div class="book-notebook__editor-actions">
             <button type="button" data-notebook-save>Save now</button>
@@ -127,6 +192,16 @@ const catalog = (await getWorks()).map((work) => ({
           </div>
           <p class="micro">Plain Markdown stays editable and portable. Use [[note:ID|Title]] to link saved notes by stable ID.</p>
           <section class="book-notebook__relations" aria-labelledby="notebook-relations-heading">
+            <div class="book-notebook__linked-preview" data-notebook-linked-preview hidden
+              aria-label="Linked note preview">
+              <div class="book-notebook__linked-preview-head">
+                <strong data-linked-preview-title></strong>
+                <button type="button" data-linked-preview-close aria-label="Close linked note preview">Close</button>
+              </div>
+              <p class="micro" data-linked-preview-source></p>
+              <div class="book-notebook__linked-preview-text" data-linked-preview-text></div>
+              <button type="button" data-linked-preview-open>Open this note</button>
+            </div>
             <h3 id="notebook-relations-heading">Connected notes</h3>
             <div class="book-notebook__relation-columns">
               <div><h4>References in this note</h4><div data-notebook-outgoing></div></div>
@@ -162,6 +237,11 @@ const catalog = (await getWorks()).map((work) => ({
     } from '../lib/knowledge/note-store';
     import { bookNotebookToObsidianMarkdown } from '../lib/knowledge/note-export';
     import { downloadNotebookRecovery } from '../lib/knowledge/note-recovery';
+    import { renderNotebookPreview } from '../lib/knowledge/note-preview';
+    import {
+      NOTEBOOK_TEMPLATES, buildNotebookOverview, collectNotebookTopics,
+      extractNotebookTopics, insertNotebookText, normalizeNotebookTopic,
+    } from '../lib/knowledge/note-workspace';
     import {
       findNotebookNotes, notebookConnections, notebookWordCount,
       noteReferenceMarkdown, applyNotebookMarkdownTool, insertNotebookReference,
@@ -200,6 +280,7 @@ const catalog = (await getWorks()).map((work) => ({
       const removeButton = root.querySelector<HTMLButtonElement>('[data-notebook-delete]')!;
       const discoverQuery = root.querySelector<HTMLInputElement>('[data-discover-query]')!;
       const discoverBook = root.querySelector<HTMLSelectElement>('[data-discover-book]')!;
+      const discoverTopic = root.querySelector<HTMLSelectElement>('[data-discover-topic]')!;
       const discoverResults = root.querySelector<HTMLElement>('[data-discover-results]')!;
       const discoverCount = root.querySelector<HTMLElement>('[data-discover-count]')!;
       const discoverEmpty = root.querySelector<HTMLElement>('[data-discover-empty]')!;
@@ -216,6 +297,20 @@ const catalog = (await getWorks()).map((work) => ({
       const wordCount = root.querySelector<HTMLElement>('[data-notebook-words]')!;
       const characterCount = root.querySelector<HTMLElement>('[data-notebook-characters]')!;
       const focusToggle = root.querySelector<HTMLButtonElement>('[data-notebook-focus]')!;
+      const readingPreview = root.querySelector<HTMLElement>('[data-notebook-reading-preview]')!;
+      const writingSurface = root.querySelector<HTMLElement>('[data-notebook-writing-surface]')!;
+      const templateSelect = root.querySelector<HTMLSelectElement>('[data-notebook-template]')!;
+      const topicInput = root.querySelector<HTMLInputElement>('[data-notebook-topic-input]')!;
+      const currentTopics = root.querySelector<HTMLElement>('[data-notebook-current-topics]')!;
+      const linkedPreview = root.querySelector<HTMLElement>('[data-notebook-linked-preview]')!;
+      const linkedPreviewTitle = root.querySelector<HTMLElement>('[data-linked-preview-title]')!;
+      const linkedPreviewSource = root.querySelector<HTMLElement>('[data-linked-preview-source]')!;
+      const linkedPreviewText = root.querySelector<HTMLElement>('[data-linked-preview-text]')!;
+      const linkedPreviewOpen = root.querySelector<HTMLButtonElement>('[data-linked-preview-open]')!;
+      const dashboardRecent = root.querySelector<HTMLElement>('[data-dashboard-recent]')!;
+      const dashboardTopics = root.querySelector<HTMLElement>('[data-dashboard-topics]')!;
+      const dashboardUnlinked = root.querySelector<HTMLElement>('[data-dashboard-unlinked]')!;
+      const dashboardStats = root.querySelector<HTMLElement>('[data-notebook-dashboard-stats]')!;
       const books = new Map<string, BookEntry>();
       const allNotes: BookNoteDocumentV1[] = [];
       let libraryNotes: BookNoteDocumentV1[] = [];
@@ -228,6 +323,10 @@ const catalog = (await getWorks()).map((work) => ({
       let saving = false;
       let loadNumber = 0;
       let deletionArmed = false;
+      let previewMode: 'write' | 'split' | 'read' = 'write';
+      let linkedPreviewNote: BookNoteDocumentV1 | undefined;
+      for (const template of NOTEBOOK_TEMPLATES)
+        templateSelect.add(new Option(template.label + ' — ' + template.description, template.id));
 
       function dirty(): boolean {
         return Boolean(draft || selected) && (title.value !== savedTitle || body.value !== savedBody);
