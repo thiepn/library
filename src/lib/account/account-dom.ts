@@ -232,6 +232,8 @@ export function mountLibraryAccountPage(): () => void {
         // Account identity changed while native CAS was running. Never paint
         // the previous owner's result or release its conflict hold.
         user = current;
+        history.switchOwner(current?.id ?? null);
+        paintHistory();
         if (!disposed) await render(current);
         return;
       }
@@ -256,6 +258,8 @@ export function mountLibraryAccountPage(): () => void {
         text('[data-sync-status]', 'Native Library check failed. Local reading remains available; retry or export a manual backup.');
       } else {
         user = current;
+        history.switchOwner(current?.id ?? null);
+        paintHistory();
         if (!disposed) await render(current);
       }
     } finally {
