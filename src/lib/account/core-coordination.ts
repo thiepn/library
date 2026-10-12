@@ -1,6 +1,5 @@
 import {
   getVerifiedLibraryAccountUser,
-  type LibraryAccountUser,
 } from './supabase';
 import {
   isLibrarySyncEnabledForUser,
