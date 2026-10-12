@@ -407,6 +407,7 @@ const catalog = (await getWorks()).map((work) => ({
         }
         history.replaceState(null, '', url);
         updateWritingStats();
+        setWritingView(previewMode);
         renderConnections();
         renderNotes(allNotes);
         title.focus();
@@ -662,6 +663,8 @@ const catalog = (await getWorks()).map((work) => ({
         backlinks.replaceChildren();
         suggestions.replaceChildren();
         sourceInfo.textContent = '';
+        renderCurrentTopics();
+        renderReadingView();
         sourceReader.hidden = true;
         sourceCopy.disabled = !selected;
         if (!selected) {
@@ -671,7 +674,7 @@ const catalog = (await getWorks()).map((work) => ({
         }
         const graph = notebookConnections(selected, libraryNotes, body.value);
         for (const link of graph.outbound) {
-          outgoing.append(connectedButton(link.target,
+          outgoing.append(connectedWithPreview(link.target,
             (link.crossBook ? 'Another book · ' : '') + bookName(link.target.workId)));
         }
         for (const link of graph.missing) {
@@ -683,13 +686,13 @@ const catalog = (await getWorks()).map((work) => ({
         if (!graph.outbound.length && !graph.missing.length)
           paragraph(outgoing, 'No links yet. Use “Link note” to connect an idea.');
         for (const link of graph.inbound) {
-          backlinks.append(connectedButton(link.target,
+          backlinks.append(connectedWithPreview(link.target,
             (link.crossBook ? 'Another book · ' : '') + bookName(link.target.workId)));
         }
         if (!graph.inbound.length) paragraph(backlinks, 'No notes link here yet.');
         const suggested = suggestRelatedNotebookNotes(selected, libraryNotes, body.value);
         for (const item of suggested) {
-          suggestions.append(connectedButton(item.note,
+          suggestions.append(connectedWithPreview(item.note,
             'Shared words: ' + item.sharedTerms.join(', ')));
         }
         if (!suggested.length) paragraph(suggestions, 'No strong word overlap found yet.');
@@ -751,13 +754,16 @@ const catalog = (await getWorks()).map((work) => ({
       function renderDiscover(): void {
         discoverResults.replaceChildren();
         const filter = discoverBook.value;
-        const filtered = libraryNotes.filter(note => filter === 'all' || note.workId === filter);
+        const topic = discoverTopic.value;
+        const filtered = libraryNotes.filter(note =>
+          (filter === 'all' || note.workId === filter)
+          && (topic === 'all' || extractNotebookTopics(note.bodyMarkdown).includes(topic)));
         const candidates = findNotebookNotes(filtered, bookName, discoverQuery.value, 30);
         discoverCount.textContent = libraryNotes.length + ' notes across '
           + new Set(libraryNotes.map(note => note.workId)).size + ' books';
         discoverEmpty.hidden = candidates.length > 0;
         for (const note of candidates) {
-          const button = connectedButton(note);
+          const button = connectedWithPreview(note);
           button.classList.add('book-notebook__discover-item');
           const snippet = document.createElement('small');
           snippet.textContent = note.bodyMarkdown
@@ -788,6 +794,13 @@ const catalog = (await getWorks()).map((work) => ({
             discoverBook.add(new Option(bookName(id),id));
           }
           discoverBook.value = listed.has(selectedBook) ? selectedBook : 'all';
+          const currentTopic = discoverTopic.value;
+          discoverTopic.replaceChildren(new Option('All topics', 'all'));
+          for (const item of collectNotebookTopics(documents))
+            discoverTopic.add(new Option('#' + item.id + ' (' + item.count + ')', item.id));
+          discoverTopic.value = [...discoverTopic.options].some(option => option.value === currentTopic)
+            ? currentTopic : 'all';
+          renderDashboard();
           renderDiscover();
           renderLinkChoices();
           renderConnections();
@@ -941,6 +954,7 @@ const catalog = (await getWorks()).map((work) => ({
         scheduleSave();
         updateWritingStats();
         renderConnections();
+        renderReadingView();
       });
       title.addEventListener('blur', () => { if (dirty()) void save(); });
       body.addEventListener('blur', () => { if (dirty()) void save(); });
