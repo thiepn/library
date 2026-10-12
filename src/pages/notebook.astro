@@ -430,6 +430,30 @@ const catalog = (await getWorks()).map((work) => ({
             </div>
             <div class="book-notebook__n1p-source-path" data-n1p-source-path></div>
           </section>
+          <section class="book-notebook__n1p-comparison" aria-labelledby="n1p-compare-heading">
+            <div class="book-notebook__n1o-heading">
+              <div>
+                <h4 id="n1p-compare-heading">Multi-source writing basket</h4>
+                <p class="micro">Collect two to six already saved notes and turn their stable references into a comparative synthesis outline.</p>
+              </div>
+              <span class="micro" data-n1p-compare-count>0 / 6 sources</span>
+            </div>
+            <div class="book-notebook__n1p-compare-controls">
+              <label for="n1p-comparison-source">Saved source</label>
+              <select id="n1p-comparison-source" data-n1p-compare-select>
+                <option value="">Choose a note in this collection…</option>
+              </select>
+              <button type="button" data-n1p-compare-add>Add to basket</button>
+              <button type="button" data-n1p-compare-clear>Clear basket</button>
+            </div>
+            <div data-n1p-comparison-items class="book-notebook__n1p-comparison-items"
+              aria-label="Selected source notes for comparison"></div>
+            <div class="book-notebook__n1p-compare-actions">
+              <button type="button" data-n1p-compare-insert disabled>Insert cross-book outline in synthesis</button>
+              <button type="button" data-n1p-compare-copy disabled>Copy source references</button>
+            </div>
+            <p class="micro" data-n1p-compare-status role="status" aria-live="polite"></p>
+          </section>
           <section class="book-notebook__n1o-evidence" aria-labelledby="n1o-evidence-heading">
             <div class="book-notebook__n1o-heading">
               <div>
