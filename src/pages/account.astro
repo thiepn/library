@@ -87,6 +87,11 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
             <a href={`${base}/backup`}>Native Library backup &amp; restore</a>
           </div>
           <p data-recovery-inspection role="status" aria-live="polite">No recovery inspection performed. Local reading is available without a Core grant.</p>
+          <div class="sync-boundary" aria-label="Session recovery history">
+            <h4>Incident history in this tab</h4>
+            <p class="micro">Last 12 native status/permission events. Cleared when the Account changes or the tab closes; never uploaded.</p>
+            <ol data-recovery-history aria-live="polite"></ol>
+          </div>
           <div data-recovery-conflict-actions hidden>
             <p class="micro">Conflict recovery: export a backup before selecting the authoritative copy with the native chooser below.</p>
           </div>

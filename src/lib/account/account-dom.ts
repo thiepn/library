@@ -19,6 +19,7 @@ import {
 import { isLibraryAutomaticSyncEnabled, setLibraryAutomaticSync } from './auto-sync';
 import { getLibraryCoreGrant, changeLibraryCoreGrant, requestLibrarySyncFromCore } from './core-coordination';
 import { inspectLibraryRecovery } from './recovery-inspection';
+import { createLibraryRecoveryHistory, type LibraryIncidentKind } from './recovery-history';
 import {
   isLibraryPersonalFileCloudEnabled,
   reconcileLibraryPersonalFiles,
@@ -172,6 +173,22 @@ export function mountLibraryAccountPage(): () => void {
   let user: LibraryAccountUser | null = null;
   let disposed = false;
   let lastNativeStatus: LibrarySyncResult['status'] | null = null;
+  const history = createLibraryRecoveryHistory();
+  const paintHistory = () => {
+    const list = document.querySelector<HTMLOListElement>('[data-recovery-history]');
+    if (!list) return;
+    list.replaceChildren();
+    for (const entry of history.list(user?.id ?? null)) {
+      const item = document.createElement('li');
+      item.textContent = new Date(entry.observedAt).toLocaleTimeString() + ' · ' +
+        entry.kind.replaceAll('-', ' ');
+      list.append(item);
+    }
+  };
+  const record = (ownerId: string | null, kind: LibraryIncidentKind) => {
+    history.append(ownerId, kind);
+    paintHistory();
+  };
 
   const refresh = async () => {
     if (disposed) return;
@@ -184,11 +201,15 @@ export function mountLibraryAccountPage(): () => void {
         if (disposed || initial.status === 'redirecting') return;
       }
       user = await render();
+      history.switchOwner(user?.id ?? null);
+      paintHistory();
     } catch (error) {
       // Identity verification can be unavailable behind tracking blockers or
       // during an outage. Never display stale private state, but retain the
       // explicit top-level Account sign-in recovery path.
       user = null;
+      history.switchOwner(null);
+      paintHistory();
       hidden('[data-account-signed-out]', false);
       hidden('[data-account-signed-in]', true);
       hidden('[data-sync-panel]', true);
@@ -215,7 +236,12 @@ export function mountLibraryAccountPage(): () => void {
         return;
       }
       lastNativeStatus = result.status;
+      const incident: LibraryIncidentKind = result.status === 'conflict' ? 'native-conflict'
+        : result.status === 'offline' ? 'native-offline'
+        : result.status === 'error' ? 'native-error'
+        : conflictResolution ? 'resolution-chosen' : 'native-confirmed';
       await render(current);
+      record(startedAs, incident);
       // Rendering Account controls is observational. Only the original
       // operation result may set conflict/status UI for this verified owner.
       renderResult(result);
@@ -265,6 +291,7 @@ export function mountLibraryAccountPage(): () => void {
       text('[data-recovery-inspection]',
         'Library ' + result.status.replaceAll('-', ' ') + ': ' + result.action +
         ' External custody has not been certified.');
+      record(current.id, 'inspect');
       hidden('[data-recovery-conflict-actions]', result.status !== 'conflict');
     })().catch(() =>
       text('[data-recovery-inspection]', 'Unable to verify the Account. Native backup remains available without Core.'));
@@ -276,6 +303,7 @@ export function mountLibraryAccountPage(): () => void {
     text('[data-recovery-inspection]', revoked
       ? 'Core device grant revoked. Native Library sync, backup, and conflict chooser remain available.'
       : 'Unable to persist Core revocation. Check browser storage permissions.');
+    if (revoked) record(owner, 'revoked');
     void render(user);
   });
   document.querySelector('[data-sync-enable]')?.addEventListener('click', () => void act(enableLibraryAccountSync));
@@ -347,6 +375,9 @@ export function mountLibraryAccountPage(): () => void {
     if (!user || readLibrarySyncMeta()?.userId !== user.id) return;
     if (detail) {
       lastNativeStatus = detail.status;
+      if (detail.status === 'conflict') record(user.id, 'native-conflict');
+      if (detail.status === 'error') record(user.id, 'native-error');
+      if (detail.status === 'offline') record(user.id, 'native-offline');
       renderResult(detail);
       if (detail.status === 'conflict' || detail.status === 'offline' || detail.status === 'error')
         text('[data-sync-mode]', detail.status === 'conflict' ? 'Attention required: changes conflict' : detail.status === 'offline' ? 'Waiting for connection' : 'Sync needs attention');
@@ -382,6 +413,7 @@ export function mountLibraryAccountPage(): () => void {
 
   return () => {
     disposed = true;
+    history.clear();
     window.removeEventListener('thiepn:library-sync', onSync);
     window.removeEventListener('thiepn:library-runtime', onRuntime);
     window.removeEventListener('thiepn:library-personal-files', onPersonalFiles);

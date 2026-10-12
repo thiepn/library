@@ -1,0 +1,20 @@
+import assert from 'node:assert/strict';
+import { test } from 'node:test';
+import { createLibraryRecoveryHistory } from '../../src/lib/account/recovery-history';
+test('B16 bounded in-memory owner-scoped recovery history cannot cross accounts', () => {
+  const a = '11111111-1111-4111-8111-111111111111';
+  const b = '22222222-2222-4222-8222-222222222222';
+  const h = createLibraryRecoveryHistory(() => 123);
+  h.switchOwner(a);
+  assert.equal(h.append(b, 'native-conflict'), false);
+  for(let i=0;i<20;i++) assert.equal(h.append(a,'inspect'), true);
+  assert.equal(h.list(a).length, 12);
+  assert.equal(h.list(a)[0]?.sequence,9);
+  h.switchOwner(b);
+  assert.equal(h.list(a).length,0);
+  assert.equal(h.append(a,'revoked'),false);
+  assert.equal(h.append(b,'revoked'),true);
+  assert.equal(h.list(b)[0]?.sequence,1);
+  h.clear();
+  assert.equal(h.list(b).length,0);
+});
