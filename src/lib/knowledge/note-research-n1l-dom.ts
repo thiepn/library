@@ -2,7 +2,7 @@ import { applyNotebookMarkdownTool, notebookWordCount, type MarkdownTool } from 
 import { getNotebookHeadings } from './note-outline';
 import { researchReferences, researchBibliographyMarkdown } from './note-references';
 import { researchBriefMarkdown, researchDossierMarkdown } from './note-research-handoff';
-import { type ResearchCollection, type ResearchSource } from './note-research';
+import { describeResearchSource, type ResearchCollection, type ResearchSource } from './note-research';
 import { notebookTitle, type BookNoteDocumentV1 } from './note-model';
 import {
   readResearchSession, newResearchSession, alignResearchSession, moveResearchSession,
@@ -70,12 +70,7 @@ export function mountResearchN1L(root:HTMLElement,host:ResearchN1LHost):Research
       const note=byId.get(id);
       return note?[{
         note,bookTitle:host.bookTitle(note.workId),
-        sourceLocation:note.anchor?.format==='pdf'
-          ? 'PDF page '+note.anchor.page
-          :note.anchor?.format==='epub'
-            ? 'EPUB '+(note.anchor.chapterLabel??note.anchor.chapterHref)
-            :note.anchor?.format==='web'?'Web chapter '+note.anchor.chapterId
-              :(note.chapterKey?'Chapter '+note.chapterKey:'Exact location not recorded'),
+        sourceLocation:describeResearchSource(note.anchor,note.chapterKey),
         sourceHref:host.sourceHref(note),
       }]:[];
     });
@@ -137,13 +132,17 @@ export function mountResearchN1L(root:HTMLElement,host:ResearchN1LHost):Research
     session=active?readResearchSession(active.id):undefined;
     if(session){
       const reconciled=alignResearchSession(session,sessionIds());
-      if(reconciled)store(reconciled);
-      else session=undefined;
+      if(reconciled){
+        store(reconciled);
+        const ids=reconciled.entries.map(item=>item.id);
+        const idx=ids.indexOf(reconciled.cursor);
+        host.setPins(reconciled.cursor,ids[idx+1]??ids[idx-1]??'');
+      } else session=undefined;
     }
     renderSession();renderOutline();renderExportState();
   }
   function onNotesChanged():void {
-    if(session) {
+    if(session && session.collectionId===host.active()?.id) {
       const aligned=alignResearchSession(session,sessionIds());
       if(aligned)store(aligned);
       else session=undefined;
