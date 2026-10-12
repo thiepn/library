@@ -44,6 +44,9 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
         <p data-sync-status>Your local reading data will not be uploaded until you enable sync.</p>
         <p class="micro" data-sync-meta>No cloud sync enabled.</p>
+        <p class="micro">Keep a manual copy of notebook notes and reading progress even when Account sync is unavailable.</p>
+        <button type="button" data-account-action data-sync-device-backup>Download device backup (JSON)</button>
+        <p class="micro" data-sync-device-backup-status role="status" aria-live="polite"></p>
 
         <div class="account-actions">
           <button type="button" class="account-primary" data-account-action data-sync-enable>Sync this device</button>
