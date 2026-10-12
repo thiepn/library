@@ -644,6 +644,14 @@ export function mountResearchWorkbench(
     openNote:note=>host.openNote(note),
     openCollection:id=>activate(id),
     collectNote:id=>addNote(id),
+    pinSource:id=>{
+      if(!active?.noteIds.includes(id))return;
+      pins.left=id;
+      if(pins.right===id)
+        pins.right=active.noteIds.find(other=>other!==id)??'';
+      renderSources();renderSide('left');renderSide('right');
+      refinements?.onNotesChanged();integration?.onNotesChanged();
+    },
     notify,
   });
   integration=mountResearchN1P(root,{
