@@ -99,6 +99,8 @@ export function mountKnowledgeWorkbench(
       loadResearchCollections(),id=>host.bookTitle(id));
   };
   function openInEditor(note:BookNoteDocumentV1):void {
+    if(host.isDirty()&&!window.confirm(
+      'Your research synthesis has unsaved edits. Save or download the draft before switching into the note editor? Cancel to stay in this workspace.'))return;
     void host.openNote(note);
   }
   function scrollToSource(source:SourceCoverage):void {
