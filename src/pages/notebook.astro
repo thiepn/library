@@ -156,6 +156,10 @@ const catalog = (await getWorks()).map((work) => ({
             <option value="title">Title A–Z</option>
           </select>
         </div>
+        <div class="book-notebook__discover-bulk">
+          <button type="button" data-research-add-results>Add matching notes to research</button>
+          <p class="micro">Adds up to 20 matching notes to the selected collection. Your source notes remain unchanged.</p>
+        </div>
         <div class="book-notebook__discover-results" data-discover-results></div>
         <p class="micro" data-discover-empty hidden>No matching notebook notes.</p>
       </section>
@@ -1654,6 +1658,12 @@ const catalog = (await getWorks()).map((work) => ({
         if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
           event.preventDefault(); void save();
         }
+      });
+      root.querySelector('[data-research-add-results]')?.addEventListener('click', async () => {
+        const matches=workspaceNotes().slice(0,20);
+        if(!matches.length){setStatus('There are no matching notes to collect.');return;}
+        if(!window.confirm('Add '+matches.length+' matching notes to the selected research collection?'))return;
+        await research.addNotes(matches.map(note=>note.id));
       });
       root.querySelector('[data-notebook-add-research]')?.addEventListener('click', async () => {
         if (!selected && !draft) return;
