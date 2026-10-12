@@ -22,9 +22,6 @@ export function sourceLinkedComparison(
   title:(workId:string)=>string,
 ):ResearchCompareOutline {
   if(first.id===second.id)throw new Error('Select two different saved source notes.');
-  if(first.scope==='book-overview'&&second.scope==='book-overview'
-    &&first.workId===second.workId&&first.title===second.title)
-    throw new Error('Choose two independent saved source notes.');
   const safe=(s:string)=>s.replace(/[\r\n]+/g,' ').trim();
   const firstTopics=new Set(extractNotebookTopics(first.bodyMarkdown));
   const secondTopics=new Set(extractNotebookTopics(second.bodyMarkdown));
