@@ -8,26 +8,26 @@
   "contributors": [
     {
       "name": "John Bunyan",
-      "role": "creator",
+      "role": "author",
       "birthYear": 1628,
       "deathYear": 1688
     }
   ],
-  "description": "A public-domain edition of The Holy War, Made by King Shaddai Upon Diabolus, for the Regaining of the Metropolis of the World; Or, The Losing and Taking Again of the Town of Mansoul by John Bunyan. Project Gutenberg classifies it under Soul, Christian fiction, Spiritual warfare -- Fiction.",
-  "shortDescription": "A public-domain edition of The Holy War, Made by King Shaddai Upon Diabolus, for the Regaining of the Metropolis of the World; Or, The Losing and Taking Again of the Town of Man…",
+  "description": "The Holy War, Made by King Shaddai Upon Diabolus, for the Regaining of the Metropolis of the World; Or, The Losing and Taking Again of the Town of Mansoul by John Bunyan is a classic work exploring soul, christian fiction, spiritual warfare. This Library edition presents the work for modern digital reading.",
+  "shortDescription": "The Holy War, Made by King Shaddai Upon Diabolus, for the Regaining of the Metropolis of the World; Or, The Losing and Taking Again of the Town of Mansoul by John Bunyan is a classic work…",
   "status": "published",
   "visibility": "public",
   "publication": {
-    "firstPublished": "1996-01-01",
-    "lastUpdated": "2026-09-08",
+    "firstPublished": "Not verified",
+    "lastUpdated": "2026-10-12",
     "edition": 1,
-    "editionLabel": "Project Gutenberg public-domain edition",
+    "editionLabel": "THIEPN Library Edition",
     "version": "pg-395-67a2fe57c591-cover-e4c53ee9b3db",
     "activeRelease": "pg-395-67a2fe57c591-cover-e4c53ee9b3db"
   },
   "cover": {
     "src": "/covers/public-domain/pd-pg-395.webp",
-    "alt": "Cover for The Holy War, Made by King Shaddai Upon Diabolus, for the Regaining of the Metropolis of the World; Or, The Losing and Taking Again of the Town of Mansoul by John Bunyan"
+    "alt": "Cover of The Holy War, Made by King Shaddai Upon Diabolus, for the Regaining of the Metropolis of the World; Or, The Losing and Taking Again of the Town of Mansoul by John Bunyan"
   },
   "classification": {
     "subjects": [
@@ -38,7 +38,6 @@
     ],
     "tags": [
       "public-domain",
-      "project-gutenberg",
       "classic",
       "christian",
       "christian-classic"
@@ -64,21 +63,9 @@
     "relatedWorks": [],
     "prerequisites": []
   },
-  "resources": [
-    {
-      "type": "source",
-      "label": "Project Gutenberg",
-      "url": "https://www.gutenberg.org/ebooks/395",
-      "gutenbergId": 395
-    },
-    {
-      "type": "provenance",
-      "label": "Official Project Gutenberg RDF metadata",
-      "url": "https://www.gutenberg.org/cache/epub/395/pg395.rdf"
-    }
-  ],
+  "resources": [],
   "rights": {
-    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
-    "notice": "Source edition: Project Gutenberg #395. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+    "status": "Public domain in Germany",
+    "notice": "This Library edition is offered as a public-domain work under German copyright law. Copyright status can differ in other jurisdictions."
   }
 }

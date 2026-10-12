@@ -8,26 +8,26 @@
   "contributors": [
     {
       "name": "Edgar Allan Poe",
-      "role": "creator",
+      "role": "author",
       "birthYear": 1809,
       "deathYear": 1849
     }
   ],
-  "description": "A public-domain edition of The Cask of Amontillado by Edgar Allan Poe. Project Gutenberg classifies it under Horror tales, American, Revenge -- Fiction, PS.",
-  "shortDescription": "A public-domain edition of The Cask of Amontillado by Edgar Allan Poe. Project Gutenberg classifies it under Horror tales, American, Revenge -- Fiction, PS.",
+  "description": "The Cask of Amontillado by Edgar Allan Poe is a classic work exploring horror tales american, revenge, ps. This Library edition presents the work for modern digital reading.",
+  "shortDescription": "The Cask of Amontillado by Edgar Allan Poe is a classic work exploring horror tales american, revenge, ps. This Library edition presents the work for modern digital reading.",
   "status": "published",
   "visibility": "public",
   "publication": {
-    "firstPublished": "2010-06-06",
-    "lastUpdated": "2026-09-13",
+    "firstPublished": "Not verified",
+    "lastUpdated": "2026-10-12",
     "edition": 1,
-    "editionLabel": "Project Gutenberg public-domain edition",
+    "editionLabel": "THIEPN Library Edition",
     "version": "pg-1063-4e4e64ae9b36-cover-78fed5759ac7",
     "activeRelease": "pg-1063-4e4e64ae9b36-cover-78fed5759ac7"
   },
   "cover": {
     "src": "/covers/public-domain/pd-pg-1063.webp",
-    "alt": "Cover for The Cask of Amontillado by Edgar Allan Poe"
+    "alt": "Cover of The Cask of Amontillado by Edgar Allan Poe"
   },
   "classification": {
     "subjects": [
@@ -37,7 +37,6 @@
     ],
     "tags": [
       "public-domain",
-      "project-gutenberg",
       "classic"
     ],
     "collections": [
@@ -60,21 +59,9 @@
     "relatedWorks": [],
     "prerequisites": []
   },
-  "resources": [
-    {
-      "type": "source",
-      "label": "Project Gutenberg",
-      "url": "https://www.gutenberg.org/ebooks/1063",
-      "gutenbergId": 1063
-    },
-    {
-      "type": "provenance",
-      "label": "Official Project Gutenberg RDF metadata",
-      "url": "https://www.gutenberg.org/cache/epub/1063/pg1063.rdf"
-    }
-  ],
+  "resources": [],
   "rights": {
-    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
-    "notice": "Source edition: Project Gutenberg #1063. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+    "status": "Public domain in Germany",
+    "notice": "This Library edition is offered as a public-domain work under German copyright law. Copyright status can differ in other jurisdictions."
   }
 }

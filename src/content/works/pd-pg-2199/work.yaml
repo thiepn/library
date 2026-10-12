@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-2199",
+  "slug": "pd-pg-2199",
+  "title": "The Iliad",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Homer",
+      "role": "author",
+      "birthYear": -750,
+      "deathYear": -650
+    },
+    {
+      "name": "Samuel Butler",
+      "role": "translator",
+      "birthYear": 1835,
+      "deathYear": 1902
+    }
+  ],
+  "description": "The Iliad by Homer is a classic work associated with Classical literature, Epic poetry, Greek -- Translations into English, Achilles (Mythological character).",
+  "shortDescription": "The Iliad by Homer is a classic work associated with Classical literature, Epic poetry, Greek -- Translations into English, Achilles (Mythological character).",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "Ancient work",
+    "lastUpdated": "2026-10-12",
+    "edition": 1,
+    "editionLabel": "THIEPN Library Edition",
+    "version": "pg-2199-f32b68a9a7a2",
+    "activeRelease": "pg-2199-f32b68a9a7a2"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-2199.svg",
+    "alt": "Cover of The Iliad by Homer"
+  },
+  "classification": {
+    "subjects": [
+      "classical-literature",
+      "epic-poetry-greek",
+      "achilles-mythological-character",
+      "trojan-war",
+      "pa"
+    ],
+    "tags": [
+      "public-domain",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "general-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [],
+  "rights": {
+    "status": "Public domain in Germany",
+    "notice": "This Library edition is offered as a public-domain work under German copyright law. Copyright status can differ in other jurisdictions."
+  }
+}

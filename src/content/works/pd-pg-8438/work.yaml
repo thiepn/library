@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-8438",
+  "slug": "pd-pg-8438",
+  "title": "Nicomachean Ethics",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Aristotle",
+      "role": "author",
+      "birthYear": -384,
+      "deathYear": -322
+    }
+  ],
+  "description": "The Nicomachean ethics of Aristotle by Aristotle is a classic work associated with Ethics, B, PA.",
+  "shortDescription": "The Nicomachean ethics of Aristotle by Aristotle is a classic work associated with Ethics, B, PA.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "Ancient work",
+    "lastUpdated": "2026-10-12",
+    "edition": 1,
+    "editionLabel": "THIEPN Library Edition",
+    "version": "pg-8438-0609068660aa",
+    "activeRelease": "pg-8438-0609068660aa"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-8438.svg",
+    "alt": "Cover of Nicomachean Ethics by Aristotle"
+  },
+  "classification": {
+    "subjects": [
+      "ethics",
+      "b",
+      "pa"
+    ],
+    "tags": [
+      "public-domain",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "philosophy-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [],
+  "rights": {
+    "status": "Public domain in Germany",
+    "notice": "This Library edition is offered as a public-domain work under German copyright law. Copyright status can differ in other jurisdictions."
+  }
+}

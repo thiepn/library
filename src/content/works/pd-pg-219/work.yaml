@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-219",
+  "slug": "pd-pg-219",
+  "title": "Heart of Darkness",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Joseph Conrad",
+      "role": "author",
+      "birthYear": 1857,
+      "deathYear": 1924
+    }
+  ],
+  "description": "Heart of Darkness by Joseph Conrad is a classic work associated with Africa -- Fiction, Europeans -- Africa -- Fiction, Trading posts -- Fiction.",
+  "shortDescription": "Heart of Darkness by Joseph Conrad is a classic work associated with Africa -- Fiction, Europeans -- Africa -- Fiction, Trading posts -- Fiction.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "Not verified",
+    "lastUpdated": "2026-10-12",
+    "edition": 1,
+    "editionLabel": "THIEPN Library Edition",
+    "version": "pg-219-03e961e7a98b",
+    "activeRelease": "pg-219-03e961e7a98b"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-219.svg",
+    "alt": "Cover of Heart of Darkness by Joseph Conrad"
+  },
+  "classification": {
+    "subjects": [
+      "africa",
+      "europeans",
+      "trading-posts",
+      "degeneration",
+      "imperialism"
+    ],
+    "tags": [
+      "public-domain",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "best-books-ever-listings",
+      "general-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [],
+  "rights": {
+    "status": "Public domain in Germany",
+    "notice": "This Library edition is offered as a public-domain work under German copyright law. Copyright status can differ in other jurisdictions."
+  }
+}

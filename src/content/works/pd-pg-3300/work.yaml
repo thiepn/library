@@ -8,26 +8,26 @@
   "contributors": [
     {
       "name": "Adam Smith",
-      "role": "creator",
+      "role": "author",
       "birthYear": 1723,
       "deathYear": 1790
     }
   ],
-  "description": "A public-domain edition of An Inquiry into the Nature and Causes of the Wealth of Nations by Adam Smith. Project Gutenberg classifies it under Economics, HB.",
-  "shortDescription": "A public-domain edition of An Inquiry into the Nature and Causes of the Wealth of Nations by Adam Smith. Project Gutenberg classifies it under Economics, HB.",
+  "description": "An Inquiry into the Nature and Causes of the Wealth of Nations by Adam Smith is a classic work exploring economics, hb. This Library edition presents the work for modern digital reading.",
+  "shortDescription": "An Inquiry into the Nature and Causes of the Wealth of Nations by Adam Smith is a classic work exploring economics, hb. This Library edition presents the work for modern digital reading.",
   "status": "published",
   "visibility": "public",
   "publication": {
-    "firstPublished": "2002-06-01",
-    "lastUpdated": "2026-09-08",
+    "firstPublished": "Not verified",
+    "lastUpdated": "2026-10-12",
     "edition": 1,
-    "editionLabel": "THIEPN Library public-domain edition (Project Gutenberg source)",
+    "editionLabel": "THIEPN Library Edition",
     "version": "pg-3300-2db4a352fd89-cover-7920d7eebb0f",
     "activeRelease": "pg-3300-2db4a352fd89-cover-7920d7eebb0f"
   },
   "cover": {
     "src": "/covers/public-domain/pd-pg-3300.webp",
-    "alt": "Cover for The Wealth of Nations by Adam Smith"
+    "alt": "Cover of An Inquiry into the Nature and Causes of the Wealth of Nations by Adam Smith"
   },
   "classification": {
     "subjects": [
@@ -36,7 +36,6 @@
     ],
     "tags": [
       "public-domain",
-      "project-gutenberg",
       "classic"
     ],
     "collections": [
@@ -61,21 +60,9 @@
     "relatedWorks": [],
     "prerequisites": []
   },
-  "resources": [
-    {
-      "type": "source",
-      "label": "Project Gutenberg",
-      "url": "https://www.gutenberg.org/ebooks/3300",
-      "gutenbergId": 3300
-    },
-    {
-      "type": "provenance",
-      "label": "Official Project Gutenberg RDF metadata",
-      "url": "https://www.gutenberg.org/cache/epub/3300/pg3300.rdf"
-    }
-  ],
+  "resources": [],
   "rights": {
-    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
-    "notice": "Source edition: Project Gutenberg #3300. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+    "status": "Public domain in Germany",
+    "notice": "This Library edition is offered as a public-domain work under German copyright law. Copyright status can differ in other jurisdictions."
   }
 }

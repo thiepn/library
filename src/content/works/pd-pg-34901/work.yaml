@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-34901",
+  "slug": "pd-pg-34901",
+  "title": "On Liberty",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "John Stuart Mill",
+      "role": "author",
+      "birthYear": 1806,
+      "deathYear": 1873
+    }
+  ],
+  "description": "On Liberty by John Stuart Mill is a classic work associated with Liberty, JC.",
+  "shortDescription": "On Liberty by John Stuart Mill is a classic work associated with Liberty, JC.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "Not verified",
+    "lastUpdated": "2026-10-12",
+    "edition": 1,
+    "editionLabel": "THIEPN Library Edition",
+    "version": "pg-34901-6e38fd03fbb8",
+    "activeRelease": "pg-34901-6e38fd03fbb8"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-34901.svg",
+    "alt": "Cover of On Liberty by John Stuart Mill"
+  },
+  "classification": {
+    "subjects": [
+      "liberty",
+      "jc"
+    ],
+    "tags": [
+      "public-domain",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "philosophy-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [],
+  "rights": {
+    "status": "Public domain in Germany",
+    "notice": "This Library edition is offered as a public-domain work under German copyright law. Copyright status can differ in other jurisdictions."
+  }
+}

@@ -8,26 +8,26 @@
   "contributors": [
     {
       "name": "Lewis Carroll",
-      "role": "creator",
+      "role": "author",
       "birthYear": 1832,
       "deathYear": 1898
     }
   ],
   "description": "\"Alice's Adventures in Wonderland\" by Lewis Carroll is a children's novel published in 1865. When a curious girl named Alice spots a White Rabbit with a pocket watch, she tumbles down a rabbit hole into an extraordinary fantasy world filled with peculiar anthropomorphic creatures. This pioneering work of literary nonsense plays with logic and language, creating a whimsical tale that delights both children and adults…",
-  "shortDescription": "\"Alice's Adventures in Wonderland\" by Lewis Carroll is a children's novel published in 1865. When a curious girl named Alice spots a White Rabbit with a pocket watch, she tumble…",
+  "shortDescription": "\"Alice's Adventures in Wonderland\" by Lewis Carroll is a children's novel published in 1865. When a curious girl named Alice spots a White Rabbit with a pocket watch, she tumbles down a r…",
   "status": "published",
   "visibility": "public",
   "publication": {
-    "firstPublished": "2008-06-27",
-    "lastUpdated": "2026-09-08",
+    "firstPublished": "Not verified",
+    "lastUpdated": "2026-10-12",
     "edition": 1,
-    "editionLabel": "THIEPN Library public-domain edition (Project Gutenberg source)",
+    "editionLabel": "THIEPN Library Edition",
     "version": "pg-11-d6524a6b578d-cover-06e7d88871fe",
     "activeRelease": "pg-11-d6524a6b578d-cover-06e7d88871fe"
   },
   "cover": {
     "src": "/covers/public-domain/pd-pg-11.webp",
-    "alt": "Cover for Alice's Adventures in Wonderland by Lewis Carroll"
+    "alt": "Cover of Alice's Adventures in Wonderland by Lewis Carroll"
   },
   "classification": {
     "subjects": [
@@ -39,7 +39,6 @@
     ],
     "tags": [
       "public-domain",
-      "project-gutenberg",
       "classic"
     ],
     "collections": [
@@ -63,21 +62,9 @@
     "relatedWorks": [],
     "prerequisites": []
   },
-  "resources": [
-    {
-      "type": "source",
-      "label": "Project Gutenberg",
-      "url": "https://www.gutenberg.org/ebooks/11",
-      "gutenbergId": 11
-    },
-    {
-      "type": "provenance",
-      "label": "Official Project Gutenberg RDF metadata",
-      "url": "https://www.gutenberg.org/cache/epub/11/pg11.rdf"
-    }
-  ],
+  "resources": [],
   "rights": {
-    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
-    "notice": "Source edition: Project Gutenberg #11. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+    "status": "Public domain in Germany",
+    "notice": "This Library edition is offered as a public-domain work under German copyright law. Copyright status can differ in other jurisdictions."
   }
 }

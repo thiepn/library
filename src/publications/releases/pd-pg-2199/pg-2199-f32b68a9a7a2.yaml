@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-2199",
+  "version": "pg-2199-f32b68a9a7a2",
+  "edition": 1,
+  "releasedAt": "2026-10-12T06:55:20Z",
+  "sourceHash": "4925b57a1252de4bd9b8a56493e9a34f6b51931075ff1576f7b26e7532d3b6d8",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-2199/editions/pg-2199-f32b68a9a7a2/the-iliad.epub",
+      "filename": "the-iliad.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 452478,
+      "sha256": "f32b68a9a7a21c8c03a83f58f1d57329ffb9f069af8a1bfb4fe80b6e0511b7ec"
+    }
+  }
+}

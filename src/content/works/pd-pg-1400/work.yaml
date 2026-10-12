@@ -8,26 +8,26 @@
   "contributors": [
     {
       "name": "Charles Dickens",
-      "role": "creator",
+      "role": "author",
       "birthYear": 1812,
       "deathYear": 1870
     }
   ],
-  "description": "A public-domain edition of Great Expectations by Charles Dickens. Project Gutenberg classifies it under Orphans -- Fiction, England -- Fiction, Revenge -- Fiction.",
-  "shortDescription": "A public-domain edition of Great Expectations by Charles Dickens. Project Gutenberg classifies it under Orphans -- Fiction, England -- Fiction, Revenge -- Fiction.",
+  "description": "Great Expectations by Charles Dickens is a classic work exploring orphans, england, revenge. This Library edition presents the work for modern digital reading.",
+  "shortDescription": "Great Expectations by Charles Dickens is a classic work exploring orphans, england, revenge. This Library edition presents the work for modern digital reading.",
   "status": "published",
   "visibility": "public",
   "publication": {
-    "firstPublished": "1998-07-01",
-    "lastUpdated": "2026-09-27",
+    "firstPublished": "Not verified",
+    "lastUpdated": "2026-10-12",
     "edition": 1,
-    "editionLabel": "Project Gutenberg public-domain edition",
+    "editionLabel": "THIEPN Library Edition",
     "version": "pg-1400-b8c505e03004-cover-d6b6cd643ecc",
     "activeRelease": "pg-1400-b8c505e03004-cover-d6b6cd643ecc"
   },
   "cover": {
     "src": "/covers/public-domain/pd-pg-1400.webp",
-    "alt": "Cover for Great Expectations by Charles Dickens"
+    "alt": "Cover of Great Expectations by Charles Dickens"
   },
   "classification": {
     "subjects": [
@@ -39,7 +39,6 @@
     ],
     "tags": [
       "public-domain",
-      "project-gutenberg",
       "classic"
     ],
     "collections": [
@@ -63,21 +62,9 @@
     "relatedWorks": [],
     "prerequisites": []
   },
-  "resources": [
-    {
-      "type": "source",
-      "label": "Project Gutenberg",
-      "url": "https://www.gutenberg.org/ebooks/1400",
-      "gutenbergId": 1400
-    },
-    {
-      "type": "provenance",
-      "label": "Official Project Gutenberg RDF metadata",
-      "url": "https://www.gutenberg.org/cache/epub/1400/pg1400.rdf"
-    }
-  ],
+  "resources": [],
   "rights": {
-    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
-    "notice": "Source edition: Project Gutenberg #1400. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+    "status": "Public domain in Germany",
+    "notice": "This Library edition is offered as a public-domain work under German copyright law. Copyright status can differ in other jurisdictions."
   }
 }

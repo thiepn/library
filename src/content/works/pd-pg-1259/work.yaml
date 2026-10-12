@@ -8,32 +8,32 @@
   "contributors": [
     {
       "name": "Alexandre Dumas",
-      "role": "creator",
+      "role": "author",
       "birthYear": 1802,
       "deathYear": 1870
     },
     {
       "name": "Auguste Maquet",
-      "role": "creator",
+      "role": "author",
       "birthYear": 1813,
       "deathYear": 1888
     }
   ],
-  "description": "A public-domain edition of Twenty years after by Alexandre Dumas, Auguste Maquet. Project Gutenberg classifies it under France -- History -- Louis XIV, 1643-1715 -- Fiction, PQ.",
-  "shortDescription": "A public-domain edition of Twenty years after by Alexandre Dumas, Auguste Maquet. Project Gutenberg classifies it under France -- History -- Louis XIV, 1643-1715 -- Fiction, PQ.",
+  "description": "Twenty years after by Alexandre Dumas is a classic work exploring france, pq. This Library edition presents the work for modern digital reading.",
+  "shortDescription": "Twenty years after by Alexandre Dumas is a classic work exploring france, pq. This Library edition presents the work for modern digital reading.",
   "status": "published",
   "visibility": "public",
   "publication": {
-    "firstPublished": "1998-03-01",
-    "lastUpdated": "2026-09-13",
+    "firstPublished": "Not verified",
+    "lastUpdated": "2026-10-12",
     "edition": 1,
-    "editionLabel": "Project Gutenberg public-domain edition",
+    "editionLabel": "THIEPN Library Edition",
     "version": "pg-1259-43c4e94aceb3-cover-6521635552f1",
     "activeRelease": "pg-1259-43c4e94aceb3-cover-6521635552f1"
   },
   "cover": {
     "src": "/covers/public-domain/pd-pg-1259.webp",
-    "alt": "Cover for Twenty years after by Alexandre Dumas, Auguste Maquet"
+    "alt": "Cover of Twenty years after by Alexandre Dumas"
   },
   "classification": {
     "subjects": [
@@ -42,7 +42,6 @@
     ],
     "tags": [
       "public-domain",
-      "project-gutenberg",
       "classic"
     ],
     "collections": [
@@ -66,21 +65,9 @@
     "relatedWorks": [],
     "prerequisites": []
   },
-  "resources": [
-    {
-      "type": "source",
-      "label": "Project Gutenberg",
-      "url": "https://www.gutenberg.org/ebooks/1259",
-      "gutenbergId": 1259
-    },
-    {
-      "type": "provenance",
-      "label": "Official Project Gutenberg RDF metadata",
-      "url": "https://www.gutenberg.org/cache/epub/1259/pg1259.rdf"
-    }
-  ],
+  "resources": [],
   "rights": {
-    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
-    "notice": "Source edition: Project Gutenberg #1259. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+    "status": "Public domain in Germany",
+    "notice": "This Library edition is offered as a public-domain work under German copyright law. Copyright status can differ in other jurisdictions."
   }
 }

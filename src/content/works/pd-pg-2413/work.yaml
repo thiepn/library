@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-2413",
+  "slug": "pd-pg-2413",
+  "title": "Madame Bovary",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Gustave Flaubert",
+      "role": "author",
+      "birthYear": 1821,
+      "deathYear": 1880
+    },
+    {
+      "name": "Eleanor Marx Aveling",
+      "role": "translator",
+      "birthYear": 1855,
+      "deathYear": 1898
+    }
+  ],
+  "description": "Madame Bovary by Gustave Flaubert is a classic work associated with Adultery -- Fiction, Domestic fiction, Married women -- Fiction.",
+  "shortDescription": "Madame Bovary by Gustave Flaubert is a classic work associated with Adultery -- Fiction, Domestic fiction, Married women -- Fiction.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "Not verified",
+    "lastUpdated": "2026-10-12",
+    "edition": 1,
+    "editionLabel": "THIEPN Library Edition",
+    "version": "pg-2413-e6b4614f01d7",
+    "activeRelease": "pg-2413-e6b4614f01d7"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-2413.svg",
+    "alt": "Cover of Madame Bovary by Gustave Flaubert"
+  },
+  "classification": {
+    "subjects": [
+      "adultery",
+      "domestic-fiction",
+      "married-women",
+      "france",
+      "middle-class"
+    ],
+    "tags": [
+      "public-domain",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "best-books-ever-listings",
+      "general-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [],
+  "rights": {
+    "status": "Public domain in Germany",
+    "notice": "This Library edition is offered as a public-domain work under German copyright law. Copyright status can differ in other jurisdictions."
+  }
+}

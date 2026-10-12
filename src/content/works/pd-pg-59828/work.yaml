@@ -8,31 +8,31 @@
   "contributors": [
     {
       "name": "James Malcolm Rymer",
-      "role": "creator",
+      "role": "author",
       "deathYear": 1884
     },
     {
       "name": "Thomas Peckett Prest",
-      "role": "creator",
+      "role": "author",
       "birthYear": 1810,
       "deathYear": 1859
     }
   ],
-  "description": "A public-domain edition of The String of Pearls; Or, The Barber of Fleet Street. A Domestic Romance. by James Malcolm Rymer, Thomas Peckett Prest. Project Gutenberg classifies it under Historical fiction, Horror tales, Revenge -- Fiction.",
-  "shortDescription": "A public-domain edition of The String of Pearls; Or, The Barber of Fleet Street. A Domestic Romance. by James Malcolm Rymer, Thomas Peckett Prest. Project Gutenberg classifies i…",
+  "description": "The String of Pearls; Or, The Barber of Fleet Street. A Domestic Romance. by James Malcolm Rymer is a classic work exploring historical fiction, horror tales, revenge. This Library edition presents the work for modern digital reading.",
+  "shortDescription": "The String of Pearls; Or, The Barber of Fleet Street. A Domestic Romance. by James Malcolm Rymer is a classic work exploring historical fiction, horror tales, revenge. This Library editio…",
   "status": "published",
   "visibility": "public",
   "publication": {
-    "firstPublished": "2019-06-28",
-    "lastUpdated": "2026-09-08",
+    "firstPublished": "Not verified",
+    "lastUpdated": "2026-10-12",
     "edition": 1,
-    "editionLabel": "THIEPN Library public-domain edition (Project Gutenberg source)",
+    "editionLabel": "THIEPN Library Edition",
     "version": "pg-59828-ac0a2006a2ee-cover-64872d553c55",
     "activeRelease": "pg-59828-ac0a2006a2ee-cover-64872d553c55"
   },
   "cover": {
     "src": "/covers/public-domain/pd-pg-59828.webp",
-    "alt": "Cover for The String of Pearls by James Malcolm Rymer, Thomas Peckett Prest"
+    "alt": "Cover of The String of Pearls; Or, The Barber of Fleet Street. A Domestic Romance. by James Malcolm Rymer"
   },
   "classification": {
     "subjects": [
@@ -44,7 +44,6 @@
     ],
     "tags": [
       "public-domain",
-      "project-gutenberg",
       "classic"
     ],
     "collections": [
@@ -67,21 +66,9 @@
     "relatedWorks": [],
     "prerequisites": []
   },
-  "resources": [
-    {
-      "type": "source",
-      "label": "Project Gutenberg",
-      "url": "https://www.gutenberg.org/ebooks/59828",
-      "gutenbergId": 59828
-    },
-    {
-      "type": "provenance",
-      "label": "Official Project Gutenberg RDF metadata",
-      "url": "https://www.gutenberg.org/cache/epub/59828/pg59828.rdf"
-    }
-  ],
+  "resources": [],
   "rights": {
-    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
-    "notice": "Source edition: Project Gutenberg #59828. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+    "status": "Public domain in Germany",
+    "notice": "This Library edition is offered as a public-domain work under German copyright law. Copyright status can differ in other jurisdictions."
   }
 }

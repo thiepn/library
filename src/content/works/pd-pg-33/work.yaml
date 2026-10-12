@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-33",
+  "slug": "pd-pg-33",
+  "title": "The Scarlet Letter",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Nathaniel Hawthorne",
+      "role": "author",
+      "birthYear": 1804,
+      "deathYear": 1864
+    }
+  ],
+  "description": "The Scarlet Letter by Nathaniel Hawthorne is a classic work associated with Adultery -- Fiction, Historical fiction, Revenge -- Fiction.",
+  "shortDescription": "The Scarlet Letter by Nathaniel Hawthorne is a classic work associated with Adultery -- Fiction, Historical fiction, Revenge -- Fiction.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "Not verified",
+    "lastUpdated": "2026-10-12",
+    "edition": 1,
+    "editionLabel": "THIEPN Library Edition",
+    "version": "pg-33-98b2022af7c2",
+    "activeRelease": "pg-33-98b2022af7c2"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-33.svg",
+    "alt": "Cover of The Scarlet Letter by Nathaniel Hawthorne"
+  },
+  "classification": {
+    "subjects": [
+      "adultery",
+      "historical-fiction",
+      "revenge",
+      "psychological-fiction",
+      "married-women"
+    ],
+    "tags": [
+      "public-domain",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "harvard-classics",
+      "general-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [],
+  "rights": {
+    "status": "Public domain in Germany",
+    "notice": "This Library edition is offered as a public-domain work under German copyright law. Copyright status can differ in other jurisdictions."
+  }
+}

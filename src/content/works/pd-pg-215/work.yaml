@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-215",
+  "slug": "pd-pg-215",
+  "title": "The Call of the Wild",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Jack London",
+      "role": "author",
+      "birthYear": 1876,
+      "deathYear": 1916
+    }
+  ],
+  "description": "The call of the wild by Jack London is a classic work associated with Dogs -- Fiction, Adventure stories, Nature stories.",
+  "shortDescription": "The call of the wild by Jack London is a classic work associated with Dogs -- Fiction, Adventure stories, Nature stories.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "Not verified",
+    "lastUpdated": "2026-10-12",
+    "edition": 1,
+    "editionLabel": "THIEPN Library Edition",
+    "version": "pg-215-c8979f50cb73",
+    "activeRelease": "pg-215-c8979f50cb73"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-215.svg",
+    "alt": "Cover of The Call of the Wild by Jack London"
+  },
+  "classification": {
+    "subjects": [
+      "dogs",
+      "adventure-stories",
+      "nature-stories",
+      "klondike-river-valley-yukon",
+      "sled-dogs"
+    ],
+    "tags": [
+      "public-domain",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "best-books-ever-listings",
+      "general-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [],
+  "rights": {
+    "status": "Public domain in Germany",
+    "notice": "This Library edition is offered as a public-domain work under German copyright law. Copyright status can differ in other jurisdictions."
+  }
+}

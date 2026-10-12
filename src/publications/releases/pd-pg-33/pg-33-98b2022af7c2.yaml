@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-33",
+  "version": "pg-33-98b2022af7c2",
+  "edition": 1,
+  "releasedAt": "2026-10-12T06:55:45Z",
+  "sourceHash": "7638b1d4046b5248611b4b0b93cb45ef51b618e2411df5a1511e0d79390c31f7",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-33/editions/pg-33-98b2022af7c2/the-scarlet-letter.epub",
+      "filename": "the-scarlet-letter.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 303669,
+      "sha256": "98b2022af7c26dfa61c743a30d2190de2b2f69b452e33a5dcd064946e528c051"
+    }
+  }
+}

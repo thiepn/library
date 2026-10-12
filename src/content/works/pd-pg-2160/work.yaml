@@ -8,26 +8,26 @@
   "contributors": [
     {
       "name": "T. (Tobias) Smollett",
-      "role": "creator",
+      "role": "author",
       "birthYear": 1721,
       "deathYear": 1771
     }
   ],
-  "description": "A public-domain edition of The Expedition of Humphry Clinker by T. (Tobias) Smollett. Project Gutenberg classifies it under Epistolary fiction, Travelers -- Fiction, Great Britain -- Fiction.",
-  "shortDescription": "A public-domain edition of The Expedition of Humphry Clinker by T. (Tobias) Smollett. Project Gutenberg classifies it under Epistolary fiction, Travelers -- Fiction, Great Brita…",
+  "description": "The Expedition of Humphry Clinker by T. (Tobias) Smollett is a classic work exploring epistolary fiction, travelers, great britain. This Library edition presents the work for modern digital reading.",
+  "shortDescription": "The Expedition of Humphry Clinker by T. (Tobias) Smollett is a classic work exploring epistolary fiction, travelers, great britain. This Library edition presents the work for modern digit…",
   "status": "published",
   "visibility": "public",
   "publication": {
-    "firstPublished": "2000-04-01",
-    "lastUpdated": "2026-09-13",
+    "firstPublished": "Not verified",
+    "lastUpdated": "2026-10-12",
     "edition": 1,
-    "editionLabel": "Project Gutenberg public-domain edition",
+    "editionLabel": "THIEPN Library Edition",
     "version": "pg-2160-8c7ca187cf54-cover-6dfe30eca9ef",
     "activeRelease": "pg-2160-8c7ca187cf54-cover-6dfe30eca9ef"
   },
   "cover": {
     "src": "/covers/public-domain/pd-pg-2160.webp",
-    "alt": "Cover for The Expedition of Humphry Clinker by T. (Tobias) Smollett"
+    "alt": "Cover of The Expedition of Humphry Clinker by T. (Tobias) Smollett"
   },
   "classification": {
     "subjects": [
@@ -38,7 +38,6 @@
     ],
     "tags": [
       "public-domain",
-      "project-gutenberg",
       "classic"
     ],
     "collections": [
@@ -63,21 +62,9 @@
     "relatedWorks": [],
     "prerequisites": []
   },
-  "resources": [
-    {
-      "type": "source",
-      "label": "Project Gutenberg",
-      "url": "https://www.gutenberg.org/ebooks/2160",
-      "gutenbergId": 2160
-    },
-    {
-      "type": "provenance",
-      "label": "Official Project Gutenberg RDF metadata",
-      "url": "https://www.gutenberg.org/cache/epub/2160/pg2160.rdf"
-    }
-  ],
+  "resources": [],
   "rights": {
-    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
-    "notice": "Source edition: Project Gutenberg #2160. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+    "status": "Public domain in Germany",
+    "notice": "This Library edition is offered as a public-domain work under German copyright law. Copyright status can differ in other jurisdictions."
   }
 }

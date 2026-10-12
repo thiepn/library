@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-8800",
+  "slug": "pd-pg-8800",
+  "title": "The Divine Comedy",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Dante Alighieri",
+      "role": "author",
+      "birthYear": 1265,
+      "deathYear": 1321
+    },
+    {
+      "name": "Gustave Doré",
+      "role": "illustrator",
+      "birthYear": 1832,
+      "deathYear": 1883
+    },
+    {
+      "name": "Henry Francis Cary",
+      "role": "translator",
+      "birthYear": 1772,
+      "deathYear": 1844
+    }
+  ],
+  "description": "The divine comedy by Dante Alighieri is a classic work associated with Epic poetry, Italian -- Translations into English, Italian poetry -- To 1400 -- Translations into English, PQ.",
+  "shortDescription": "The divine comedy by Dante Alighieri is a classic work associated with Epic poetry, Italian -- Translations into English, Italian poetry -- To 1400 -- Translations into English, PQ.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "Not verified",
+    "lastUpdated": "2026-10-12",
+    "edition": 1,
+    "editionLabel": "THIEPN Library Edition",
+    "version": "pg-8800-6066397cd53c",
+    "activeRelease": "pg-8800-6066397cd53c"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-8800.svg",
+    "alt": "Cover of The Divine Comedy by Dante Alighieri"
+  },
+  "classification": {
+    "subjects": [
+      "epic-poetry-italian",
+      "italian-poetry",
+      "pq"
+    ],
+    "tags": [
+      "public-domain",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "best-books-ever-listings",
+      "general-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [],
+  "rights": {
+    "status": "Public domain in Germany",
+    "notice": "This Library edition is offered as a public-domain work under German copyright law. Copyright status can differ in other jurisdictions."
+  }
+}

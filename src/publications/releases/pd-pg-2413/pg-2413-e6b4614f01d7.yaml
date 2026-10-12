@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-2413",
+  "version": "pg-2413-e6b4614f01d7",
+  "edition": 1,
+  "releasedAt": "2026-10-12T06:55:48Z",
+  "sourceHash": "daeaa386c93fa3e4aa44889ad6cb69625e6b8fd10601a52776addf7a206abd89",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-2413/editions/pg-2413-e6b4614f01d7/madame-bovary.epub",
+      "filename": "madame-bovary.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 420471,
+      "sha256": "e6b4614f01d77d37e7ee978c02c6edb526e9eddec3911d9017a42b60c816e1b7"
+    }
+  }
+}

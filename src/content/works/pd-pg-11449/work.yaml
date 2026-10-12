@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-11449",
+  "slug": "pd-pg-11449",
+  "title": "An Enquiry into the Obligations of Christians to Use Means for the Conversion of the Heathens",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "William Carey",
+      "role": "author",
+      "birthYear": 1761,
+      "deathYear": 1834
+    }
+  ],
+  "description": "An Enquiry into the Obligations of Christians to Use Means for the Conversion of the Heathens by William Carey is a classic work associated with Missions, Baptists -- Missions, BV.",
+  "shortDescription": "An Enquiry into the Obligations of Christians to Use Means for the Conversion of the Heathens by William Carey is a classic work associated with Missions, Baptists -- Missions, BV.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "Not verified",
+    "lastUpdated": "2026-10-12",
+    "edition": 1,
+    "editionLabel": "THIEPN Library Edition",
+    "version": "pg-11449-d3123f5ecbfd",
+    "activeRelease": "pg-11449-d3123f5ecbfd"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-11449.svg",
+    "alt": "Cover of An Enquiry into the Obligations of Christians to Use Means for the Conversion of the Heathens by William Carey"
+  },
+  "classification": {
+    "subjects": [
+      "missions",
+      "baptists",
+      "bv"
+    ],
+    "tags": [
+      "public-domain",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "missions-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [],
+  "rights": {
+    "status": "Public domain in Germany",
+    "notice": "This Library edition is offered as a public-domain work under German copyright law. Copyright status can differ in other jurisdictions."
+  }
+}

@@ -8,26 +8,26 @@
   "contributors": [
     {
       "name": "Henry David Thoreau",
-      "role": "creator",
+      "role": "author",
       "birthYear": 1817,
       "deathYear": 1862
     }
   ],
-  "description": "A public-domain edition of Walden, and On The Duty Of Civil Disobedience by Henry David Thoreau. Project Gutenberg classifies it under Civil disobedience, Authors, American -- 19th century -- Biography, Thoreau, Henry David, 1817-1862 -- Homes and haunts -- Massachusetts -- Walden Woods.",
-  "shortDescription": "A public-domain edition of Walden, and On The Duty Of Civil Disobedience by Henry David Thoreau. Project Gutenberg classifies it under Civil disobedience, Authors, American -- 1…",
+  "description": "Walden, and On The Duty Of Civil Disobedience by Henry David Thoreau is a classic work exploring civil disobedience, authors american, thoreau henry david 1817 1862. This Library edition presents the work for modern digital reading.",
+  "shortDescription": "Walden, and On The Duty Of Civil Disobedience by Henry David Thoreau is a classic work exploring civil disobedience, authors american, thoreau henry david 1817 1862. This Library edition…",
   "status": "published",
   "visibility": "public",
   "publication": {
-    "firstPublished": "1995-01-01",
-    "lastUpdated": "2026-09-27",
+    "firstPublished": "Not verified",
+    "lastUpdated": "2026-10-12",
     "edition": 1,
-    "editionLabel": "Project Gutenberg public-domain edition",
+    "editionLabel": "THIEPN Library Edition",
     "version": "pg-205-5084cf2d77e4-cover-c11da3a4107d",
     "activeRelease": "pg-205-5084cf2d77e4-cover-c11da3a4107d"
   },
   "cover": {
     "src": "/covers/public-domain/pd-pg-205.webp",
-    "alt": "Cover for Walden, and On The Duty Of Civil Disobedience by Henry David Thoreau"
+    "alt": "Cover of Walden, and On The Duty Of Civil Disobedience by Henry David Thoreau"
   },
   "classification": {
     "subjects": [
@@ -39,7 +39,6 @@
     ],
     "tags": [
       "public-domain",
-      "project-gutenberg",
       "classic"
     ],
     "collections": [
@@ -62,21 +61,9 @@
     "relatedWorks": [],
     "prerequisites": []
   },
-  "resources": [
-    {
-      "type": "source",
-      "label": "Project Gutenberg",
-      "url": "https://www.gutenberg.org/ebooks/205",
-      "gutenbergId": 205
-    },
-    {
-      "type": "provenance",
-      "label": "Official Project Gutenberg RDF metadata",
-      "url": "https://www.gutenberg.org/cache/epub/205/pg205.rdf"
-    }
-  ],
+  "resources": [],
   "rights": {
-    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
-    "notice": "Source edition: Project Gutenberg #205. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+    "status": "Public domain in Germany",
+    "notice": "This Library edition is offered as a public-domain work under German copyright law. Copyright status can differ in other jurisdictions."
   }
 }

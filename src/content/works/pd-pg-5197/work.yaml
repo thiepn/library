@@ -8,26 +8,26 @@
   "contributors": [
     {
       "name": "Richard Wagner",
-      "role": "creator",
+      "role": "author",
       "birthYear": 1813,
       "deathYear": 1883
     }
   ],
-  "description": "A public-domain edition of My Life — Volume 1 by Richard Wagner. Project Gutenberg classifies it under Wagner, Richard, 1813-1883, Composers -- Germany -- Biography, ML.",
-  "shortDescription": "A public-domain edition of My Life — Volume 1 by Richard Wagner. Project Gutenberg classifies it under Wagner, Richard, 1813-1883, Composers -- Germany -- Biography, ML.",
+  "description": "My Life — Volume 1 by Richard Wagner is a classic work exploring wagner richard 1813 1883, composers, ml. This Library edition presents the work for modern digital reading.",
+  "shortDescription": "My Life — Volume 1 by Richard Wagner is a classic work exploring wagner richard 1813 1883, composers, ml. This Library edition presents the work for modern digital reading.",
   "status": "published",
   "visibility": "public",
   "publication": {
-    "firstPublished": "2004-02-01",
-    "lastUpdated": "2026-09-08",
+    "firstPublished": "Not verified",
+    "lastUpdated": "2026-10-12",
     "edition": 1,
-    "editionLabel": "THIEPN Library public-domain edition (Project Gutenberg source)",
+    "editionLabel": "THIEPN Library Edition",
     "version": "pg-5197-fd52b138cad6-cover-9b234431a161",
     "activeRelease": "pg-5197-fd52b138cad6-cover-9b234431a161"
   },
   "cover": {
     "src": "/covers/public-domain/pd-pg-5197.webp",
-    "alt": "Cover for My Life — Volume 1 by Richard Wagner"
+    "alt": "Cover of My Life — Volume 1 by Richard Wagner"
   },
   "classification": {
     "subjects": [
@@ -37,7 +37,6 @@
     ],
     "tags": [
       "public-domain",
-      "project-gutenberg",
       "classic"
     ],
     "collections": [
@@ -60,21 +59,9 @@
     "relatedWorks": [],
     "prerequisites": []
   },
-  "resources": [
-    {
-      "type": "source",
-      "label": "Project Gutenberg",
-      "url": "https://www.gutenberg.org/ebooks/5197",
-      "gutenbergId": 5197
-    },
-    {
-      "type": "provenance",
-      "label": "Official Project Gutenberg RDF metadata",
-      "url": "https://www.gutenberg.org/cache/epub/5197/pg5197.rdf"
-    }
-  ],
+  "resources": [],
   "rights": {
-    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
-    "notice": "Source edition: Project Gutenberg #5197. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+    "status": "Public domain in Germany",
+    "notice": "This Library edition is offered as a public-domain work under German copyright law. Copyright status can differ in other jurisdictions."
   }
 }

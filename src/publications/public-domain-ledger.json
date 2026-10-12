@@ -6579,6 +6579,563 @@
         "releaseVersion": "pg-4363-bb7c0261c3cd-cover-553ab6258fec",
         "artifactSha256": "553ab6258fec8250641cdcb231be30a1d21c575f3cb15eec2f247fa202b6b44d"
       }
+    },
+    {
+      "gutenbergId": 2199,
+      "workId": "pd-pg-2199",
+      "title": "The Iliad",
+      "author": "Homer",
+      "score": 15.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Classical Antiquity",
+        "Category: Poetry",
+        "Category: Mythology, Legends & Folklore",
+        "Category: Classics of Literature",
+        "Category: History - Ancient"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/2199",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/2199/pg2199.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/2199/pg2199.epub",
+      "sourceRdfSha256": "4925b57a1252de4bd9b8a56493e9a34f6b51931075ff1576f7b26e7532d3b6d8",
+      "sourceEpubSha256": "f32b68a9a7a21c8c03a83f58f1d57329ffb9f069af8a1bfb4fe80b6e0511b7ec",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Homer",
+          "role": "creator",
+          "birthYear": -750,
+          "deathYear": -650
+        },
+        {
+          "name": "Samuel Butler",
+          "role": "trl",
+          "birthYear": 1835,
+          "deathYear": 1902
+        }
+      ],
+      "selectedAt": "2026-10-12T06:55:20Z",
+      "releaseVersion": "pg-2199-f32b68a9a7a2",
+      "curation": {
+        "mode": "curated-library-canon",
+        "requestedPosition": 1,
+        "requestedTitle": "The Iliad",
+        "requestedAuthor": "Homer",
+        "collection": "general-classics",
+        "rightsMode": "global",
+        "sourceMatch": "matched PG#2199 confidence=1.000"
+      }
+    },
+    {
+      "gutenbergId": 8800,
+      "workId": "pd-pg-8800",
+      "title": "The divine comedy",
+      "author": "Dante Alighieri",
+      "score": 135.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Italy",
+        "Best Books Ever Listings",
+        "Category: Poetry",
+        "Category: Classics of Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/8800",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/8800/pg8800.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/8800/pg8800.epub",
+      "sourceRdfSha256": "c72a8d24d1edc66d579ded89da97e9cee489b7b100825a70dd31d02069d56c3a",
+      "sourceEpubSha256": "6066397cd53cd9317eb5bc157cad10db1f076024df9784e337bd59b4d04c9d03",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Dante Alighieri",
+          "role": "creator",
+          "birthYear": 1265,
+          "deathYear": 1321
+        },
+        {
+          "name": "Gustave Doré",
+          "role": "ill",
+          "birthYear": 1832,
+          "deathYear": 1883
+        },
+        {
+          "name": "Henry Francis Cary",
+          "role": "trl",
+          "birthYear": 1772,
+          "deathYear": 1844
+        }
+      ],
+      "selectedAt": "2026-10-12T06:55:23Z",
+      "releaseVersion": "pg-8800-6066397cd53c",
+      "curation": {
+        "mode": "curated-library-canon",
+        "requestedPosition": 2,
+        "requestedTitle": "The Divine Comedy",
+        "requestedAuthor": "Dante Alighieri",
+        "collection": "general-classics",
+        "rightsMode": "global",
+        "sourceMatch": "matched PG#8800 confidence=1.000"
+      }
+    },
+    {
+      "gutenbergId": 135,
+      "workId": "pd-pg-135",
+      "title": "Les Misérables",
+      "author": "Victor Hugo",
+      "score": 43.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Historical Fiction",
+        "Banned Books from Anne Haight's list",
+        "Category: Historical Novels",
+        "Category: Novels",
+        "Category: Classics of Literature",
+        "Category: French Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/135",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/135/pg135.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/135/pg135.epub",
+      "sourceRdfSha256": "ad26cc69ed39aeea5e480eb024b11d8fe6a8c4a8c7e68dff6dc9634804cb6719",
+      "sourceEpubSha256": "af9844d0621e3a64a235e7c615c38febf2be4876d5dda6d61ebab083ba8d49ab",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Victor Hugo",
+          "role": "creator",
+          "birthYear": 1802,
+          "deathYear": 1885
+        },
+        {
+          "name": "Isabel Florence Hapgood",
+          "role": "trl",
+          "birthYear": 1850,
+          "deathYear": 1928
+        }
+      ],
+      "selectedAt": "2026-10-12T06:55:27Z",
+      "releaseVersion": "pg-135-af9844d0621e",
+      "curation": {
+        "mode": "curated-library-canon",
+        "requestedPosition": 3,
+        "requestedTitle": "Les Misérables",
+        "requestedAuthor": "Victor Hugo",
+        "collection": "general-classics",
+        "rightsMode": "global",
+        "sourceMatch": "matched PG#135 confidence=1.000"
+      }
+    },
+    {
+      "gutenbergId": 70841,
+      "workId": "pd-pg-70841",
+      "title": "Robinson Crusoe",
+      "author": "Daniel Defoe",
+      "score": 23.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Category: Adventure",
+        "Category: Novels",
+        "Category: Classics of Literature",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/70841",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/70841/pg70841.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/70841/pg70841.epub",
+      "sourceRdfSha256": "3eb2d797f97c70e1595bb64b6c3ad2bb4a2163e32a9d887c631e49a99c30b0bf",
+      "sourceEpubSha256": "fbf0a5a1cc8217a9ff01da4e41f3c21c38852429eb439306703a7f4cc5a39b17",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Daniel Defoe",
+          "role": "creator",
+          "birthYear": null,
+          "deathYear": 1731
+        },
+        {
+          "name": "N. C. (Newell Convers) Wyeth",
+          "role": "ill",
+          "birthYear": 1882,
+          "deathYear": 1945
+        }
+      ],
+      "selectedAt": "2026-10-12T06:55:30Z",
+      "releaseVersion": "pg-70841-fbf0a5a1cc82",
+      "curation": {
+        "mode": "curated-library-canon",
+        "requestedPosition": 4,
+        "requestedTitle": "Robinson Crusoe",
+        "requestedAuthor": "Daniel Defoe",
+        "collection": "general-classics",
+        "rightsMode": "global",
+        "sourceMatch": "matched PG#70841 confidence=1.000"
+      }
+    },
+    {
+      "gutenbergId": 219,
+      "workId": "pd-pg-219",
+      "title": "Heart of Darkness",
+      "author": "Joseph Conrad",
+      "score": 143.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Best Books Ever Listings",
+        "Movie Books",
+        "Category: Novels",
+        "Category: Classics of Literature",
+        "Category: British Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/219",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/219/pg219.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/219/pg219.epub",
+      "sourceRdfSha256": "bfa4ea927a10223f3dd8847a1aa2347ab3921f45f8ff4de58bde03466648b238",
+      "sourceEpubSha256": "03e961e7a98b060c26e65b709dd3515dee1b804978eaf0c7e35496196f3bec74",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Joseph Conrad",
+          "role": "creator",
+          "birthYear": 1857,
+          "deathYear": 1924
+        }
+      ],
+      "selectedAt": "2026-10-12T06:55:36Z",
+      "releaseVersion": "pg-219-03e961e7a98b",
+      "curation": {
+        "mode": "curated-library-canon",
+        "requestedPosition": 6,
+        "requestedTitle": "Heart of Darkness",
+        "requestedAuthor": "Joseph Conrad",
+        "collection": "general-classics",
+        "rightsMode": "global",
+        "sourceMatch": "matched PG#219 confidence=1.000"
+      }
+    },
+    {
+      "gutenbergId": 33,
+      "workId": "pd-pg-33",
+      "title": "The Scarlet Letter",
+      "author": "Nathaniel Hawthorne",
+      "score": 138.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Harvard Classics",
+        "Movie Books",
+        "Category: Novels",
+        "Category: Classics of Literature",
+        "Category: American Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/33",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/33/pg33.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/33/pg33.epub",
+      "sourceRdfSha256": "7638b1d4046b5248611b4b0b93cb45ef51b618e2411df5a1511e0d79390c31f7",
+      "sourceEpubSha256": "98b2022af7c26dfa61c743a30d2190de2b2f69b452e33a5dcd064946e528c051",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Nathaniel Hawthorne",
+          "role": "creator",
+          "birthYear": 1804,
+          "deathYear": 1864
+        }
+      ],
+      "selectedAt": "2026-10-12T06:55:45Z",
+      "releaseVersion": "pg-33-98b2022af7c2",
+      "curation": {
+        "mode": "curated-library-canon",
+        "requestedPosition": 9,
+        "requestedTitle": "The Scarlet Letter",
+        "requestedAuthor": "Nathaniel Hawthorne",
+        "collection": "general-classics",
+        "rightsMode": "global",
+        "sourceMatch": "matched PG#33 confidence=1.000"
+      }
+    },
+    {
+      "gutenbergId": 2413,
+      "workId": "pd-pg-2413",
+      "title": "Madame Bovary",
+      "author": "Gustave Flaubert",
+      "score": 143.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Best Books Ever Listings",
+        "Banned Books from Anne Haight's list",
+        "Category: Novels",
+        "Category: French Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/2413",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/2413/pg2413.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/2413/pg2413.epub",
+      "sourceRdfSha256": "daeaa386c93fa3e4aa44889ad6cb69625e6b8fd10601a52776addf7a206abd89",
+      "sourceEpubSha256": "e6b4614f01d77d37e7ee978c02c6edb526e9eddec3911d9017a42b60c816e1b7",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Gustave Flaubert",
+          "role": "creator",
+          "birthYear": 1821,
+          "deathYear": 1880
+        },
+        {
+          "name": "Eleanor Marx Aveling",
+          "role": "trl",
+          "birthYear": 1855,
+          "deathYear": 1898
+        }
+      ],
+      "selectedAt": "2026-10-12T06:55:48Z",
+      "releaseVersion": "pg-2413-e6b4614f01d7",
+      "curation": {
+        "mode": "curated-library-canon",
+        "requestedPosition": 10,
+        "requestedTitle": "Madame Bovary",
+        "requestedAuthor": "Gustave Flaubert",
+        "collection": "general-classics",
+        "rightsMode": "global",
+        "sourceMatch": "matched PG#2413 confidence=1.000"
+      }
+    },
+    {
+      "gutenbergId": 215,
+      "workId": "pd-pg-215",
+      "title": "The call of the wild",
+      "author": "Jack London",
+      "score": 143.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Animals-Domestic",
+        "Adventure",
+        "Best Books Ever Listings",
+        "Movie Books",
+        "Banned Books from Anne Haight's list",
+        "Banned Books List from the American Library Association",
+        "Category: Adventure",
+        "Category: Novels",
+        "Category: Classics of Literature",
+        "Category: American Literature"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/215",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/215/pg215.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/215/pg215.epub",
+      "sourceRdfSha256": "76cbba5531e7088b33c9e88552d52603ce8729dfa98fc439fb3a37cb67a6388b",
+      "sourceEpubSha256": "c8979f50cb7385864bf06df9a6f5cb271c994652cc734595fd2e27b2046c0183",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Jack London",
+          "role": "creator",
+          "birthYear": 1876,
+          "deathYear": 1916
+        }
+      ],
+      "selectedAt": "2026-10-12T06:55:51Z",
+      "releaseVersion": "pg-215-c8979f50cb73",
+      "curation": {
+        "mode": "curated-library-canon",
+        "requestedPosition": 11,
+        "requestedTitle": "The Call of the Wild",
+        "requestedAuthor": "Jack London",
+        "collection": "general-classics",
+        "rightsMode": "global",
+        "sourceMatch": "matched PG#215 confidence=1.000"
+      }
+    },
+    {
+      "gutenbergId": 8438,
+      "workId": "pd-pg-8438",
+      "title": "The Nicomachean ethics of Aristotle",
+      "author": "Aristotle",
+      "score": 25.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Classical Antiquity",
+        "Philosophy",
+        "Category: Classics of Literature",
+        "Category: Philosophy & Ethics"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/8438",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/8438/pg8438.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/8438/pg8438.epub",
+      "sourceRdfSha256": "41efb09f07797f5946f80cdc85e7611170c4e47c2baee0f7a9d208e3e0d30092",
+      "sourceEpubSha256": "0609068660aa1fa2e7f6fda696c5ac7a9536a42a1e304174aa26cab8ac55ea3b",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Aristotle",
+          "role": "creator",
+          "birthYear": -384,
+          "deathYear": -322
+        }
+      ],
+      "selectedAt": "2026-10-12T06:55:55Z",
+      "releaseVersion": "pg-8438-0609068660aa",
+      "curation": {
+        "mode": "curated-library-canon",
+        "requestedPosition": 12,
+        "requestedTitle": "Nicomachean Ethics",
+        "requestedAuthor": "Aristotle",
+        "collection": "philosophy-classics",
+        "rightsMode": "global",
+        "sourceMatch": "matched PG#8438 confidence=0.969"
+      }
+    },
+    {
+      "gutenbergId": 34901,
+      "workId": "pd-pg-34901",
+      "title": "On Liberty",
+      "author": "John Stuart Mill",
+      "score": 15.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Philosophy",
+        "Category: Philosophy & Ethics"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/34901",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/34901/pg34901.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/34901/pg34901.epub",
+      "sourceRdfSha256": "4d1da2e5c1cd6d3112614d9b94cec442da4149d414346aef1002c49fa814c24a",
+      "sourceEpubSha256": "6e38fd03fbb8e1005c5211dd98232451458da4435798d41390d6d6a72bd1dc72",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "John Stuart Mill",
+          "role": "creator",
+          "birthYear": 1806,
+          "deathYear": 1873
+        }
+      ],
+      "selectedAt": "2026-10-12T06:56:00Z",
+      "releaseVersion": "pg-34901-6e38fd03fbb8",
+      "curation": {
+        "mode": "curated-library-canon",
+        "requestedPosition": 14,
+        "requestedTitle": "On Liberty",
+        "requestedAuthor": "John Stuart Mill",
+        "collection": "philosophy-classics",
+        "rightsMode": "global",
+        "sourceMatch": "matched PG#34901 confidence=1.000"
+      }
+    },
+    {
+      "gutenbergId": 3330,
+      "workId": "pd-pg-3330",
+      "title": "The Analects of Confucius (from the Chinese Classics)",
+      "author": "Confucius",
+      "score": 130.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Harvard Classics",
+        "Banned Books from Anne Haight's list",
+        "Category: Classics of Literature",
+        "Category: Philosophy & Ethics",
+        "Category: Religion/Spirituality"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/3330",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/3330/pg3330.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/3330/pg3330.epub",
+      "sourceRdfSha256": "59aaf387ab0afa0d27bf53fde89ba90d3c3549c3407b2a9522ec0a902a81d218",
+      "sourceEpubSha256": "916085cffa7c6fe9b50cbe04630788ca4b742ff3872306429afdb24894a6727c",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "Confucius",
+          "role": "creator",
+          "birthYear": -551,
+          "deathYear": -479
+        },
+        {
+          "name": "James Legge",
+          "role": "trl",
+          "birthYear": 1815,
+          "deathYear": 1897
+        }
+      ],
+      "selectedAt": "2026-10-12T06:56:03Z",
+      "releaseVersion": "pg-3330-916085cffa7c",
+      "curation": {
+        "mode": "curated-library-canon",
+        "requestedPosition": 15,
+        "requestedTitle": "The Analects of Confucius",
+        "requestedAuthor": "Confucius",
+        "collection": "general-classics",
+        "rightsMode": "global",
+        "sourceMatch": "matched PG#3330 confidence=0.969"
+      }
+    },
+    {
+      "gutenbergId": 65688,
+      "workId": "pd-pg-65688",
+      "title": "The Everlasting Man",
+      "author": "G. K. (Gilbert Keith) Chesterton",
+      "score": 25.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Category: History - Other",
+        "Category: Philosophy & Ethics",
+        "Category: Religion/Spirituality"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/65688",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/65688/pg65688.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/65688/pg65688.epub",
+      "sourceRdfSha256": "86fcb5d1ee77e297093bde217c19085bd89c8e9e944271090a46a80f5e81e746",
+      "sourceEpubSha256": "d6b5bbf4463f5e9d9225c4bdee4b4f28c30763510169b4ebdb02604d3a2c3128",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "G. K. (Gilbert Keith) Chesterton",
+          "role": "creator",
+          "birthYear": 1874,
+          "deathYear": 1936
+        }
+      ],
+      "selectedAt": "2026-10-12T06:56:23Z",
+      "releaseVersion": "pg-65688-d6b5bbf4463f",
+      "curation": {
+        "mode": "curated-library-canon",
+        "requestedPosition": 23,
+        "requestedTitle": "The Everlasting Man",
+        "requestedAuthor": "G. K. Chesterton",
+        "collection": "christian-classics",
+        "rightsMode": "global",
+        "sourceMatch": "matched PG#65688 confidence=1.000"
+      }
+    },
+    {
+      "gutenbergId": 11449,
+      "workId": "pd-pg-11449",
+      "title": "An Enquiry into the Obligations of Christians to Use Means for the Conversion of the Heathens",
+      "author": "William Carey",
+      "score": 15.526,
+      "downloadCountAtSelection": 0,
+      "bookshelves": [
+        "Category: History - Religious",
+        "Category: Philosophy & Ethics",
+        "Category: Religion/Spirituality"
+      ],
+      "sourcePage": "https://www.gutenberg.org/ebooks/11449",
+      "sourceRdf": "https://www.gutenberg.org/cache/epub/11449/pg11449.rdf",
+      "sourceEpub": "https://www.gutenberg.org/cache/epub/11449/pg11449.epub",
+      "sourceRdfSha256": "1b9022491ba9a2d1a9e26d49022dfa3408f591b641e939c87a59f81839c70cbc",
+      "sourceEpubSha256": "d3123f5ecbfd4767417d8445e186f737afa38067bc44a67e615e7e6d083c30ad",
+      "copyrightCutoffYear": 1955,
+      "legalContributors": [
+        {
+          "name": "William Carey",
+          "role": "creator",
+          "birthYear": 1761,
+          "deathYear": 1834
+        }
+      ],
+      "selectedAt": "2026-10-12T06:56:39Z",
+      "releaseVersion": "pg-11449-d3123f5ecbfd",
+      "curation": {
+        "mode": "curated-library-canon",
+        "requestedPosition": 27,
+        "requestedTitle": "An Enquiry into the Obligations of Christians to Use Means for the Conversion of the Heathens",
+        "requestedAuthor": "William Carey",
+        "collection": "missions-classics",
+        "rightsMode": "global",
+        "sourceMatch": "matched PG#11449 confidence=0.969"
+      }
     }
   ],
   "rejections": {
@@ -6793,65 +7350,142 @@
       "reason": "unknown death year for creator Vatsyayana",
       "checkedAt": "2026-09-27T09:31:11Z",
       "copyrightCutoffYear": 1955
+    },
+    "65473": {
+      "gutenbergId": 65473,
+      "title": "Gulliver's Travels",
+      "author": "Jonathan Swift",
+      "curationMode": "curated-library-canon",
+      "reason": "ill Milo Winter died 1956, after automatic German cutoff 1955",
+      "checkedAt": "2026-10-12T06:55:33Z",
+      "copyrightCutoffYear": 1955
     }
   },
   "lastRun": {
-    "at": "2026-09-27T09:31:11Z",
-    "rankingMode": "official-project-gutenberg-top100-30d",
-    "rankingSource": "https://www.gutenberg.org/browse/scores/top",
-    "rankingWindow": "last 30 days",
-    "rankingRowsVerified": 100,
+    "at": "2026-10-12T06:56:45Z",
+    "rankingMode": "curated-library-canon",
+    "catalog": "src/publications/curated-canon.tsv",
+    "catalogEntries": 29,
+    "globallyEligible": 29,
     "copyrightCutoffYear": 1955,
-    "candidateCount": 98,
-    "checkedCount": 21,
-    "candidateCheckLimit": 100,
-    "addedCount": 15,
-    "skippedCount": 6,
+    "checkedCount": 14,
+    "candidateCheckLimit": 650,
+    "addedCount": 13,
+    "skippedCount": 16,
     "recentSkips": [
       {
-        "gutenbergId": 45839,
-        "title": "Dracula",
-        "popularityRank": 61,
-        "reason": "logical work already represented in Library: Dracula — Bram Stoker"
-      },
-      {
-        "gutenbergId": 42,
-        "title": "The strange case of Dr. Jekyll and Mr. Hyde",
-        "popularityRank": 66,
-        "reason": "logical work already represented in Library: The strange case of Dr. Jekyll and Mr. Hyde — Robert Louis Stevenson"
-      },
-      {
-        "gutenbergId": 25344,
-        "title": "The Scarlet Letter",
-        "popularityRank": 68,
-        "downloadCount30d": 31820,
-        "reason": "unknown death year for ill Ludvig Sandöe Ipsen",
-        "checkedAt": "2026-09-27T09:31:03Z",
+        "gutenbergId": 65473,
+        "title": "Gulliver's Travels",
+        "author": "Jonathan Swift",
+        "curationMode": "curated-library-canon",
+        "reason": "ill Milo Winter died 1956, after automatic German cutoff 1955",
+        "checkedAt": "2026-10-12T06:55:33Z",
         "copyrightCutoffYear": 1955
       },
       {
-        "gutenbergId": 161,
-        "title": "Sense and Sensibility",
-        "popularityRank": 70,
-        "reason": "logical work already represented in Library: Sense and Sensibility — Jane Austen"
+        "position": 7,
+        "title": "Notes from Underground",
+        "author": "Fyodor Dostoevsky",
+        "rightsMode": "global",
+        "reason": "no English Project Gutenberg catalog match"
       },
       {
-        "gutenbergId": 408,
-        "title": "The Souls of Black Folk",
-        "popularityRank": 92,
-        "downloadCount30d": 28618,
-        "reason": "creator W. E. B. (William Edward Burghardt) Du Bois died 1963, after automatic German cutoff 1955",
-        "checkedAt": "2026-09-27T09:31:09Z",
-        "copyrightCutoffYear": 1955
+        "position": 8,
+        "title": "The Death of Ivan Ilyich",
+        "author": "Leo Tolstoy",
+        "rightsMode": "global",
+        "reason": "no English Project Gutenberg catalog match"
       },
       {
-        "gutenbergId": 27827,
-        "title": "The Kama Sutra of Vatsyayana",
-        "popularityRank": 100,
-        "downloadCount30d": 27150,
-        "reason": "unknown death year for creator Vatsyayana",
-        "checkedAt": "2026-09-27T09:31:11Z",
-        "copyrightCutoffYear": 1955
+        "position": 13,
+        "title": "Pensées",
+        "author": "Blaise Pascal",
+        "rightsMode": "global",
+        "reason": "best source match confidence too low (0.695)"
+      },
+      {
+        "position": 16,
+        "title": "On the Incarnation",
+        "author": "Athanasius",
+        "rightsMode": "global",
+        "reason": "no English Project Gutenberg catalog match"
+      },
+      {
+        "position": 17,
+        "title": "The Didache",
+        "author": "Anonymous",
+        "rightsMode": "global",
+        "reason": "best source match confidence too low (0.641)"
+      },
+      {
+        "position": 18,
+        "title": "The Mortification of Sin",
+        "author": "John Owen",
+        "rightsMode": "global",
+        "reason": "no English Project Gutenberg catalog match"
+      },
+      {
+        "position": 19,
+        "title": "Religious Affections",
+        "author": "Jonathan Edwards",
+        "rightsMode": "global",
+        "reason": "no English Project Gutenberg catalog match"
+      },
+      {
+        "position": 20,
+        "title": "Holiness",
+        "author": "J. C. Ryle",
+        "rightsMode": "global",
+        "reason": "no English Project Gutenberg catalog match"
+      },
+      {
+        "position": 21,
+        "title": "The Reformed Pastor",
+        "author": "Richard Baxter",
+        "rightsMode": "global",
+        "reason": "no English Project Gutenberg catalog match"
+      },
+      {
+        "position": 22,
+        "title": "All of Grace",
+        "author": "Charles H. Spurgeon",
+        "rightsMode": "global",
+        "reason": "no English Project Gutenberg catalog match"
+      },
+      {
+        "position": 24,
+        "title": "Christianity and Liberalism",
+        "author": "J. Gresham Machen",
+        "rightsMode": "global",
+        "reason": "no English Project Gutenberg catalog match"
+      },
+      {
+        "position": 25,
+        "title": "The Bondage of the Will",
+        "author": "Martin Luther",
+        "rightsMode": "global",
+        "reason": "no English Project Gutenberg catalog match"
+      },
+      {
+        "position": 26,
+        "title": "Missionary Methods: St. Paul's or Ours?",
+        "author": "Roland Allen",
+        "rightsMode": "global",
+        "reason": "no English Project Gutenberg catalog match"
+      },
+      {
+        "position": 28,
+        "title": "Autobiography of John G. Paton",
+        "author": "John G. Paton",
+        "rightsMode": "global",
+        "reason": "no English Project Gutenberg catalog match"
+      },
+      {
+        "position": 29,
+        "title": "Absolute Surrender",
+        "author": "Andrew Murray",
+        "rightsMode": "global",
+        "reason": "no English Project Gutenberg catalog match"
       }
     ]
   }

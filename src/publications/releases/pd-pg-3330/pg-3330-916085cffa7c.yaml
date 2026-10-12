@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-3330",
+  "version": "pg-3330-916085cffa7c",
+  "edition": 1,
+  "releasedAt": "2026-10-12T06:56:03Z",
+  "sourceHash": "59aaf387ab0afa0d27bf53fde89ba90d3c3549c3407b2a9522ec0a902a81d218",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-3330/editions/pg-3330-916085cffa7c/the-analects-of-confucius-from-the-chinese-classics.epub",
+      "filename": "the-analects-of-confucius-from-the-chinese-classics.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 132226,
+      "sha256": "916085cffa7c6fe9b50cbe04630788ca4b742ff3872306429afdb24894a6727c"
+    }
+  }
+}

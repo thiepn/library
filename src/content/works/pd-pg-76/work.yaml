@@ -8,32 +8,32 @@
   "contributors": [
     {
       "name": "Mark Twain",
-      "role": "creator",
+      "role": "author",
       "birthYear": 1835,
       "deathYear": 1910
     },
     {
       "name": "E. W. (Edward Windsor) Kemble",
-      "role": "ill",
+      "role": "illustrator",
       "birthYear": 1861,
       "deathYear": 1933
     }
   ],
-  "description": "A public-domain edition of Adventures of Huckleberry Finn by Mark Twain. Project Gutenberg classifies it under Humorous stories, Bildungsromans, Boys -- Fiction.",
-  "shortDescription": "A public-domain edition of Adventures of Huckleberry Finn by Mark Twain. Project Gutenberg classifies it under Humorous stories, Bildungsromans, Boys -- Fiction.",
+  "description": "Adventures of Huckleberry Finn by Mark Twain is a classic work exploring humorous stories, bildungsromans, boys. This Library edition presents the work for modern digital reading.",
+  "shortDescription": "Adventures of Huckleberry Finn by Mark Twain is a classic work exploring humorous stories, bildungsromans, boys. This Library edition presents the work for modern digital reading.",
   "status": "published",
   "visibility": "public",
   "publication": {
-    "firstPublished": "2004-06-29",
-    "lastUpdated": "2026-09-27",
+    "firstPublished": "Not verified",
+    "lastUpdated": "2026-10-12",
     "edition": 1,
-    "editionLabel": "Project Gutenberg public-domain edition",
+    "editionLabel": "THIEPN Library Edition",
     "version": "pg-76-fb47de0fdb1f-cover-ed4beea87f6a",
     "activeRelease": "pg-76-fb47de0fdb1f-cover-ed4beea87f6a"
   },
   "cover": {
     "src": "/covers/public-domain/pd-pg-76.webp",
-    "alt": "Cover for Adventures of Huckleberry Finn by Mark Twain"
+    "alt": "Cover of Adventures of Huckleberry Finn by Mark Twain"
   },
   "classification": {
     "subjects": [
@@ -45,7 +45,6 @@
     ],
     "tags": [
       "public-domain",
-      "project-gutenberg",
       "classic"
     ],
     "collections": [
@@ -69,21 +68,9 @@
     "relatedWorks": [],
     "prerequisites": []
   },
-  "resources": [
-    {
-      "type": "source",
-      "label": "Project Gutenberg",
-      "url": "https://www.gutenberg.org/ebooks/76",
-      "gutenbergId": 76
-    },
-    {
-      "type": "provenance",
-      "label": "Official Project Gutenberg RDF metadata",
-      "url": "https://www.gutenberg.org/cache/epub/76/pg76.rdf"
-    }
-  ],
+  "resources": [],
   "rights": {
-    "status": "Public domain — automated Germany/EU ordinary-term gate passed",
-    "notice": "Source edition: Project Gutenberg #76. The Library's automated rights gate found all detected creative contributors in the official Project Gutenberg RDF to have died in 1955 or earlier, satisfying the ordinary German 70-year post-mortem term for calendar year 2026. Uncertain candidates are not published automatically. The EPUB is retained as a Project Gutenberg source edition, including its embedded notices and terms."
+    "status": "Public domain in Germany",
+    "notice": "This Library edition is offered as a public-domain work under German copyright law. Copyright status can differ in other jurisdictions."
   }
 }

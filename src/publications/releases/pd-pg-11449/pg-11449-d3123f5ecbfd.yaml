@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-11449",
+  "version": "pg-11449-d3123f5ecbfd",
+  "edition": 1,
+  "releasedAt": "2026-10-12T06:56:39Z",
+  "sourceHash": "1b9022491ba9a2d1a9e26d49022dfa3408f591b641e939c87a59f81839c70cbc",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-11449/editions/pg-11449-d3123f5ecbfd/an-enquiry-into-the-obligations-of-christians-to-use-means-for-the-conversion-of.epub",
+      "filename": "an-enquiry-into-the-obligations-of-christians-to-use-means-for-the-conversion-of.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 105204,
+      "sha256": "d3123f5ecbfd4767417d8445e186f737afa38067bc44a67e615e7e6d083c30ad"
+    }
+  }
+}

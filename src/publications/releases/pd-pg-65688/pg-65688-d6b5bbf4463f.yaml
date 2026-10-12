@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-65688",
+  "version": "pg-65688-d6b5bbf4463f",
+  "edition": 1,
+  "releasedAt": "2026-10-12T06:56:23Z",
+  "sourceHash": "86fcb5d1ee77e297093bde217c19085bd89c8e9e944271090a46a80f5e81e746",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-65688/editions/pg-65688-d6b5bbf4463f/the-everlasting-man.epub",
+      "filename": "the-everlasting-man.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 320901,
+      "sha256": "d6b5bbf4463f5e9d9225c4bdee4b4f28c30763510169b4ebdb02604d3a2c3128"
+    }
+  }
+}

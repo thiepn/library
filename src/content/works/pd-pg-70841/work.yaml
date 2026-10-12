@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-70841",
+  "slug": "pd-pg-70841",
+  "title": "Robinson Crusoe",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Daniel Defoe",
+      "role": "author",
+      "deathYear": 1731
+    },
+    {
+      "name": "N. C. (Newell Convers) Wyeth",
+      "role": "illustrator",
+      "birthYear": 1882,
+      "deathYear": 1945
+    }
+  ],
+  "description": "Robinson Crusoe by Daniel Defoe is a classic work associated with Shipwreck survival -- Fiction, Islands -- Fiction, Crusoe, Robinson (Fictitious character) -- Fiction.",
+  "shortDescription": "Robinson Crusoe by Daniel Defoe is a classic work associated with Shipwreck survival -- Fiction, Islands -- Fiction, Crusoe, Robinson (Fictitious character) -- Fiction.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "Not verified",
+    "lastUpdated": "2026-10-12",
+    "edition": 1,
+    "editionLabel": "THIEPN Library Edition",
+    "version": "pg-70841-fbf0a5a1cc82",
+    "activeRelease": "pg-70841-fbf0a5a1cc82"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-70841.svg",
+    "alt": "Cover of Robinson Crusoe by Daniel Defoe"
+  },
+  "classification": {
+    "subjects": [
+      "shipwreck-survival",
+      "islands",
+      "crusoe-robinson-fictitious-character",
+      "atlantic-ocean",
+      "adventure-stories"
+    ],
+    "tags": [
+      "public-domain",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "general-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [],
+  "rights": {
+    "status": "Public domain in Germany",
+    "notice": "This Library edition is offered as a public-domain work under German copyright law. Copyright status can differ in other jurisdictions."
+  }
+}

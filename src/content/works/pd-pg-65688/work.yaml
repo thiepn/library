@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-65688",
+  "slug": "pd-pg-65688",
+  "title": "The Everlasting Man",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "G. K. Chesterton",
+      "role": "author",
+      "birthYear": 1874,
+      "deathYear": 1936
+    }
+  ],
+  "description": "The Everlasting Man by G. K. (Gilbert Keith) Chesterton is a classic work associated with Religion, Christianity and other religions, Catholic Church -- Apologetic works.",
+  "shortDescription": "The Everlasting Man by G. K. (Gilbert Keith) Chesterton is a classic work associated with Religion, Christianity and other religions, Catholic Church -- Apologetic works.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "Not verified",
+    "lastUpdated": "2026-10-12",
+    "edition": 1,
+    "editionLabel": "THIEPN Library Edition",
+    "version": "pg-65688-d6b5bbf4463f",
+    "activeRelease": "pg-65688-d6b5bbf4463f"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-65688.svg",
+    "alt": "Cover of The Everlasting Man by G. K. Chesterton"
+  },
+  "classification": {
+    "subjects": [
+      "religion",
+      "christianity-and-other-religions",
+      "catholic-church",
+      "bl"
+    ],
+    "tags": [
+      "public-domain",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "christian-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [],
+  "rights": {
+    "status": "Public domain in Germany",
+    "notice": "This Library edition is offered as a public-domain work under German copyright law. Copyright status can differ in other jurisdictions."
+  }
+}

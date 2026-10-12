@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "id": "pd-pg-135",
+  "slug": "pd-pg-135",
+  "title": "Les Misérables",
+  "type": "book",
+  "language": "en",
+  "contributors": [
+    {
+      "name": "Victor Hugo",
+      "role": "author",
+      "birthYear": 1802,
+      "deathYear": 1885
+    },
+    {
+      "name": "Isabel Florence Hapgood",
+      "role": "translator",
+      "birthYear": 1850,
+      "deathYear": 1928
+    }
+  ],
+  "description": "Les Misérables by Victor Hugo is a classic work associated with Historical fiction, Orphans -- Fiction, Paris (France) -- Fiction.",
+  "shortDescription": "Les Misérables by Victor Hugo is a classic work associated with Historical fiction, Orphans -- Fiction, Paris (France) -- Fiction.",
+  "status": "published",
+  "visibility": "public",
+  "publication": {
+    "firstPublished": "Not verified",
+    "lastUpdated": "2026-10-12",
+    "edition": 1,
+    "editionLabel": "THIEPN Library Edition",
+    "version": "pg-135-af9844d0621e",
+    "activeRelease": "pg-135-af9844d0621e"
+  },
+  "cover": {
+    "src": "/covers/public-domain/pd-pg-135.svg",
+    "alt": "Cover of Les Misérables by Victor Hugo"
+  },
+  "classification": {
+    "subjects": [
+      "historical-fiction",
+      "orphans",
+      "paris-france",
+      "epic-literature",
+      "ex-convicts"
+    ],
+    "tags": [
+      "public-domain",
+      "classic"
+    ],
+    "collections": [
+      "public-domain",
+      "historical-fiction",
+      "general-classics"
+    ]
+  },
+  "parts": [],
+  "formats": {
+    "web": {
+      "enabled": false
+    },
+    "pdf": {
+      "enabled": false
+    },
+    "epub": {
+      "enabled": true
+    }
+  },
+  "relationships": {
+    "relatedWorks": [],
+    "prerequisites": []
+  },
+  "resources": [],
+  "rights": {
+    "status": "Public domain in Germany",
+    "notice": "This Library edition is offered as a public-domain work under German copyright law. Copyright status can differ in other jurisdictions."
+  }
+}

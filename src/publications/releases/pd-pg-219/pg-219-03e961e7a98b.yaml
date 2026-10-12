@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "workId": "pd-pg-219",
+  "version": "pg-219-03e961e7a98b",
+  "edition": 1,
+  "releasedAt": "2026-10-12T06:55:36Z",
+  "sourceHash": "bfa4ea927a10223f3dd8847a1aa2347ab3921f45f8ff4de58bde03466648b238",
+  "artifacts": {
+    "epub": {
+      "url": "https://thiepn.dev/library/media/works/pd-pg-219/editions/pg-219-03e961e7a98b/heart-of-darkness.epub",
+      "filename": "heart-of-darkness.epub",
+      "mimeType": "application/epub+zip",
+      "sizeBytes": 187216,
+      "sha256": "03e961e7a98b060c26e65b709dd3515dee1b804978eaf0c7e35496196f3bec74"
+    }
+  }
+}
