@@ -3,6 +3,7 @@ import {
 } from './note-research-n1p-writing';
 import { notebookTitle, type BookNoteDocumentV1 } from './note-model';
 import { noteReferenceMarkdown } from './note-links';
+import { requestResearchView } from './note-research-n1q-view';
 import { readResearchDraftCheckpoint } from './note-research-drafts';
 import { loadResearchCollections, describeResearchSource,
   type ResearchCollection } from './note-research';
@@ -184,6 +185,7 @@ export function mountResearchN1P(
     const other=notes.find(id=>id!==item.note.id&&host.notes().some(note=>note.id===id))??'';
     host.setPins(item.note.id,other);
     renderContinuity();
+    requestResearchView(root,'sources','[data-research-compare]');
     root.querySelector<HTMLElement>('[data-research-compare]')
       ?.scrollIntoView({behavior:'smooth',block:'start'});
     status.textContent='Source selected in its collection. You can read, cite or compare it.';
@@ -204,6 +206,7 @@ export function mountResearchN1P(
       renderBasket();
       basketStatus.textContent='Source added to a collection-aware comparison basket. All note content remains unchanged.';
     }
+    requestResearchView(root,'write','[data-n1p-comparison-items]');
     root.querySelector<HTMLElement>('[data-n1p-comparison-items]')
       ?.scrollIntoView({behavior:'smooth',block:'center'});
   }
@@ -217,6 +220,7 @@ export function mountResearchN1P(
     }
     if(!host.synthesis()){
       status.textContent='Create a native synthesis for this collection before inserting a source reference.';
+      requestResearchView(root,'write','[data-research-make-synthesis]');
       root.querySelector<HTMLButtonElement>('[data-research-make-synthesis]')
         ?.scrollIntoView({block:'center',behavior:'smooth'});
       return;
@@ -244,6 +248,7 @@ export function mountResearchN1P(
       return false;
     }
     host.setDraft(host.draft().title,next);
+    requestResearchView(root,'write','[data-research-synthesis-body]');
     writingArea.focus();
     writingArea.setSelectionRange(from+addition.length,from+addition.length);
     return true;
@@ -457,6 +462,7 @@ export function mountResearchN1P(
   });
   bind('[data-n1p-focus-writing]','click',()=>{
     if(!host.synthesis())return;
+    requestResearchView(root,'write','[data-research-synthesis-body]');
     writingArea.focus();
     writingArea.scrollIntoView({behavior:'smooth',block:'center'});
   });
@@ -465,6 +471,7 @@ export function mountResearchN1P(
     if(!collection||!note)return;
     const checkpoint=readResearchDraftCheckpoint(collection.id,note.id);
     const recovery=root.querySelector<HTMLElement>('[data-research-checkpoint-status]');
+    requestResearchView(root,'write','[data-research-checkpoint-status]');
     recovery?.scrollIntoView({behavior:'smooth',block:'center'});
     if(checkpoint){
       root.querySelector<HTMLButtonElement>('[data-research-restore-checkpoint]')?.focus();
