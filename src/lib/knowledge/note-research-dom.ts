@@ -687,6 +687,7 @@ export function mountResearchWorkbench(
       integration?.onNotesChanged();
     },
     bookTitle:workId=>host.bookTitle(workId),
+    sourceHref:note=>host.sourceHref(note),
   });
   void refresh();
   return {
