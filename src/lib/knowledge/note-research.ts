@@ -165,6 +165,9 @@ export function copyResearchNoteToCollection(
   sourceId:string,targetCollectionId:string,
 ):ResearchCollection {
   if(!validId(sourceId))throw new Error('Invalid source-note reference.');
+  const target=loadResearchCollections().find(c=>c.id===targetCollectionId);
+  if(!target)throw new Error('Destination collection is unavailable.');
+  if(target.noteIds.includes(sourceId))return target;
   return updateResearchCollection(targetCollectionId,c=>{
     if(c.noteIds.includes(sourceId))return c;
     if(c.noteIds.length>=MAX_ENTRIES)throw new Error('Destination collection has reached 120 notes.');
