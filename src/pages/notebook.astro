@@ -283,6 +283,10 @@ const catalog = (await getWorks()).map((work) => ({
             </select>
             <button type="button" data-n1p-review-start>Start current collection</button>
             <button type="button" data-n1p-export-review>Export filtered review checklist</button>
+            <label for="n1r-review-search">Find in queue</label>
+            <input id="n1r-review-search" data-n1r-review-search type="search"
+              placeholder="Book, note, topic, collection…" autocomplete="off" />
+            <button type="button" data-n1r-review-next>Next source to revisit</button>
           </div>
           <div data-n1p-review-queue class="book-notebook__n1p-review-queue"
             aria-label="Research notes from selected review sessions"></div>
