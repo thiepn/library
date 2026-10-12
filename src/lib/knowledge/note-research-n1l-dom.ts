@@ -396,7 +396,7 @@ export function mountResearchN1L(root:HTMLElement,host:ResearchN1LHost):Research
       return;
     }
     try {
-      const scaffold=sourceComparisonForSection(a,b,host.bookTitle);
+      const scaffold=sourceComparisonForSection(a,b,host.bookTitle,host.sourceHref);
       const activeIndex=selectedSectionIndex();
       const inserted=insertSynthesisSection(host.getDraft().body,activeIndex,
         scaffold,synthBody.maxLength);
