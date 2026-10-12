@@ -105,3 +105,57 @@ test('@n1c rejects duplicate notebook identities before any restore mutation', a
   });
   expect(count).toBe(0);
 });
+
+
+test('@n1c aborts notebook and favorite writes together after an injected notebook put failure', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium-desktop', 'Transactional rollback acceptance in Chromium.');
+  await page.goto('/library/backup');
+  const [download] = await Promise.all([
+    page.waitForEvent('download'), page.locator('[data-library-backup-export]').click(),
+  ]);
+  const target = JSON.parse(await readFile(await download.path(), 'utf8'));
+  const now = new Date().toISOString();
+  target.state.main.favorites.records = [{ schemaVersion: 1, workId: 'must-not-commit', savedAt: now }];
+  target.state.main.noteDocuments.records = [{
+    schemaVersion: 1, id: 'must-not-commit-note', workId: 'test-work', scope: 'reading-note',
+    title: 'Should be rolled back', bodyMarkdown: 'Never committed', sourceAnnotations: [],
+    createdAt: now, updatedAt: now, revision: 1,
+  }];
+
+  await page.evaluate(() => {
+    const original = IDBObjectStore.prototype.put;
+    let once = true;
+    IDBObjectStore.prototype.put = function(value: any, key?: IDBValidKey) {
+      if (this.name === 'noteDocuments' && once) {
+        once = false;
+        throw new Error('N1C_SYNTHETIC_NOTE_WRITE_FAILURE');
+      }
+      return key === undefined ? original.call(this, value) : original.call(this, value, key);
+    } as typeof IDBObjectStore.prototype.put;
+  });
+
+  page.once('dialog', dialog => dialog.accept());
+  await page.locator('[data-library-backup-input]').setInputFiles({
+    name: 'synthetic-failure.json', mimeType: 'application/json',
+    buffer: Buffer.from(JSON.stringify(target)),
+  });
+  await expect(page.locator('[data-library-backup-status]')).toContainText('previous state was restored');
+  const state = await page.evaluate(async () => {
+    const request = indexedDB.open('thiepn-library', 11);
+    const db = await new Promise<IDBDatabase>((resolve, reject) => {
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    const tx = db.transaction(['favorites', 'noteDocuments'], 'readonly');
+    const all = (name: string) => new Promise<any[]>((resolve, reject) => {
+      const request = tx.objectStore(name).getAll();
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    const [favorites, notes] = await Promise.all([all('favorites'), all('noteDocuments')]);
+    db.close();
+    return { favorites, notes };
+  });
+  expect(state.favorites).not.toContainEqual(expect.objectContaining({ workId: 'must-not-commit' }));
+  expect(state.notes).not.toContainEqual(expect.objectContaining({ id: 'must-not-commit-note' }));
+});
