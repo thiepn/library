@@ -19,7 +19,7 @@ const catalog = (await getWorks()).map((work) => ({
         </div>
         <a class="secondary-action" href={`${base}/knowledge`}>All knowledge</a>
       </header>
-      <p class="book-notebook__warning" role="note">N1C: Notebook documents are included in Library V2 JSON backups and per-book Markdown export. Private Account synchronization is paused until the V2 server downgrade guard is independently enabled. Keep a manual backup.</p>
+      <p class="book-notebook__warning" role="note">N1C: Notebook documents are included in Library V2 JSON backups and per-book Markdown export. Private Account synchronization is paused until the V2 server downgrade guard is independently enabled. Keep a manual backup. <a href={`${base}/backup`}>Open Backup &amp; restore</a>.</p>
       <div class="book-notebook__selector">
         <label for="notebook-book">Book</label>
         <select id="notebook-book" data-notebook-book>
