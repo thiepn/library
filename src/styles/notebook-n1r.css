@@ -87,3 +87,26 @@
     }
   }
 }
+
+@layer notebook {
+  /* The section's saved citation selector shares the native outline layout. */
+  .book-notebook__n1r-section-tools a[data-n1r-section-reader] {
+    display:inline-flex;align-items:center;
+    min-height:39px;box-sizing:border-box;
+    padding:7px 10px;text-decoration:none;
+    color:var(--ink);background:var(--canvas);
+    border:1px solid var(--strong-rule);border-radius:2px;
+    font-size:.8rem;
+  }
+  .book-notebook__n1r-section-tools a[data-n1r-section-reader][hidden] {
+    display:none!important;
+  }
+  .book-notebook__n1r-section-tools a:focus-visible {
+    outline:2px solid var(--accent);outline-offset:2px;
+  }
+  @media(max-width:720px) {
+    .book-notebook__n1r-section-tools a[data-n1r-section-reader] {
+      justify-content:center;min-width:0;white-space:normal;
+    }
+  }
+}
