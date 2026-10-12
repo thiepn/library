@@ -195,7 +195,7 @@ test('@rr8 full backup round-trips reading state without embedding personal file
   expect(JSON.stringify(backup.state.personalBooks)).not.toMatch(/"file"|"cover"|"data"/);
 
   await page.evaluate(async ({ mainDb, pendingKey, readerSettingsKey }) => {
-    const request = indexedDB.open(mainDb, 10);
+    const request = indexedDB.open(mainDb, 11);
     const db = await new Promise<IDBDatabase>((resolve, reject) => {
       request.onsuccess = () => resolve(request.result);
       request.onerror = () => reject(request.error);
@@ -220,7 +220,7 @@ test('@rr8 full backup round-trips reading state without embedding personal file
   await expect(page.locator('[data-library-backup-status]')).toContainText('1 personal book file');
 
   const restored = await page.evaluate(async ({ mainDb, pendingKey, readerSettingsKey }) => {
-    const request = indexedDB.open(mainDb, 10);
+    const request = indexedDB.open(mainDb, 11);
     const db = await new Promise<IDBDatabase>((resolve, reject) => {
       request.onsuccess = () => resolve(request.result);
       request.onerror = () => reject(request.error);
@@ -271,7 +271,7 @@ test('@rr8 partial restore leaves omitted categories unchanged and rejects corru
   await expect(page.locator('[data-library-backup-status]')).toContainText('Restore complete');
 
   const state = await page.evaluate(async (mainDb) => {
-    const request = indexedDB.open(mainDb, 10);
+    const request = indexedDB.open(mainDb, 11);
     const db = await new Promise<IDBDatabase>((resolve, reject) => {
       request.onsuccess = () => resolve(request.result);
       request.onerror = () => reject(request.error);
@@ -296,7 +296,7 @@ test('@rr8 partial restore leaves omitted categories unchanged and rejects corru
   await restoreBackup(page, { ...partial, schemaVersion: 99 });
   await expect(page.locator('[data-library-backup-status]')).toContainText('Unsupported Library backup schema version');
   const afterCorrupt = await page.evaluate(async (mainDb) => {
-    const request = indexedDB.open(mainDb, 10);
+    const request = indexedDB.open(mainDb, 11);
     const db = await new Promise<IDBDatabase>((resolve, reject) => {
       request.onsuccess = () => resolve(request.result);
       request.onerror = () => reject(request.error);
@@ -346,7 +346,7 @@ test('@rr8 failed cross-backend restore compensates back to the previous committ
   await expect(page.locator('[data-library-backup-status]')).toContainText('previous state was restored');
 
   const favorites = await page.evaluate(async (mainDb) => {
-    const request = indexedDB.open(mainDb, 10);
+    const request = indexedDB.open(mainDb, 11);
     const db = await new Promise<IDBDatabase>((resolve, reject) => {
       request.onsuccess = () => resolve(request.result);
       request.onerror = () => reject(request.error);
