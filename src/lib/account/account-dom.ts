@@ -7,8 +7,6 @@ import {
   type LibraryAccountUser,
 } from './supabase';
 import {
-  chooseCloudForLibrarySync,
-  chooseThisDeviceForLibrarySync,
   enableLibraryAccountSync,
   isLibrarySyncEnabledForUser,
   pauseLibrarySync,
@@ -16,6 +14,7 @@ import {
   reconcileLibraryAccountSync,
   type LibrarySyncResult,
 } from './sync';
+import { mountLibraryConflictReview } from './account-conflict-dom';
 import {
   isLibraryPersonalFileCloudEnabled,
   reconcileLibraryPersonalFiles,
@@ -132,6 +131,7 @@ async function render(userOverride?: LibraryAccountUser | null): Promise<Library
 export function mountLibraryAccountPage(): () => void {
   let user: LibraryAccountUser | null = null;
   let disposed = false;
+  let conflictReview: ReturnType<typeof mountLibraryConflictReview> | undefined;
 
   const refresh = async () => {
     if (disposed) return;
@@ -160,6 +160,7 @@ export function mountLibraryAccountPage(): () => void {
 
   const act = async (operation: (current: LibraryAccountUser) => Promise<LibrarySyncResult>) => {
     if (!user) return;
+    conflictReview?.reset();
     setBusy(true);
     try {
       const result = await operation(user);
@@ -185,8 +186,14 @@ export function mountLibraryAccountPage(): () => void {
     pauseLibrarySync(user.id);
     void render(user);
   });
-  document.querySelector('[data-use-device]')?.addEventListener('click', () => void act(chooseThisDeviceForLibrarySync));
-  document.querySelector('[data-use-cloud]')?.addEventListener('click', () => void act(chooseCloudForLibrarySync));
+  // Conflict choices are gated by a fresh two-copy preview and explicit safety downloads.
+  conflictReview = mountLibraryConflictReview(
+    () => user,
+    async result => {
+      renderResult(result);
+      if (user && result.status !== 'conflict' && result.status !== 'error') await render(user);
+    },
+  );
   document.querySelector('[data-personal-files-sync]')?.addEventListener('click', () => {
     if (!user) return;
     setBusy(true);
@@ -197,7 +204,10 @@ export function mountLibraryAccountPage(): () => void {
 
   const onSync = (event: Event) => {
     const detail = (event as CustomEvent<LibrarySyncResult>).detail;
-    if (detail) renderResult(detail);
+    if (detail) {
+      if (detail.status !== 'conflict') conflictReview?.reset();
+      renderResult(detail);
+    }
   };
   const onPersonalFiles = (event: Event) => {
     const detail = (event as CustomEvent<PersonalFileCloudResult>).detail;
@@ -214,5 +224,6 @@ export function mountLibraryAccountPage(): () => void {
     window.removeEventListener('thiepn:library-sync', onSync);
     window.removeEventListener('thiepn:library-personal-files', onPersonalFiles);
     unsubscribeAuth();
+    conflictReview?.dispose();
   };
 }
