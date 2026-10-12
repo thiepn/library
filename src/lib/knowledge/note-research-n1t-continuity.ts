@@ -3,7 +3,6 @@ import { notebookTitle } from './note-model';
 import { noteReferenceMarkdown } from './note-links';
 import { noteEvidenceExcerpts } from './note-evidence-workflows';
 import { researchSynthesisSections, type SynthesisSection } from './note-research-n1r-sections';
-import { getSectionEvidenceContext } from './note-research-n1s-evidence';
 import { describeResearchSource, type ResearchCollection } from './note-research';
 
 /**
@@ -22,18 +21,21 @@ export function researchSectionAgenda(
   markdown:string,collection:ResearchCollection,
   documents:readonly BookNoteDocumentV1[],
 ):ResearchSectionGap[] {
+  const available=new Set(documents.map(note=>note.id));
+  const collected=new Set(collection.noteIds);
+  // One Markdown parse and one local lookup: large drafts need not rescore the
+  // entire library for every heading, on each editor refresh or export.
   return researchSynthesisSections(markdown).map(section=>{
-    const evidence=getSectionEvidenceContext(markdown,section.index,collection,documents,8);
-    const missingIds=evidence?.unavailableIds??[];
-    const outsideIds=evidence?.outsideCollectionIds??[];
-    const collectedSourceIds=evidence?.inCollectionIds??[];
+    const missingIds=section.sourceIds.filter(id=>!available.has(id));
+    const outsideIds=section.sourceIds.filter(id=>available.has(id)&&!collected.has(id));
+    const collectedSourceIds=section.sourceIds.filter(id=>available.has(id)&&collected.has(id));
     const gapReasons:string[]=[];
     if(!section.sourceIds.length)gapReasons.push('No explicit note links in this section');
     if(missingIds.length)gapReasons.push(missingIds.length+' unavailable saved-note references');
     if(outsideIds.length)gapReasons.push(outsideIds.length+' links outside this collection');
     return {
       section,missingIds,outsideIds,collectedSourceIds,
-      candidateCount:evidence?.suggestions.length??0,gapReasons,
+      candidateCount:0,gapReasons,
     };
   });
 }
