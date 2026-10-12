@@ -151,6 +151,7 @@ export function mountResearchN1P(
         action('Open',()=>{void host.openNote(item.note);}),
         action('Study in collection',()=>{void openReviewSource(item);}),
         action('Compare',()=>{void addReviewToBasket(item);}),
+        action('Cite in synthesis',()=>{void citeReviewSource(item);}),
         action('Copy citation',()=>{
           void navigator.clipboard.writeText(noteReferenceMarkdown(item.note))
             .then(()=>{status.textContent='Stable note reference copied.';},
@@ -206,6 +207,48 @@ export function mountResearchN1P(
     root.querySelector<HTMLElement>('[data-n1p-comparison-items]')
       ?.scrollIntoView({behavior:'smooth',block:'center'});
   }
+  async function citeReviewSource(item:ResearchQueueItem):Promise<void> {
+    if(host.active()?.id!==item.collectionId)await openReviewSource(item);
+    if(disposed||host.active()?.id!==item.collectionId)return;
+    const current=host.notes().find(note=>note.id===item.note.id);
+    if(!current||!host.active()?.noteIds.includes(current.id)){
+      status.textContent='The saved source note is no longer available in this collection.';
+      return;
+    }
+    if(!host.synthesis()){
+      status.textContent='Create a native synthesis for this collection before inserting a source reference.';
+      root.querySelector<HTMLButtonElement>('[data-research-make-synthesis]')
+        ?.scrollIntoView({block:'center',behavior:'smooth'});
+      return;
+    }
+    const reference=[
+      noteReferenceMarkdown(current),
+      '> Recorded book location: '+describeResearchSource(current.anchor,current.chapterKey),
+      '',
+    ].join('\n');
+    if(insertInDraft(reference)){
+      status.textContent='Stable-ID source citation inserted into the synthesis editor. Save explicitly to commit the note revision.';
+    }
+  }
+  function insertInDraft(markdown:string):boolean {
+    if(!host.synthesis())return false;
+    const old=host.draft().body;
+    const from=Math.max(0,Math.min(old.length,writingArea.selectionStart));
+    const to=Math.max(from,Math.min(old.length,writingArea.selectionEnd));
+    const prefix=from>0&&!old.slice(0,from).endsWith('\n')?'\n\n':'';
+    const suffix=to<old.length&&!old.slice(to).startsWith('\n')?'\n':'';
+    const addition=prefix+markdown.trimEnd()+'\n'+suffix;
+    const next=old.slice(0,from)+addition+old.slice(to);
+    if(next.length>writingArea.maxLength){
+      basketStatus.textContent='This synthesis reached its maximum Markdown length. Download the current draft first.';
+      return false;
+    }
+    host.setDraft(host.draft().title,next);
+    writingArea.focus();
+    writingArea.setSelectionRange(from+addition.length,from+addition.length);
+    return true;
+  }
+
   function basketCandidates():BookNoteDocumentV1[] {
     const lookup=new Map(host.notes().map(note=>[note.id,note]));
     return host.active()?.noteIds.flatMap(id=>{
@@ -266,22 +309,9 @@ export function mountResearchN1P(
   function insertComparison():void {
     const sources=basketSources();
     if(!host.synthesis()||sources.length<2)return;
-    try{
-      const markdown=multiSourceComparisonMarkdown(sources);
-      const old=host.draft().body;
-      const start=writingArea.selectionStart,end=writingArea.selectionEnd;
-      const prefix=start>0&&!old.slice(0,start).endsWith('\n')?'\n\n':'';
-      const suffix=end<old.length&&!old.slice(end).startsWith('\n')?'\n':'';
-      const addition=prefix+markdown+'\n'+suffix;
-      const next=old.slice(0,start)+addition+old.slice(end);
-      if(next.length>250000){
-        basketStatus.textContent='Synthesis Markdown limit reached. Export the current draft before adding more.';
-        return;
-      }
-      host.setDraft(host.draft().title,next);
-      writingArea.focus();
-      writingArea.setSelectionRange(start+addition.length,start+addition.length);
-      basketStatus.textContent='Comparison outline inserted into the native synthesis draft. Save to commit.';
+    try {
+      if(insertInDraft(multiSourceComparisonMarkdown(sources)))
+        basketStatus.textContent='Comparison outline inserted into the native synthesis draft. Save to commit its revision.';
     }catch(error){
       basketStatus.textContent=error instanceof Error?error.message:'Cannot build a comparison outline.';
     }
