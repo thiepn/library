@@ -377,6 +377,174 @@ const catalog = (await getWorks()).map((work) => ({
         count.textContent = notes.length + (notes.length === 1 ? ' notebook note' : ' notebook notes');
       }
 
+
+      function updateWritingStats(): void {
+        const words = notebookWordCount(body.value);
+        wordCount.textContent = words + (words === 1 ? ' word' : ' words');
+        characterCount.textContent = body.value.length.toLocaleString() + ' characters';
+      }
+
+      async function openAnyNote(note: BookNoteDocumentV1): Promise<void> {
+        if (dirty() && !await save()) {
+          setStatus('Save failed. Download your draft before following another note.');
+          return;
+        }
+        if (currentBook() !== note.workId) await chooseBook(note.workId);
+        if (currentBook() !== note.workId) return;
+        const current = libraryNotes.find(item => item.id === note.id) ?? note;
+        openEditor(current);
+        document.querySelector<HTMLElement>('[data-notebook-editor]')?.scrollIntoView({
+          behavior: 'smooth', block: 'nearest',
+        });
+      }
+
+      function connectedButton(note: BookNoteDocumentV1, description?: string): HTMLButtonElement {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'book-notebook__connection';
+        const titleLine = document.createElement('strong');
+        titleLine.textContent = notebookTitle(note);
+        const subtitle = document.createElement('span');
+        subtitle.textContent = description ?? bookName(note.workId);
+        button.append(titleLine, subtitle);
+        button.addEventListener('click', () => { void openAnyNote(note); });
+        return button;
+      }
+
+      function renderConnections(): void {
+        outgoing.replaceChildren();
+        backlinks.replaceChildren();
+        sourceInfo.textContent = '';
+        if (!selected) {
+          paragraph(outgoing, 'Links and backlinks appear after this note is first saved.');
+          paragraph(backlinks, 'Save this draft to create its note ID.');
+          return;
+        }
+        const graph = notebookConnections(selected, libraryNotes, body.value);
+        for (const link of graph.outbound) {
+          outgoing.append(connectedButton(link.target,
+            (link.crossBook ? 'Another book · ' : '') + bookName(link.target.workId)));
+        }
+        for (const link of graph.missing) {
+          const note = document.createElement('p');
+          note.className = 'book-notebook__missing-link';
+          note.textContent = 'Unavailable note: ' + (link.label || link.id);
+          outgoing.append(note);
+        }
+        if (!graph.outbound.length && !graph.missing.length)
+          paragraph(outgoing, 'No links yet. Use “Link note” to connect an idea.');
+        for (const link of graph.inbound) {
+          backlinks.append(connectedButton(link.target,
+            (link.crossBook ? 'Another book · ' : '') + bookName(link.target.workId)));
+        }
+        if (!graph.inbound.length) paragraph(backlinks, 'No notes link here yet.');
+        const anchor = selected.anchor;
+        if (!anchor) {
+          sourceInfo.textContent = 'Source: book-level note; no exact reader location captured.';
+        } else if (anchor.format === 'epub') {
+          sourceInfo.textContent = 'EPUB source: ' + (anchor.chapterLabel || anchor.chapterHref)
+            + (anchor.cfi ? ' · exact CFI preserved' : ' · chapter anchor')
+            + ' · edition ' + anchor.edition + ', release ' + anchor.releaseVersion;
+        } else if (anchor.format === 'pdf') {
+          sourceInfo.textContent = 'PDF source: page ' + anchor.page
+            + ' · edition ' + anchor.edition + ', release ' + anchor.releaseVersion;
+        } else {
+          sourceInfo.textContent = 'Web chapter source: ' + anchor.chapterId;
+        }
+      }
+
+      function renderLinkChoices(): void {
+        linkResults.replaceChildren();
+        if (!selected && !draft) {
+          paragraph(linkResults, 'Open or create a notebook note first.');
+          return;
+        }
+        const candidates = findNotebookNotes(libraryNotes, bookName, linkSearch.value, 24)
+          .filter(note => note.id !== selected?.id);
+        for (const note of candidates) {
+          // Link insertion is deliberately different from navigation.
+          const insert = document.createElement('button');
+          insert.type = 'button';
+          insert.className = 'book-notebook__connection';
+          const heading = document.createElement('strong');
+          heading.textContent = notebookTitle(note);
+          const book = document.createElement('span');
+          book.textContent = bookName(note.workId);
+          insert.append(heading, book);
+          insert.setAttribute('aria-label', 'Insert link to ' + notebookTitle(note));
+          insert.addEventListener('click', () => {
+            const edit = insertNotebookReference(
+              body.value, body.selectionStart, body.selectionEnd, noteReferenceMarkdown(note));
+            if (edit.value.length > body.maxLength) {
+              mark('The note would exceed its maximum size.');
+              return;
+            }
+            body.value = edit.value;
+            body.focus();
+            body.setSelectionRange(edit.selectionStart, edit.selectionEnd);
+            body.dispatchEvent(new Event('input', { bubbles:true }));
+            linkPicker.hidden = true;
+            linkToggle.setAttribute('aria-expanded', 'false');
+          });
+          linkResults.append(insert);
+        }
+        if (!candidates.length) paragraph(linkResults, 'No matching saved notes.');
+      }
+
+      function renderDiscover(): void {
+        discoverResults.replaceChildren();
+        const filter = discoverBook.value;
+        const filtered = libraryNotes.filter(note => filter === 'all' || note.workId === filter);
+        const candidates = findNotebookNotes(filtered, bookName, discoverQuery.value, 30);
+        discoverCount.textContent = libraryNotes.length + ' notes across '
+          + new Set(libraryNotes.map(note => note.workId)).size + ' books';
+        discoverEmpty.hidden = candidates.length > 0;
+        for (const note of candidates) {
+          const button = connectedButton(note);
+          button.classList.add('book-notebook__discover-item');
+          const snippet = document.createElement('small');
+          snippet.textContent = note.bodyMarkdown
+            .replace(/\s+/g, ' ').trim().slice(0, 125) || 'No text yet';
+          button.append(snippet);
+          discoverResults.append(button);
+        }
+      }
+
+      async function refreshNetwork(): Promise<void> {
+        const nonce = ++networkRequest;
+        try {
+          const documents = await listBookNotes();
+          if (nonce !== networkRequest) return;
+          libraryNotes = documents;
+          const selectedBook = discoverBook.value;
+          const listed = new Set(documents.map(note => note.workId));
+          discoverBook.replaceChildren(new Option('All books', 'all'));
+          for (const id of [...listed].sort((a,b) => bookName(a).localeCompare(bookName(b)))) {
+            discoverBook.add(new Option(bookName(id),id));
+          }
+          discoverBook.value = listed.has(selectedBook) ? selectedBook : 'all';
+          renderDiscover();
+          renderLinkChoices();
+          renderConnections();
+        } catch {
+          discoverCount.textContent = 'Notebook discovery unavailable on this device.';
+          if (selected) paragraph(outgoing, 'Linked note lookup unavailable; your draft remains editable.');
+        }
+      }
+
+      function useMarkdownTool(tool: MarkdownTool): void {
+        if (!selected && !draft) return;
+        const edit = applyNotebookMarkdownTool(body.value,body.selectionStart,body.selectionEnd,tool);
+        if (edit.value.length > body.maxLength) {
+          mark('The note would exceed its maximum size.');
+          return;
+        }
+        body.value = edit.value;
+        body.focus();
+        body.setSelectionRange(edit.selectionStart,edit.selectionEnd);
+        body.dispatchEvent(new Event('input',{bubbles:true}));
+      }
+
       async function refresh(): Promise<void> {
         const id = currentBook(), nonce = ++loadNumber;
         if (!id) { renderNotes([]); return; }
@@ -428,6 +596,41 @@ const catalog = (await getWorks()).map((work) => ({
           if (match) openEditor(match);
         }
       }
+
+
+      discoverQuery.addEventListener('input', renderDiscover);
+      discoverBook.addEventListener('change', renderDiscover);
+      linkSearch.addEventListener('input', renderLinkChoices);
+      linkToggle.addEventListener('click', () => {
+        if (!selected && !draft) return;
+        linkPicker.hidden = !linkPicker.hidden;
+        linkToggle.setAttribute('aria-expanded', String(!linkPicker.hidden));
+        if (!linkPicker.hidden) { renderLinkChoices(); linkSearch.focus(); }
+      });
+      root.querySelector('[data-notebook-link-close]')?.addEventListener('click', () => {
+        linkPicker.hidden = true;
+        linkToggle.setAttribute('aria-expanded','false');
+        body.focus();
+      });
+      root.querySelectorAll<HTMLButtonElement>('[data-markdown-tool]').forEach(button => {
+        button.addEventListener('click', () => {
+          useMarkdownTool(button.dataset.markdownTool as MarkdownTool);
+        });
+      });
+      body.addEventListener('keydown', event => {
+        if ((event.ctrlKey || event.metaKey) && !event.altKey) {
+          if (event.key.toLowerCase() === 'b' || event.key.toLowerCase() === 'i') {
+            event.preventDefault();
+            useMarkdownTool(event.key.toLowerCase() === 'b' ? 'bold' : 'italic');
+          }
+        }
+      });
+      focusToggle.addEventListener('click', () => {
+        const focused = !editor.classList.contains('book-notebook__editor--focus');
+        editor.classList.toggle('book-notebook__editor--focus',focused);
+        focusToggle.setAttribute('aria-pressed',String(focused));
+        if (focused) body.focus();
+      });
 
       root.querySelectorAll<HTMLButtonElement>('[data-notebook-create]').forEach((btn) => {
         btn.addEventListener('click', async () => {
