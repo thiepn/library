@@ -363,7 +363,7 @@ export function mountResearchWorkbench(
     knowledge?.onNotesChanged();
     workflow?.onNotesChanged();
     integration?.onNotesChanged();
-    views?.onCollectionChanged();
+    views?.onNotesChanged();
   }
   async function activate(id:string,force=false):Promise<void> {
     if(!force && id!==activeId && !guardSwitch()){
@@ -671,6 +671,22 @@ export function mountResearchWorkbench(
     active:()=>active,
     synthesis:()=>synthesis,
     dirty,
+    notes:()=>all,
+    draft:()=>({title:synthTitle.value,body:synthBody.value}),
+    setDraft:(title,body)=>{
+      synthTitle.value=title;synthBody.value=body;synthInput();
+    },
+    openNote:note=>host.openNote(note),
+    pinSource:id=>{
+      if(!active?.noteIds.includes(id))return;
+      pins.left=id;
+      if(pins.right===id)
+        pins.right=active.noteIds.find(other=>other!==id)??'';
+      renderSources();renderSide('left');renderSide('right');
+      refinements?.onNotesChanged();workflow?.onNotesChanged();
+      integration?.onNotesChanged();
+    },
+    bookTitle:workId=>host.bookTitle(workId),
   });
   void refresh();
   return {
