@@ -9,6 +9,7 @@ import { mountResearchN1L, type ResearchN1LController } from './note-research-n1
 import { mountKnowledgeWorkbench, type KnowledgeWorkbench } from './note-research-n1m-dom';
 import { extractNotebookTopics } from './note-workspace';
 import { mountResearchRefinements, type ResearchRefinements } from './note-research-n1k-dom';
+import { readNotebookContinuity, rememberResearchCollection, orderResearchCollections } from './note-continuity';
 import {
   createResearchCollection, deleteResearchCollection, RESEARCH_WORKFLOWS,
   describeResearchSource, exportResearchCollectionIndex, groupedResearchMarkdown,
@@ -26,6 +27,8 @@ export interface ResearchWorkbench {
   refresh(): Promise<void>;
   addNote(noteId: string): Promise<void>;
   addNotes(noteIds: readonly string[]): Promise<void>;
+  openCollection(id: string): Promise<void>;
+  activeCollectionId(): string;
   dispose(): void;
 }
 type Side = 'left'|'right';
@@ -147,7 +150,7 @@ export function mountResearchWorkbench(
   const setStatusBusy=(value:boolean)=>{busy=value;saveSynth.disabled=value||!synthesis||!dirty();};
 
   function renderSelector():void {
-    const items=loadResearchCollections();
+    const items=orderResearchCollections(loadResearchCollections());
     const last=activeId;
     select.replaceChildren(new Option('Choose a collection…',''));
     for(const c of items)select.add(new Option(c.name+' ('+c.noteIds.length+' notes)',c.id));
@@ -356,6 +359,7 @@ export function mountResearchWorkbench(
       select.value=activeId;return;
     }
     activeId=id;pins={left:'',right:''};adoptSynthesis(undefined);
+    if(id)rememberResearchCollection(id);
     try {
       if(id)sessionStorage.setItem(ACTIVE_RESEARCH_TAB_KEY,id);
       else sessionStorage.removeItem(ACTIVE_RESEARCH_TAB_KEY);
@@ -405,6 +409,7 @@ export function mountResearchWorkbench(
       if(!activeId){
         let recent='';
         try{recent=sessionStorage.getItem(ACTIVE_RESEARCH_TAB_KEY)??'';}catch{}
+        if(!recent)recent=readNotebookContinuity().lastCollectionId;
         if(recent && loadResearchCollections().some(c=>c.id===recent)){
           await activate(recent,true);
           return;
@@ -603,7 +608,10 @@ export function mountResearchWorkbench(
   });
   void refresh();
   return {
-    refresh,addNote,addNotes,dispose(){
+    refresh,addNote,addNotes,
+    openCollection:id=>activate(id),
+    activeCollectionId:()=>activeId,
+    dispose(){
       disposed=true;
       for(const off of events)off();
       unsubscribe();
