@@ -7,6 +7,7 @@ import { extractNotebookTopics } from './note-workspace';
 import { synthesisSectionTemplate } from './note-research-n1r-sections';
 import { requestResearchView } from './note-research-n1q-view';
 import { readResearchDraftCheckpoint } from './note-research-drafts';
+import { sourceReadingCaptureMarkdown, currentResearchWorkingPacket } from './note-research-n1u-workflows';
 import { loadResearchCollections, describeResearchSource,
   type ResearchCollection } from './note-research';
 import {
@@ -84,6 +85,8 @@ export function mountResearchN1P(
   const openReader=$<HTMLButtonElement>('[data-n1p-go-reader]');
   const openSynthesis=$<HTMLButtonElement>('[data-n1p-go-synthesis]');
   const focusWriting=$<HTMLButtonElement>('[data-n1p-focus-writing]');
+  const captureSource=$<HTMLButtonElement>('[data-n1u-capture-source]');
+  const workingPacket=$<HTMLButtonElement>('[data-n1u-working-packet]');
   const saveCopy=$<HTMLButtonElement>('[data-n1p-download-working-copy]');
   const copyWorking=$<HTMLButtonElement>('[data-n1p-copy-working-copy]');
   const openRecovery=$<HTMLButtonElement>('[data-n1p-recovery-jump]');
@@ -433,6 +436,8 @@ export function mountResearchN1P(
     openReader.disabled=!href;
     openSynthesis.disabled=!synthesis;
     focusWriting.disabled=!synthesis;
+    captureSource.disabled=!synthesis||!source||!collection?.noteIds.includes(source.id);
+    workingPacket.disabled=!synthesis||!collection;
     saveCopy.disabled=!synthesis;
     copyWorking.disabled=!synthesis;
     openRecovery.disabled=!synthesis;
@@ -574,6 +579,32 @@ export function mountResearchN1P(
     requestResearchView(root,'write','[data-research-synthesis-body]');
     writingArea.focus();
     writingArea.scrollIntoView({behavior:'smooth',block:'center'});
+  });
+  bind('[data-n1u-capture-source]','click',()=>{
+    const collection=host.active(),source=selectedSource();
+    if(!collection||!host.synthesis()||!source||!collection.noteIds.includes(source.id)){
+      status.textContent='Pin an available collected note and create a native synthesis first.';
+      return;
+    }
+    try{
+      const scaffold=sourceReadingCaptureMarkdown(source,host.bookTitle,host.sourceHref);
+      if(insertInDraft(scaffold))
+        status.textContent='Saved-note observations and original reader details inserted into the current synthesis draft. Review and save explicitly.';
+    }catch(error){
+      status.textContent=error instanceof Error?error.message:'Reading capture unavailable.';
+    }
+  });
+  bind('[data-n1u-working-packet]','click',()=>{
+    const collection=host.active(),synthesis=host.synthesis();
+    if(!collection||!synthesis)return;
+    try {
+      const packet=currentResearchWorkingPacket(collection,host.draft(),synthesis.revision,
+        host.isDirty(),host.notes(),host.bookTitle,host.sourceHref);
+      downloadMarkdown('research-working-'+safeFile(collection.name)+'.md',packet);
+      status.textContent='Current working packet requested. This is not a saved note or Library V2 backup.';
+    }catch(error){
+      status.textContent=error instanceof Error?error.message:'Working packet unavailable.';
+    }
   });
   bind('[data-n1p-recovery-jump]','click',()=>{
     const collection=host.active(),note=host.synthesis();
