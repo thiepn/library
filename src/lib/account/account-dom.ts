@@ -52,6 +52,19 @@ function hidden(selector: string, value: boolean): void {
   if (element) element.hidden = value;
 }
 
+const LOCAL_DISCONNECT_KEY = 'thiepn.library.disconnect-device.v1';
+function locallyDisconnected() {
+  try { return localStorage.getItem(LOCAL_DISCONNECT_KEY) === 'true'; }
+  catch { return false; }
+}
+function setLocallyDisconnected(disconnected: boolean) {
+  try {
+    if (disconnected) localStorage.setItem(LOCAL_DISCONNECT_KEY, 'true');
+    else localStorage.removeItem(LOCAL_DISCONNECT_KEY);
+    return true;
+  } catch { return false; }
+}
+
 function setBusy(value: boolean): void {
   for (const button of document.querySelectorAll<HTMLButtonElement>('[data-account-action]')) {
     button.disabled = value;
@@ -218,6 +231,16 @@ export function mountLibraryAccountPage(): () => void {
     if (disposed) return;
     setBusy(true);
     try {
+      if (locallyDisconnected()) {
+        invalidateLibrarySyncAuthority();
+        user = null;
+        hidden('[data-account-signed-in]', true);
+        hidden('[data-sync-panel]', true);
+        hidden('[data-account-signed-out]', false);
+        text('[data-account-summary]',
+          'Library sync is disconnected locally. Original books and annotations remain. Reconnect explicitly.');
+        return;
+      }
       // Resolve the shared Account SSO state before showing personalized data.
       // Redirects are deduplicated with the global Library Account runtime.
       if (hasThiepnAccountConfiguration()) {
@@ -323,6 +346,7 @@ export function mountLibraryAccountPage(): () => void {
   };
 
   document.querySelector('[data-sign-in]')?.addEventListener('click', () => {
+    setLocallyDisconnected(false);
     setBusy(true);
     void beginLibraryAccountSso(window.location.href).catch((error) => {
       setBusy(false);
@@ -372,6 +396,10 @@ export function mountLibraryAccountPage(): () => void {
   document.querySelector('[data-b26-disconnect-device]')?.addEventListener('click', () => {
     if (!user) return;
     const disconnected = user.id;
+    if (!setLocallyDisconnected(true)) {
+      text('[data-sync-status]', 'Could not save the local disconnect preference. No sign-out performed.');
+      return;
+    }
     pauseLibrarySync(disconnected);
     setLibraryAutomaticSync(disconnected, false);
     signOutLibraryAppSession();
@@ -384,7 +412,12 @@ export function mountLibraryAccountPage(): () => void {
     void refresh();
   });
   document.querySelector('[data-b26-reconnect]')?.addEventListener('click', () => {
+    setLocallyDisconnected(false);
     void refresh();
+  });
+  document.querySelector('[data-b26-reconnect-signedout]')?.addEventListener('click', () => {
+    setLocallyDisconnected(false);
+    void beginLibraryAccountSso(window.location.href);
   });
   document.querySelector('[data-sync-enable]')?.addEventListener('click', () => void act(enableLibraryAccountSync));
   document.querySelector('[data-sync-now]')?.addEventListener('click', () => void act(reconcileLibraryAccountSync));
