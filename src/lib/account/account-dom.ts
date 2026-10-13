@@ -16,6 +16,7 @@ import {
   pauseLibrarySync,
   readLibrarySyncMeta,
   reconcileLibraryAccountSync,
+  inspectNativeLibraryHeads,
   type LibrarySyncResult,
 } from './sync';
 import { isLibraryAutomaticSyncEnabled, setLibraryAutomaticSync } from './auto-sync';
@@ -378,6 +379,23 @@ export function mountLibraryAccountPage(): () => void {
     changeLibraryCoreGrant(user.id, false);
     pauseLibrarySync(user.id);
     void render(user);
+  });
+  document.querySelector('[data-recovery-compare-heads]')?.addEventListener('click', () => {
+    if (!user) return;
+    const selectedOwner = user.id;
+    setBusy(true);
+    text('[data-recovery-heads]', 'Inspecting original Library local and cloud heads without changing either copy…');
+    void inspectNativeLibraryHeads(user).then((result) => {
+      if (disposed || user?.id !== selectedOwner) return;
+      text('[data-recovery-heads]', result.kind.replaceAll('-', ' ') + ' · ' +
+        result.guidance + ' Last baseline revision ' +
+        (result.baselineRevision ?? 'unknown') + '; latest observed cloud revision ' +
+        (result.cloudRevision ?? 'missing') + '. External custody NOT TESTED.');
+      record(selectedOwner, 'inspect', result.kind, result.baselineRevision, result.cloudRevision);
+    }).catch(() => {
+      if (!disposed && user?.id === selectedOwner)
+        text('[data-recovery-heads]', 'The native owner/device or snapshots changed during inspection. Nothing was restored or marked synced. Inspect again before choosing authority.');
+    }).finally(() => setBusy(false));
   });
   document.querySelector('[data-recovery-prepare-cloud]')?.addEventListener('click', () => {
     if (!user) return;

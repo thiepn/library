@@ -17,6 +17,7 @@ import {
 import { validateNativeCloudRestore, type NativeCloudRestorePreview } from './recovery-guard';
 import { assessLibraryRestoreReadback } from './restore-witness';
 import { assessNativeReconciliation } from './native-reconciliation';
+import { describeNativeLibraryHeads } from './conflict-preview';
 
 export const LIBRARY_ACCOUNT_SYNC_KEY = 'thiepn.library.account-sync.v1';
 const DEVICE_ID_KEY = 'thiepn.library.device-id.v1';
@@ -325,6 +326,42 @@ async function pushLocal(
   };
   emitSync(result);
   return result;
+}
+
+/**
+ * Read-only original Library conflict preview: no Core records, private book
+ * metadata or backup JSON cross this boundary. Never mutates native CAS.
+ */
+export async function inspectNativeLibraryHeads(user: LibraryAccountUser) {
+  const meta = readLibrarySyncMeta();
+  if (!meta || meta.userId !== user.id || !meta.enabled ||
+    !(await isLibraryAccountConnectionActive()) ||
+    (await getVerifiedLibraryAccountUser())?.id !== user.id)
+    throw new Error('B20_LIBRARY_NATIVE_OWNER_REQUIRED');
+  const [local, cloud] = await Promise.all([createLibraryBackup(), readCloudState()]);
+  const [localHash, cloudHash] = await Promise.all([
+    hashBackup(local), cloud ? hashBackup(cloud.state) : Promise.resolve(null),
+  ]);
+  const owner = await getVerifiedLibraryAccountUser();
+  const nextMeta = readLibrarySyncMeta();
+  const lastLocalHash = await hashBackup(await createLibraryBackup());
+  if (owner?.id !== user.id || nextMeta?.userId !== user.id ||
+    nextMeta.deviceId !== meta.deviceId || !nextMeta.enabled ||
+    nextMeta.revision !== meta.revision || nextMeta.hash !== meta.hash ||
+    lastLocalHash !== localHash)
+    throw new Error('B20_LIBRARY_HEADS_CHANGED_DURING_INSPECTION');
+  const report = describeNativeLibraryHeads({
+    baselineRevision: meta.revision ?? null,
+    baselineHash: meta.hash ?? null,
+    localHash,
+    cloudRevision: cloud?.revision ?? null,
+    cloudHash,
+  });
+  return {
+    ...report, cloudRevision: cloud?.revision ?? null,
+    baselineRevision: meta.revision ?? null,
+    externalCustody: 'NOT_TESTED' as const,
+  };
 }
 
 export async function enableLibraryAccountSync(user: LibraryAccountUser): Promise<LibrarySyncResult> {
