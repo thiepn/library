@@ -349,6 +349,9 @@ export function mountResearchN1L(root:HTMLElement,host:ResearchN1LHost):Research
       else {
         actions.unshift(btn('Cite in section',()=>insertCitationInSection(note)));
         actions.push(btn('Review later',()=>queueForReview(note)));
+        if(context.inCollectionIds.some(id=>id!==note.id)){
+          actions.push(btn('Compare to cited note',()=>compareWithCited(note)));
+        }
       }
       const href=host.sourceHref(note);
       if(href){
@@ -477,6 +480,23 @@ export function mountResearchN1L(root:HTMLElement,host:ResearchN1LHost):Research
     }catch(error){
       evidenceStatus.textContent=error instanceof Error?error.message:'Unable to collect this note.';
     }
+  }
+  function compareWithCited(note:BookNoteDocumentV1):void {
+    const active=host.active(),context=selectedContext();
+    if(!active||!context||!active.noteIds.includes(note.id)){
+      evidenceStatus.textContent='Choose a locally collected source before comparing.';
+      return;
+    }
+    const cited=context.inCollectionIds.find(id=>id!==note.id
+      &&host.notes().some(source=>source.id===id));
+    if(!cited){
+      evidenceStatus.textContent='This section needs another available cited note before a pair comparison.';
+      return;
+    }
+    host.setPins(cited,note.id);
+    // Reuse the N1T guarded comparison-to-synthesis writer and native save path.
+    root.querySelector<HTMLButtonElement>('[data-n1t-compare-pins]')?.click();
+    evidenceStatus.textContent='Cited and suggested sources paired in the existing comparison writer. Check the draft and save explicitly.';
   }
   function pinCandidate(note:BookNoteDocumentV1):void {
     if(!host.active()?.noteIds.includes(note.id)){
