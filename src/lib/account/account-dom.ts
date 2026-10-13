@@ -9,6 +9,7 @@ import {
 import {
   chooseCloudForLibrarySync,
   prepareLibraryCloudRestore,
+  prepareLibraryDevicePublish,
   cancelPreparedLibraryCloudRestore,
   chooseThisDeviceForLibrarySync,
   enableLibraryAccountSync,
@@ -237,7 +238,7 @@ export function mountLibraryAccountPage(): () => void {
     if (!user) return;
     const startedAs = user.id;
     const original = user;
-    if (operation !== chooseCloudForLibrarySync) cancelPreparedLibraryCloudRestore();
+    if (operation !== chooseCloudForLibrarySync && operation !== chooseThisDeviceForLibrarySync) cancelPreparedLibraryCloudRestore();
     const baselineMeta = readLibrarySyncMeta();
     const beforeRevision = baselineMeta?.userId === startedAs
       ? baselineMeta.revision ?? null : null;
@@ -395,6 +396,37 @@ export function mountLibraryAccountPage(): () => void {
     }).catch(() => {
       if (!disposed && user?.id === selectedOwner)
         text('[data-recovery-heads]', 'The native owner/device or snapshots changed during inspection. Nothing was restored or marked synced. Inspect again before choosing authority.');
+    }).finally(() => setBusy(false));
+  });
+  document.querySelector('[data-recovery-prepare-device]')?.addEventListener('click', () => {
+    if (!user) return;
+    const selectedOwner = user.id;
+    setBusy(true);
+    text('[data-recovery-device-preparation]', 'Reading original Library cloud and local heads for a remote safety copy…');
+    void prepareLibraryDevicePublish(user).then((prepared) => {
+      if (disposed || user?.id !== selectedOwner) {
+        cancelPreparedLibraryCloudRestore();
+        return;
+      }
+      const url = URL.createObjectURL(new Blob([prepared.backupJson], { type: 'application/json' }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'thiepn-library-before-device-publish-cloud-copy.json';
+      document.body.append(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 0);
+      text('[data-recovery-device-preparation]',
+        'Original cloud safety backup download requested. Verify it was saved before Use this device. ' +
+        'One-use preparation expires in two minutes; cloud revision ' +
+        prepared.cloudRevision + '. No cloud record changed.');
+      record(selectedOwner, 'native-backup', 'remote safety download requested',
+        readLibrarySyncMeta()?.revision ?? null, prepared.cloudRevision);
+    }).catch((error) => {
+      cancelPreparedLibraryCloudRestore();
+      if (!disposed && user?.id === selectedOwner)
+        text('[data-recovery-device-preparation]', error instanceof Error
+          ? error.message : 'Original cloud safety backup could not be prepared.');
     }).finally(() => setBusy(false));
   });
   document.querySelector('[data-recovery-prepare-cloud]')?.addEventListener('click', () => {
