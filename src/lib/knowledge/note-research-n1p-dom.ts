@@ -87,6 +87,7 @@ export function mountResearchN1P(
   const openSynthesis=$<HTMLButtonElement>('[data-n1p-go-synthesis]');
   const focusWriting=$<HTMLButtonElement>('[data-n1p-focus-writing]');
   const captureSource=$<HTMLButtonElement>('[data-n1u-capture-source]');
+  const citeSection=$<HTMLButtonElement>('[data-n1u-cite-section]');
   const workingPacket=$<HTMLButtonElement>('[data-n1u-working-packet]');
   const saveCopy=$<HTMLButtonElement>('[data-n1p-download-working-copy]');
   const copyWorking=$<HTMLButtonElement>('[data-n1p-copy-working-copy]');
@@ -467,6 +468,7 @@ export function mountResearchN1P(
     openSynthesis.disabled=!synthesis;
     focusWriting.disabled=!synthesis;
     captureSource.disabled=!synthesis||!source||!collection?.noteIds.includes(source.id);
+    citeSection.disabled=captureSource.disabled;
     workingPacket.disabled=!synthesis||!collection;
     saveCopy.disabled=!synthesis;
     copyWorking.disabled=!synthesis;
@@ -609,6 +611,20 @@ export function mountResearchN1P(
     requestResearchView(root,'write','[data-research-synthesis-body]');
     writingArea.focus();
     writingArea.scrollIntoView({behavior:'smooth',block:'center'});
+  });
+  bind('[data-n1u-cite-section]','click',()=>{
+    const active=host.active(),source=selectedSource();
+    if(!active||!host.synthesis()||!source||!active.noteIds.includes(source.id)){
+      status.textContent='Create a synthesis and pin a locally saved source first.';
+      return;
+    }
+    // This event is owned by the existing N1L/N1T section writer. It refuses
+    // insertion without a selected destination heading and respects the note limit.
+    requestResearchView(root,'write','[data-n1r-section-picker]');
+    root.dispatchEvent(new CustomEvent('library-research-cite-in-section',{
+      detail:{noteId:source.id,collectionId:active.id},
+    }));
+    status.textContent='Source sent to the existing section citation writer. Choose a heading if needed, then save explicitly.';
   });
   bind('[data-n1u-capture-source]','click',()=>{
     const collection=host.active(),source=selectedSource();
