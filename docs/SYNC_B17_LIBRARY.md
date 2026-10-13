@@ -1,0 +1,7 @@
+# Library B17 — Native recovery preflight and CAS head stability
+
+The ORIGINAL Library `chooseCloudForLibrarySync` now requires a recent, owner/device-bound native backup preflight. The Account UI exposes **Prepare cloud restore & download local backup** in the original conflict chooser, offering the entire portable Library v1 backup as a local file before the user chooses Use cloud. A download request is not a durable backup receipt; the owner must verify it was saved. No cloud or Core storage of the backup is introduced.
+
+Preflight expires after 120 seconds and records original local SHA-256, native device identifier, live cloud revision and canonical hash. Choosing cloud consumes the preflight once; any owner change, changed local edits, switched device, expired window or changed cloud head fails closed. The original native restore rechecks verified Account owner, device sync permission and both heads just before applying an existing `restoreLibraryBackupJson`. Automatic first-device pulls also recheck live local/cloud heads to prevent a stale asynchronous pull from clobbering intervening edits.
+
+No second conflict resolver, snapshot writer or backup/import engine. A remote write immediately after the final read cannot be made atomic with local browser imports; genuine cross-device concurrency remains a release gate. All actual Account two-device and physical restore acceptance and independent external ciphertext custody remain NOT_TESTED; production NO_GO.

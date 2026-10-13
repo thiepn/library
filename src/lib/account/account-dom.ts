@@ -8,6 +8,8 @@ import {
 } from './supabase';
 import {
   chooseCloudForLibrarySync,
+  prepareLibraryCloudRestore,
+  cancelPreparedLibraryCloudRestore,
   chooseThisDeviceForLibrarySync,
   enableLibraryAccountSync,
   isLibrarySyncEnabledForUser,
@@ -211,7 +213,9 @@ export function mountLibraryAccountPage(): () => void {
         const initial = await initializeLibraryAccountSso();
         if (disposed || initial.status === 'redirecting') return;
       }
+      const previousOwner = user?.id ?? null;
       user = await render();
+      if (previousOwner !== (user?.id ?? null)) cancelPreparedLibraryCloudRestore();
       showIncidents(user?.id ?? null);
     } catch (error) {
       // Identity verification can be unavailable behind tracking blockers or
@@ -232,6 +236,7 @@ export function mountLibraryAccountPage(): () => void {
     if (!user) return;
     const startedAs = user.id;
     const original = user;
+    if (operation !== chooseCloudForLibrarySync) cancelPreparedLibraryCloudRestore();
     const baselineMeta = readLibrarySyncMeta();
     const beforeRevision = baselineMeta?.userId === startedAs
       ? baselineMeta.revision ?? null : null;
@@ -374,6 +379,33 @@ export function mountLibraryAccountPage(): () => void {
     pauseLibrarySync(user.id);
     void render(user);
   });
+  document.querySelector('[data-recovery-prepare-cloud]')?.addEventListener('click', () => {
+    if (!user) return;
+    const ownerId = user.id;
+    setBusy(true);
+    text('[data-recovery-preparation]', 'Reading the original Library snapshot and preparing a local safety backup…');
+    void prepareLibraryCloudRestore(user).then((prepared) => {
+      if (disposed || user?.id !== ownerId) {
+        cancelPreparedLibraryCloudRestore();
+        return;
+      }
+      // The native Library portability JSON is offered directly to its owner;
+      // do not retain it in Core or claim the browser saved the file.
+      const url = URL.createObjectURL(new Blob([prepared.backupJson], { type: 'application/json' }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'thiepn-library-before-cloud-restore.json';
+      document.body.append(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 0);
+      text('[data-recovery-preparation]', 'Safety backup download requested. Confirm it was saved before selecting Use cloud. Preparation expires after two minutes; current cloud revision ' + prepared.cloudRevision + '.');
+      record(ownerId, 'native-backup', 'safety download requested', null, prepared.cloudRevision);
+    }).catch((error) => {
+      cancelPreparedLibraryCloudRestore();
+      text('[data-recovery-preparation]', error instanceof Error ? error.message : 'Could not prepare native recovery.');
+    }).finally(() => { setBusy(false); });
+  });
   document.querySelector('[data-use-device]')?.addEventListener('click', () => void act(chooseThisDeviceForLibrarySync, true));
   document.querySelector('[data-use-cloud]')?.addEventListener('click', () => void act(chooseCloudForLibrarySync, true));
   document.querySelector('[data-ecosystem-retry]')?.addEventListener('click', () => void act(reconcileLibraryAccountSync));
@@ -435,6 +467,7 @@ export function mountLibraryAccountPage(): () => void {
     window.removeEventListener('thiepn:library-runtime', onRuntime);
     window.removeEventListener('thiepn:library-personal-files', onPersonalFiles);
     unsubscribeAuth();
+    cancelPreparedLibraryCloudRestore();
     incidents.clear();
   };
 }

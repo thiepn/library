@@ -6,6 +6,7 @@ import {
 import {
   getThiepnAccountClient,
   isLibraryAccountConnectionActive,
+  getVerifiedLibraryAccountUser,
   type LibraryAccountUser,
 } from './supabase';
 import {
@@ -13,10 +14,17 @@ import {
   decideLibrarySync,
   type LibrarySyncBaseline,
 } from './sync-policy';
+import { validateNativeCloudRestore, type NativeCloudRestorePreview } from './recovery-guard';
 
 export const LIBRARY_ACCOUNT_SYNC_KEY = 'thiepn.library.account-sync.v1';
 const DEVICE_ID_KEY = 'thiepn.library.device-id.v1';
 const APP_VERSION = '1.0.0-account-sync';
+let pendingCloudRestore: NativeCloudRestorePreview | null = null;
+
+/** Clear the preflight whenever the native owner, permission or direction changes. */
+export function cancelPreparedLibraryCloudRestore(): void {
+  pendingCloudRestore = null;
+}
 
 export type LibrarySyncStatus =
   | 'disabled'
@@ -206,7 +214,24 @@ function describeError(error: unknown): string {
   return 'Library cloud sync failed.';
 }
 
-async function applyCloud(userId: string, cloud: CloudState): Promise<LibrarySyncResult> {
+async function applyCloud(
+  userId: string,
+  cloud: CloudState,
+  expectedLocalHash: string,
+): Promise<LibrarySyncResult> {
+  // A local editor or second device can change during the native cloud read.
+  // Re-read BOTH heads before destructive import; never import a stale result.
+  const meta = readLibrarySyncMeta();
+  if (meta?.userId !== userId || !meta.enabled)
+    throw new Error('LIBRARY_SYNC_CONFLICT: native Account/device changed');
+  const [freshCloud, freshLocal, verifiedUser] = await Promise.all([
+    readCloudState(), createLibraryBackup(), getVerifiedLibraryAccountUser(),
+  ]);
+  if (verifiedUser?.id !== userId ||
+    (await hashBackup(freshLocal)) !== expectedLocalHash ||
+    !freshCloud || freshCloud.revision !== cloud.revision ||
+    (await hashBackup(freshCloud.state)) !== (await hashBackup(cloud.state)))
+    throw new Error('LIBRARY_SYNC_CONFLICT: local or cloud head changed before restore');
   await restoreLibraryBackupJson(JSON.stringify(cloud.state));
   const hash = await hashBackup(cloud.state);
   setBaseline(userId, true, cloud, hash);
@@ -294,7 +319,7 @@ export async function reconcileLibraryAccountSync(user: LibraryAccountUser): Pro
     });
 
     if (decision === 'push') return await pushLocal(user.id, cloud, local);
-    if (decision === 'pull' && cloud) return await applyCloud(user.id, cloud);
+    if (decision === 'pull' && cloud) return await applyCloud(user.id, cloud, localHash);
 
     if (decision === 'noop' && cloud && cloudHash) {
       setBaseline(user.id, true, cloud, cloudHash);
@@ -343,17 +368,60 @@ export async function chooseThisDeviceForLibrarySync(user: LibraryAccountUser): 
   }
 }
 
+/**
+ * Native owner action: prepare a real original-format portable backup before
+ * replacing local categories from cloud. This is a download OFFER, not proof
+ * that the owner saved the file. No Core writer or alternative import exists.
+ */
+export async function prepareLibraryCloudRestore(user: LibraryAccountUser) {
+  cancelPreparedLibraryCloudRestore();
+  const meta = readLibrarySyncMeta();
+  if (meta?.userId !== user.id || !meta.enabled ||
+    !(await isLibraryAccountConnectionActive()) ||
+    (await getVerifiedLibraryAccountUser())?.id !== user.id)
+    throw new Error('Library Account permission is required before preparing recovery.');
+  const [local, cloud] = await Promise.all([createLibraryBackup(), readCloudState()]);
+  if (!cloud) throw new Error('No native Library cloud copy exists.');
+  const [localHash, cloudHash] = await Promise.all([
+    hashBackup(local), hashBackup(cloud.state),
+  ]);
+  pendingCloudRestore = {
+    ownerId: user.id, deviceId: meta.deviceId, localHash,
+    cloudHash, cloudRevision: cloud.revision,
+    expiresAt: Date.now() + 120_000,
+  };
+  return {
+    backupJson: JSON.stringify(local),
+    cloudRevision: cloud.revision,
+    expiresAt: pendingCloudRestore.expiresAt,
+  };
+}
+
 export async function chooseCloudForLibrarySync(user: LibraryAccountUser): Promise<LibrarySyncResult> {
+  const preview = pendingCloudRestore;
+  cancelPreparedLibraryCloudRestore();
   try {
-    const cloud = await readCloudState();
-    if (!cloud) {
-      const result: LibrarySyncResult = { status: 'error', message: 'No Library cloud copy exists.' };
-      emitSync(result);
-      return result;
-    }
-    return await applyCloud(user.id, cloud);
+    const [local, cloud] = await Promise.all([createLibraryBackup(), readCloudState()]);
+    const meta = readLibrarySyncMeta();
+    if (!cloud || !meta) throw new Error('LIBRARY_SYNC_CONFLICT: missing native recovery baseline');
+    const [localHash, cloudHash] = await Promise.all([
+      hashBackup(local), hashBackup(cloud.state),
+    ]);
+    const outcome = validateNativeCloudRestore(preview, {
+      ownerId: user.id, deviceId: meta.deviceId, localHash, cloudHash,
+      cloudRevision: cloud.revision, now: Date.now(),
+      nativeEnabled: meta.userId === user.id && meta.enabled,
+    });
+    if (outcome !== 'ready')
+      throw new Error('LIBRARY_SYNC_CONFLICT: recovery preparation ' + outcome +
+        '. Preserve a backup and prepare again.');
+    return await applyCloud(user.id, cloud, localHash);
   } catch (error) {
-    const result: LibrarySyncResult = { status: 'error', message: describeError(error) };
+    const message = describeError(error);
+    const result: LibrarySyncResult = {
+      status: /LIBRARY_SYNC_CONFLICT/.test(message) ? 'conflict' : 'error',
+      message,
+    };
     emitSync(result);
     return result;
   }
