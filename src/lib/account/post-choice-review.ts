@@ -1,4 +1,3 @@
-import type { NativeReconciliationOutcome } from './native-reconciliation';
 export type LibraryChoiceResult = 'pushed' | 'pulled' | 'synced' | 'conflict' | 'error' | 'offline' | 'disabled';
 export function assessLibraryPostChoice(input: {
   originalResult: LibraryChoiceResult;
