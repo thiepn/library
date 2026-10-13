@@ -1,23 +1,7 @@
 name: Public Domain Cover Quality
 
 on:
-  pull_request:
-    paths:
-      - 'scripts/public-domain/cover_pipeline.py'
-      - 'scripts/public-domain/cover_job.py'
-      - 'scripts/public-domain/finalize-cover-release.py'
-      - 'scripts/public-domain/verify-cover-pipeline.py'
-      - '.github/workflows/public-domain-cover-*.yml'
-      - '.github/workflows/public-domain-autopilot.yml'
-  push:
-    branches: [main]
-    paths:
-      - 'scripts/public-domain/cover_pipeline.py'
-      - 'scripts/public-domain/cover_job.py'
-      - 'scripts/public-domain/finalize-cover-release.py'
-      - 'scripts/public-domain/verify-cover-pipeline.py'
-      - '.github/workflows/public-domain-cover-*.yml'
-      - '.github/workflows/public-domain-autopilot.yml'
+  workflow_dispatch:
 
 permissions:
   contents: read

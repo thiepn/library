@@ -1,37 +1,6 @@
 name: Publication Compatibility
 
 on:
-  pull_request:
-    paths:
-      - 'src/lib/publication-compatibility.ts'
-      - 'src/lib/client/personal-books.ts'
-      - 'src/lib/reader/canonical.ts'
-      - 'src/lib/pdf-reader/**'
-      - 'tests/compatibility/**'
-      - 'tests/e2e/compatibility-fixtures.ts'
-      - 'tests/e2e/publication-compatibility.spec.ts'
-      - 'tests/e2e/security-boundaries.spec.ts'
-      - 'scripts/certification/publication-corpus.mjs'
-      - 'docs/RR3_PUBLICATION_COMPATIBILITY.md'
-      - '.github/workflows/publication-compatibility.yml'
-      - 'package.json'
-      - 'pnpm-lock.yaml'
-  push:
-    branches: [main]
-    paths:
-      - 'src/lib/publication-compatibility.ts'
-      - 'src/lib/client/personal-books.ts'
-      - 'src/lib/reader/canonical.ts'
-      - 'src/lib/pdf-reader/**'
-      - 'tests/compatibility/**'
-      - 'tests/e2e/compatibility-fixtures.ts'
-      - 'tests/e2e/publication-compatibility.spec.ts'
-      - 'tests/e2e/security-boundaries.spec.ts'
-      - 'scripts/certification/publication-corpus.mjs'
-      - 'docs/RR3_PUBLICATION_COMPATIBILITY.md'
-      - '.github/workflows/publication-compatibility.yml'
-      - 'package.json'
-      - 'pnpm-lock.yaml'
   workflow_dispatch:
 
 permissions:

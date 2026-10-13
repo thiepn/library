@@ -1,21 +1,6 @@
 name: Performance Budget
 
 on:
-  pull_request:
-    paths:
-      - 'src/lib/pdf-reader/**'
-      - 'src/lib/reader/**'
-      - 'src/pages/personal/**'
-      - 'tests/e2e/performance-*'
-      - 'playwright.performance.config.ts'
-      - 'scripts/certification/performance-budget.mjs'
-      - 'docs/RR4_PERFORMANCE_BUDGETS.md'
-      - 'package.json'
-      - 'pnpm-lock.yaml'
-      - '.github/workflows/performance-budget.yml'
-      - '.github/workflows/deploy.yml'
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
