@@ -23,6 +23,7 @@ import {
 import { isLibraryAutomaticSyncEnabled, setLibraryAutomaticSync } from './auto-sync';
 import { getLibraryCoreGrant, changeLibraryCoreGrant, requestLibrarySyncFromCore } from './core-coordination';
 import { inspectLibraryRecovery } from './recovery-inspection';
+import { classifyPostChoiceRecovery } from './post-choice-recovery';
 import {
   createLibraryRecoveryIncidentHistory,
   describeNativeLibraryRecovery,
@@ -265,10 +266,31 @@ export function mountLibraryAccountPage(): () => void {
       const cas = describeNativeLibraryRecovery(result, beforeRevision);
       text('[data-recovery-cas]', cas.original + ' · ' + cas.remote +
         '. ' + cas.action + ' External custody NOT TESTED.');
-      if (conflictResolution && ['pushed', 'pulled', 'synced'].includes(result.status)) {
-        window.dispatchEvent(new CustomEvent('thiepn:library-conflict-resolved', {
-          detail: { ownerId: startedAs },
-        }));
+      if (conflictResolution) {
+        let heads: Awaited<ReturnType<typeof inspectNativeLibraryHeads>> | null = null;
+        if (['pushed', 'pulled', 'synced'].includes(result.status)) {
+          heads = await inspectNativeLibraryHeads(current).catch(() => null);
+        }
+        if (disposed || user?.id !== startedAs) return;
+        const checked = classifyPostChoiceRecovery({
+          initialResult: result.status === 'pushed' || result.status === 'pulled' ||
+            result.status === 'synced' ? result.status : result.status === 'conflict'
+            ? 'conflict' : 'error',
+          heads: heads?.kind ?? null,
+        });
+        text('[data-recovery-after-choice]', checked.guidance +
+          ' External custody NOT TESTED.');
+        if (checked.status === 'observed-matched') {
+          window.dispatchEvent(new CustomEvent('thiepn:library-conflict-resolved', {
+            detail: { ownerId: startedAs },
+          }));
+        } else if (result.status === 'pushed' || result.status === 'pulled' ||
+          result.status === 'synced') {
+          // A concurrent second-device write can invalidate a previously
+          // successful original CAS after its final readback.
+          hidden('[data-sync-conflict]', false);
+          text('[data-sync-status]', 'The original Library state changed after the choice. No new sync confirmation was issued. Inspect both copies again.');
+        }
       }
     } catch {
       const current = await getVerifiedLibraryAccountUser().catch(() => null);
@@ -396,6 +418,25 @@ export function mountLibraryAccountPage(): () => void {
     }).catch(() => {
       if (!disposed && user?.id === selectedOwner)
         text('[data-recovery-heads]', 'The native owner/device or snapshots changed during inspection. Nothing was restored or marked synced. Inspect again before choosing authority.');
+    }).finally(() => setBusy(false));
+  });
+  document.querySelector('[data-recovery-post-choice]')?.addEventListener('click', () => {
+    if (!user) return;
+    const selected = user.id;
+    setBusy(true);
+    text('[data-recovery-after-choice]', 'Checking the original local and Account cloud revisions again…');
+    void inspectNativeLibraryHeads(user).then((heads) => {
+      if (disposed || user?.id !== selected) return;
+      const report = classifyPostChoiceRecovery({
+        initialResult: 'synced', heads: heads.kind,
+      });
+      text('[data-recovery-after-choice]', report.guidance +
+        ' External custody NOT TESTED.');
+      if (report.status !== 'observed-matched') hidden('[data-sync-conflict]', false);
+    }).catch(() => {
+      if (disposed || user?.id !== selected) return;
+      hidden('[data-sync-conflict]', false);
+      text('[data-recovery-after-choice]', 'Could not confirm matching original native heads. Keep the local and cloud backup copies before retrying.');
     }).finally(() => setBusy(false));
   });
   document.querySelector('[data-recovery-prepare-device]')?.addEventListener('click', () => {
