@@ -247,8 +247,24 @@ export function mountLibraryAccountPage(): () => void {
         const initial = await initializeLibraryAccountSso();
         if (disposed || initial.status === 'redirecting') return;
       }
+      if (locallyDisconnected()) {
+        invalidateLibrarySyncAuthority();
+        user = null;
+        hidden('[data-account-signed-in]', true);
+        hidden('[data-sync-panel]', true);
+        hidden('[data-account-signed-out]', false);
+        return;
+      }
       const previousOwner = user?.id ?? null;
       user = await render();
+      if (locallyDisconnected()) {
+        invalidateLibrarySyncAuthority();
+        user = null;
+        hidden('[data-account-signed-in]', true);
+        hidden('[data-sync-panel]', true);
+        hidden('[data-account-signed-out]', false);
+        return;
+      }
       if (previousOwner !== (user?.id ?? null)) {
         invalidateLibrarySyncAuthority();
         pendingFileDirection = null;
@@ -660,6 +676,16 @@ export function mountLibraryAccountPage(): () => void {
   window.addEventListener('thiepn:library-sync', onSync);
   window.addEventListener('thiepn:library-personal-files', onPersonalFiles);
 
+  const onLocalDisconnectStorage = (event: StorageEvent) => {
+    if (event.key !== LOCAL_DISCONNECT_KEY ||
+        (event.storageArea && event.storageArea !== window.localStorage)) return;
+    // A second same-origin tab changed the original Library device consent.
+    // Invalidate every prepared marker before updating the owner's UI.
+    invalidateLibrarySyncAuthority();
+    pendingFileDirection = null;
+    void refresh();
+  };
+  window.addEventListener('storage', onLocalDisconnectStorage);
   const unsubscribeAuth = subscribeLibraryAccountAuth(() => { void refresh(); });
   void refresh();
 
@@ -668,6 +694,7 @@ export function mountLibraryAccountPage(): () => void {
     window.removeEventListener('thiepn:library-sync', onSync);
     window.removeEventListener('thiepn:library-runtime', onRuntime);
     window.removeEventListener('thiepn:library-personal-files', onPersonalFiles);
+    window.removeEventListener('storage', onLocalDisconnectStorage);
     unsubscribeAuth();
     cancelPreparedLibraryCloudRestore();
     incidents.clear();
