@@ -340,6 +340,16 @@ export function mountResearchN1O(
   bind('[data-n1u-reset-connections]','click',()=>{
     relatedSeedId='';renderHub();hubQuery.focus();
   });
+  const openConnections=(event:Event)=>{
+    const id=(event as CustomEvent<{noteId:string}>).detail?.noteId;
+    if(!id||!host.notes().some(note=>note.id===id))return;
+    relatedSeedId=id;
+    hubKind.value='notes';
+    hubQuery.value='';
+    renderHub();
+  };
+  root.addEventListener('library-research-discover-related',openConnections);
+  disposers.push(()=>root.removeEventListener('library-research-discover-related',openConnections));
   bind('[data-n1o-quick-type]','change',renderHub);
   bind('[data-n1o-evidence-source]','change',renderExcerptOptions);
   bind('[data-n1o-evidence-excerpt]','change',renderSourceDetails);
