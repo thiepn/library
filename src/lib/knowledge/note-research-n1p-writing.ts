@@ -3,6 +3,7 @@ import { noteReferenceMarkdown } from './note-links';
 import { describeResearchSource } from './note-research';
 import { extractNotebookTopics } from './note-workspace';
 import { noteEvidenceExcerpts } from './note-evidence-workflows';
+import { researchComparisonConnections } from './note-research-n1u-workflows';
 
 export interface ComparisonSource {
   note:BookNoteDocumentV1;
@@ -38,7 +39,9 @@ export function multiSourceComparisonMarkdown(sources:readonly ComparisonSource[
         rows.push('     - '+observation.replace(/[\r\n]/g,' ').slice(0,240));
     }
   }
-  rows.push('','### Agreements supported by the notes','','',
+  rows.push('',
+    researchComparisonConnections(sources.map(source=>source.note)),'',
+    '### Agreements supported by the notes','','',
     '### Differences in arguments or evidence','','',
     '### Source limitations and alternative interpretations','','',
     '### Working conclusion in my own words','','',
