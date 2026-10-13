@@ -2,6 +2,7 @@ import { listBookNotes } from './note-store';
 import { requestResearchView } from './note-research-n1q-view';
 import { completeResearchHandoff } from './note-research-n1o-handoff';
 import { findNotebookNotes, noteReferenceMarkdown } from './note-links';
+import { relatedResearchNotes } from './note-research-n1u-workflows';
 import { notebookTitle, type BookNoteDocumentV1 } from './note-model';
 import { loadResearchCollections, type ResearchCollection } from './note-research';
 import { readNotebookContinuity, orderResearchCollections } from './note-continuity';
@@ -23,6 +24,7 @@ export interface ResearchN1OHost {
   openNote(note:BookNoteDocumentV1):Promise<void>;
   openCollection(id:string):Promise<void>;
   collectNote(id:string):Promise<void>;
+  pinSource(id:string):void;
   notify(message:string):void;
 }
 export interface ResearchN1OController {
@@ -68,6 +70,7 @@ export function mountResearchN1O(
   const hubKind=$<HTMLSelectElement>('[data-n1o-quick-type]');
   const hubCount=$<HTMLElement>('[data-n1o-hub-count]');
   const hubResults=$<HTMLElement>('[data-n1o-quick-results]');
+  const resetConnections=$<HTMLButtonElement>('[data-n1u-reset-connections]');
   const evidenceSource=$<HTMLSelectElement>('[data-n1o-evidence-source]');
   const evidenceExcerpt=$<HTMLSelectElement>('[data-n1o-evidence-excerpt]');
   const evidenceMeta=$<HTMLElement>('[data-n1o-evidence-source-meta]');
@@ -87,6 +90,7 @@ export function mountResearchN1O(
   let refreshTimer:ReturnType<typeof setTimeout>|undefined;
   let busyExport=false;
   let busyHandoff=false;
+  let relatedSeedId='';
   const bind=(selector:string,event:string,callback:EventListener)=>{
     const control=$(selector);control.addEventListener(event,callback);
     disposers.push(()=>control.removeEventListener(event,callback));
@@ -109,6 +113,9 @@ export function mountResearchN1O(
     const collections=orderResearchCollections(loadResearchCollections());
     const notes=host.notes();
     const prefs=readNotebookContinuity();
+    const relatedSeed=notes.find(note=>note.id===relatedSeedId);
+    const ranked=relatedSeed?relatedResearchNotes(relatedSeed,notes,24):[];
+    resetConnections.hidden=!relatedSeed;
     const items:Array<{kind:'collection'|'note';id:string;name:string;label:string;open:()=>void}>=[];
     if(type!=='notes'){
       const matches=collections.filter(collection=>{
@@ -127,7 +134,9 @@ export function mountResearchN1O(
       });
     }
     if(type!=='collections'){
-      const matching=terms.length
+      const matching=relatedSeed
+        ?ranked.map(item=>item.note)
+        :terms.length
         ?findNotebookNotes(notes,host.bookTitle,terms.join(' '),20)
         :[...notes].sort((a,b)=>{
           const ax=prefs.recentNoteIds.indexOf(a.id);
@@ -139,12 +148,15 @@ export function mountResearchN1O(
         }).slice(0,9);
       for(const note of matching)items.push({
         kind:'note',id:note.id,name:notebookTitle(note),
-        label:host.bookTitle(note.workId)+(prefs.recentNoteIds.includes(note.id)?' · Recently opened':''),
+        label:host.bookTitle(note.workId)
+          +(relatedSeed?' · '+(ranked.find(item=>item.note.id===note.id)?.reasons.join('; ')??'Authored connection')
+            :(prefs.recentNoteIds.includes(note.id)?' · Recently opened':'')),
         open:()=>{void host.openNote(note);},
       });
     }
     hubResults.replaceChildren();
-    hubCount.textContent=items.length+' quick destinations';
+    hubCount.textContent=items.length+' quick destinations'
+      +(relatedSeed?' connected to '+notebookTitle(relatedSeed):'');
     if(!items.length){
       hubResults.append(simple('p','No saved notes or research collections match this search.'));
       return;
@@ -159,6 +171,11 @@ export function mountResearchN1O(
       if(item.kind==='note'){
         const note=notes.find(entry=>entry.id===item.id);
         if(note){
+          row.append(createButton('Connections',()=>{
+            relatedSeedId=note.id;hubKind.value='notes';hubQuery.value='';
+            renderHub();
+            hubResults.scrollIntoView({behavior:'smooth',block:'nearest'});
+          }));
           row.append(createButton('Copy ref',()=>{
             void navigator.clipboard.writeText(noteReferenceMarkdown(note))
               .then(()=>host.notify('Stable note reference copied.'),
@@ -166,6 +183,18 @@ export function mountResearchN1O(
           }));
           if(host.active()&&!host.active()!.noteIds.includes(note.id)){
             row.append(createButton('Collect',()=>{void host.collectNote(note.id);}));
+          }else if(host.active()?.noteIds.includes(note.id)){
+            row.append(createButton('Use source',()=>{
+              host.pinSource(note.id);
+              requestResearchView(root,'sources','[data-n1p-source-path]');
+            }));
+          }
+          const reader=host.sourceHref(note);
+          if(reader){
+            const anchor=document.createElement('a');
+            anchor.href=reader;anchor.target='_blank';anchor.rel='noopener noreferrer';
+            anchor.textContent='Read original';
+            row.append(anchor);
           }
         }
       }
@@ -225,8 +254,12 @@ export function mountResearchN1O(
       host.notify('Create a native synthesis note before inserting writing.');
       return;
     }
-    const start=synthesisBody.selectionStart,end=synthesisBody.selectionEnd;
     const old=host.draft().body;
+    // Buttons in the evidence desk are outside the editor: do not overwrite
+    // the old hidden textarea selection when returning from another view.
+    const inEditor=document.activeElement===synthesisBody;
+    const start=inEditor?Math.min(old.length,synthesisBody.selectionStart):old.length;
+    const end=inEditor?Math.min(old.length,Math.max(start,synthesisBody.selectionEnd)):old.length;
     const before=old.slice(0,start);
     const after=old.slice(end);
     const prefix=before&&!before.endsWith('\n')?'\n\n':'';
@@ -301,7 +334,12 @@ export function mountResearchN1O(
     },180);
   }
 
-  bind('[data-n1o-quick-search]','input',renderHub);
+  bind('[data-n1o-quick-search]','input',()=>{
+    relatedSeedId='';renderHub();
+  });
+  bind('[data-n1u-reset-connections]','click',()=>{
+    relatedSeedId='';renderHub();hubQuery.focus();
+  });
   bind('[data-n1o-quick-type]','change',renderHub);
   bind('[data-n1o-evidence-source]','change',renderExcerptOptions);
   bind('[data-n1o-evidence-excerpt]','change',renderSourceDetails);
