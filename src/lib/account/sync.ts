@@ -1,5 +1,6 @@
 import {
   createLibraryBackup,
+  parseLibraryBackupJson,
   restoreLibraryBackupJson,
   type LibraryBackupV1,
 } from '../client/library-portability';
@@ -15,6 +16,11 @@ import {
   type LibrarySyncBaseline,
 } from './sync-policy';
 import { validateNativeCloudRestore, type NativeCloudRestorePreview } from './recovery-guard';
+import {
+  assessSavedLibrarySafetyCopy,
+  explainNativeLibraryConflictIssue,
+  type LibrarySafetyDirection,
+} from './saved-safety-copy';
 import { assessLibraryRestoreReadback } from './restore-witness';
 import { assessNativeReconciliation } from './native-reconciliation';
 import { describeNativeLibraryHeads } from './conflict-preview';
@@ -22,8 +28,9 @@ import { describeNativeLibraryHeads } from './conflict-preview';
 export const LIBRARY_ACCOUNT_SYNC_KEY = 'thiepn.library.account-sync.v1';
 const DEVICE_ID_KEY = 'thiepn.library.device-id.v1';
 const APP_VERSION = '1.0.0-account-sync';
-let pendingCloudRestore: NativeCloudRestorePreview | null = null;
-let pendingDevicePublish: NativeCloudRestorePreview | null = null;
+type VerifiedLibrarySafetyPreparation = NativeCloudRestorePreview & { fileVerified: boolean };
+let pendingCloudRestore: VerifiedLibrarySafetyPreparation | null = null;
+let pendingDevicePublish: VerifiedLibrarySafetyPreparation | null = null;
 
 /** Clear the preflight whenever the native owner, permission or direction changes. */
 export function cancelPreparedLibraryCloudRestore(): void {
@@ -129,6 +136,7 @@ export function isLibrarySyncEnabledForUser(userId: string): boolean {
 }
 
 export function pauseLibrarySync(userId: string): void {
+  cancelPreparedLibraryCloudRestore();
   const meta = metaForUser(userId);
   writeLibrarySyncMeta({ ...meta, enabled: false });
   emitSync({ status: 'disabled', message: 'Cloud sync is paused on this device.' });
@@ -498,13 +506,71 @@ export async function prepareLibraryDevicePublish(user: LibraryAccountUser) {
   pendingDevicePublish = {
     ownerId: user.id, deviceId: meta.deviceId,
     localHash, cloudHash, cloudRevision: cloud.revision,
-    expiresAt: Date.now() + 120_000,
+    expiresAt: Date.now() + 120_000, fileVerified: false,
   };
   return {
     backupJson: JSON.stringify(cloud.state),
     cloudRevision: cloud.revision,
     expiresAt: pendingDevicePublish.expiresAt,
     downloadStatus: 'REQUESTED_NOT_SAVED' as const,
+  };
+}
+
+/**
+ * Verify the user's ACTUAL selected local safety file using the original
+ * portable Library parser. This is read-only and never acts as an importer.
+ * Stored only in this tab's current one-shot owner/device CAS preparation.
+ */
+export async function verifySavedLibraryConflictCopy(
+  user: LibraryAccountUser,
+  direction: LibrarySafetyDirection,
+  backupJson: string,
+) {
+  const preview = direction === 'use-device' ? pendingDevicePublish : pendingCloudRestore;
+  if (!preview) throw new Error('LIBRARY_SAFETY_NOT_PREPARED');
+  if (backupJson.length > 64 * 1024 * 1024) throw new Error('LIBRARY_SAFETY_FILE_TOO_LARGE');
+  const parsed = parseLibraryBackupJson(backupJson);
+  const selectedHash = await hashBackup(parsed);
+  const preliminary = assessSavedLibrarySafetyCopy({
+    direction, preview, ownerId: user.id,
+    deviceId: readLibrarySyncMeta()?.deviceId ?? '',
+    selectedHash, now: Date.now(),
+  });
+  if (preliminary !== 'ready')
+    throw new Error('LIBRARY_SAFETY_' + preliminary.toUpperCase().replaceAll('-', '_'));
+  const current = readLibrarySyncMeta();
+  if (!current || !current.enabled || current.userId !== user.id ||
+      !(await isLibraryAccountConnectionActive()))
+    throw new Error('LIBRARY_SAFETY_PERMISSION_CHANGED');
+  const [verified, local, cloud] = await Promise.all([
+    getVerifiedLibraryAccountUser(), createLibraryBackup(), readCloudState(),
+  ]);
+  const meta = readLibrarySyncMeta();
+  if (verified?.id !== user.id || !meta?.enabled || meta.userId !== user.id ||
+      meta.deviceId !== preview.deviceId || !cloud)
+    throw new Error('LIBRARY_SAFETY_OWNER_OR_CLOUD_CHANGED');
+  const [localHash, cloudHash] = await Promise.all([
+    hashBackup(local), hashBackup(cloud.state),
+  ]);
+  const outcome = validateNativeCloudRestore(preview, {
+    ownerId: user.id, deviceId: meta.deviceId,
+    localHash, cloudHash, cloudRevision: cloud.revision,
+    now: Date.now(), nativeEnabled: true,
+  });
+  if (outcome !== 'ready')
+    throw new Error('LIBRARY_SAFETY_HEAD_CHANGED_' + outcome.toUpperCase());
+  // The marker may have been invalidated by signout, opposite preparation,
+  // pause or an owner's other tab while original async reads were pending.
+  const stillPrepared = direction === 'use-device' ? pendingDevicePublish : pendingCloudRestore;
+  if (stillPrepared !== preview || Date.now() >= preview.expiresAt)
+    throw new Error('LIBRARY_SAFETY_PREPARATION_INTERRUPTED');
+  preview.fileVerified = true;
+  return {
+    status: 'validated-local-file' as const,
+    cloudRevision: preview.cloudRevision,
+    expiresAt: preview.expiresAt,
+    direction,
+    externalCustody: 'NOT_TESTED' as const,
   };
 }
 
@@ -518,6 +584,8 @@ export async function chooseThisDeviceForLibrarySync(user: LibraryAccountUser): 
       (await getVerifiedLibraryAccountUser())?.id !== user.id)
       throw new Error('LIBRARY_SYNC_CONFLICT: original device permission changed');
     if (cloud) {
+      if (!preview?.fileVerified)
+        throw new Error('LIBRARY_SYNC_CONFLICT: Verify the saved cloud safety file before using this device.');
       const [localHash, cloudHash] = await Promise.all([
         hashBackup(local), hashBackup(cloud.state),
       ]);
@@ -539,8 +607,10 @@ export async function chooseThisDeviceForLibrarySync(user: LibraryAccountUser): 
     const result: LibrarySyncResult = {
       status: conflict ? 'conflict' : 'error',
       message: conflict
-        ? 'The cloud or local Library state changed while this device was publishing. Nothing was marked synced. Inspect both copies, preserve the original backup and choose again.'
-        : message,
+        ? 'The original Library publish was refused. ' +
+          explainNativeLibraryConflictIssue(message) +
+          ' Nothing was marked synced. Use Compare heads and prepare the current cloud safety copy again.'
+        : 'The original Library publish failed without updating its sync baseline. Local reading remains available.',
     };
     emitSync(result);
     return result;
@@ -579,7 +649,7 @@ export async function prepareLibraryCloudRestore(user: LibraryAccountUser) {
   pendingCloudRestore = {
     ownerId: user.id, deviceId: meta.deviceId, localHash,
     cloudHash, cloudRevision: cloud.revision,
-    expiresAt: Date.now() + 120_000,
+    expiresAt: Date.now() + 120_000, fileVerified: false,
   };
   return {
     backupJson: JSON.stringify(local),
@@ -595,6 +665,8 @@ export async function chooseCloudForLibrarySync(user: LibraryAccountUser): Promi
     const [local, cloud] = await Promise.all([createLibraryBackup(), readCloudState()]);
     const meta = readLibrarySyncMeta();
     if (!cloud || !meta) throw new Error('LIBRARY_SYNC_CONFLICT: missing native recovery baseline');
+    if (!preview?.fileVerified)
+      throw new Error('LIBRARY_SYNC_CONFLICT: Verify the saved device safety file before using cloud.');
     const [localHash, cloudHash] = await Promise.all([
       hashBackup(local), hashBackup(cloud.state),
     ]);
@@ -611,7 +683,10 @@ export async function chooseCloudForLibrarySync(user: LibraryAccountUser): Promi
     const message = describeError(error);
     const result: LibrarySyncResult = {
       status: /LIBRARY_SYNC_CONFLICT/.test(message) ? 'conflict' : 'error',
-      message,
+      message: /LIBRARY_SYNC_CONFLICT/.test(message)
+        ? explainNativeLibraryConflictIssue(message) +
+          ' Preserve the original local backup and compare the current cloud revision again.'
+        : 'Original Library cloud recovery failed; local reading remains available. Recheck Account permission before retrying.',
     };
     emitSync(result);
     return result;
