@@ -166,6 +166,7 @@ export function mountResearchViews(
   const exportOptions:Record<string,{target:string;needsCollection:boolean;draft:boolean}>={
     handoff:{target:'[data-n1o-export-handoff]',needsCollection:true,draft:false},
     continuity:{target:'[data-n1t-export-continuity]',needsCollection:true,draft:true},
+    'working-packet':{target:'[data-n1u-working-packet]',needsCollection:true,draft:true},
     knowledge:{target:'[data-n1m-export-knowledge]',needsCollection:true,draft:false},
     section:{target:'[data-n1r-section-export]',needsCollection:true,draft:true},
     comparison:{target:'[data-n1p-compare-export]',needsCollection:true,draft:true},
@@ -184,7 +185,8 @@ export function mountResearchViews(
       exportStatus.textContent='Choose a research collection before exporting this material.';
       return;
     }
-    if(option.draft&&(exportKind.value==='draft'||exportKind.value==='continuity')
+    if(option.draft&&(exportKind.value==='draft'||exportKind.value==='continuity'
+      ||exportKind.value==='working-packet')
       &&!host.synthesis()){
       exportStatus.textContent='Create a native synthesis note before downloading its current working draft or continuity worksheet.';
       return;
