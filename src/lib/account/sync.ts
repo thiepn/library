@@ -15,6 +15,7 @@ import {
   type LibrarySyncBaseline,
 } from './sync-policy';
 import { validateNativeCloudRestore, type NativeCloudRestorePreview } from './recovery-guard';
+import { assessLibraryRestoreReadback } from './restore-witness';
 
 export const LIBRARY_ACCOUNT_SYNC_KEY = 'thiepn.library.account-sync.v1';
 const DEVICE_ID_KEY = 'thiepn.library.device-id.v1';
@@ -232,8 +233,28 @@ async function applyCloud(
     !freshCloud || freshCloud.revision !== cloud.revision ||
     (await hashBackup(freshCloud.state)) !== (await hashBackup(cloud.state)))
     throw new Error('LIBRARY_SYNC_CONFLICT: local or cloud head changed before restore');
+  // The original portability engine performs its own validated import and
+  // rollback on write failure. Verify its actual result before advancing the
+  // native sync baseline; no new importer or Core writer is introduced.
   await restoreLibraryBackupJson(JSON.stringify(cloud.state));
+  const [afterImport, authenticated] = await Promise.all([
+    createLibraryBackup(), getVerifiedLibraryAccountUser(),
+  ]);
   const hash = await hashBackup(cloud.state);
+  const afterMeta = readLibrarySyncMeta();
+  const checked = assessLibraryRestoreReadback({
+    ownerId: userId,
+    deviceId: meta.deviceId,
+    revision: cloud.revision,
+    expectedHash: hash,
+    observedHash: await hashBackup(afterImport),
+    authenticatedOwnerId: authenticated?.id ?? null,
+    activeDevice: afterMeta?.enabled === true &&
+      afterMeta.userId === userId &&
+      afterMeta.deviceId === meta.deviceId,
+  });
+  if (checked.status !== 'native-readback-only')
+    throw new Error('LIBRARY_SYNC_RESTORE_UNVERIFIED: ' + checked.next);
   setBaseline(userId, true, cloud, hash);
   const result: LibrarySyncResult = {
     status: 'pulled',
@@ -345,7 +366,16 @@ export async function reconcileLibraryAccountSync(user: LibraryAccountUser): Pro
     return result;
   } catch (error) {
     const message = describeError(error);
+    const unverified = /LIBRARY_SYNC_RESTORE_UNVERIFIED/.test(message);
     const conflict = /LIBRARY_SYNC_CONFLICT|40001/i.test(message);
+    if (unverified) {
+      const result: LibrarySyncResult = {
+        status: 'error',
+        message: 'Native Library imported a cloud snapshot but could not confirm matching local data or permission. The sync baseline was NOT advanced. Inspect the native backup and recovery controls before retrying.',
+      };
+      emitSync(result);
+      return result;
+    }
     const result: LibrarySyncResult = {
       status: conflict ? 'conflict' : 'error',
       message: conflict
