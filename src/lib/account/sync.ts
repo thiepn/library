@@ -23,6 +23,7 @@ import {
 } from './saved-safety-copy';
 import { assessLibraryRestoreReadback } from './restore-witness';
 import { assessNativeReconciliation } from './native-reconciliation';
+import { isOriginalLibraryLifecycleCurrent } from './lifecycle-authority';
 import { describeNativeLibraryHeads } from './conflict-preview';
 
 export const LIBRARY_ACCOUNT_SYNC_KEY = 'thiepn.library.account-sync.v1';
@@ -31,6 +32,31 @@ const APP_VERSION = '1.0.0-account-sync';
 type VerifiedLibrarySafetyPreparation = NativeCloudRestorePreview & { fileVerified: boolean };
 let pendingCloudRestore: VerifiedLibrarySafetyPreparation | null = null;
 let pendingDevicePublish: VerifiedLibrarySafetyPreparation | null = null;
+/** Session-scoped generation: never advance the original CAS baseline on a
+ * request started before device pause, owner signout or reconnect. */
+let nativeLifecycleEpoch = 0;
+
+export function invalidateLibrarySyncAuthority(): void {
+  nativeLifecycleEpoch++;
+  cancelPreparedLibraryCloudRestore();
+}
+
+async function requireCurrentLibraryAuthority(userId: string, deviceId: string, epoch: number) {
+  const meta = readLibrarySyncMeta();
+  if (nativeLifecycleEpoch !== epoch || !meta?.enabled || meta.userId !== userId ||
+    meta.deviceId !== deviceId)
+    throw new Error('LIBRARY_SYNC_CONFLICT: native device consent changed during original sync');
+  const owner = await getVerifiedLibraryAccountUser();
+  const after = readLibrarySyncMeta();
+  if (!isOriginalLibraryLifecycleCurrent({
+    startedEpoch: epoch, currentEpoch: nativeLifecycleEpoch,
+    startedOwner: userId, authenticatedOwner: owner?.id ?? null,
+    startedDevice: deviceId, currentDevice: after?.deviceId ?? null,
+    enabled: after?.enabled === true && after?.userId === userId,
+  }))
+    throw new Error('LIBRARY_SYNC_CONFLICT: native Account authorization changed during sync');
+}
+
 
 /** Clear the preflight whenever the native owner, permission or direction changes. */
 export function cancelPreparedLibraryCloudRestore(): void {
@@ -136,7 +162,7 @@ export function isLibrarySyncEnabledForUser(userId: string): boolean {
 }
 
 export function pauseLibrarySync(userId: string): void {
-  cancelPreparedLibraryCloudRestore();
+  invalidateLibrarySyncAuthority();
   const meta = metaForUser(userId);
   writeLibrarySyncMeta({ ...meta, enabled: false });
   emitSync({ status: 'disabled', message: 'Cloud sync is paused on this device.' });
@@ -237,6 +263,7 @@ async function applyCloud(
   const meta = readLibrarySyncMeta();
   if (meta?.userId !== userId || !meta.enabled)
     throw new Error('LIBRARY_SYNC_CONFLICT: native Account/device changed');
+  const lifecycle = nativeLifecycleEpoch;
   const [freshCloud, freshLocal, verifiedUser] = await Promise.all([
     readCloudState(), createLibraryBackup(), getVerifiedLibraryAccountUser(),
   ]);
@@ -248,12 +275,14 @@ async function applyCloud(
   // The original portability engine performs its own validated import and
   // rollback on write failure. Verify its actual result before advancing the
   // native sync baseline; no new importer or Core writer is introduced.
+  await requireCurrentLibraryAuthority(userId, meta.deviceId, lifecycle);
   await restoreLibraryBackupJson(JSON.stringify(cloud.state));
   const [afterImport, authenticated] = await Promise.all([
     createLibraryBackup(), getVerifiedLibraryAccountUser(),
   ]);
   const hash = await hashBackup(cloud.state);
   const afterMeta = readLibrarySyncMeta();
+  await requireCurrentLibraryAuthority(userId, meta.deviceId, lifecycle);
   const checked = assessLibraryRestoreReadback({
     ownerId: userId,
     deviceId: meta.deviceId,
@@ -287,6 +316,7 @@ async function applyCloud(
   });
   if (outcome !== 'confirmed-native-only')
     throw new Error('LIBRARY_SYNC_CONFLICT: post-restore reconciliation ' + outcome);
+  await requireCurrentLibraryAuthority(userId, meta.deviceId, lifecycle);
   setBaseline(userId, true, cloud, hash);
   const result: LibrarySyncResult = {
     status: 'pulled',
@@ -304,10 +334,12 @@ async function pushLocal(
   local: LibraryBackupV1,
 ): Promise<LibrarySyncResult> {
   const meta = metaForUser(userId);
+  const lifecycle = nativeLifecycleEpoch;
   // Native CAS RPC is the only remote writer. An acknowledged write must not
   // advance local baseline if another device changed the cloud head before
   // our authoritative readback, or local edits happened during the RPC.
   const hash = await hashBackup(local);
+  await requireCurrentLibraryAuthority(userId, meta.deviceId, lifecycle);
   const saved = await writeCloudState(cloud?.revision ?? null, local, meta.deviceId);
   const [verifiedCloud, verifiedLocal, verifiedOwner] = await Promise.all([
     readCloudState(), createLibraryBackup(), getVerifiedLibraryAccountUser(),
@@ -327,6 +359,7 @@ async function pushLocal(
   });
   if (outcome !== 'confirmed-native-only')
     throw new Error('LIBRARY_SYNC_CONFLICT: post-push reconciliation ' + outcome);
+  await requireCurrentLibraryAuthority(userId, meta.deviceId, lifecycle);
   setBaseline(userId, true, saved, hash);
   const result: LibrarySyncResult = {
     status: 'pushed',
@@ -375,6 +408,7 @@ export async function inspectNativeLibraryHeads(user: LibraryAccountUser) {
 }
 
 export async function enableLibraryAccountSync(user: LibraryAccountUser): Promise<LibrarySyncResult> {
+  invalidateLibrarySyncAuthority();
   if (!(await isLibraryAccountConnectionActive())) {
     return {
       status: 'disabled',
@@ -393,6 +427,7 @@ export async function enableLibraryAccountSync(user: LibraryAccountUser): Promis
 
 export async function reconcileLibraryAccountSync(user: LibraryAccountUser): Promise<LibrarySyncResult> {
   const meta = metaForUser(user.id);
+  const lifecycle = nativeLifecycleEpoch;
   if (!meta.enabled) return { status: 'disabled', message: 'Cloud sync is not enabled on this device.' };
   if (!navigator.onLine) {
     return {
@@ -421,6 +456,7 @@ export async function reconcileLibraryAccountSync(user: LibraryAccountUser): Pro
         ? { revision: meta.revision, hash: meta.hash }
         : undefined;
 
+    await requireCurrentLibraryAuthority(user.id, meta.deviceId, lifecycle);
     const decision = decideLibrarySync({
       ...(baseline ? { baseline } : {}),
       ...(cloud && cloudHash ? { cloud: { revision: cloud.revision, hash: cloudHash } } : {}),
@@ -432,6 +468,7 @@ export async function reconcileLibraryAccountSync(user: LibraryAccountUser): Pro
     if (decision === 'pull' && cloud) return await applyCloud(user.id, cloud, localHash);
 
     if (decision === 'noop' && cloud && cloudHash) {
+      await requireCurrentLibraryAuthority(user.id, meta.deviceId, lifecycle);
       setBaseline(user.id, true, cloud, cloudHash);
       const result: LibrarySyncResult = {
         status: 'synced',

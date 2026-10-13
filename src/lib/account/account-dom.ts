@@ -4,6 +4,7 @@ import {
   getVerifiedLibraryAccountUser,
   hasThiepnAccountConfiguration,
   subscribeLibraryAccountAuth,
+  signOutLibraryAppSession,
   type LibraryAccountUser,
 } from './supabase';
 import {
@@ -15,6 +16,7 @@ import {
   enableLibraryAccountSync,
   isLibrarySyncEnabledForUser,
   pauseLibrarySync,
+  invalidateLibrarySyncAuthority,
   readLibrarySyncMeta,
   reconcileLibraryAccountSync,
   inspectNativeLibraryHeads,
@@ -225,7 +227,7 @@ export function mountLibraryAccountPage(): () => void {
       const previousOwner = user?.id ?? null;
       user = await render();
       if (previousOwner !== (user?.id ?? null)) {
-        cancelPreparedLibraryCloudRestore();
+        invalidateLibrarySyncAuthority();
         pendingFileDirection = null;
         text('[data-recovery-saved-device]', 'No saved cloud safety file verified for this Account.');
         text('[data-recovery-saved-cloud]', 'No saved device safety file verified for this Account.');
@@ -235,6 +237,7 @@ export function mountLibraryAccountPage(): () => void {
       // Identity verification can be unavailable behind tracking blockers or
       // during an outage. Never display stale private state, but retain the
       // explicit top-level Account sign-in recovery path.
+      invalidateLibrarySyncAuthority();
       user = null;
       hidden('[data-account-signed-out]', false);
       hidden('[data-account-signed-in]', true);
@@ -365,6 +368,23 @@ export function mountLibraryAccountPage(): () => void {
   });
   document.querySelector('[data-recovery-backup]')?.addEventListener('click', () => {
     if (user) record(user.id, 'native-backup', 'native backup page opened', null, null);
+  });
+  document.querySelector('[data-b26-disconnect-device]')?.addEventListener('click', () => {
+    if (!user) return;
+    const disconnected = user.id;
+    pauseLibrarySync(disconnected);
+    setLibraryAutomaticSync(disconnected, false);
+    signOutLibraryAppSession();
+    user = null;
+    hidden('[data-sync-panel]', true);
+    hidden('[data-account-signed-in]', true);
+    hidden('[data-account-signed-out]', false);
+    text('[data-account-summary]',
+      'Library disconnected on this device. Original local reading and manual backups remain available. Reconnect through THIEPN Account.');
+    void refresh();
+  });
+  document.querySelector('[data-b26-reconnect]')?.addEventListener('click', () => {
+    void refresh();
   });
   document.querySelector('[data-sync-enable]')?.addEventListener('click', () => void act(enableLibraryAccountSync));
   document.querySelector('[data-sync-now]')?.addEventListener('click', () => void act(reconcileLibraryAccountSync));
