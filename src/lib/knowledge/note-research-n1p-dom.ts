@@ -7,6 +7,7 @@ import { extractNotebookTopics } from './note-workspace';
 import { synthesisSectionTemplate } from './note-research-n1r-sections';
 import { requestResearchView } from './note-research-n1q-view';
 import { readResearchDraftCheckpoint } from './note-research-drafts';
+import { getBookNote, listBookNotes } from './note-store';
 import { sourceReadingCaptureMarkdown, currentResearchWorkingPacket } from './note-research-n1u-workflows';
 import { loadResearchCollections, describeResearchSource,
   type ResearchCollection } from './note-research';
@@ -212,6 +213,13 @@ export function mountResearchN1P(
         action('Cite in synthesis',()=>{void citeReviewSource(item);}),
         action('Cite in section',()=>{void citeReviewInSection(item);}),
         action('Writing prompt',()=>{void draftReviewPrompt(item);}),
+        action('Capture reading',()=>{void captureReviewReading(item);}),
+        action('Connections',()=>{
+          root.dispatchEvent(new CustomEvent('library-research-discover-related',{
+            detail:{noteId:item.note.id},
+          }));
+          requestResearchView(root,'browse','[data-n1o-quick-results]');
+        }),
         action('Copy citation',()=>{
           void navigator.clipboard.writeText(noteReferenceMarkdown(item.note))
             .then(()=>{status.textContent='Stable note reference copied.';},
@@ -331,6 +339,28 @@ export function mountResearchN1P(
     if(insertInDraft(synthesisSectionTemplate('reading',note))){
       status.textContent='Source-linked reading takeaway inserted in your current synthesis draft. Review and save explicitly.';
     }
+  }
+  async function captureReviewReading(item:ResearchQueueItem):Promise<void> {
+    if(host.active()?.id!==item.collectionId)await host.openCollection(item.collectionId);
+    if(disposed||host.active()?.id!==item.collectionId)return;
+    if(!host.synthesis()){
+      requestResearchView(root,'write','[data-research-make-synthesis]');
+      status.textContent='Create a native synthesis before bringing a review source into writing.';
+      return;
+    }
+    const before=host.draft().body,base=host.synthesis()!.revision;
+    const source=await getBookNote(item.note.id).catch(()=>undefined);
+    if(disposed||host.active()?.id!==item.collectionId
+      ||host.draft().body!==before||host.synthesis()?.revision!==base){
+      status.textContent='Writing or collection changed while reading the saved source. Nothing was inserted.';
+      return;
+    }
+    if(!source||!host.active()?.noteIds.includes(source.id)){
+      status.textContent='Saved source is unavailable in this collection; no citation was inserted.';
+      return;
+    }
+    if(insertInDraft(sourceReadingCaptureMarkdown(source,host.bookTitle,host.sourceHref)))
+      status.textContent='Current saved-note reading capture inserted into the unsaved synthesis draft; verify the original and save explicitly.';
   }
   function insertInDraft(markdown:string):boolean {
     if(!host.synthesis())return false;
@@ -586,25 +616,38 @@ export function mountResearchN1P(
       status.textContent='Pin an available collected note and create a native synthesis first.';
       return;
     }
-    try{
-      const scaffold=sourceReadingCaptureMarkdown(source,host.bookTitle,host.sourceHref);
-      if(insertInDraft(scaffold))
-        status.textContent='Saved-note observations and original reader details inserted into the current synthesis draft. Review and save explicitly.';
-    }catch(error){
-      status.textContent=error instanceof Error?error.message:'Reading capture unavailable.';
-    }
+    const draftBefore=host.draft().body,base=host.synthesis()!.revision;
+    void getBookNote(source.id).then(saved=>{
+      if(!saved||host.active()?.id!==collection.id||!host.active()?.noteIds.includes(saved.id)
+        ||host.synthesis()?.revision!==base||host.draft().body!==draftBefore){
+        status.textContent='Source or writing changed during reading capture. No draft changes were applied.';
+        return;
+      }
+      if(insertInDraft(sourceReadingCaptureMarkdown(saved,host.bookTitle,host.sourceHref)))
+        status.textContent='Current saved-note observations inserted into the native synthesis draft; verify the book and save explicitly.';
+    }).catch(()=>{status.textContent='Unable to read authoritative local note. No writing changed.';});
   });
+  let workingPacketBusy=false;
   bind('[data-n1u-working-packet]','click',()=>{
     const collection=host.active(),synthesis=host.synthesis();
-    if(!collection||!synthesis)return;
-    try {
-      const packet=currentResearchWorkingPacket(collection,host.draft(),synthesis.revision,
-        host.isDirty(),host.notes(),host.bookTitle,host.sourceHref);
-      downloadMarkdown('research-working-'+safeFile(collection.name)+'.md',packet);
-      status.textContent='Current working packet requested. This is not a saved note or Library V2 backup.';
-    }catch(error){
+    if(!collection||!synthesis||workingPacketBusy)return;
+    const draft={...host.draft()},base=synthesis.revision,dirty=host.isDirty();
+    workingPacketBusy=true;
+    void listBookNotes().then(savedNotes=>{
+      const current=loadResearchCollections().find(item=>item.id===collection.id);
+      if(!current||host.active()?.id!==collection.id
+        ||host.synthesis()?.revision!==base
+        ||host.draft().title!==draft.title||host.draft().body!==draft.body){
+        status.textContent='Workspace changed while preparing the packet. Export canceled; current draft was preserved.';
+        return;
+      }
+      const packet=currentResearchWorkingPacket(current,draft,base,dirty,
+        savedNotes,host.bookTitle,host.sourceHref);
+      downloadMarkdown('research-working-'+safeFile(current.name)+'.md',packet);
+      status.textContent='Current working packet requested with saved source revisions and clearly labeled unsaved writing. Not a V2 backup.';
+    }).catch(error=>{
       status.textContent=error instanceof Error?error.message:'Working packet unavailable.';
-    }
+    }).finally(()=>{workingPacketBusy=false;});
   });
   bind('[data-n1p-recovery-jump]','click',()=>{
     const collection=host.active(),note=host.synthesis();
