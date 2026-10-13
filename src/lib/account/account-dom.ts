@@ -4,6 +4,7 @@ import {
   getVerifiedLibraryAccountUser,
   hasThiepnAccountConfiguration,
   subscribeLibraryAccountAuth,
+  signOutLibraryAppSession,
   type LibraryAccountUser,
 } from './supabase';
 import {
@@ -15,6 +16,7 @@ import {
   enableLibraryAccountSync,
   isLibrarySyncEnabledForUser,
   pauseLibrarySync,
+  invalidateLibrarySyncAuthority,
   readLibrarySyncMeta,
   reconcileLibraryAccountSync,
   inspectNativeLibraryHeads,
@@ -48,6 +50,19 @@ function text(selector: string, value: string): void {
 function hidden(selector: string, value: boolean): void {
   const element = document.querySelector<HTMLElement>(selector);
   if (element) element.hidden = value;
+}
+
+const LOCAL_DISCONNECT_KEY = 'thiepn.library.disconnect-device.v1';
+function locallyDisconnected() {
+  try { return localStorage.getItem(LOCAL_DISCONNECT_KEY) === 'true'; }
+  catch { return false; }
+}
+function setLocallyDisconnected(disconnected: boolean) {
+  try {
+    if (disconnected) localStorage.setItem(LOCAL_DISCONNECT_KEY, 'true');
+    else localStorage.removeItem(LOCAL_DISCONNECT_KEY);
+    return true;
+  } catch { return false; }
 }
 
 function setBusy(value: boolean): void {
@@ -216,16 +231,42 @@ export function mountLibraryAccountPage(): () => void {
     if (disposed) return;
     setBusy(true);
     try {
+      if (locallyDisconnected()) {
+        invalidateLibrarySyncAuthority();
+        user = null;
+        hidden('[data-account-signed-in]', true);
+        hidden('[data-sync-panel]', true);
+        hidden('[data-account-signed-out]', false);
+        text('[data-account-summary]',
+          'Library sync is disconnected locally. Original books and annotations remain. Reconnect explicitly.');
+        return;
+      }
       // Resolve the shared Account SSO state before showing personalized data.
       // Redirects are deduplicated with the global Library Account runtime.
       if (hasThiepnAccountConfiguration()) {
         const initial = await initializeLibraryAccountSso();
         if (disposed || initial.status === 'redirecting') return;
       }
+      if (locallyDisconnected()) {
+        invalidateLibrarySyncAuthority();
+        user = null;
+        hidden('[data-account-signed-in]', true);
+        hidden('[data-sync-panel]', true);
+        hidden('[data-account-signed-out]', false);
+        return;
+      }
       const previousOwner = user?.id ?? null;
       user = await render();
+      if (locallyDisconnected()) {
+        invalidateLibrarySyncAuthority();
+        user = null;
+        hidden('[data-account-signed-in]', true);
+        hidden('[data-sync-panel]', true);
+        hidden('[data-account-signed-out]', false);
+        return;
+      }
       if (previousOwner !== (user?.id ?? null)) {
-        cancelPreparedLibraryCloudRestore();
+        invalidateLibrarySyncAuthority();
         pendingFileDirection = null;
         text('[data-recovery-saved-device]', 'No saved cloud safety file verified for this Account.');
         text('[data-recovery-saved-cloud]', 'No saved device safety file verified for this Account.');
@@ -235,6 +276,7 @@ export function mountLibraryAccountPage(): () => void {
       // Identity verification can be unavailable behind tracking blockers or
       // during an outage. Never display stale private state, but retain the
       // explicit top-level Account sign-in recovery path.
+      invalidateLibrarySyncAuthority();
       user = null;
       hidden('[data-account-signed-out]', false);
       hidden('[data-account-signed-in]', true);
@@ -320,6 +362,7 @@ export function mountLibraryAccountPage(): () => void {
   };
 
   document.querySelector('[data-sign-in]')?.addEventListener('click', () => {
+    setLocallyDisconnected(false);
     setBusy(true);
     void beginLibraryAccountSso(window.location.href).catch((error) => {
       setBusy(false);
@@ -365,6 +408,32 @@ export function mountLibraryAccountPage(): () => void {
   });
   document.querySelector('[data-recovery-backup]')?.addEventListener('click', () => {
     if (user) record(user.id, 'native-backup', 'native backup page opened', null, null);
+  });
+  document.querySelector('[data-b26-disconnect-device]')?.addEventListener('click', () => {
+    if (!user) return;
+    const disconnected = user.id;
+    if (!setLocallyDisconnected(true)) {
+      text('[data-sync-status]', 'Could not save the local disconnect preference. No sign-out performed.');
+      return;
+    }
+    pauseLibrarySync(disconnected);
+    setLibraryAutomaticSync(disconnected, false);
+    signOutLibraryAppSession();
+    user = null;
+    hidden('[data-sync-panel]', true);
+    hidden('[data-account-signed-in]', true);
+    hidden('[data-account-signed-out]', false);
+    text('[data-account-summary]',
+      'Library disconnected on this device. Original local reading and manual backups remain available. Reconnect through THIEPN Account.');
+    void refresh();
+  });
+  document.querySelector('[data-b26-reconnect]')?.addEventListener('click', () => {
+    setLocallyDisconnected(false);
+    void refresh();
+  });
+  document.querySelector('[data-b26-reconnect-signedout]')?.addEventListener('click', () => {
+    setLocallyDisconnected(false);
+    void beginLibraryAccountSso(window.location.href);
   });
   document.querySelector('[data-sync-enable]')?.addEventListener('click', () => void act(enableLibraryAccountSync));
   document.querySelector('[data-sync-now]')?.addEventListener('click', () => void act(reconcileLibraryAccountSync));
@@ -607,6 +676,16 @@ export function mountLibraryAccountPage(): () => void {
   window.addEventListener('thiepn:library-sync', onSync);
   window.addEventListener('thiepn:library-personal-files', onPersonalFiles);
 
+  const onLocalDisconnectStorage = (event: StorageEvent) => {
+    if (event.key !== LOCAL_DISCONNECT_KEY ||
+        (event.storageArea && event.storageArea !== window.localStorage)) return;
+    // A second same-origin tab changed the original Library device consent.
+    // Invalidate every prepared marker before updating the owner's UI.
+    invalidateLibrarySyncAuthority();
+    pendingFileDirection = null;
+    void refresh();
+  };
+  window.addEventListener('storage', onLocalDisconnectStorage);
   const unsubscribeAuth = subscribeLibraryAccountAuth(() => { void refresh(); });
   void refresh();
 
@@ -615,6 +694,7 @@ export function mountLibraryAccountPage(): () => void {
     window.removeEventListener('thiepn:library-sync', onSync);
     window.removeEventListener('thiepn:library-runtime', onRuntime);
     window.removeEventListener('thiepn:library-personal-files', onPersonalFiles);
+    window.removeEventListener('storage', onLocalDisconnectStorage);
     unsubscribeAuth();
     cancelPreparedLibraryCloudRestore();
     incidents.clear();

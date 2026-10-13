@@ -20,6 +20,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         <h2>Keep reading without an account</h2>
         <p>Library remains fully usable as a local-first reader. If THIEPN Account is already signed in, Library connects automatically. You can also connect manually without signing into Library separately.</p>
         <button type="button" class="account-primary" data-account-action data-sign-in>Connect THIEPN Account</button>
+        <button type="button" data-account-action data-b26-reconnect-signedout>Reconnect Library on this device</button>
       </div>
 
       <div class="account-card" data-account-signed-in hidden>
@@ -43,6 +44,11 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         </div>
 
         <p data-sync-status>Your local reading data will not be uploaded until you enable sync.</p>
+        <div class="account-actions">
+          <button type="button" data-account-action data-b26-reconnect>Recheck THIEPN Account connection</button>
+          <button type="button" data-account-action data-b26-disconnect-device>Disconnect Library on this device</button>
+        </div>
+        <p class="micro">Disconnect disables this device's native Library sync, clears pending recovery authorizations and signs out the Library app locally. It cannot revoke another device's Account session: manage those through THIEPN Account. Local books and annotations remain on this device.</p>
         <p class="micro" data-sync-meta>No cloud sync enabled.</p>
         <div class="sync-device-preferences" data-auto-sync-section hidden>
           <div>
