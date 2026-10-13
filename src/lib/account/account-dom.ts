@@ -23,6 +23,7 @@ import {
 import { isLibraryAutomaticSyncEnabled, setLibraryAutomaticSync } from './auto-sync';
 import { getLibraryCoreGrant, changeLibraryCoreGrant, requestLibrarySyncFromCore } from './core-coordination';
 import { inspectLibraryRecovery } from './recovery-inspection';
+import { assessLibraryPostChoice } from './post-choice-review';
 import {
   createLibraryRecoveryIncidentHistory,
   describeNativeLibraryRecovery,
@@ -265,10 +266,51 @@ export function mountLibraryAccountPage(): () => void {
       const cas = describeNativeLibraryRecovery(result, beforeRevision);
       text('[data-recovery-cas]', cas.original + ' · ' + cas.remote +
         '. ' + cas.action + ' External custody NOT TESTED.');
-      if (conflictResolution && ['pushed', 'pulled', 'synced'].includes(result.status)) {
-        window.dispatchEvent(new CustomEvent('thiepn:library-conflict-resolved', {
-          detail: { ownerId: startedAs },
-        }));
+      if (conflictResolution) {
+        // An earlier native CAS acknowledgment is not proof the OTHER device
+        // has stopped writing. Inspect ORIGINAL heads again without creating
+        // a shadow writer or silently resolving a later race.
+        let postChoice = assessLibraryPostChoice({
+          originalResult: result.status,
+          expectedRevision: result.revision ?? null,
+          observedRevision: null,
+          observedKind: 'baseline-missing',
+          nativeAuthorityStillValid: false,
+        });
+        try {
+          const currentHeads = await inspectNativeLibraryHeads(current);
+          const stillAuthenticated = await getVerifiedLibraryAccountUser();
+          const sameOwner = !disposed && user?.id === startedAs &&
+            stillAuthenticated?.id === startedAs;
+          if (!sameOwner) return;
+          postChoice = assessLibraryPostChoice({
+            originalResult: result.status,
+            expectedRevision: result.revision ?? null,
+            observedRevision: currentHeads.cloudRevision,
+            observedKind: currentHeads.kind,
+            nativeAuthorityStillValid: sameOwner,
+          });
+        } catch {
+          // When inspection itself fails, do not announce resolved.
+        }
+        if (disposed || user?.id !== startedAs) return;
+        text('[data-recovery-post-choice]',
+          postChoice.status.replaceAll('-', ' ') + ' · ' +
+          postChoice.instruction + ' External custody NOT TESTED.');
+        record(startedAs, action, 'post-choice ' + postChoice.status,
+          beforeRevision, result.revision ?? null);
+        if (postChoice.status === 'observed-match') {
+          window.dispatchEvent(new CustomEvent('thiepn:library-conflict-resolved', {
+            detail: { ownerId: startedAs },
+          }));
+        } else {
+          hidden('[data-sync-conflict]', false);
+          text('[data-sync-mode]', 'Native Library requires another conflict inspection');
+          text('[data-sync-status]',
+            'Original sync result: ' + result.status +
+            '. Post-choice inspection was not independently confirmed. ' +
+            'Preserve both safety copies and compare again.');
+        }
       }
     } catch {
       const current = await getVerifiedLibraryAccountUser().catch(() => null);
