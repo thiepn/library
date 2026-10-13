@@ -16,6 +16,7 @@ import {
 } from './sync-policy';
 import { validateNativeCloudRestore, type NativeCloudRestorePreview } from './recovery-guard';
 import { assessLibraryRestoreReadback } from './restore-witness';
+import { assessNativeReconciliation } from './native-reconciliation';
 
 export const LIBRARY_ACCOUNT_SYNC_KEY = 'thiepn.library.account-sync.v1';
 const DEVICE_ID_KEY = 'thiepn.library.device-id.v1';
@@ -255,6 +256,26 @@ async function applyCloud(
   });
   if (checked.status !== 'native-readback-only')
     throw new Error('LIBRARY_SYNC_RESTORE_UNVERIFIED: ' + checked.next);
+  // A second device can write after preflight while original local restore
+  // runs. Re-read native cloud CAS before reporting a successful pull.
+  const [postCloud, postOwner] = await Promise.all([
+    readCloudState(), getVerifiedLibraryAccountUser(),
+  ]);
+  const postMeta = readLibrarySyncMeta();
+  const outcome = assessNativeReconciliation({
+    ownerId: userId, deviceId: meta.deviceId,
+    authenticatedOwnerId: postOwner?.id ?? null,
+    activeOwnerId: postMeta?.userId ?? null,
+    activeDeviceId: postMeta?.deviceId ?? null,
+    enabled: postMeta?.enabled === true,
+    expectedRevision: cloud.revision,
+    expectedHash: hash,
+    observedRevision: postCloud?.revision ?? null,
+    observedCloudHash: postCloud ? await hashBackup(postCloud.state) : null,
+    observedLocalHash: await hashBackup(await createLibraryBackup()),
+  });
+  if (outcome !== 'confirmed-native-only')
+    throw new Error('LIBRARY_SYNC_CONFLICT: post-restore reconciliation ' + outcome);
   setBaseline(userId, true, cloud, hash);
   const result: LibrarySyncResult = {
     status: 'pulled',
@@ -272,8 +293,29 @@ async function pushLocal(
   local: LibraryBackupV1,
 ): Promise<LibrarySyncResult> {
   const meta = metaForUser(userId);
-  const saved = await writeCloudState(cloud?.revision ?? null, local, meta.deviceId);
+  // Native CAS RPC is the only remote writer. An acknowledged write must not
+  // advance local baseline if another device changed the cloud head before
+  // our authoritative readback, or local edits happened during the RPC.
   const hash = await hashBackup(local);
+  const saved = await writeCloudState(cloud?.revision ?? null, local, meta.deviceId);
+  const [verifiedCloud, verifiedLocal, verifiedOwner] = await Promise.all([
+    readCloudState(), createLibraryBackup(), getVerifiedLibraryAccountUser(),
+  ]);
+  const currentMeta = readLibrarySyncMeta();
+  const outcome = assessNativeReconciliation({
+    ownerId: userId, deviceId: meta.deviceId,
+    authenticatedOwnerId: verifiedOwner?.id ?? null,
+    activeOwnerId: currentMeta?.userId ?? null,
+    activeDeviceId: currentMeta?.deviceId ?? null,
+    enabled: currentMeta?.enabled === true,
+    expectedRevision: saved.revision,
+    expectedHash: hash,
+    observedRevision: verifiedCloud?.revision ?? null,
+    observedCloudHash: verifiedCloud ? await hashBackup(verifiedCloud.state) : null,
+    observedLocalHash: await hashBackup(verifiedLocal),
+  });
+  if (outcome !== 'confirmed-native-only')
+    throw new Error('LIBRARY_SYNC_CONFLICT: post-push reconciliation ' + outcome);
   setBaseline(userId, true, saved, hash);
   const result: LibrarySyncResult = {
     status: 'pushed',
