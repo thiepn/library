@@ -14,6 +14,7 @@ import '../styles/notebook-n1p.css';
 import '../styles/notebook-n1q.css';
 import '../styles/notebook-n1r.css';
 import '../styles/notebook-n1s.css';
+import '../styles/notebook-n1u.css';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const catalog = (await getWorks()).map((work) => ({
@@ -233,6 +234,7 @@ const catalog = (await getWorks()).map((work) => ({
               <option value="handoff">Complete saved research handoff</option>
               <option value="knowledge">Knowledge summary</option>
               <option value="continuity">Current writing and citation continuity worksheet</option>
+              <option value="working-packet">Current research working packet with source ledger and tab review</option>
               <option value="section">Current synthesis section working copy</option>
               <option value="comparison">Source comparison writing outline</option>
               <option value="evidence">Evidence coverage review</option>
@@ -482,6 +484,8 @@ const catalog = (await getWorks()).map((work) => ({
               <button type="button" data-n1p-go-reader>Open reader in new tab</button>
               <button type="button" data-n1p-go-synthesis>Open native synthesis</button>
               <button type="button" data-n1p-focus-writing>Write in synthesis</button>
+              <button type="button" data-n1u-capture-source disabled>Bring pinned reading into synthesis</button>
+              <button type="button" data-n1u-working-packet disabled>Export current working packet</button>
               <button type="button" data-n1p-download-working-copy>Download current writing draft</button>
               <button type="button" data-n1p-copy-working-copy>Copy current draft</button>
               <button type="button" data-n1p-recovery-jump>Open session recovery controls</button>
