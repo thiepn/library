@@ -23,10 +23,12 @@ export const LIBRARY_ACCOUNT_SYNC_KEY = 'thiepn.library.account-sync.v1';
 const DEVICE_ID_KEY = 'thiepn.library.device-id.v1';
 const APP_VERSION = '1.0.0-account-sync';
 let pendingCloudRestore: NativeCloudRestorePreview | null = null;
+let pendingDevicePublish: NativeCloudRestorePreview | null = null;
 
 /** Clear the preflight whenever the native owner, permission or direction changes. */
 export function cancelPreparedLibraryCloudRestore(): void {
   pendingCloudRestore = null;
+  pendingDevicePublish = null;
 }
 
 export type LibrarySyncStatus =
@@ -466,9 +468,70 @@ export async function reconcileLibraryAccountSync(user: LibraryAccountUser): Pro
   }
 }
 
+/**
+ * Original Library Device-choice safety: offer the CURRENT native cloud
+ * portable snapshot for owner-controlled download before replacing it.
+ * Preparation is one-shot, RAM-only, and never certifies that a file was saved.
+ */
+export async function prepareLibraryDevicePublish(user: LibraryAccountUser) {
+  cancelPreparedLibraryCloudRestore();
+  const meta = readLibrarySyncMeta();
+  if (!meta || meta.userId !== user.id || !meta.enabled ||
+    !(await isLibraryAccountConnectionActive()) ||
+    (await getVerifiedLibraryAccountUser())?.id !== user.id)
+    throw new Error('B21_LIBRARY_NATIVE_ACCOUNT_REQUIRED');
+  const [local, cloud] = await Promise.all([createLibraryBackup(), readCloudState()]);
+  if (!cloud) throw new Error('B21_LIBRARY_CLOUD_MISSING: no remote copy to preserve; inspect conflict first');
+  const [localHash, cloudHash] = await Promise.all([
+    hashBackup(local), hashBackup(cloud.state),
+  ]);
+  const next = readLibrarySyncMeta();
+  const [verified, localAgain, cloudAgain] = await Promise.all([
+    getVerifiedLibraryAccountUser(), createLibraryBackup(), readCloudState(),
+  ]);
+  if (verified?.id !== user.id || !next?.enabled ||
+    next.userId !== meta.userId || next.deviceId !== meta.deviceId ||
+    (await hashBackup(localAgain)) !== localHash ||
+    !cloudAgain || cloudAgain.revision !== cloud.revision ||
+    (await hashBackup(cloudAgain.state)) !== cloudHash)
+    throw new Error('B21_LIBRARY_HEAD_CHANGED_DURING_PREPARATION');
+  pendingDevicePublish = {
+    ownerId: user.id, deviceId: meta.deviceId,
+    localHash, cloudHash, cloudRevision: cloud.revision,
+    expiresAt: Date.now() + 120_000,
+  };
+  return {
+    backupJson: JSON.stringify(cloud.state),
+    cloudRevision: cloud.revision,
+    expiresAt: pendingDevicePublish.expiresAt,
+    downloadStatus: 'REQUESTED_NOT_SAVED' as const,
+  };
+}
+
 export async function chooseThisDeviceForLibrarySync(user: LibraryAccountUser): Promise<LibrarySyncResult> {
+  const preview = pendingDevicePublish;
+  cancelPreparedLibraryCloudRestore();
   try {
     const [local, cloud] = await Promise.all([createLibraryBackup(), readCloudState()]);
+    const meta = readLibrarySyncMeta();
+    if (!meta || meta.userId !== user.id || !meta.enabled ||
+      (await getVerifiedLibraryAccountUser())?.id !== user.id)
+      throw new Error('LIBRARY_SYNC_CONFLICT: original device permission changed');
+    if (cloud) {
+      const [localHash, cloudHash] = await Promise.all([
+        hashBackup(local), hashBackup(cloud.state),
+      ]);
+      const outcome = validateNativeCloudRestore(preview, {
+        ownerId: user.id, deviceId: meta.deviceId, localHash,
+        cloudHash, cloudRevision: cloud.revision,
+        now: Date.now(), nativeEnabled: true,
+      });
+      if (outcome !== 'ready')
+        throw new Error('LIBRARY_SYNC_CONFLICT: cloud safety preparation ' +
+          outcome + '. Download and verify the original cloud backup again before replacing it.');
+    } else if (preview) {
+      throw new Error('LIBRARY_SYNC_CONFLICT: remote backup disappeared after preparation');
+    }
     return await pushLocal(user.id, cloud, local);
   } catch (error) {
     const message = describeError(error);
