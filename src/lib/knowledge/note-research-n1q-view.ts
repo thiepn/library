@@ -208,8 +208,12 @@ export function mountResearchViews(
   bindCitation(citeInsert,'click',()=>{
     const note=chosen();if(!note||!host.synthesis())return;
     try {
-      const changed=insertResearchNoteLink(host.draft().body,
-        synthBody.selectionStart,synthBody.selectionEnd,note,synthBody.maxLength);
+      const body=host.draft().body;
+      const cursorInside=document.activeElement===synthBody;
+      const start=cursorInside?synthBody.selectionStart:body.length;
+      const end=cursorInside?synthBody.selectionEnd:body.length;
+      const changed=insertResearchNoteLink(body,
+        start,end,note,synthBody.maxLength);
       host.setDraft(host.draft().title,changed.body);
       show('write','[data-research-synthesis-body]');
       synthBody.focus();
