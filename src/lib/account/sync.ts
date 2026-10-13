@@ -16,7 +16,11 @@ import {
   type LibrarySyncBaseline,
 } from './sync-policy';
 import { validateNativeCloudRestore, type NativeCloudRestorePreview } from './recovery-guard';
-import { assessSavedLibrarySafetyCopy, type LibrarySafetyDirection } from './saved-safety-copy';
+import {
+  assessSavedLibrarySafetyCopy,
+  explainNativeLibraryConflictIssue,
+  type LibrarySafetyDirection,
+} from './saved-safety-copy';
 import { assessLibraryRestoreReadback } from './restore-witness';
 import { assessNativeReconciliation } from './native-reconciliation';
 import { describeNativeLibraryHeads } from './conflict-preview';
@@ -603,8 +607,10 @@ export async function chooseThisDeviceForLibrarySync(user: LibraryAccountUser): 
     const result: LibrarySyncResult = {
       status: conflict ? 'conflict' : 'error',
       message: conflict
-        ? 'The cloud or local Library state changed while this device was publishing. Nothing was marked synced. Inspect both copies, preserve the original backup and choose again.'
-        : message,
+        ? 'The original Library publish was refused. ' +
+          explainNativeLibraryConflictIssue(message) +
+          ' Nothing was marked synced. Use Compare heads and prepare the current cloud safety copy again.'
+        : 'The original Library publish failed without updating its sync baseline. Local reading remains available.',
     };
     emitSync(result);
     return result;
@@ -677,7 +683,10 @@ export async function chooseCloudForLibrarySync(user: LibraryAccountUser): Promi
     const message = describeError(error);
     const result: LibrarySyncResult = {
       status: /LIBRARY_SYNC_CONFLICT/.test(message) ? 'conflict' : 'error',
-      message,
+      message: /LIBRARY_SYNC_CONFLICT/.test(message)
+        ? explainNativeLibraryConflictIssue(message) +
+          ' Preserve the original local backup and compare the current cloud revision again.'
+        : 'Original Library cloud recovery failed; local reading remains available. Recheck Account permission before retrying.',
     };
     emitSync(result);
     return result;

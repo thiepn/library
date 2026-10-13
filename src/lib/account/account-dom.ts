@@ -469,7 +469,8 @@ export function mountLibraryAccountPage(): () => void {
     const file = savedInput.files?.[0];
     savedInput.value = '';
     if (!direction || !file || !user) return;
-    const owner = user.id;
+    const verifiedSelectionOwner = user;
+    const owner = verifiedSelectionOwner.id;
     const selector = direction === 'use-device'
       ? '[data-recovery-saved-device]' : '[data-recovery-saved-cloud]';
     if (file.size > 64 * 1024 * 1024) {
@@ -479,7 +480,7 @@ export function mountLibraryAccountPage(): () => void {
     setBusy(true);
     text(selector, 'Validating the actual saved Library JSON against the prepared native snapshot…');
     void file.text().then((raw) => verifySavedLibraryConflictCopy(
-      { id: owner, email: user?.email ?? null } as LibraryAccountUser, direction, raw,
+      verifiedSelectionOwner, direction, raw,
     )).then((result) => {
       if (disposed || user?.id !== owner) return;
       text(selector, 'Original Library backup parser validated the selected saved file for ' +
