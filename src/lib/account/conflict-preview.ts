@@ -1,11 +1,12 @@
 /** Owner-facing B20 preview of ORIGINAL Library CAS heads (no content). */
+export type NativeLibraryHeadKind = 'baseline-missing' | 'both-changed' | 'cloud-only' | 'device-only' | 'matched' | 'cloud-missing';
 export function describeNativeLibraryHeads(input: {
   baselineRevision: number | null;
   baselineHash: string | null;
   localHash: string;
   cloudRevision: number | null;
   cloudHash: string | null;
-}): { kind: 'baseline-missing' | 'both-changed' | 'cloud-only' | 'device-only' | 'matched' | 'cloud-missing'; guidance: string } {
+}): { kind: NativeLibraryHeadKind; guidance: string } {
   const good = (value: string | null) => Boolean(value && /^[a-f0-9]{64}$/.test(value));
   if (input.cloudRevision === null || input.cloudHash === null)
     return { kind: 'cloud-missing', guidance: 'The native Library cloud snapshot is absent. Preserve the device backup before considering an original CAS upload.' };

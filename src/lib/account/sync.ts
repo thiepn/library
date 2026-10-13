@@ -564,6 +564,18 @@ export async function prepareLibraryCloudRestore(user: LibraryAccountUser) {
   const [localHash, cloudHash] = await Promise.all([
     hashBackup(local), hashBackup(cloud.state),
   ]);
+  // B22 re-read both ORIGINAL heads and the verified Account before
+  // constructing the short-lived local safety preflight.
+  const [secondLocal, secondCloud, verified] = await Promise.all([
+    createLibraryBackup(), readCloudState(), getVerifiedLibraryAccountUser(),
+  ]);
+  const latestMeta = readLibrarySyncMeta();
+  if (verified?.id !== user.id || latestMeta?.userId !== user.id ||
+    latestMeta.deviceId !== meta.deviceId || !latestMeta.enabled ||
+    (await hashBackup(secondLocal)) !== localHash ||
+    !secondCloud || secondCloud.revision !== cloud.revision ||
+    (await hashBackup(secondCloud.state)) !== cloudHash)
+    throw new Error('LIBRARY_SYNC_CONFLICT: heads changed while preparing original local safety backup');
   pendingCloudRestore = {
     ownerId: user.id, deviceId: meta.deviceId, localHash,
     cloudHash, cloudRevision: cloud.revision,
