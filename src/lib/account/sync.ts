@@ -434,7 +434,14 @@ export async function chooseThisDeviceForLibrarySync(user: LibraryAccountUser): 
     const [local, cloud] = await Promise.all([createLibraryBackup(), readCloudState()]);
     return await pushLocal(user.id, cloud, local);
   } catch (error) {
-    const result: LibrarySyncResult = { status: 'error', message: describeError(error) };
+    const message = describeError(error);
+    const conflict = /LIBRARY_SYNC_CONFLICT|40001/i.test(message);
+    const result: LibrarySyncResult = {
+      status: conflict ? 'conflict' : 'error',
+      message: conflict
+        ? 'The cloud or local Library state changed while this device was publishing. Nothing was marked synced. Inspect both copies, preserve the original backup and choose again.'
+        : message,
+    };
     emitSync(result);
     return result;
   }
