@@ -1,0 +1,7 @@
+# Library B19 — reconcile original CAS after both push and pull
+
+The **existing** `sync_thiepn_library_state` RPC remains the only remote writer; `restoreLibraryBackupJson` remains the only portable importer. Native push now re-reads cloud state after the CAS RPC, re-exports current local categories, rechecks verified Account identity and same device, and compares the acknowledged revision and both canonical SHA-256 hashes before advancing the original baseline. A concurrent second-device write or changed local edit remains a **conflict**, even when our earlier native RPC succeeded. The original conflict chooser and backup workflows stay available.
+
+Native pull already checked safety backup preflight and local post-import digest in B17/B18. B19 additionally re-reads the cloud head **after** applying original local restore, checks owner/device and local hash again, and declines to claim `pulled` if the remote changed during restore. This is a best-effort post-operation observation, not an atomic lock across cloud and browser storage; the next device's write might still occur afterward. Never claim an automatic rollback of an already applied import on observation failure.
+
+Tests cover second-device CAS revision change, local mutation, cloud disappearance, owner switch and consent loss using pure synthetic heads. Live two-device authenticated CAS and physical restore are NOT_TESTED; external custody is NOT_TESTED. Production remains NO_GO.
