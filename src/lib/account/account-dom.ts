@@ -18,12 +18,17 @@ import {
   readLibrarySyncMeta,
   reconcileLibraryAccountSync,
   inspectNativeLibraryHeads,
+  verifySavedLibraryConflictCopy,
   type LibrarySyncResult,
 } from './sync';
 import { isLibraryAutomaticSyncEnabled, setLibraryAutomaticSync } from './auto-sync';
 import { getLibraryCoreGrant, changeLibraryCoreGrant, requestLibrarySyncFromCore } from './core-coordination';
 import { inspectLibraryRecovery } from './recovery-inspection';
 import { classifyPostChoiceRecovery } from './post-choice-recovery';
+import {
+  explainNativeLibraryConflictIssue,
+  type LibrarySafetyDirection,
+} from './saved-safety-copy';
 import {
   createLibraryRecoveryIncidentHistory,
   describeNativeLibraryRecovery,
@@ -182,6 +187,7 @@ export function mountLibraryAccountPage(): () => void {
   let user: LibraryAccountUser | null = null;
   let disposed = false;
   let lastNativeStatus: LibrarySyncResult['status'] | null = null;
+  let pendingFileDirection: LibrarySafetyDirection | null = null;
   const incidents = createLibraryRecoveryIncidentHistory();
   const showIncidents = (owner: string | null) => {
     const entries = incidents.forOwner(owner).slice(-5).reverse();
@@ -218,7 +224,12 @@ export function mountLibraryAccountPage(): () => void {
       }
       const previousOwner = user?.id ?? null;
       user = await render();
-      if (previousOwner !== (user?.id ?? null)) cancelPreparedLibraryCloudRestore();
+      if (previousOwner !== (user?.id ?? null)) {
+        cancelPreparedLibraryCloudRestore();
+        pendingFileDirection = null;
+        text('[data-recovery-saved-device]', 'No saved cloud safety file verified for this Account.');
+        text('[data-recovery-saved-cloud]', 'No saved device safety file verified for this Account.');
+      }
       showIncidents(user?.id ?? null);
     } catch (error) {
       // Identity verification can be unavailable behind tracking blockers or
@@ -284,17 +295,20 @@ export function mountLibraryAccountPage(): () => void {
           window.dispatchEvent(new CustomEvent('thiepn:library-conflict-resolved', {
             detail: { ownerId: startedAs },
           }));
-        } else if (result.status === 'pushed' || result.status === 'pulled' ||
-          result.status === 'synced') {
-          // A concurrent second-device write can invalidate a previously
-          // successful original CAS after its final readback.
+        } else {
+          // A failed CAS, rejected safety file, or changed second-device head
+          // must leave the ORIGINAL native conflict chooser reachable.
           hidden('[data-sync-conflict]', false);
-          text('[data-sync-status]', 'The original Library state changed after the choice. No new sync confirmation was issued. Inspect both copies again.');
+          text('[data-sync-status]', result.status === 'pushed' ||
+            result.status === 'pulled' || result.status === 'synced'
+            ? 'The original Library state changed after the choice. Reinspect both copies before trying again.'
+            : result.message);
         }
       }
     } catch {
       const current = await getVerifiedLibraryAccountUser().catch(() => null);
       if (!disposed && current?.id === startedAs && user?.id === startedAs) {
+        if (conflictResolution) hidden('[data-sync-conflict]', false);
         text('[data-sync-status]', 'Native Library check failed. Local reading remains available; retry or export a manual backup.');
       } else {
         user = current;
@@ -439,10 +453,52 @@ export function mountLibraryAccountPage(): () => void {
       text('[data-recovery-after-choice]', 'Could not confirm matching original native heads. Keep the local and cloud backup copies before retrying.');
     }).finally(() => setBusy(false));
   });
+  const savedInput = document.querySelector<HTMLInputElement>('[data-recovery-saved-file]');
+  const startSavedValidation = (direction: LibrarySafetyDirection) => {
+    if (!user || !savedInput) return;
+    pendingFileDirection = direction;
+    savedInput.click();
+  };
+  document.querySelector('[data-recovery-verify-device]')?.addEventListener('click', () =>
+    startSavedValidation('use-device'));
+  document.querySelector('[data-recovery-verify-cloud]')?.addEventListener('click', () =>
+    startSavedValidation('use-cloud'));
+  savedInput?.addEventListener('change', () => {
+    const direction = pendingFileDirection;
+    pendingFileDirection = null;
+    const file = savedInput.files?.[0];
+    savedInput.value = '';
+    if (!direction || !file || !user) return;
+    const owner = user.id;
+    const selector = direction === 'use-device'
+      ? '[data-recovery-saved-device]' : '[data-recovery-saved-cloud]';
+    if (file.size > 64 * 1024 * 1024) {
+      text(selector, 'This saved JSON file exceeds the 64 MB safety inspection limit. Nothing was replaced.');
+      return;
+    }
+    setBusy(true);
+    text(selector, 'Validating the actual saved Library JSON against the prepared native snapshot…');
+    void file.text().then((raw) => verifySavedLibraryConflictCopy(
+      { id: owner, email: user?.email ?? null } as LibraryAccountUser, direction, raw,
+    )).then((result) => {
+      if (disposed || user?.id !== owner) return;
+      text(selector, 'Original Library backup parser validated the selected saved file for ' +
+        (direction === 'use-device' ? 'cloud safety before Device publish' : 'device safety before cloud restore') +
+        '. Matched native revision ' + result.cloudRevision +
+        '. You may now choose the source while the two-minute preparation is valid. External custody NOT TESTED.');
+      record(owner, 'inspect', 'saved backup validated locally',
+        readLibrarySyncMeta()?.revision ?? null, result.cloudRevision);
+    }).catch((error) => {
+      if (!disposed && user?.id === owner)
+        text(selector, explainNativeLibraryConflictIssue(
+          error instanceof Error ? error.message : 'unavailable'));
+    }).finally(() => setBusy(false));
+  });
   document.querySelector('[data-recovery-prepare-device]')?.addEventListener('click', () => {
     if (!user) return;
     const selectedOwner = user.id;
     setBusy(true);
+    text('[data-recovery-saved-device]', 'New cloud safety snapshot prepared: validate its saved JSON file before Use this device.');
     text('[data-recovery-device-preparation]', 'Reading original Library cloud and local heads for a remote safety copy…');
     void prepareLibraryDevicePublish(user).then((prepared) => {
       if (disposed || user?.id !== selectedOwner) {
@@ -474,6 +530,7 @@ export function mountLibraryAccountPage(): () => void {
     if (!user) return;
     const ownerId = user.id;
     setBusy(true);
+    text('[data-recovery-saved-cloud]', 'New device safety snapshot prepared: validate its saved JSON file before Use cloud.');
     text('[data-recovery-preparation]', 'Reading the original Library snapshot and preparing a local safety backup…');
     void prepareLibraryCloudRestore(user).then((prepared) => {
       if (disposed || user?.id !== ownerId) {

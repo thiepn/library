@@ -88,6 +88,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
           </div>
           <p data-recovery-inspection role="status" aria-live="polite">No recovery inspection performed. Local reading is available without a Core grant.</p>
           <p class="micro" data-recovery-cas>Native CAS revisions are displayed after an original Library sync or conflict choice.</p>
+          <button type="button" data-account-action data-recovery-post-choice>Recheck Library's native heads after any conflict choice</button>
+          <p class="micro" role="status" aria-live="polite" data-recovery-after-choice>No original post-choice comparison performed in this tab.</p>
           <p class="micro" data-recovery-history-empty>No native recovery incidents recorded in this tab.</p>
           <ol data-recovery-history aria-label="Local recovery incident history"></ol>
           <div data-recovery-conflict-actions hidden>
@@ -104,8 +106,15 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
           <button type="button" data-account-action data-recovery-prepare-device>Prepare device publish &amp; download cloud safety copy</button>
           <p class="micro" data-recovery-device-preparation role="status" aria-live="polite">Before using this device to replace an existing cloud snapshot, request and save a separate copy of that cloud snapshot.</p>
           <p class="micro" data-recovery-preparation role="status" aria-live="polite">No native safety backup prepared in this tab.</p>
-          <button type="button" data-account-action data-recovery-post-choice>Recheck Library after choosing a source</button>
-          <p class="micro" role="status" aria-live="polite" data-recovery-after-choice>No original post-choice comparison performed in this tab.</p>
+          <input type="file" accept=".json,application/json" data-recovery-saved-file aria-label="Select a saved Library JSON safety backup" hidden />
+          <div class="account-actions">
+            <button type="button" data-account-action data-recovery-verify-device>Validate saved cloud safety file</button>
+            <button type="button" data-account-action data-recovery-verify-cloud>Validate saved device safety file</button>
+          </div>
+          <p class="micro" role="status" aria-live="polite" data-recovery-saved-device>No saved cloud safety file verified yet.</p>
+          <p class="micro" role="status" aria-live="polite" data-recovery-saved-cloud>No saved device safety file verified yet.</p>
+          <p class="micro">File inspection uses Library's original JSON validator and compares only its canonical snapshot hash with the current one-use preparation. Choosing Device or Cloud requires a matching selected file. Nothing is uploaded or imported by inspection. A matching file on this device does not prove independent external backup retention.</p>
+
           <div class="account-actions">
             <button type="button" class="account-primary" data-account-action data-use-device>Use this device</button>
             <button type="button" data-account-action data-use-cloud>Use cloud</button>
