@@ -68,7 +68,7 @@ const catalog = works.map((work) => {
       </nav>
     </section>
 
-    <form class="browse-filters" data-browse-filters role="search" aria-label="Filter published books" onsubmit="return false">
+    <form class="browse-filters" data-browse-filters role="search" aria-label="Filter published books">
       <label class="browse-search"><span>Title, author or topic</span><input data-browse-query type="search" autocomplete="off" placeholder="Search the catalog…" /></label>
       <label><span>Subject</span>
         <select data-browse-subject>
@@ -172,6 +172,7 @@ const catalog = works.map((work) => {
       if (count) count.textContent = visible.length + ' of ' + books.length + ' books';
       if (empty) empty.hidden = visible.length > 0;
     }
+    form?.addEventListener('submit', (event) => { event.preventDefault(); refresh(); });
     form?.addEventListener('input', refresh);
     form?.addEventListener('change', refresh);
     reset?.addEventListener('click', () => { form?.reset(); refresh(); query?.focus(); });
