@@ -126,6 +126,7 @@ const catalog = works.map((work) => {
       </div>
 
       {catalog.length ? (
+        <>
         <div class="catalog-grid">
           {catalog.map(({ work, coverUrl, stableGeneratedCover, release, readHref, epub, formats, primary }) => (
             <article
@@ -202,6 +203,7 @@ const catalog = works.map((work) => {
           ))}
         </div>
         <p class="catalog-explore"><a class="primary-action" href={`${base}/browse`}>Explore and filter all {works.length} books →</a></p>
+        </>
       ) : (
         <div class="empty compact-empty"><h2>No books yet.</h2><p>Your Library does not contain any books yet.</p></div>
       )}
