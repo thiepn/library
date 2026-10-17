@@ -10,6 +10,10 @@ The public product is a personal reading application, not a publishing dashboard
 
 Publication validation, immutable media storage, and release ingestion remain maintenance infrastructure behind the reader. They are not the product’s public information architecture.
 
+## Book Notes N1A (isolated draft)
+
+The new `/notebook` UI supports local Markdown book overviews, chapter summaries, and free reading notes with debounced autosave, CAS revision checks and a per-book Markdown export. Original EPUB/PDF/web highlights remain in their existing stores and appear alongside notebook documents in `/knowledge`. **Until N1C, notebook documents are local-only and are not included in the existing JSON backup or THIEPN Account sync**; the UI warns readers to export important notes. No reader engine migrations or release actions are part of N1A.
+
 ## Reader capabilities
 
 - one consolidated EPUB reader for hosted and personal books
