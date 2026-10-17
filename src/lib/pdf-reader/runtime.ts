@@ -1,4 +1,5 @@
 import { copyPassageReference } from '../reader/passage-copy';
+import { mountReadingGuide } from '../reader/reading-guide';
 import {
   getDocument,
   GlobalWorkerOptions,
@@ -285,6 +286,7 @@ class PdfReaderController {
   private openGeneration = 0;
   private renderGeneration = 0;
   private destroyed = false;
+  private readonly disposeReadingGuide: () => void;
 
   constructor(root: HTMLElement, candidate: PdfCanonicalCandidate) {
     this.root = root;
@@ -292,6 +294,14 @@ class PdfReaderController {
     this.elements = collectElements(root);
     this.device = new PdfDeviceController(root);
     this.device.start();
+    this.disposeReadingGuide = mountReadingGuide(root, {
+      mode: 'pdf',
+      actions: [
+        { label: 'Search PDF', selector: '[data-pdf-search-toggle]' },
+        { label: 'Saved pages', selector: '[data-pdf-bookmark-toggle]' },
+        { label: 'Highlights & notes', selector: '[data-pdf-annotation-toggle]' },
+      ],
+    });
     this.bind();
   }
 
@@ -1077,6 +1087,7 @@ class PdfReaderController {
     this.destroyed = true;
     this.openGeneration += 1;
     this.device.destroy();
+    this.disposeReadingGuide();
     this.abort.abort();
     this.resizeObserver?.disconnect();
     if (this.resizeTimer) window.clearTimeout(this.resizeTimer);
