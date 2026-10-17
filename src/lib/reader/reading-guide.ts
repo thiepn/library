@@ -64,7 +64,8 @@ export function mountReadingGuide(root: HTMLElement, options: ReadingGuideOption
   }
   function reveal() {
     if (disposed) return;
-    // Native readers own their original settings and tools. The help view never rewrites them.
+    // Avoid stacking the guide over a live native search/annotation dialog.
+    if (root.querySelector('[role="dialog"]:not([hidden]), dialog[open]')) return;
     lastFocus = document.activeElement instanceof HTMLElement ? document.activeElement : button;
     dialog.hidden = false;
     button.setAttribute('aria-expanded', 'true');
