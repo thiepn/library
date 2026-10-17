@@ -10,17 +10,21 @@ const files = [
   'src/lib/reader-entry/dom.ts',
   'src/lib/reader-entry/client.ts',
   'src/lib/reader-entry/continuity.ts',
+  'src/pages/browse.astro',
+  'src/lib/content/browse.ts',
 ];
 const present = (await Promise.all(files.map(exists))).every(Boolean);
 pass('LIBRARY_HOME_P17', present, 'Reader-first Library homepage, responsive styles, and ER5 continuity boundary are present');
 
 if (present) {
-  const [page, css, dom, client, continuity] = await Promise.all([
+  const [page, css, dom, client, continuity, browse, browseModel] = await Promise.all([
     readFile('src/pages/index.astro', 'utf8'),
     readFile('src/styles/library-home.css', 'utf8'),
     readFile('src/lib/reader-entry/dom.ts', 'utf8'),
     readFile('src/lib/reader-entry/client.ts', 'utf8'),
     readFile('src/lib/reader-entry/continuity.ts', 'utf8'),
+    readFile('src/pages/browse.astro', 'utf8'),
+    readFile('src/lib/content/browse.ts', 'utf8'),
   ]);
 
   pass(
@@ -117,6 +121,29 @@ if (present) {
       && client.includes("new BroadcastChannel(PDF_CHANNEL)")
       && page.includes("window.addEventListener('pagehide', unsubscribe"),
     'Saved state and cross-format reading state refresh through their authoritative channels with lifecycle cleanup',
+  );
+
+  pass(
+    'LIBRARY_L1_READER_PARITY',
+    page.includes('readerCanOpen(work) ?')
+      && browse.includes('readerCanOpen(work) ?')
+      && page.includes('data-web-readable={readHref ?')
+      && browse.includes('data-web-readable={readerHref ?'),
+    'Both home and Browse use the original canonical native EPUB/legacy route availability; PDF remains separate',
+  );
+
+  pass(
+    'LIBRARY_L1_BROWSE_SOURCE',
+    browse.includes('visibleBrowseBooks(books, filters)')
+      && browse.includes('data-browse-filters')
+      && browse.includes('data-browse-grid')
+      && browse.includes('data-catalog-work={work.id}')
+      && browse.includes("event.preventDefault()")
+      && browseModel.includes('isReaderFacingSubject')
+      && browseModel.includes('books.filter')
+      && !browse.includes('localStorage.setItem(')
+      && !browse.includes('indexedDB.open('),
+    'Browse filters original published metadata locally without introducing persisted positions, cloud authority, or duplicate catalog engines',
   );
 
   pass(
