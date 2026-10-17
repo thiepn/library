@@ -44,7 +44,7 @@ jobs:
       - name: Build actual Library preview
         run: pnpm build
       - name: Exercise L2 source-attributed copy, mobile saved access and reader help
-        run: pnpm exec playwright test tests/e2e/l2-reading-interactions.spec.ts --project=chromium-desktop --project=chromium-phone
+        run: pnpm exec playwright test tests/e2e/l2-reading-interactions.spec.ts --project=chromium-desktop --project=chromium-phone --retries=0 --max-failures=1
       - name: Test L1 at 320px, 390px and 1440px in Chromium desktop and mobile
         run: pnpm exec playwright test tests/e2e/library-l1-browse.spec.ts --project=chromium-desktop --project=chromium-phone
       - name: Check original reader, touch, and navigation journeys
