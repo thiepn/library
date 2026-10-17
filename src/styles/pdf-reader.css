@@ -530,18 +530,27 @@
     .pdf-reader__identity { gap: 5px; min-width: 0; }
     .pdf-reader__title { max-width: 19vw; }
     .pdf-reader__tools { gap: 3px; }
-    /* At phone width, Help is the visible native-tool menu. Its actions still
-       invoke the original Search, Saved and Notes controls, which stay in DOM. */
+    /* Preserve direct Search/Notes controls on standard 390px phones.
+       On very narrow phones Help can open the same native panels instead. */
     .pdf-reader__tools > [data-pdf-search-toggle],
-    .pdf-reader__tools > [data-pdf-annotation-toggle] { display: none; }
+    .pdf-reader__tools > [data-pdf-annotation-toggle] {
+      min-width: 40px;
+      padding-inline: 5px;
+      font-size: .72rem;
+    }
     .pdf-reader__identity { flex: 1 1 0; overflow: hidden; }
     .pdf-reader__tools { flex: 0 0 auto; }
-    .pdf-reader__tools .reading-guide-toggle { min-width: 44px; min-height: 44px; }
+    .pdf-reader__tools .reading-guide-toggle { min-width: 40px; min-height: 44px; }
     .pdf-reader__tools [data-pdf-bookmark-toggle] { display: none; }
     .pdf-reader__page-controls { gap: 4px; }
     .pdf-reader__page-controls input { width: 48px; }
     .pdf-reader__zoom-controls { gap: 4px; }
     .pdf-reader__zoom-controls select { max-width: 118px; }
+  }
+
+  @media (max-width: 360px) {
+    .pdf-reader__tools > [data-pdf-search-toggle],
+    .pdf-reader__tools > [data-pdf-annotation-toggle] { display: none; }
   }
 
   @media (prefers-reduced-motion: reduce) {
