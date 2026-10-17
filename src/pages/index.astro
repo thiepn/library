@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getLibraryWorks } from '../lib/content/repository';
 import { taxonomyLabel } from '../lib/content/taxonomy';
+import { readerCanOpen } from '../lib/reader/migration';
 import '../styles/library-home.css';
 
 const works = await getLibraryWorks();
@@ -23,10 +24,10 @@ const catalog = works.map((work) => {
   const release = work.release;
   const pdf = release?.artifacts.pdf;
   const epub = release?.artifacts.epub;
-  const readHref = work.webMaterialized ? `${base}/works/${work.slug}/read` : undefined;
+  const readHref = readerCanOpen(work) ? `${base}/works/${work.slug}/read` : undefined;
   const pdfHref = pdf ? `${base}/works/${work.slug}/pdf` : undefined;
   const formats = [
-    work.webMaterialized ? 'Reader' : null,
+    readHref ? 'Reader' : null,
     epub ? 'EPUB' : null,
     pdf ? 'PDF' : null,
   ].filter((value): value is string => Boolean(value));
@@ -44,9 +45,14 @@ const catalog = works.map((work) => {
   <div class="page library-home" data-library-home>
     <header class="library-intro">
       <div class="library-intro-copy">
-        <p class="eyebrow">Your reading library</p>
-        <h1>Books</h1>
-        <p>{works.length} book{works.length === 1 ? '' : 's'} available. Pick up where you left off, browse your library, or find something new to read.</p>
+        <p class="eyebrow">Your reading desk</p>
+        <h1>Return to reading.</h1>
+        <p>Resume where you stopped, revisit a recent book, or explore {works.length} available titles. Your reading position stays with the original EPUB, PDF, or web edition.</p>
+        <nav class="library-quick-nav" aria-label="Reading shortcuts">
+          <a class="library-quick-nav__primary" href={`${base}/browse`}>Browse all books →</a>
+          <a href={`${base}/saved`}>My Library</a>
+          <a href={`${base}/knowledge`}>Reading notes</a>
+        </nav>
       </div>
       <form class="catalog-search" action={`${base}/search`} method="get" role="search">
         <label class="sr-only" for="home-library-search">Search the Library</label>
@@ -107,9 +113,11 @@ const catalog = works.map((work) => {
       <div class="catalog-toolbar">
         <div>
           <p class="eyebrow">Library</p>
-          <h2 id="catalog-heading">All books</h2>
+          <h2 id="catalog-heading">Discover books</h2>
+          <p class="micro">The full catalog is also available in the focused Browse view with filters for subjects, languages, and reading formats.</p>
         </div>
         <nav class="catalog-links" aria-label="Library navigation">
+          <a href={`${base}/browse`}>Browse & filter</a>
           <a href={`${base}/saved`}>My Library</a>
           <a href={`${base}/subjects`}>Subjects</a>
           <a href={`${base}/collections`}>Collections</a>
@@ -193,6 +201,7 @@ const catalog = works.map((work) => {
             </article>
           ))}
         </div>
+        <p class="catalog-explore"><a class="primary-action" href={`${base}/browse`}>Explore and filter all {works.length} books →</a></p>
       ) : (
         <div class="empty compact-empty"><h2>No books yet.</h2><p>Your Library does not contain any books yet.</p></div>
       )}
