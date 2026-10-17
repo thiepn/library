@@ -1,6 +1,7 @@
 ---
 import '../../styles/reader-shell.css';
 import '../../styles/reader-modes.css';
+import '../../styles/reading-guide.css';
 import '../../styles/reader-typography.css';
 
 interface Props {
@@ -159,8 +160,20 @@ const {
 
 <script>
   import { mountReaderShell } from '../../lib/reader/shell';
+  import { mountReadingGuide } from '../../lib/reader/reading-guide';
 
   document.querySelectorAll<HTMLElement>('[data-reader-shell]').forEach((root) => {
     mountReaderShell(root);
+    const dispose = mountReadingGuide(root, {
+      mode: 'epub',
+      actions: [
+        { label: 'Contents', selector: '[data-reader-command="contents"]' },
+        { label: 'Search book', selector: '[data-reader-search-toggle]' },
+        { label: 'Bookmarks', selector: '[data-reader-bookmarks-toggle]' },
+        { label: 'Highlights & notes', selector: '[data-reader-annotations-toggle]' },
+        { label: 'Reading appearance', selector: '[data-reader-command="appearance"]' },
+      ],
+    });
+    window.addEventListener('pagehide', dispose, { once: true });
   });
 </script>
