@@ -1,3 +1,4 @@
+import { copyPassageReference } from '../reader/passage-copy';
 import {
   getDocument,
   GlobalWorkerOptions,
@@ -94,6 +95,8 @@ type PdfReaderElements = {
   selectionQuote: HTMLElement;
   selectionHighlight: HTMLButtonElement;
   selectionNote: HTMLButtonElement;
+  selectionCopy: HTMLButtonElement;
+  selectionFeedback: HTMLElement;
   selectionDismiss: HTMLButtonElement;
   noteDialog: HTMLDialogElement;
   noteQuote: HTMLElement;
@@ -154,6 +157,8 @@ function collectElements(root: HTMLElement): PdfReaderElements {
     selectionQuote: required(root, '[data-pdf-selection-quote]'),
     selectionHighlight: required(root, '[data-pdf-selection-highlight]'),
     selectionNote: required(root, '[data-pdf-selection-note]'),
+    selectionCopy: required(root, '[data-pdf-selection-copy]'),
+    selectionFeedback: required(root, '[data-pdf-selection-feedback]'),
     selectionDismiss: required(root, '[data-pdf-selection-dismiss]'),
     noteDialog: required(root, '[data-pdf-note-dialog]'),
     noteQuote: required(root, '[data-pdf-note-quote]'),
@@ -315,6 +320,7 @@ class PdfReaderController {
     this.elements.annotationFilter.addEventListener('input', () => this.renderAnnotations(), { signal });
     this.elements.selectionHighlight.addEventListener('click', () => void this.createAnnotation(''), { signal });
     this.elements.selectionNote.addEventListener('click', () => this.openNoteForSelection(), { signal });
+    this.elements.selectionCopy.addEventListener('click', () => void this.copyPendingSelection(), { signal });
     this.elements.selectionDismiss.addEventListener('click', () => this.dismissSelection(), { signal });
     this.elements.noteSave.addEventListener('click', () => void this.saveNoteDialog(), { signal });
     this.elements.noteCancel.addEventListener('click', () => this.closeNoteDialog(), { signal });
@@ -666,7 +672,22 @@ class PdfReaderController {
     if (!rects.length) return;
     this.pendingSelection = { quote, rects };
     this.elements.selectionQuote.textContent = quote.length > 180 ? `${quote.slice(0, 177)}…` : quote;
+    this.elements.selectionFeedback.textContent = '';
     this.elements.selectionActions.hidden = false;
+  }
+
+  private async copyPendingSelection(): Promise<void> {
+    const pending = this.pendingSelection;
+    if (!pending) return;
+    const copied = await copyPassageReference({
+      text: pending.quote,
+      title: this.root.querySelector<HTMLElement>('.pdf-reader__title')?.textContent ?? 'Book',
+      location: `PDF · page ${this.page} of ${this.pageCount}`,
+    });
+    if (this.destroyed || this.pendingSelection !== pending) return;
+    this.elements.selectionFeedback.textContent = copied
+      ? 'Passage and PDF page reference copied.'
+      : 'Clipboard unavailable. Select and copy text using your device controls.';
   }
 
   private dismissSelection(clearBrowserSelection = true): void {
@@ -815,7 +836,20 @@ class PdfReaderController {
       remove.type = 'button';
       remove.textContent = 'Delete';
       remove.addEventListener('click', () => void this.removeAnnotation(annotation), { signal: this.abort.signal });
-      actions.append(open, edit, remove);
+      const copy = document.createElement('button');
+      copy.type = 'button';
+      copy.textContent = 'Copy quote';
+      copy.setAttribute('aria-label', `Copy PDF highlight on page ${annotation.page}`);
+      copy.addEventListener('click', () => {
+        void copyPassageReference({
+          text: annotation.quote,
+          title: this.root.querySelector<HTMLElement>('.pdf-reader__title')?.textContent ?? 'Book',
+          location: `PDF · page ${annotation.page} of ${this.pageCount}`,
+        }).then((copied) => {
+          if (!this.destroyed) this.elements.annotationStatus.textContent = copied ? 'Highlight and page reference copied.' : 'Clipboard unavailable.';
+        });
+      }, { signal: this.abort.signal });
+      actions.append(open, edit, copy, remove);
       article.append(actions);
       this.elements.annotationList.append(article);
     }
