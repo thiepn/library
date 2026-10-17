@@ -148,8 +148,10 @@ const {
     <div>
       <button type="button" data-pdf-selection-highlight>Highlight</button>
       <button type="button" data-pdf-selection-note>Add note</button>
+      <button type="button" data-pdf-selection-copy>Copy with reference</button>
       <button type="button" data-pdf-selection-dismiss aria-label="Dismiss selected text actions">×</button>
     </div>
+    <p data-pdf-selection-feedback role="status" aria-live="polite"></p>
   </section>
 
   <dialog class="pdf-reader__note-dialog" data-pdf-note-dialog aria-labelledby="pdf-note-dialog-title">
