@@ -1,0 +1,199 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getLibraryWorks } from '../lib/content/repository';
+import { getTaxonomyItems, taxonomyLabel } from '../lib/content/taxonomy';
+import { readerCanOpen } from '../lib/reader/migration';
+import { isReaderFacingSubject, type BrowseBook, type BrowseFormat } from '../lib/content/browse';
+import '../styles/library-home.css';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const works = await getLibraryWorks();
+const subjects = getTaxonomyItems(works, 'subjects').filter((item) => isReaderFacingSubject(item.slug));
+const hasOtherSubjects = works.some((work) => !work.classification.subjects.some(isReaderFacingSubject));
+const languages = [...new Set(works.map((work) => work.language))].sort();
+
+function authorLabel(work: (typeof works)[number]): string {
+  return (work.contributors ?? [])
+    .filter((value): value is Record<string, unknown> => !!value && typeof value === 'object')
+    .filter((value) => ['author', 'creator', 'aut'].includes(String(value.role ?? '').toLowerCase()))
+    .map((value) => String(value.name ?? '').trim()).filter(Boolean).join(', ') || 'Unknown author';
+}
+function languageLabel(code: string): string {
+  try { return new Intl.DisplayNames(['en'], { type: 'language' }).of(code) ?? code; }
+  catch { return code; }
+}
+const catalog = works.map((work) => {
+  const release = work.release;
+  const epub = release?.artifacts.epub;
+  const pdf = release?.artifacts.pdf;
+  const readerHref = readerCanOpen(work) ? base + '/works/' + work.slug + '/read' : undefined;
+  const pdfHref = pdf ? base + '/works/' + work.slug + '/pdf' : undefined;
+  const primaryHref = readerHref ?? pdfHref;
+  const cover = /^https?:\/\//i.test(work.cover.src) ? work.cover.src
+    : base + (work.cover.src.startsWith('/') ? work.cover.src : '/' + work.cover.src);
+  const author = authorLabel(work);
+  const formats = [
+    ...(epub ? ['epub' as const] : []),
+    ...(pdf ? ['pdf' as const] : []),
+    ...(work.webMaterialized ? ['web' as const] : []),
+  ] satisfies BrowseFormat[];
+  const browse: BrowseBook = {
+    id: work.id,
+    title: work.title,
+    author,
+    language: work.language,
+    subjects: work.classification.subjects,
+    formats,
+    searchText: [
+      work.title, work.subtitle ?? '', author, work.shortDescription,
+      ...work.classification.tags, ...work.classification.collections,
+      ...work.classification.subjects.map(taxonomyLabel),
+    ].join(' '),
+    updatedAt: String(work.publication.lastUpdated),
+  };
+  return { work, release, epub, pdf, readerHref, primaryHref, cover, author, formats, browse };
+});
+---
+<BaseLayout title="Browse books" description="Browse and filter published Library books by source-backed subjects, languages, formats and titles.">
+  <div class="page browse-page" data-browse>
+    <section class="browse-header" aria-labelledby="browse-heading">
+      <p class="eyebrow">Explore the collection</p>
+      <h1 id="browse-heading">Browse books</h1>
+      <p>Search the published catalog or narrow the selection with source-backed metadata. Personal imports remain private in <a href={base + '/saved'}>My Library</a>.</p>
+      <nav class="browse-shortcuts" aria-label="Browse shortcuts">
+        <a href={base}>← Reading desk</a>
+        <a href={base + '/saved'}>My Library</a>
+        <a href={base + '/subjects'}>All subject codes</a>
+        <a href={base + '/collections'}>Collections</a>
+      </nav>
+    </section>
+
+    <form class="browse-filters" data-browse-filters role="search" aria-label="Filter published books" onsubmit="return false">
+      <label class="browse-search"><span>Title, author or topic</span><input data-browse-query type="search" autocomplete="off" placeholder="Search the catalog…" /></label>
+      <label><span>Subject</span>
+        <select data-browse-subject>
+          <option value="">All subjects</option>
+          {subjects.map((subject) => <option value={subject.slug}>{subject.label} ({subject.count})</option>)}
+          {hasOtherSubjects && <option value="__other">Other source classifications</option>}
+        </select>
+      </label>
+      <label><span>Language</span>
+        <select data-browse-language><option value="">All languages</option>{languages.map((language) => <option value={language}>{languageLabel(language)}</option>)}</select>
+      </label>
+      <label><span>Available format</span>
+        <select data-browse-format><option value="">All formats</option><option value="epub">EPUB</option><option value="pdf">PDF</option><option value="web">Web edition</option></select>
+      </label>
+      <label><span>Order</span>
+        <select data-browse-sort><option value="recent">Recently updated</option><option value="title">Title A–Z</option><option value="author">Author A–Z</option></select>
+      </label>
+      <button type="button" data-browse-reset>Clear filters</button>
+    </form>
+    <div class="browse-count" data-browse-count role="status" aria-live="polite">{works.length} books</div>
+
+    <section class="catalog-section" aria-label="Published books">
+      <div class="catalog-grid" data-browse-grid>
+        {catalog.map(({ work, release, epub, pdf, readerHref, primaryHref, cover, author, browse }) => (
+          <article class="catalog-book browse-book"
+            data-pagefind-ignore="all"
+            data-browse-work={work.id}
+            data-browse-record={JSON.stringify(browse)}
+            data-catalog-work={work.id}
+            data-edition={work.publication.edition}
+            data-release-version={release?.version ?? ''}
+            data-web-readable={readerHref ? 'true' : 'false'}
+          >
+            <a class="catalog-cover" href={base + '/works/' + work.slug} aria-label={'Open ' + work.title}>
+              <img src={cover} alt={work.cover.alt} loading="lazy" decoding="async" width={192} height={288} />
+            </a>
+            <div class="catalog-copy">
+              <p class="eyebrow">{work.classification.subjects.filter(isReaderFacingSubject).slice(0, 2).map(taxonomyLabel).join(' · ') || 'Other classification'}</p>
+              <h2><a href={base + '/works/' + work.slug}>{work.title}</a></h2>
+              <p class="catalog-author">by {author}</p>
+              {work.subtitle && <p class="catalog-subtitle">{work.subtitle}</p>}
+              <p class="catalog-description">{work.shortDescription}</p>
+              <p class="micro catalog-activity" data-catalog-activity hidden></p>
+              <div class="catalog-progress" data-catalog-progress hidden>
+                <div class="catalog-progress__copy"><span data-catalog-progress-context>Reading progress</span><strong data-catalog-progress-label>0%</strong></div>
+                <div class="catalog-progress__track"><span data-catalog-progress-fill></span><i data-catalog-progress-furthest></i></div>
+              </div>
+              <div class="catalog-meta"><div class="catalog-format-list" aria-label="Available formats">
+                {readerHref && <span>Reader</span>}
+                {epub && <span>EPUB</span>}
+                {pdf && <span>PDF</span>}
+              </div></div>
+              <div class="catalog-actions">
+                {primaryHref && <a class="catalog-primary" data-catalog-reader-cta={readerHref && epub ? '' : undefined} href={primaryHref}>{readerHref ? 'Start reading' : 'Read PDF'}</a>}
+                <a href={base + '/works/' + work.slug}>Book details</a>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+      <div class="empty" data-browse-empty hidden><h2>No matching books</h2><p>Try another title, subject, language or reading format.</p></div>
+    </section>
+  </div>
+  <script>
+    import { visibleBrowseBooks, type BrowseBook, type BrowseFilters } from '../lib/content/browse';
+    const root = document.querySelector<HTMLElement>('[data-browse]');
+    const form = root?.querySelector<HTMLFormElement>('[data-browse-filters]');
+    const grid = root?.querySelector<HTMLElement>('[data-browse-grid]');
+    const count = root?.querySelector<HTMLElement>('[data-browse-count]');
+    const empty = root?.querySelector<HTMLElement>('[data-browse-empty]');
+    const query = form?.querySelector<HTMLInputElement>('[data-browse-query]');
+    const subject = form?.querySelector<HTMLSelectElement>('[data-browse-subject]');
+    const language = form?.querySelector<HTMLSelectElement>('[data-browse-language]');
+    const format = form?.querySelector<HTMLSelectElement>('[data-browse-format]');
+    const sort = form?.querySelector<HTMLSelectElement>('[data-browse-sort]');
+    const reset = form?.querySelector<HTMLButtonElement>('[data-browse-reset]');
+    const nodes = [...(grid?.querySelectorAll<HTMLElement>('[data-browse-work]') ?? [])];
+    const byId = new Map<string, HTMLElement>();
+    const books: BrowseBook[] = [];
+    for (const node of nodes) {
+      try {
+        const value = JSON.parse(node.dataset.browseRecord ?? '') as BrowseBook;
+        if (!value.id || byId.has(value.id)) continue;
+        byId.set(value.id, node);
+        books.push(value);
+      } catch { /* Invalid display metadata does not modify stored reader data. */ }
+    }
+    function refresh() {
+      if (!grid) return;
+      const filters: BrowseFilters = {
+        query: query?.value ?? '',
+        subject: subject?.value ?? '',
+        language: language?.value ?? '',
+        format: (format?.value ?? '') as BrowseFilters['format'],
+        sort: (sort?.value ?? 'recent') as BrowseFilters['sort'],
+      };
+      const visible = visibleBrowseBooks(books, filters);
+      const allowed = new Set(visible.map((book) => book.id));
+      for (const [id, node] of byId) node.hidden = !allowed.has(id);
+      grid.append(...visible.map((book) => byId.get(book.id)).filter((node): node is HTMLElement => !!node));
+      if (count) count.textContent = visible.length + ' of ' + books.length + ' books';
+      if (empty) empty.hidden = visible.length > 0;
+    }
+    form?.addEventListener('input', refresh);
+    form?.addEventListener('change', refresh);
+    reset?.addEventListener('click', () => { form?.reset(); refresh(); query?.focus(); });
+    refresh();
+  </script>
+  <style>
+    .browse-header { border-bottom:1px solid var(--rule); padding:40px 0 30px; }
+    .browse-header h1 { margin:0 0 12px; font:500 clamp(2.8rem,6vw,5.8rem)/.95 var(--display); letter-spacing:-.045em; }
+    .browse-header > p:not(.eyebrow) { margin:0; color:var(--secondary); max-width:72ch; line-height:1.6; }
+    .browse-shortcuts { display:flex; flex-wrap:wrap; gap:12px 22px; margin-top:22px; font-size:.84rem; }
+    .browse-filters { display:grid; grid-template-columns:minmax(190px,2fr) repeat(4,minmax(130px,1fr)) auto; gap:10px; padding:25px 0 15px; align-items:end; }
+    .browse-filters label { display:grid; gap:6px; min-width:0; color:var(--secondary); font-size:.75rem; }
+    .browse-filters input,.browse-filters select { width:100%; min-width:0; min-height:44px; border:1px solid var(--strong-rule); border-radius:0; padding:8px; color:var(--ink); background:var(--surface); font-size:.85rem; }
+    .browse-filters button { min-height:44px; padding:8px 10px; border:1px solid var(--strong-rule); background:transparent; cursor:pointer; font-size:.8rem; }
+    .browse-count { padding:7px 0 17px; font-size:.8rem; color:var(--secondary); }
+    .browse-page .catalog-section { padding-top:0; }
+    .browse-page .catalog-book h2 { margin:8px 0 5px; font:500 1.42rem/1.05 var(--display); letter-spacing:-.02em; }
+    .browse-page .catalog-book h2 a { text-decoration:none; }
+    .browse-page .catalog-book h2 a:hover { color:var(--accent); }
+    .browse-book[hidden] { display:none; }
+    @media (max-width:1150px) { .browse-filters { grid-template-columns:repeat(3,minmax(0,1fr)); } .browse-search { grid-column:span 2; } }
+    @media (max-width:620px) { .browse-filters { grid-template-columns:repeat(2,minmax(0,1fr)); } .browse-search { grid-column:1/-1; } .browse-header { padding-top:26px; } }
+    @media (max-width:380px) { .browse-filters { grid-template-columns:1fr; } .browse-search { grid-column:auto; } }
+  </style>
+</BaseLayout>
