@@ -1,0 +1,56 @@
+name: Library L1 One-Time Browser Acceptance
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/l1-browser-acceptance.yml'
+      - 'tests/e2e/library-l1-browse.spec.ts'
+      - 'src/pages/browse.astro'
+      - 'src/pages/index.astro'
+      - 'src/lib/content/browse.ts'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: library-l1-browser-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  l1-chromium:
+    if: github.event.pull_request.number == 194
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Setup pnpm and Node
+        uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2
+        with:
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+          cache: true
+      - name: Install frozen dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Install Chromium
+        run: pnpm exec playwright install --with-deps chromium
+      - name: Build actual Library preview
+        run: pnpm build
+      - name: Test L1 at 320px, 390px and 1440px in Chromium desktop and mobile
+        run: pnpm exec playwright test tests/e2e/library-l1-browse.spec.ts --project=chromium-desktop --project=chromium-phone
+      - name: Check original reader, touch, and navigation journeys
+        run: pnpm exec playwright test tests/e2e/reader-navigation-controls.spec.ts tests/e2e/reader-ergonomics.spec.ts --project=chromium-desktop --project=chromium-phone
+      - name: Retain failure diagnostics only
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: library-l1-browser-failure-${{ github.run_id }}
+          path: |
+            playwright-report
+            test-results
+          retention-days: 7
+          if-no-files-found: ignore
