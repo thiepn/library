@@ -50,7 +50,7 @@ test('catalog and My Library navigation remain usable and contained', async ({ p
 
   await page.goto('/library');
   await expect(page).toHaveTitle(/Library/);
-  await expect(page.getByRole('heading', { level: 1, name: 'Books' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Return to reading.' })).toBeVisible();
   await expect(page.getByRole('search')).toBeVisible();
   await expect(page.locator('[data-catalog-work]').first()).toBeVisible();
   await expectNoHorizontalOverflow(page);
