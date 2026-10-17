@@ -534,9 +534,22 @@
        On very narrow phones Help can open the same native panels instead. */
     .pdf-reader__tools > [data-pdf-search-toggle],
     .pdf-reader__tools > [data-pdf-annotation-toggle] {
+      flex: 0 0 40px;
+      width: 40px;
       min-width: 40px;
-      padding-inline: 5px;
-      font-size: .72rem;
+      max-width: 40px;
+      padding: 4px 0;
+      font-size: 0;
+    }
+    .pdf-reader__tools > [data-pdf-search-toggle]::before {
+      content: "⌕";
+      font-size: 1.45rem;
+      line-height: 1;
+    }
+    .pdf-reader__tools > [data-pdf-annotation-toggle]::before {
+      content: "✎";
+      font-size: 1.3rem;
+      line-height: 1;
     }
     .pdf-reader__identity { flex: 1 1 0; overflow: hidden; }
     .pdf-reader__tools { flex: 0 0 auto; }
