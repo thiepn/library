@@ -29,7 +29,7 @@ Publication validation, immutable media storage, and release ingestion remain ma
 
 The production runtime is:
 
-- Astro 6 with strict TypeScript
+- Astro 7 with strict TypeScript
 - static catalog, book-detail, search, and reader routes
 - Pagefind static full-text catalog/content search
 - GitHub Pages mounted at `/library`
@@ -37,8 +37,12 @@ The production runtime is:
 - deployment-time R2 staging into a hash-certified Pages artifact
 - bundled `epubjs` and `pdfjs-dist` reader engines
 - browser-local IndexedDB remains the offline authority for progress, activity, bookmarks, annotations, and personal books
-- optional THIEPN Account first-party OAuth/PKCE SSO using the shared Account session runtime, followed by Supabase synchronization of portable reader state with revision-CAS conflict protection; personal EPUB/PDF bytes remain local
+- optional THIEPN Account first-party OAuth/PKCE SSO using the shared Account session runtime, followed by Supabase synchronization of portable reader state with revision-CAS conflict protection; personal EPUB/PDF bytes are excluded from reading-state sync; a separate opt-in, owner-controlled Personal book cloud permission supports eligible files
 - optional owner-authenticated AI as a separate service, never a dependency of the static reader
+
+## L1 reading desk and discovery
+
+The Library homepage remains a reading-first entry with original format-native continuity. The separate `/browse` route filters the existing published catalog by source-backed subject, language, format, title and author, without a new data store or search service. Opaque abbreviated subject codes are preserved internally and grouped as `Other source classifications` rather than assigned invented category meanings. The canonical `/works/<slug>/read` route opens valid hosted EPUB publications even when no legacy Markdown web chapters exist. Personal imports remain in the separate owner-controlled My Library surface.
 
 Large hosted PDF, EPUB, and cover binaries do not live in normal Git history. Each canonical release records filename, MIME type, byte size, and SHA-256. Deployment downloads those objects from R2, verifies them, and only then includes them in the public artifact.
 
