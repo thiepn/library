@@ -39,7 +39,7 @@ test('L1 browse keeps opaque abbreviated source classifications intact without i
   assert.equal(isReaderFacingSubject('bv'), false);
   assert.equal(isReaderFacingSubject('language-learning'), true);
   assert.deepEqual(visibleBrowseBooks(books, { ...defaults, subject: OTHER_SUBJECT }).map((book) => book.id), ['c']);
-  assert.equal(books[1].subjects[0], 'bv');
+  assert.equal(books[1]?.subjects[0], 'bv');
 });
 
 test('L1 browse provides deterministic title and author ordering', () => {
