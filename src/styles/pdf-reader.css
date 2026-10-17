@@ -525,7 +525,13 @@
   }
 
   @media (max-width: 430px) {
-    .pdf-reader__title { max-width: 34vw; }
+    /* Keep native Search/Notes and the new Help visible at 320px without page overflow. */
+    .pdf-reader__topbar { gap: 5px; padding-inline: max(8px, env(safe-area-inset-left)) max(8px, env(safe-area-inset-right)); }
+    .pdf-reader__identity { gap: 5px; min-width: 0; }
+    .pdf-reader__title { max-width: 19vw; }
+    .pdf-reader__tools { gap: 3px; }
+    .pdf-reader__tools [data-pdf-search-toggle],
+    .pdf-reader__tools [data-pdf-annotation-toggle] { padding-inline: 6px; min-width: 40px; font-size: .72rem; }
     .pdf-reader__tools [data-pdf-bookmark-toggle] { display: none; }
     .pdf-reader__page-controls { gap: 4px; }
     .pdf-reader__page-controls input { width: 48px; }
