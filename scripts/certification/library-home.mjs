@@ -35,11 +35,11 @@ if (present) {
 
   pass(
     'LIBRARY_HOME_READER_ROUTE_SAFE',
-    page.includes('const readHref = work.webMaterialized')
+    page.includes('readerCanOpen(work) ?')
       && page.includes("data-web-readable={readHref ? 'true' : 'false'}")
       && page.includes('data-catalog-reader-cta')
       && dom.includes("card.dataset.webReadable === 'true'"),
-    'Reader actions remain gated by a materialized reading route while ER5 resolves the format-aware entry behind that route',
+    'Reader actions use canonical native EPUB or legacy route availability, while ER5 resolves exact format progress',
   );
 
   pass(
@@ -92,7 +92,7 @@ if (present) {
 
   pass(
     'LIBRARY_HOME_READER_METADATA',
-    page.includes("work.webMaterialized ? 'Reader' : null")
+    page.includes("readHref ? 'Reader' : null")
       && page.includes("epub ? 'EPUB' : null")
       && page.includes("pdf ? 'PDF' : null")
       && page.includes('Available reading formats')
