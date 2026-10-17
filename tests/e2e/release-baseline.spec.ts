@@ -8,10 +8,23 @@ function watchPageErrors(page: Page): () => void {
 }
 
 async function expectNoHorizontalOverflow(page: Page): Promise<void> {
-  await expect.poll(async () => page.evaluate(() => Math.max(
-    document.documentElement.scrollWidth - document.documentElement.clientWidth,
-    document.body.scrollWidth - document.body.clientWidth,
-  ))).toBeLessThanOrEqual(1);
+  try {
+    await expect.poll(async () => page.evaluate(() => Math.max(
+      document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      document.body.scrollWidth - document.body.clientWidth,
+    ))).toBeLessThanOrEqual(1);
+  } catch (error) {
+    const overflowing = await page.evaluate(() => {
+      const edge = document.documentElement.clientWidth + 1;
+      return [...document.querySelectorAll<HTMLElement>('*')]
+        .map((element) => ({ name: element.tagName.toLowerCase(), className: typeof element.className === 'string' ? element.className : '', rect: element.getBoundingClientRect(), width: element.scrollWidth }))
+        .filter(({ rect }) => rect.right > edge && rect.width > 0)
+        .sort((a, b) => b.rect.right - a.rect.right)
+        .slice(0, 12)
+        .map(({ name, className, rect, width }) => ({ name, className, right: Math.round(rect.right), width }));
+    });
+    throw new Error(`PDF/mobile page overflow: ${JSON.stringify(overflowing)}. ${String(error)}`);
+  }
 }
 
 async function importBook(page: Page, fixture: BrowserFixtureFile, title: string): Promise<Locator> {
