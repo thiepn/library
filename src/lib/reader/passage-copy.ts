@@ -9,7 +9,7 @@ export function formatPassageReference(input: PassageReference): string {
   if (!quote) throw new Error('Select a passage first.');
   const title = input.title.replace(/\s+/g, ' ').trim() || 'Untitled book';
   const location = input.location.replace(/\s+/g, ' ').trim();
-  return \`“\${quote}”\n— \${title}\${location ? \`, \${location}\` : ''}\`;
+  return `“${quote}”\n— ${title}${location ? `, ${location}` : ''}`;
 }
 
 /** Refuse silently-failing clipboard operations. No remote service, permission prompt, or persistence. */
