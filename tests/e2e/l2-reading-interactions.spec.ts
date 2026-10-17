@@ -83,7 +83,12 @@ test('L2 source-attributed PDF quote copy works for a selection and saved annota
   expect(copied).toContain('rr3 text mixed pages');
   expect(copied).toContain('PDF · page 1 of 2');
   await page.locator('[data-pdf-selection-highlight]').click();
-  await page.locator('[data-pdf-annotation-toggle]').click();
+  if (await page.locator('[data-pdf-annotation-toggle]').isVisible()) {
+    await page.locator('[data-pdf-annotation-toggle]').click();
+  } else {
+    await page.locator('[data-reading-guide-toggle]').click();
+    await page.locator('[data-reading-guide]').getByRole('button', { name: 'Highlights & notes' }).click();
+  }
   await expect(page.locator('.pdf-reader__annotation-result')).toHaveCount(1);
   await page.locator('.pdf-reader__annotation-result').getByRole('button', { name: /Copy PDF highlight on page/ }).click();
   await expect(page.locator('[data-pdf-annotation-status]')).toContainText('copied');
