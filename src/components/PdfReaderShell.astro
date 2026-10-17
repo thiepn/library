@@ -14,6 +14,7 @@ const {
   fallbackHref,
   metadata = 'Integrated PDF reader',
 } = Astro.props;
+import '../styles/reading-guide.css';
 ---
 <main class="pdf-reader" data-pdf-reader-root data-pdf-panel="closed" aria-busy="true">
   <header class="pdf-reader__topbar" data-pdf-topbar>
@@ -148,8 +149,10 @@ const {
     <div>
       <button type="button" data-pdf-selection-highlight>Highlight</button>
       <button type="button" data-pdf-selection-note>Add note</button>
+      <button type="button" data-pdf-selection-copy>Copy with reference</button>
       <button type="button" data-pdf-selection-dismiss aria-label="Dismiss selected text actions">×</button>
     </div>
+    <p data-pdf-selection-feedback role="status" aria-live="polite"></p>
   </section>
 
   <dialog class="pdf-reader__note-dialog" data-pdf-note-dialog aria-labelledby="pdf-note-dialog-title">
