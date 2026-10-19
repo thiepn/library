@@ -158,6 +158,11 @@ function reorderContinueByRecency(states: Map<string, ReadingLibraryState>) {
     return compareReadingRecency(aState, bState);
   });
   list.append(...nodes);
+  const firstActive = nodes.find((node) => {
+    const state = node.dataset.continueWork ? states.get(node.dataset.continueWork) : undefined;
+    return state?.status === 'in-progress';
+  });
+  for (const node of nodes) node.toggleAttribute('data-featured', node === firstActive);
 }
 
 function renderRecent(states: Map<string, ReadingLibraryState>) {

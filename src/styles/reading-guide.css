@@ -1,0 +1,27 @@
+/* Shared help for the original EPUB and PDF shells; no independent reader state. */
+.reading-guide-toggle { flex: 0 0 auto; min-width: 36px; min-height: 36px; padding: 4px 9px; border: 1px solid currentColor; border-radius: 3px; background: transparent; font: 700 1rem/1 system-ui, sans-serif; cursor: pointer; }
+.reading-guide[hidden] { display: none !important; }
+.reading-guide { position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left)); }
+.reading-guide__backdrop { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; border-radius: 0; background: rgb(0 0 0 / .56); cursor: pointer; }
+.reading-guide__panel { position: relative; z-index: 1; width: min(560px, 100%); max-height: min(85dvh, 680px); overflow: auto; border: 1px solid; padding: clamp(18px, 3vw, 30px); box-shadow: 0 12px 46px rgb(0 0 0 / .2); }
+.reader-shell .reading-guide__panel { background: var(--reader-shell-surface); color: var(--reader-shell-ink); border-color: var(--reader-shell-rule); }
+.pdf-reader .reading-guide__panel { background: var(--pdf-panel); color: var(--pdf-text); border-color: var(--pdf-border); }
+.reading-guide__panel h2 { margin: 0 0 12px; font-size: clamp(1.3rem, 4vw, 1.8rem); line-height: 1.15; }
+.reading-guide__panel p { line-height: 1.5; margin: 12px 0; }
+.reading-guide__shortcuts { padding: 12px; border: 1px solid currentColor; font-size: .86rem; }
+.reading-guide__actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.reading-guide__panel button { min-height: 44px; padding: 8px 14px; cursor: pointer; }
+.reader-shell .reading-guide__panel button { background: var(--reader-shell-surface); color: var(--reader-shell-ink); border: 1px solid var(--reader-shell-rule); }
+.pdf-reader .reading-guide__panel button { background: var(--pdf-control); color: var(--pdf-text); border: 1px solid var(--pdf-border); }
+.reader-shell .reading-guide-toggle { color: var(--reader-shell-ink); }
+@media (max-width: 430px) {
+  .reader-shell .reading-guide-toggle { min-width: 32px; width: 32px; min-height: 40px; padding: 4px; }
+  .pdf-reader .reading-guide-toggle { min-width: 40px; width: 40px; padding: 4px; }
+  .pdf-reader__tools { gap: 4px; }
+  .reading-guide { place-items: end center; padding-inline: 0; padding-bottom: 0; }
+  .reading-guide__panel { width: 100%; max-height: 75dvh; border-radius: 10px 10px 0 0; padding-bottom: max(16px, env(safe-area-inset-bottom)); }
+  .reading-guide__actions button { flex: 1 1 140px; }
+}
+@media (forced-colors: active) {
+  .reading-guide__panel, .reading-guide-toggle, .reading-guide__panel button { border: 1px solid CanvasText; }
+}

@@ -10,6 +10,7 @@ import {
   type ReaderAnnotationRecordV2,
 } from './annotation-store';
 import { ReaderAnnotationHighlighter } from './annotation-highlighter';
+import { copyPassageReference } from './passage-copy';
 import type { ReaderShellController } from './shell';
 import type { ReaderLocation, ReaderSelection, ReaderTocItem, Unsubscribe } from './types';
 
@@ -59,6 +60,8 @@ interface AnnotationUi {
   selectionQuote: HTMLElement;
   selectionHighlight: HTMLButtonElement;
   selectionNote: HTMLButtonElement;
+  selectionCopy: HTMLButtonElement;
+  selectionFeedback: HTMLElement;
   selectionDismiss: HTMLButtonElement;
 }
 
@@ -156,8 +159,10 @@ function createAnnotationUi(root: HTMLElement): AnnotationUi {
     <div>
       <button type="button" data-reader-selection-highlight>Highlight</button>
       <button type="button" data-reader-selection-note>Add note</button>
+      <button type="button" data-reader-selection-copy>Copy with reference</button>
       <button type="button" data-reader-selection-dismiss aria-label="Dismiss selected text actions">×</button>
     </div>
+    <p data-reader-selection-feedback role="status" aria-live="polite"></p>
   `;
 
   const stage = root.querySelector<HTMLElement>('[data-reader-stage]');
@@ -179,11 +184,13 @@ function createAnnotationUi(root: HTMLElement): AnnotationUi {
   const selectionQuote = selectionBar.querySelector<HTMLElement>('[data-reader-selection-quote]');
   const selectionHighlight = selectionBar.querySelector<HTMLButtonElement>('[data-reader-selection-highlight]');
   const selectionNote = selectionBar.querySelector<HTMLButtonElement>('[data-reader-selection-note]');
+  const selectionCopy = selectionBar.querySelector<HTMLButtonElement>('[data-reader-selection-copy]');
+  const selectionFeedback = selectionBar.querySelector<HTMLElement>('[data-reader-selection-feedback]');
   const selectionDismiss = selectionBar.querySelector<HTMLButtonElement>('[data-reader-selection-dismiss]');
-  if (!close || !filter || !sort || !stale || !status || !list || !empty || !editor || !editorQuote || !editorNote || !editorSave || !editorCancel || !selectionQuote || !selectionHighlight || !selectionNote || !selectionDismiss) {
+  if (!close || !filter || !sort || !stale || !status || !list || !empty || !editor || !editorQuote || !editorNote || !editorSave || !editorCancel || !selectionQuote || !selectionHighlight || !selectionNote || !selectionCopy || !selectionFeedback || !selectionDismiss) {
     throw new Error('Reader annotations UI could not initialize.');
   }
-  return { toggle, panel, close, filter, sort, stale, status, list, empty, editor, editorQuote, editorNote, editorSave, editorCancel, selectionBar, selectionQuote, selectionHighlight, selectionNote, selectionDismiss };
+  return { toggle, panel, close, filter, sort, stale, status, list, empty, editor, editorQuote, editorNote, editorSave, editorCancel, selectionBar, selectionQuote, selectionHighlight, selectionNote, selectionCopy, selectionFeedback, selectionDismiss };
 }
 
 function createAnnotationId(identity: ReaderAnnotationIdentity): string {
@@ -256,6 +263,7 @@ export class ReaderAnnotationsController {
     this.ui.list.addEventListener('keydown', this.handleListKeydown);
     this.ui.selectionHighlight.addEventListener('click', this.handleSelectionHighlight);
     this.ui.selectionNote.addEventListener('click', this.handleSelectionNote);
+    this.ui.selectionCopy.addEventListener('click', this.handleSelectionCopy);
     this.ui.selectionDismiss.addEventListener('click', this.handleSelectionDismiss);
     this.ui.editorSave.addEventListener('click', this.handleEditorSave);
     this.ui.editorCancel.addEventListener('click', this.handleEditorCancel);
@@ -395,6 +403,7 @@ export class ReaderAnnotationsController {
     this.ui.list.removeEventListener('keydown', this.handleListKeydown);
     this.ui.selectionHighlight.removeEventListener('click', this.handleSelectionHighlight);
     this.ui.selectionNote.removeEventListener('click', this.handleSelectionNote);
+    this.ui.selectionCopy.removeEventListener('click', this.handleSelectionCopy);
     this.ui.selectionDismiss.removeEventListener('click', this.handleSelectionDismiss);
     this.ui.editorSave.removeEventListener('click', this.handleEditorSave);
     this.ui.editorCancel.removeEventListener('click', this.handleEditorCancel);
@@ -427,6 +436,7 @@ export class ReaderAnnotationsController {
     if (!text || !selection.cfiRange.startsWith('epubcfi(') || !location || this.controller.snapshot.status !== 'ready') return;
     this.pendingSelection = { selection: { cfiRange: selection.cfiRange, text }, location: { ...location } };
     this.ui.selectionQuote.textContent = text.length > 180 ? `${text.slice(0, 177)}…` : text;
+    this.ui.selectionFeedback.textContent = '';
     this.ui.selectionBar.hidden = false;
     this.patchState({ selectionActive: true });
   }
@@ -625,7 +635,16 @@ export class ReaderAnnotationsController {
       remove.dataset.readerAnnotationDelete = item.id;
       remove.textContent = 'Delete';
       remove.setAttribute('aria-label', `Delete highlight in ${item.chapterLabel}`);
-      actions.append(open, edit, remove);
+      const copy = document.createElement('button');
+      copy.type = 'button';
+      copy.textContent = 'Copy quote';
+      copy.setAttribute('aria-label', `Copy highlight from ${item.chapterLabel}`);
+      copy.addEventListener('click', () => {
+        void copyPassageReference({ text: item.quote, title: this.shell.root.querySelector<HTMLElement>('[data-reader-title]')?.textContent ?? 'Book', location: item.chapterLabel }).then((copied) => {
+          if (!this.destroyed) this.shell.announce(copied ? 'Highlight and reference copied.' : 'Clipboard unavailable.');
+        });
+      });
+      actions.append(open, edit, copy, remove);
       li.append(actions);
       this.ui.list.append(li);
     }
@@ -660,6 +679,21 @@ export class ReaderAnnotationsController {
   };
   private readonly handleSelectionHighlight = () => { void this.createFromSelection(''); };
   private readonly handleSelectionNote = () => this.beginNoteFromSelection();
+  private readonly handleSelectionCopy = () => {
+    const pending = this.pendingSelection;
+    if (!pending) return;
+    const reference = {
+      text: pending.selection.text,
+      title: this.shell.root.querySelector<HTMLElement>('[data-reader-title]')?.textContent ?? 'Book',
+      location: resolveChapterLabel(pending.location, this.controller.snapshot.toc),
+    };
+    void copyPassageReference(reference).then((copied) => {
+      if (this.destroyed || this.pendingSelection !== pending) return;
+      const message = copied ? 'Passage and chapter reference copied.' : 'Clipboard unavailable. Select and copy text using your device controls.';
+      this.ui.selectionFeedback.textContent = message;
+      this.shell.announce(message);
+    });
+  };
   private readonly handleSelectionDismiss = () => this.dismissSelection();
   private readonly handleEditorSave = () => { void this.saveEditor(); };
   private readonly handleEditorCancel = () => this.cancelEditor();
