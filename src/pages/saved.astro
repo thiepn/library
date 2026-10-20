@@ -426,7 +426,11 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
           if (status) { status.dataset.state = 'error'; status.textContent = error instanceof Error ? error.message : 'Unable to remove this book.'; }
         }
       });
-      actions.append(open, edit, remove);
+      const notebook = document.createElement('a');
+      notebook.className = 'personal-book__action';
+      notebook.href = `${base}/notebook?work=${encodeURIComponent(personalReaderWorkId(book))}`;
+      notebook.textContent = 'Notebook';
+      actions.append(open, notebook, edit, remove);
       body.append(actions);
       article.append(cover, body);
       return article;

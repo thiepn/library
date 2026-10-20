@@ -1,0 +1,35 @@
+@layer notebook {
+  .book-notebook { max-width: 1320px; }
+  .book-notebook__header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+  .book-notebook__header h1 { margin: 0; }
+  .book-notebook__warning { border-left: 3px solid var(--accent); background: var(--surface); padding: 12px 16px; max-width: 950px; font-size: .84rem; line-height: 1.5; }
+  .book-notebook__selector, .book-notebook__toolbar, .book-notebook__chapter { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 20px 0; }
+  .book-notebook__selector select { min-width: min(420px, 100%); max-width: 100%; }
+  .book-notebook__selector select, .book-notebook__chapter input, .book-notebook__editor input, .book-notebook__editor textarea { background: var(--canvas); color: var(--ink); border: 1px solid var(--strong-rule); padding: 10px 12px; border-radius: 2px; font: inherit; }
+  .book-notebook__toolbar button, .book-notebook__chapter button, .book-notebook__editor-actions button { padding: 9px 14px; }
+  .book-notebook button:disabled { opacity: .5; cursor: not-allowed; }
+  .book-notebook__layout { display: grid; grid-template-columns: minmax(200px, .85fr) minmax(0, 2fr); border-top: 1px solid var(--strong-rule); margin-top: 18px; min-height: 320px; }
+  .book-notebook__sidebar { padding: 18px 20px 20px 0; border-right: 1px solid var(--rule); }
+  .book-notebook__sidebar h2 { font-size: 1.4rem; margin: 0 0 20px; }
+  .book-notebook__sidebar h3 { font-size: .8rem; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; margin: 20px 0 9px; }
+  .book-notebook__item { display: block; width: 100%; text-align: left; margin: 5px 0; padding: 10px; background: transparent; border: 1px solid transparent; color: var(--ink); cursor: pointer; }
+  .book-notebook__item:hover, .book-notebook__item:focus-visible { border-color: var(--strong-rule); background: var(--surface); }
+  .book-notebook__editor, .book-notebook__welcome { padding: 24px; min-width: 0; }
+  .book-notebook__editor { display: grid; gap: 12px; align-content: start; }
+  .book-notebook__editor[hidden], .book-notebook__welcome[hidden], .book-notebook__chapter[hidden] { display: none; }
+  .book-notebook__editor-top, .book-notebook__editor-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: space-between; align-items: center; }
+  .book-notebook__editor label { font-size: .8rem; font-weight: 600; }
+  .book-notebook__editor textarea { display: block; min-height: 330px; width: 100%; max-width: 100%; line-height: 1.6; resize: vertical; }
+  .book-notebook__editor input { width: 100%; }
+  .book-notebook__chapter label { width: 100%; }
+  .book-notebook__chapter input { flex: 1; min-width: min(300px,100%); }
+  .book-notebook__welcome { color: var(--secondary); }
+  @media (max-width: 720px) {
+    .book-notebook__layout { display: block; }
+    .book-notebook__sidebar { border-right: 0; border-bottom: 1px solid var(--rule); padding-right: 0; }
+    .book-notebook__editor, .book-notebook__welcome { padding: 22px 0; }
+    .book-notebook__editor textarea { min-height: 48vh; }
+    .book-notebook__header { flex-wrap: wrap; }
+    .book-notebook__selector select { width: 100%; }
+  }
+}
