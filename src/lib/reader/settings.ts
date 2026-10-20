@@ -1,5 +1,8 @@
-import { READER_PAGE_LAYOUT_DEFAULTS } from './page-layout';
-import { READER_TYPOGRAPHY_DEFAULTS } from './typography';
+// Reader layout styles were historically imported transitively here. Keep the
+// browser style available without importing UI controllers into pure settings.
+import '../../styles/reader-page-layout.css';
+import { READER_SETTINGS_DEFAULTS } from './settings-defaults';
+export { READER_SETTINGS_DEFAULTS } from './settings-defaults';
 import type {
   ReaderAlignment,
   ReaderAppearance,
@@ -31,15 +34,6 @@ export interface ReaderSettingsRecord {
 }
 
 export type ReaderSettingsPatch = Partial<Omit<ReaderSettingsRecord, 'schemaVersion'>>;
-
-export const READER_SETTINGS_DEFAULTS: ReaderSettingsRecord = {
-  schemaVersion: READER_SETTINGS_SCHEMA_VERSION,
-  ...READER_TYPOGRAPHY_DEFAULTS,
-  theme: 'light',
-  ...READER_PAGE_LAYOUT_DEFAULTS,
-  flow: 'paginated',
-  spread: 'auto',
-};
 
 const FONT_FAMILIES: readonly ReaderFontFamily[] = ['publisher', 'literata', 'serif', 'sans', 'accessible'];
 const ALIGNMENTS: readonly ReaderAlignment[] = ['left', 'justify'];
