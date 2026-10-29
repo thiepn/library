@@ -1,4 +1,6 @@
 import { createThiepnAccountSession, createThiepnBrowserSso, type ThiepnIdentity } from '@thiepn/account-session';
+import { coalesceLibraryAccountAuthChanges } from './auth-notifications';
+export { coalesceLibraryAccountAuthChanges } from './auth-notifications';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 export const THIEPN_ACCOUNT_PROJECT_REF = 'hycegznamzjhwinegaai';
@@ -165,5 +167,5 @@ export function signOutLibraryAppSession(): void {
 
 export function subscribeLibraryAccountAuth(listener: () => void): () => void {
   if (!hasThiepnAccountConfiguration()) return () => {};
-  return getThiepnAccountSession().subscribe(() => listener());
+  return getThiepnAccountSession().subscribe(coalesceLibraryAccountAuthChanges(listener));
 }

@@ -5,6 +5,7 @@ import { readThiepnAccountProbeMessage } from '@thiepn/account-session';
 import {
   THIEPN_LIBRARY_OAUTH_CLIENT_ID,
   THIEPN_ACCOUNT_ORIGIN,
+  coalesceLibraryAccountAuthChanges,
 } from '../../src/lib/account/supabase';
 
 const CLIENT_ID = '76e41661-f8a9-4181-b8b9-4084f2e2acbf';
@@ -30,7 +31,10 @@ test('Library uses the pinned first-party THIEPN OAuth client', async () => {
   assert.equal(accountPage.includes('data-account-signed-out hidden'), true);
   assert.equal(accountDom.includes('initializeLibraryAccountSso()'), true);
   assert.equal(accountDom.includes("hidden('[data-account-signed-out]', false)"), true);
-  assert.equal(runtime.includes('initializeLibraryAccountSso()'), true);
+  // Guest routes may verify an existing session, but must never silently
+  // redirect through Account SSO just because background sync mounted.
+  assert.equal(runtime.includes('initializeLibraryAccountSso()'), false);
+  assert.equal(runtime.includes('getVerifiedLibraryAccountUser()'), true);
   assert.equal(runtime.includes('probeExistingThiepnAccountSession'), false);
   assert.equal(authSource.includes('createThiepnBrowserSso'), true);
   assert.equal(authSource.includes('getLibraryBrowserSso().connect()'), true);
@@ -81,4 +85,27 @@ test('silent Account probe exposes only signed-in eligibility semantics', () => 
     }, CLIENT_ID),
     null,
   );
+});
+
+test('unchanged Account verification notifications never recursively refresh Library', () => {
+  let notifications = 0;
+  const notify = coalesceLibraryAccountAuthChanges(() => { notifications += 1; });
+
+  notify({ status: 'signed-out' });
+  notify({ status: 'signed-out' });
+  assert.equal(notifications, 1);
+
+  notify({ status: 'signed-in', id: CLIENT_ID, email: 'reader@example.test' });
+  notify({ status: 'signed-in', id: CLIENT_ID, email: 'reader@example.test' });
+  assert.equal(notifications, 2);
+
+  notify({ status: 'signed-in', id: CLIENT_ID, email: 'new@example.test' });
+  assert.equal(notifications, 3);
+
+  notify({ status: 'unavailable', code: 'ACCOUNT_VERIFY_UNAVAILABLE' });
+  notify({ status: 'unavailable', code: 'ACCOUNT_VERIFY_UNAVAILABLE' });
+  assert.equal(notifications, 4);
+
+  notify({ status: 'signed-out' });
+  assert.equal(notifications, 5);
 });

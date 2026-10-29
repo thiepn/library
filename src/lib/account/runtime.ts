@@ -1,5 +1,4 @@
 import {
-  initializeLibraryAccountSso,
   getVerifiedLibraryAccountUser,
   hasThiepnAccountConfiguration,
   subscribeLibraryAccountAuth,
@@ -21,11 +20,10 @@ export function mountLibraryAccountRuntime(): () => void {
     if (disposed || running) return;
     running = true;
     try {
-      // The shared SDK verifies app-local identity, probes the Account origin
-      // only when needed, and deduplicates PKCE redirects and sign-out races.
-      const initialized = await initializeLibraryAccountSso();
-      if (initialized.status === 'redirecting' || initialized.identity.status !== 'signed-in') return;
-
+      // Background sync must not navigate away from a public reader. A broken
+      // Account probe or OAuth flow must not prevent guest-first local reading.
+      // Only reuse an already authenticated Library app session; the explicit
+      // Account page still offers first-party SSO connection.
       const user = await getVerifiedLibraryAccountUser();
       if (!user) return;
 
