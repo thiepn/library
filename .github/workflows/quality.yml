@@ -41,3 +41,25 @@ jobs:
         run: pnpm build
       - name: Post-build regression certification
         run: pnpm certify:postbuild && pnpm test:reader:postbuild
+
+  # Runs even when private Account sources are inaccessible to this public
+  # repository. This is a scoped source/policy smoke test, not full CI.
+  guest-account-isolation:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout exact source HEAD without persisted GitHub credentials
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Setup Node without installing project dependencies
+        uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2
+        with:
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+          cache: false
+      - name: Verify guest-first auth and sync decision boundaries
+        run: node --experimental-strip-types --test scripts/regression/account-hotfix-no-deps.test.mjs
