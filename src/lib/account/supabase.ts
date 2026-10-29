@@ -1,4 +1,6 @@
 import { createThiepnAccountSession, createThiepnBrowserSso, type ThiepnIdentity } from '@thiepn/account-session';
+import { coalesceLibraryAccountAuthChanges } from './auth-notifications';
+export { coalesceLibraryAccountAuthChanges } from './auth-notifications';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 export const THIEPN_ACCOUNT_PROJECT_REF = 'hycegznamzjhwinegaai';
@@ -161,25 +163,6 @@ export function consumeLibraryAccountSsoReturnTo(): string {
 
 export function signOutLibraryAppSession(): void {
   getLibraryBrowserSso().signOutLocal();
-}
-
-/**
- * The shared Account session publishes on every verify(), even when the
- * identity has not changed. Suppress duplicate notifications so a consumer
- * that verifies in response to an auth event cannot create a refresh loop.
- */
-export function coalesceLibraryAccountAuthChanges(listener: () => void): (identity: ThiepnIdentity) => void {
-  let previousKey: string | null = null;
-  return (identity) => {
-    const key = identity.status === 'signed-in'
-      ? `signed-in:${identity.id}:${identity.email ?? ''}`
-      : identity.status === 'unavailable'
-        ? `unavailable:${identity.code}`
-        : 'signed-out';
-    if (key === previousKey) return;
-    previousKey = key;
-    listener();
-  };
 }
 
 export function subscribeLibraryAccountAuth(listener: () => void): () => void {
