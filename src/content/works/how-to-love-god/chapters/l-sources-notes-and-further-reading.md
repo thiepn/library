@@ -77,7 +77,7 @@ These notes document the main research-dependent claims prioritized in the final
 
 <span class="endnote-entry" id="note-17-2"></span>**17.2.** Experimental sleep research gives strong evidence that sleep loss can alter positive affect, anxiety, arousal, mood, and emotion regulation. The manuscript therefore treats bodily depletion as one possible contributor without diagnosing a spiritual state from sleep alone. See Palmer et al., “Sleep Loss and Emotion.” [↩](#ref-17-2)
 
-<span class="endnote-entry" id="note-17-3"></span>**17.3.** Depression can include broad loss of interest or pleasure, energy and concentration changes, and other clinically relevant symptoms. Anhedonia is heterogeneous rather than a single spiritual or psychological mechanism. See National Institute of Mental Health, “Depression”; Pizzagalli, “Toward a Better Understanding of the Mechanisms and Pathophysiology of Anhedonia.” [↩](#ref-17-3)
+<span class="endnote-entry" id="note-17-3"></span>**17.3.** Depression can include broad loss of interest or pleasure, energy and concentration changes, and other clinically relevant symptoms. Anhedonia is heterogeneous rather than a single spiritual or psychological mechanism. Serious self-harm risk may require immediate crisis or emergency assistance rather than a routine appointment; this is a general safety distinction, not an individualized risk assessment. See National Institute of Mental Health, “Depression”; Pizzagalli, “Toward a Better Understanding of the Mechanisms and Pathophysiology of Anhedonia”; World Health Organization, “Suicide” (guidance on immediate danger and emergency services). [↩](#ref-17-3)
 
 <span class="endnote-entry" id="note-17-4"></span>**17.4.** Scrupulosity literature supports distinguishing unwanted intrusive content from deliberate endorsement and cautions against compulsive neutralization/checking. The chapter deliberately stops at recognition and referral. See Toprak and Özçelik; Miller and Hedges. [↩](#ref-17-4)
 
@@ -223,6 +223,8 @@ Singh, Ben, Andrew Murphy, Carol Maher, and Ashleigh E. Smith. “Time to Form a
 Toprak, Taha Burak, and Hanne Nur Özçelik. “Psychotherapies for the Treatment of Scrupulosity: A Systematic Review.” *Current Psychology* 43, no. 26 (2024): 22361–22375. <https://doi.org/10.1007/s12144-024-06040-2>.
 
 Wood, Wendy, and Dennis Rünger. “Psychology of Habit.” *Annual Review of Psychology* 67 (2016): 289–314. <https://doi.org/10.1146/annurev-psych-122414-033417>.
+
+World Health Organization. “Suicide.” Accessed October 30, 2026. <https://www.who.int/news-room/questions-and-answers/item/suicide>.
 
 ### Historical theology and formation
 

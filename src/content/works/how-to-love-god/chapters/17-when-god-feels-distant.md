@@ -41,7 +41,7 @@ The legitimate pastoral inference is modest: exhaustion, nourishment, sleep, ill
 
 Depression is not a synonym for spiritual dryness. Anhedonia—the reduced capacity to experience interest or pleasure—is a clinical concept that can occur in depression and other conditions. It can affect worship, relationships, food, hobbies, work, and many other sources of pleasure. Its presence or absence cannot be established by a Bible study guide.
 
-Persistent low mood, significant loss of interest, major changes in functioning, severe anxiety, self-harm thoughts, or other serious symptoms warrant appropriate professional assessment. Seeking such help is not an admission that spiritual realities do not matter. It recognizes that human beings are embodied creatures and that competent care can address dimensions pastors are not trained to diagnose.
+Persistent low mood, significant loss of interest, major changes in functioning, severe anxiety, self-harm thoughts, or other serious symptoms warrant appropriate professional assessment. **If someone is at immediate risk of acting on suicidal or self-harm thoughts, seek local emergency or crisis assistance immediately rather than waiting for a routine appointment.** Seeking professional help is not an admission that spiritual realities do not matter. It recognizes that human beings are embodied creatures and that competent care can address dimensions pastors are not trained to diagnose.
 
 Medication decisions—including starting, stopping, adjusting, or attributing effects—belong with qualified clinicians who know the person's history and circumstances.<sup class="endnote-call" id="ref-17-3"><a href="#note-17-3">17.3</a></sup>
 

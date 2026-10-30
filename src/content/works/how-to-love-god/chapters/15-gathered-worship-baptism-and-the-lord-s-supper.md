@@ -27,7 +27,7 @@ Music matters because song carries truth and affection into memory. But music mu
 
 Baptism is instituted by Christ, given in the triune name, connected with disciple-making, and strongly associated in the New Testament with conversion, union with Christ, new-life identity, and entrance into the visible Christian community.
 
-Protestants disagree about the proper subjects of baptism, its mode, and how to describe its efficacy. Baptists emphasize believer's baptism and often speak of ordinance and testimony; paedobaptist traditions baptize believers and their children within covenantal frameworks; sacramental traditions use stronger language of means and divine action. Those differences are substantial and should not be hidden.
+Protestants disagree about the subjects and mode of baptism and how to describe its efficacy. Many Baptists baptize professing believers and describe baptism as an ordinance that publicly testifies to faith in Christ. Reformed paedobaptists also baptize believers' children and describe baptism as a covenant sign and seal. Lutherans likewise baptize infants but explicitly teach that God offers grace through baptism. These are distinct confessional accounts, not mutually exclusive categories of infant baptism and sacramental efficacy. The differences are substantial and should not be hidden.
 
 For present purposes, the shared center matters most: baptism is not a private self-invention. It locates Christian identity in Christ and his church. It directs the believer away from endless self-definition toward the public name and promise of the triune God.
 
