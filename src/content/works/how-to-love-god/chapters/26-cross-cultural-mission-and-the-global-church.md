@@ -37,7 +37,7 @@ Acts 15 establishes the decisive inclusion of Gentiles without requiring them to
 
 Faithful contextualization asks how the unchanging gospel can be understood and embodied intelligibly in a real culture while Scripture judges both missionary culture and local culture. No culture arrives innocent. Foreign missionaries bring assumptions; local communities also contain patterns that require biblical critique.
 
-Faithful contextualization seeks Christian life that is genuinely rooted without turning either Western habits or local culture into the standard of faithfulness.<sup class="endnote-call" id="ref-26-1"><a href="#note-26-1">26.1</a></sup>
+Faithful contextualization seeks Christian life that is genuinely rooted without turning either Western habits or local culture into the standard of faithfulness.<sup class="endnote-call" id="ref-26-1"><a href="./appendix-l-sources-notes-and-further-reading#note-26-1">26.1</a></sup>
 
 ## II. Power and history
 
@@ -73,7 +73,7 @@ The modern phrase *polycentric mission* describes the reality that Christian mis
 
 The term itself is modern. Acts contains precedents of multiple centers and cross-cultural movement, but it does not use the technical category.
 
-Migration has shaped Christian witness across centuries and remains a major mission context today.<sup class="endnote-call" id="ref-26-2"><a href="#note-26-2">26.2</a></sup> Students, workers, refugees, businesspeople, pastors, and families carry faith across borders. Diaspora churches can become both receiving and sending communities.
+Migration has shaped Christian witness across centuries and remains a major mission context today.<sup class="endnote-call" id="ref-26-2"><a href="./appendix-l-sources-notes-and-further-reading#note-26-2">26.2</a></sup> Students, workers, refugees, businesspeople, pastors, and families carry faith across borders. Diaspora churches can become both receiving and sending communities.
 
 ### Global voices are not illustrations
 

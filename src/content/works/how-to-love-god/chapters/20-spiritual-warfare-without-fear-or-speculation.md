@@ -47,7 +47,7 @@ The opposite reduction also fails: a clinical diagnosis does not prove that spir
 
 In some contexts, unexplained illness, infertility, disability, economic loss, death, or family conflict may lead to accusations of witchcraft or curses. Christian supernatural realism cannot become permission to identify vulnerable people as hidden spiritual threats without evidence.
 
-Scripture condemns occult practices. It does not authorize Christians to invent causal certainty about which neighbor supposedly caused a misfortune. Fear-driven accusation can produce exclusion, violence, family rupture, and abuse.<sup class="endnote-call" id="ref-20-1"><a href="#note-20-1">20.1</a></sup>
+Scripture condemns occult practices. It does not authorize Christians to invent causal certainty about which neighbor supposedly caused a misfortune. Fear-driven accusation can produce exclusion, violence, family rupture, and abuse.<sup class="endnote-call" id="ref-20-1"><a href="./appendix-l-sources-notes-and-further-reading#note-20-1">20.1</a></sup>
 
 No child, elderly person, disabled person, widow, social outsider, or other vulnerable person should be labeled a witch or demonic source because a community lacks another explanation.
 
@@ -59,7 +59,7 @@ Modern clinical claims require modern clinical evidence. Social claims require s
 
 The practical implication is still important: seeking a physician, therapist, safeguarding professional, social support, or legal help does not deny spiritual reality. Praying and receiving competent care are not competitors.
 
-## No coercive deliverance <sup class="endnote-call" id="ref-20-2"><a href="#note-20-2">20.2</a></sup>
+## No coercive deliverance <sup class="endnote-call" id="ref-20-2"><a href="./appendix-l-sources-notes-and-further-reading#note-20-2">20.2</a></sup>
 
 Practices described as spiritual warfare can themselves become abusive. No Christian theology justifies humiliating, threatening, striking, restraining, starving, sexually violating, financially exploiting, isolating, or depriving a person of needed care in the name of deliverance.
 
