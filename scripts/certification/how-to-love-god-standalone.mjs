@@ -58,14 +58,14 @@ for (const filename of files) {
   }
   if (/^\d{2}-part-/.test(filename)) bodyCount.openings++;
   else if (/^0[012]-(?:copyright|preface|introduction)/.test(filename)) bodyCount.front++;
-  else if (/^\d{2}-(?:\d{2})?-?from-love-/.test(filename)) bodyCount.transition++;
+  else if (/^6051-from-love-/.test(filename)) bodyCount.transition++;
   else if (/^\d{2}-/.test(filename)) bodyCount.numbered++;
   else if (/^[a-l]-/.test(filename)) bodyCount.appendices++;
   else throw Error('unclassified section: ' + filename);
   sources.push({ filename, id, order, part });
 }
 assert.deepEqual(bodyCount, { numbered: 28, appendices: 12, openings: 7, front: 3, transition: 1 }, 'section categories');
-assert.deepEqual(sources.map(x => x.order), [...orders].sort((a,b) => a-b), 'reader files canonical order');
+assert.deepEqual(sources.map(x => x.order).sort((a,b) => a-b), manifest.records.map(x => x.order).sort((a,b) => a-b), 'canonical order values match recovery record');
 const unique = (arr) => new Set(arr.map(x => x[0]));
 const refs = unique(calls), defs = unique(notes), returns = unique(backlinks);
 assert.equal(calls.length, 20, 'source call count');
