@@ -10,6 +10,7 @@ on:
       - 'scripts/certification/how-to-love-god-browser.mjs'
       - 'scripts/certification/how-to-love-god-print-epub.mjs'
       - 'scripts/certification/how-to-love-god-page-audit.mjs'
+      - 'scripts/certification/how-to-love-god-media.mjs'
       - '.github/workflows/how-to-love-god-standalone.yml'
   workflow_dispatch:
 
@@ -97,6 +98,10 @@ jobs:
           java -jar "$RUNNER_TEMP/book1-epubcheck/epubcheck-5.4.0/epubcheck.jar" \
             "$RUNNER_TEMP/book1-format-qa/how-to-love-god-UNPUBLISHED-QA.epub" \
             --json "$RUNNER_TEMP/book1-format-qa/epubcheck-report.json"
+      - name: Fetch and SHA-256-check six original figures and cover (read only)
+        id: mediaFetch
+        continue-on-error: true
+        run: node scripts/certification/how-to-love-god-media.mjs
       - name: Preserve only unpublished QA evidence (no proof books)
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -108,6 +113,7 @@ jobs:
             ${{ runner.temp }}/book1-format-qa/fonts.txt
             ${{ runner.temp }}/book1-format-qa/epubcheck-report.json
             ${{ runner.temp }}/book1-format-qa/page-audit.json
+            ${{ runner.temp }}/book1-format-qa/media-verification.json
           if-no-files-found: warn
           retention-days: 7
       - name: Execute all public-dependency Library regression files
@@ -122,3 +128,8 @@ jobs:
             ! -name 'account-personal-files.test.ts' | LC_ALL=C sort)
           test "${#specs[@]}" -eq 20
           "$RUNNER_TEMP/book1-test-tools/node_modules/.bin/tsx" --test "${specs[@]}"
+      - name: Require original media availability for complete-format qualification
+        if: steps.mediaFetch.outcome == 'failure'
+        run: |
+          echo "::error::Verified media acquisition unavailable; full-media proof NOT_TESTED."
+          exit 1
