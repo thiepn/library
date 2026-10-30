@@ -26,6 +26,24 @@ assert.equal(chapters.length,51);
 const ids=new Set(chapters.map(x=>x.id));assert.equal(ids.size,51);
 const appendix=chapters.find(x=>x.id==='appendix-l-sources-notes-and-further-reading');
 assert.equal([...appendix.html.matchAll(/id="note-\d+-\d+"/g)].length,20);
+const withMedia=process.env.BOOK1_MEDIA_PROOF==='1';
+const proofDir=path.join(process.env.RUNNER_TEMP||'/tmp','book1-format-qa');
+const mediaByUrl=new Map();
+const mediaByKey=new Map();
+if(withMedia){
+  const verified=JSON.parse(await readFile(path.join(proofDir,'media-verification.json'),'utf8'));
+  assert.equal(verified.length,7,'seven release media expected');
+  for(const obj of verified){
+    assert.equal(obj.verified,true,'media checksum not verified '+obj.key);
+    const bytes=await readFile(path.join(proofDir,'media',obj.name));
+    assert.equal(bytes.length,obj.size,'media size '+obj.key);
+    assert.equal(createHash('sha256').update(bytes).digest('hex'),obj.sha256,'media hash '+obj.key);
+    mediaByUrl.set(obj.url,{...obj,bytes});
+    mediaByKey.set(obj.key,{...obj,bytes});
+  }
+  assert.equal(mediaByUrl.size,7);
+  assert.ok(mediaByKey.has('cover'));
+}
 let linksPdf=0,linksEpub=0,figures=0;
 const transform=(html,format)=>html.replace(/href="\.\/([a-z0-9-]+)(#[a-zA-Z0-9_.:-]+)"/g,(_m,id,anchor)=>{
  assert.ok(ids.has(id),'unknown chapter '+id);
@@ -34,6 +52,13 @@ const transform=(html,format)=>html.replace(/href="\.\/([a-z0-9-]+)(#[a-zA-Z0-9_
 }).replace(/<img\b([^>]*?)>/g,(_m,attrs)=>{
  const alt=attrs.match(/\balt="([^"]+)"/)?.[1];assert.ok(alt,'alt');
  if(format==='pdf') figures++;
+ if(withMedia){
+   const src=attrs.match(/\bsrc="([^"]+)"/)?.[1];
+   const media=mediaByUrl.get(src);
+   assert.ok(media&&media.key!=='cover','verified figure missing: '+src);
+   if(format==='pdf')return '<img class="proof-figure" src="data:'+media.mime+';base64,'+media.bytes.toString('base64')+'" alt="'+esc(alt)+'"/>';
+   return '<img src="../images/'+media.name+'" alt="'+esc(alt)+'"/>';
+ }
  return '<span role="img" aria-label="'+esc(alt)+'">[QA image omitted: '+alt+']</span>';
 });
 const zip=new JSZip();
@@ -49,7 +74,7 @@ for(const x of chapters){
 }
 const nav='<?xml version="1.0" encoding="utf-8"?>'+
  '<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="en"><head><title>Contents</title></head><body><nav epub:type="toc" id="toc"><h1>Contents</h1><ol>'+
- chapters.map(x=>'<li><a href="text/'+x.id+'.xhtml">'+esc(x.title)+'</a></li>').join('')+
+ (withMedia?'<li><a href="cover.xhtml">Cover</a></li>':'')+chapters.map(x=>'<li><a href="text/'+x.id+'.xhtml">'+esc(x.title)+'</a></li>').join('')+
  '</ol></nav></body></html>';
 zip.file('OEBPS/nav.xhtml',nav);
 const opf='<?xml version="1.0" encoding="UTF-8"?>'+
@@ -60,15 +85,24 @@ const opf='<?xml version="1.0" encoding="UTF-8"?>'+
  '<meta property="dcterms:modified">2026-10-30T00:00:00Z</meta>'+
  '<meta property="schema:accessMode">textual</meta><meta property="schema:accessibilityFeature">tableOfContents</meta>'+
  '</metadata><manifest><item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>'+
- chapters.map((x,i)=>'<item id="s'+i+'" href="text/'+x.id+'.xhtml" media-type="application/xhtml+xml"/>').join('')+
- '</manifest><spine>'+chapters.map((_x,i)=>'<itemref idref="s'+i+'"/>').join('')+'</spine></package>';
+ (withMedia?'<item id="cover-page" href="cover.xhtml" media-type="application/xhtml+xml"/>'+[...mediaByKey.values()].map(x=>'<item id="'+x.key+'" href="images/'+x.name+'" media-type="'+x.mime+'"'+(x.key==='cover'?' properties="cover-image"':'')+'/>').join(''):'')+chapters.map((x,i)=>'<item id="s'+i+'" href="text/'+x.id+'.xhtml" media-type="application/xhtml+xml"/>').join('')+
+ '</manifest><spine>'+(withMedia?'<itemref idref="cover-page"/>':'')+chapters.map((_x,i)=>'<itemref idref="s'+i+'"/>').join('')+'</spine></package>';
 zip.file('OEBPS/content.opf',opf);
+if(withMedia){
+  for(const asset of mediaByKey.values())zip.file('OEBPS/images/'+asset.name,asset.bytes,{binary:true});
+  const cover=mediaByKey.get('cover');
+  const coverPage='<?xml version="1.0" encoding="utf-8"?>'+
+    '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"><head><title>Cover</title></head><body>'+
+    '<section><h1>How to Love God</h1><img src="images/'+cover.name+'" alt="Cover of How to Love God"/></section></body></html>';
+  zip.file('OEBPS/cover.xhtml',coverPage);
+}
+
 const epub=await zip.generateAsync({type:'nodebuffer',compression:'DEFLATE'});
 assert.equal(epub.readUInt32LE(0),0x04034b50);
 assert.equal(epub.readUInt16LE(8),0,'first mimetype entry stored');
 assert.equal(epub.subarray(30,38).toString(),'mimetype');
 const unpacked=await JSZip.loadAsync(epub,{checkCRC32:true});
-assert.equal(Object.keys(unpacked.files).filter(x=>!x.endsWith('/')).length,55);
+assert.equal(Object.keys(unpacked.files).filter(x=>!x.endsWith('/')).length,withMedia?63:55);
 const xmlProblems=[];
 const xml=(name,txt)=>{
  const errors=[];const doc=new DOMParser({onError:(level,message)=>{errors.push(String(level)+': '+String(message));}}).parseFromString(txt,'application/xml');
@@ -77,8 +111,8 @@ const xml=(name,txt)=>{
 };
 xml('container',await unpacked.file('META-INF/container.xml').async('string'));
 const spine=xml('opf',await unpacked.file('OEBPS/content.opf').async('string'));
-assert.equal(spine.getElementsByTagName('itemref').length,51);
-assert.equal(xml('nav',await unpacked.file('OEBPS/nav.xhtml').async('string')).getElementsByTagName('a').length,51);
+assert.equal(spine.getElementsByTagName('itemref').length,withMedia?52:51);
+assert.equal(xml('nav',await unpacked.file('OEBPS/nav.xhtml').async('string')).getElementsByTagName('a').length,withMedia?52:51);
 let validated=0;
 for(const [id,content] of epubs){
  const doc=xml(id,await unpacked.file('OEBPS/text/'+id+'.xhtml').async('string'));
@@ -93,12 +127,22 @@ for(const [id,content] of epubs){
 }
 assert.equal(xmlProblems.length,0,JSON.stringify(xmlProblems.slice(0,3)));
 assert.equal(linksEpub,40);assert.equal(validated,40);
+if(withMedia){
+  for(const asset of mediaByKey.values()){
+    const bytes=await unpacked.file('OEBPS/images/'+asset.name).async('nodebuffer');
+    assert.equal(bytes.length,asset.size,'embedded image length '+asset.key);
+    assert.equal(createHash('sha256').update(bytes).digest('hex'),asset.sha256,'embedded EPUB image SHA-256 '+asset.key);
+  }
+  const coverDoc=xml('cover',await unpacked.file('OEBPS/cover.xhtml').async('string'));
+  assert.equal(coverDoc.getElementsByTagName('img').length,1);
+}
 const css=['@page{size:A5;margin:18mm 16mm 19mm}','html{color:#171717;font:11pt/1.53 Georgia,serif}',
  'h1{font-size:20pt;break-before:page;break-after:avoid}','h2,h3{break-after:avoid}',
  'p,li{orphans:2;widows:2}','a{color:#162d53;text-decoration:underline}',
  'blockquote{border-left:2px solid #999;padding-left:9pt}',
- 'table{border-collapse:collapse;width:100%}','td,th{border:1px solid #aaa;padding:3pt}'].join('');
+ 'table{border-collapse:collapse;width:100%}','td,th{border:1px solid #aaa;padding:3pt}', 'img.proof-figure{display:block;max-width:100%;max-height:98mm;object-fit:contain;break-inside:avoid;margin:8pt auto}', '.proof-cover{break-after:page;text-align:center}.proof-cover img{max-height:145mm;max-width:100%;object-fit:contain}'].join('');
 const html='<!doctype html><html lang="en"><head><meta charset="utf-8"><style>'+css+'</style></head><body><main>'+
+ (withMedia?'<section class="proof-cover"><h2>How to Love God</h2><img src="data:image/webp;base64,'+mediaByKey.get('cover').bytes.toString('base64')+'" alt="Cover of How to Love God"/></section>':'')+
  chapters.map(x=>'<section id="chapter-'+x.id+'"><h1>'+esc(x.title)+'</h1>'+transform(x.html,'pdf')+'</section>').join('')+
  '</main></body></html>';
 assert.equal(linksPdf,40);assert.equal(figures,6);
@@ -107,6 +151,11 @@ let pdf;
 try{
  const page=await browser.newPage();
  await page.setContent(html,{waitUntil:'domcontentloaded'});
+ if(withMedia){
+   const images=await page.evaluate(()=>[...document.images].map(x=>({ok:x.complete&&x.naturalWidth>0,alt:x.alt})));
+   assert.equal(images.length,7,'one cover and six diagrams in PDF print DOM');
+   assert.ok(images.every(x=>x.ok&&x.alt),'all actual figures decoded and have alt');
+ }
  const broken=await page.evaluate(()=>[...document.querySelectorAll('a[href^="#"]')].filter(a=>!document.getElementById(a.hash.slice(1))).map(a=>a.href));
  assert.deepEqual(broken,[]);
  pdf=await page.pdf({preferCSSPageSize:true,printBackground:true,tagged:true,outline:true});
@@ -140,9 +189,9 @@ await writeFile(path.join(proofDir,'how-to-love-god-UNPUBLISHED-QA.epub'),epub,{
 await writeFile(path.join(proofDir,'how-to-love-god-UNPUBLISHED-QA.pdf'),pdf,{mode:0o600});
 console.log('EPHEMERAL_QA_PATH='+proofDir);
 console.log(JSON.stringify({verdict:'ISOLATED_SOURCE_FORMAT_PASS',sections:51,
- epub:{bytes:epub.length,sha256:createHash('sha256').update(epub).digest('hex'),zipEntries:55,
-       toc:51,spine:51,endnoteTargets:validated,xmlErrors:xmlProblems.length,pagination:'reflowable/not applicable'},
+ epub:{bytes:epub.length,sha256:createHash('sha256').update(epub).digest('hex'),zipEntries:withMedia?63:55,
+       toc:withMedia?52:51,spine:withMedia?52:51,endnoteTargets:validated,xmlErrors:xmlProblems.length,embeddedMedia:withMedia?7:0,pagination:'reflowable/not applicable'},
  pdf:{bytes:pdf.length,sha256:createHash('sha256').update(pdf).digest('hex'),pages,internalLinkAnnotations:linkAnnotations,taggedSamplePages:taggedPages,extractedTextSamples:samples},
- figureBinariesOmitted:6,limitations:['NOT publication-ready: figures and cover intentionally omitted',
+ figureBinariesOmitted:withMedia?0:6,coverEmbedded:withMedia,limitations:[withMedia?'Media verified and embedded in unpublished QA proofs only':'NOT publication-ready: figures and cover intentionally omitted',
  'No PDF/UA or EPUBCheck conformance claims','PDF/EPUB not deployed or uploaded','Rights attribution remains held',
  'Not the complete Astro app build or physical-reader review']},null,2));

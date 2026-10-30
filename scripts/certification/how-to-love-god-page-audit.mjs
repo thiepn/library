@@ -4,12 +4,12 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import assert from 'node:assert/strict';
-import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
+import { getDocument, OPS } from 'pdfjs-dist/legacy/build/pdf.mjs';
 const dir=path.join(process.env.RUNNER_TEMP||'/tmp','book1-format-qa');
 const raw=await readFile(path.join(dir,'how-to-love-god-UNPUBLISHED-QA.pdf'));
 const task=getDocument({data:new Uint8Array(raw),isEvalSupported:false,useSystemFonts:true,disableFontFace:true});
 let doc;
-const fail=[],short=[],pages=[];
+const fail=[],short=[],pages=[],imageOnly=[];
 try{
  doc=await task.promise;
  assert.ok(doc.numPages>51&&doc.numPages<900,'PDF page count plausible');
@@ -23,7 +23,12 @@ try{
    const content=await pg.getTextContent();
    const items=content.items.filter(i=>typeof i.str==='string'&&i.str.trim());
    const chars=items.reduce((s,i)=>s+i.str.trim().length,0);
-   if(chars===0)fail.push({page:n,kind:'blank-no-text'});
+   if(chars===0){
+     const op=await pg.getOperatorList();
+     const imageFns=new Set([OPS.paintImageXObject,OPS.paintInlineImageXObject,OPS.paintImageMaskXObject,OPS.paintJpegXObject]);
+     if(op.fnArray.some(fn=>imageFns.has(fn)))imageOnly.push({page:n,reason:'raster-content-without-text'});
+     else fail.push({page:n,kind:'blank-no-text-or-images'});
+   }
    if(chars<110)short.push({page:n,chars});
    let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity,extreme=0;
    for(const i of items){
@@ -39,7 +44,7 @@ try{
  const chars=pages.map(p=>p.chars);
  const report={kind:'ALL_PAGE_GEOMETRY_AUDIT',pages:doc.numPages,media:dims,blankPages:fail.filter(x=>x.kind==='blank-no-text'),
    offMediaPages:fail.filter(x=>x.kind==='off-media-text'),inconsistentSize:fail.filter(x=>x.kind==='inconsistent-media'),
-   lowTextPages:short,textCharacters:{min:Math.min(...chars),max:Math.max(...chars),total:chars.reduce((a,b)=>a+b,0)},
+   lowTextPages:short,imageOnlyPages:imageOnly,textCharacters:{min:Math.min(...chars),max:Math.max(...chars),total:chars.reduce((a,b)=>a+b,0)},
    margins:{minLeft:Math.min(...pages.map(p=>p.box[0])),maxRight:Math.max(...pages.map(p=>p.box[2]))},
    totalProblems:fail.length,limitations:['Only text geometry; cannot guarantee no graphical overlap','No source-release parity or PDF/UA conformance']};
  await writeFile(path.join(dir,'page-audit.json'),JSON.stringify(report,null,2));
