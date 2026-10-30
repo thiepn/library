@@ -200,7 +200,7 @@ Berridge, Kent C. “Separating Desire from Prediction of Outcome Value.” *Tre
 
 Berridge, Kent C., and Terry E. Robinson. “Liking, Wanting and the Incentive-Sensitization Theory of Addiction.” *American Psychologist* 71, no. 8 (2016): 670–679. <https://doi.org/10.1037/amp0000059>.
 
-Büssing, Arndt. “Strategies to Cope with Phases of Spiritual Dryness in Seventh-Day Adventists.” *Journal of Religion and Health* 60, no. 2 (2021): 1281–1304. <https://doi.org/10.1007/s10943-020-01093-6>.
+Büssing, Arndt, Lorethy Starck, and Klaus van Treeck. “Strategies to Cope with Phases of Spiritual Dryness in Seventh-Day Adventists.” *Journal of Religion and Health* 60, no. 2 (2021): 1281–1304. <https://doi.org/10.1007/s10943-020-01093-6>.
 
 Büssing, Arndt, Lorethy Starck, and Klaus van Treeck. “Experience of Spiritual Dryness and Acedia Symptoms in Seventh-Day Adventists.” *Journal of Religion and Health* 60, no. 2 (2021): 1261–1280. <https://doi.org/10.1007/s10943-020-01092-7>.
 
@@ -208,7 +208,7 @@ Lally, Phillippa, et al. “How Are Habits Formed: Modelling Habit Formation in 
 
 Lincoln, Tania M., Lars Schulze, and Babette Renneberg. “The Role of Emotion Regulation in the Characterization, Development and Treatment of Psychopathology.” *Nature Reviews Psychology* 1, no. 5 (2022): 272–286. <https://doi.org/10.1038/s44159-022-00040-4>.
 
-Miller, Colin H., and David W. Hedges. “Scrupulosity Disorder: An Overview and Introductory Analysis.” *Journal of Anxiety Disorders* 22 (2008): 1042–1058. <https://doi.org/10.1016/j.janxdis.2007.11.004>.
+Miller, Chris H., and Dawson W. Hedges. “Scrupulosity Disorder: An Overview and Introductory Analysis.” *Journal of Anxiety Disorders* 22 (2008): 1042–1058. <https://doi.org/10.1016/j.janxdis.2007.11.004>.
 
 National Institute of Mental Health. “Depression.” Accessed August 28, 2026. <https://www.nimh.nih.gov/health/topics/depression>.
 
