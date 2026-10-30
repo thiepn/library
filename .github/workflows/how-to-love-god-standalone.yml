@@ -38,12 +38,13 @@ jobs:
           printf '{"private":true,"type":"module"}\n' > "$RUNNER_TEMP/book1-test-tools/package.json"
           npm install --prefix "$RUNNER_TEMP/book1-test-tools" --no-package-lock --ignore-scripts --no-audit --no-fund --no-save tsx@4.20.5 epubjs@0.3.93
           ln -s "$RUNNER_TEMP/book1-test-tools/node_modules" ./node_modules
-      - name: Execute bounded native reader regression tests
+      - name: Execute all public-dependency Library regression files
         shell: bash
         run: |
-          "$RUNNER_TEMP/book1-test-tools/node_modules/.bin/tsx" --test \
-            scripts/regression/reader-canonical.test.ts \
-            scripts/regression/reader-core.test.ts \
-            scripts/regression/reader-entry.test.ts \
-            scripts/regression/reader-navigation-chrome.test.ts \
-            scripts/regression/reader-migration-fallback.test.ts
+          set -euo pipefail
+          # The SSO contract file imports @thiepn/account-session from a private
+          # repository. It remains explicitly NOT_TESTED until authorized CI.
+          mapfile -t specs < <(find scripts/regression -type f -name '*.test.ts' \
+            ! -name 'account-sso.test.ts' | LC_ALL=C sort)
+          test "${#specs[@]}" -eq 21
+          "$RUNNER_TEMP/book1-test-tools/node_modules/.bin/tsx" --test "${specs[@]}"
