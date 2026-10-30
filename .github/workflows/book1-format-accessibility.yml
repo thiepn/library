@@ -1,0 +1,63 @@
+name: Book 1 isolated format accessibility
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/certification/how-to-love-god-format-a11y.mjs'
+      - '.github/workflows/book1-format-accessibility.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  media-semantics:
+    name: Exact-head image semantics and A5 figure inspection
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Require exact candidate identity
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+      - name: Set up Node 22
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22.12.0
+      - name: Preflight QA scripts
+        run: |
+          node --check scripts/certification/how-to-love-god-format-a11y.mjs
+          node --check scripts/certification/how-to-love-god-print-epub.mjs
+          node --check scripts/certification/how-to-love-god-media.mjs
+      - name: Install only isolated proof dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/book1-a11y-tools"
+          printf '{"private":true,"type":"module"}\n' > "$RUNNER_TEMP/book1-a11y-tools/package.json"
+          npm install --prefix "$RUNNER_TEMP/book1-a11y-tools" --no-package-lock --ignore-scripts --no-audit --no-fund --no-save \
+            @astrojs/markdown-remark@7.3.0 @playwright/test@1.62.1 \
+            jszip@3.10.1 @xmldom/xmldom@0.9.12 pdfjs-dist@5.4.530
+          ln -s "$RUNNER_TEMP/book1-a11y-tools/node_modules" ./node_modules
+      - name: Install Chromium and pdfimages
+        run: |
+          "$RUNNER_TEMP/book1-a11y-tools/node_modules/.bin/playwright" install --with-deps chromium
+          sudo apt-get install -y -qq poppler-utils
+      - name: Verify the seven immutable original media objects
+        run: node scripts/certification/how-to-love-god-media.mjs
+      - name: Generate only the unpublished media-complete proof
+        run: BOOK1_MEDIA_PROOF=1 node scripts/certification/how-to-love-god-print-epub.mjs
+      - name: Execute actual EPUB/PDF image semantics audit
+        run: node scripts/certification/how-to-love-god-format-a11y.mjs
+      - name: Keep diagnostic JSON only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: book1-a11y-report-${{ github.run_id }}
+          path: ${{ runner.temp }}/book1-format-qa/accessibility-semantics.json
+          if-no-files-found: warn
+          retention-days: 7
