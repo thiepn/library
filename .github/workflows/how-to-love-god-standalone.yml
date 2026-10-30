@@ -50,6 +50,62 @@ jobs:
         run: node scripts/certification/how-to-love-god-browser.mjs
       - name: Validate real non-release EPUB ZIP and tagged paginated PDF
         run: node scripts/certification/how-to-love-god-print-epub.mjs
+      - name: Install official W3C EPUBCheck v5.4.0 (QA only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/book1-epubcheck"
+          curl --fail --location --silent --show-error --retry 3 \
+            "https://github.com/w3c/epubcheck/releases/download/v5.4.0/epubcheck-5.4.0.zip" \
+            --output "$RUNNER_TEMP/book1-epubcheck/dist.zip"
+          unzip -q "$RUNNER_TEMP/book1-epubcheck/dist.zip" -d "$RUNNER_TEMP/book1-epubcheck"
+          java -jar "$RUNNER_TEMP/book1-epubcheck/epubcheck-5.4.0/epubcheck.jar" --version
+      - name: Execute genuine W3C EPUBCheck on isolated draft proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          java -jar "$RUNNER_TEMP/book1-epubcheck/epubcheck-5.4.0/epubcheck.jar" \
+            "$RUNNER_TEMP/book1-format-qa/how-to-love-god-UNPUBLISHED-QA.epub" \
+            --json "$RUNNER_TEMP/book1-format-qa/epubcheck-report.json"
+      - name: Render representative printed PDF pages with Poppler
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq poppler-utils
+          pdf="$RUNNER_TEMP/book1-format-qa/how-to-love-god-UNPUBLISHED-QA.pdf"
+          pdfinfo "$pdf" | tee "$RUNNER_TEMP/book1-format-qa/pdfinfo.txt"
+          pdffonts "$pdf" | tee "$RUNNER_TEMP/book1-format-qa/fonts.txt"
+          pages="$(pdfinfo "$pdf" | awk '/^Pages:/ { print $2 }')"
+          test "$pages" -gt 51
+          for p in 1 "$(( (pages+3)/4 ))" "$(( (pages+1)/2 ))" "$(( (3*pages+3)/4 ))" "$pages"; do
+            pdftoppm -f "$p" -l "$p" -singlefile -r 120 -png "$pdf" \
+              "$RUNNER_TEMP/book1-format-qa/pdf-page-$p"
+            pdftotext -f "$p" -l "$p" "$pdf" - | wc -m
+          done
+          test "$(find "$RUNNER_TEMP/book1-format-qa" -maxdepth 1 -name 'pdf-page-*.png' | wc -l)" -eq 5
+          python3 - <<'PY'
+          import glob,os,struct
+          files=sorted(glob.glob(os.environ['RUNNER_TEMP']+'/book1-format-qa/pdf-page-*.png'))
+          for f in files:
+              with open(f,'rb') as h: data=h.read(24)
+              assert data[:8]==b'\x89PNG\r\n\x1a\n'
+              w,h=struct.unpack('>II',data[16:24])
+              assert w>400 and h>600
+              print('RASTER_PASS',os.path.basename(f),f'{w}x{h}')
+          PY
+      - name: Preserve only unpublished QA evidence (no proof books)
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: book1-format-QA-evidence-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/book1-format-qa/pdf-page-*.png
+            ${{ runner.temp }}/book1-format-qa/pdfinfo.txt
+            ${{ runner.temp }}/book1-format-qa/fonts.txt
+            ${{ runner.temp }}/book1-format-qa/epubcheck-report.json
+          if-no-files-found: warn
+          retention-days: 7
       - name: Execute all public-dependency Library regression files
         shell: bash
         run: |

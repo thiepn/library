@@ -1,7 +1,8 @@
 // Read-only format QA: real EPUB3 ZIP and Chromium tagged PDF from current draft.
 // NEVER publish these proofs: they omit cover/figures and attribution is unresolved.
 import assert from 'node:assert/strict';
-import {readFile,readdir} from 'node:fs/promises';
+import {readFile,readdir,writeFile,mkdir} from 'node:fs/promises';
+import path from 'node:path';
 import {createHash} from 'node:crypto';
 import JSZip from 'jszip';
 import {DOMParser} from '@xmldom/xmldom';
@@ -131,6 +132,12 @@ try{
  assert.ok(linkAnnotations>=20,'PDF internal links '+linkAnnotations);
  assert.ok(taggedPages>0,'PDF accessibility tag tree absent');
 }finally{await task.destroy();}
+// Files exist ONLY inside the trusted runner's ephemeral directory.
+const proofDir=path.join(process.env.RUNNER_TEMP||'/tmp','book1-format-qa');
+await mkdir(proofDir,{recursive:true,mode:0o700});
+await writeFile(path.join(proofDir,'how-to-love-god-UNPUBLISHED-QA.epub'),epub,{mode:0o600});
+await writeFile(path.join(proofDir,'how-to-love-god-UNPUBLISHED-QA.pdf'),pdf,{mode:0o600});
+console.log('EPHEMERAL_QA_PATH='+proofDir);
 console.log(JSON.stringify({verdict:'ISOLATED_SOURCE_FORMAT_PASS',sections:51,
  epub:{bytes:epub.length,sha256:createHash('sha256').update(epub).digest('hex'),zipEntries:55,
        toc:51,spine:51,endnoteTargets:validated,xmlErrors:xmlProblems.length,pagination:'reflowable/not applicable'},
