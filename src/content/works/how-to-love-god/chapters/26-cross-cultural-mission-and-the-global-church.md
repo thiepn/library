@@ -73,7 +73,7 @@ The modern phrase *polycentric mission* describes the reality that Christian mis
 
 The term itself is modern. Acts contains precedents of multiple centers and cross-cultural movement, but it does not use the technical category.
 
-Migration has become a major missionary reality.<sup class="endnote-call" id="ref-26-2"><a href="#note-26-2">26.2</a></sup> Students, workers, refugees, businesspeople, pastors, and families carry faith across borders. Diaspora churches can become both receiving and sending communities.
+Migration has shaped Christian witness across centuries and remains a major mission context today.<sup class="endnote-call" id="ref-26-2"><a href="#note-26-2">26.2</a></sup> Students, workers, refugees, businesspeople, pastors, and families carry faith across borders. Diaspora churches can become both receiving and sending communities.
 
 ### Global voices are not illustrations
 

@@ -57,7 +57,7 @@ This matters for perseverance because public usefulness can become an idol. If m
 
 ## Christian perfection and present love <sup class="endnote-call" id="ref-27-2"><a href="#note-27-2">27.2</a></sup>
 
-Wesleyan-Holiness traditions use the language of Christian perfection or perfect love for a present-life work of grace characterized by wholehearted love and freedom from the reigning power of willful sin, while carefully distinguishing this from absolute sinlessness or omniscience in many formulations. Other Protestant traditions reject or reinterpret that doctrine and emphasize progressive sanctification continuing until glorification.
+Wesleyan-Holiness traditions use the language of Christian perfection or perfect love for present-life sanctification, but their formulations should not be reduced to ordinary moral improvement. For example, the Church of the Nazarene explicitly teaches entire sanctification as a grace-given work subsequent to regeneration, cleansing from original sin and directing the heart toward wholehearted love; it also distinguishes this from mature character, which continues to grow. This is a particular confessional claim, not an uncontested description of every Christian's present experience. Other Protestant traditions reject or reinterpret this doctrine and emphasize progressive sanctification continuing until glorification.
 
 The dispute deserves fair representation but not a chapter-length debate. The central common ground is substantial: Christians should pursue mature, wholehearted holiness now, while no present experience makes a creature omniscient, incapable of error, or beyond dependence on grace.
 

@@ -105,13 +105,13 @@ These notes document the main research-dependent claims prioritized in the final
 
 <span class="endnote-entry" id="note-26-1"></span>**26.1.** Sanneh's work on Christian translation highlights vernacularization and the capacity of Christian faith to take local linguistic and cultural form. Twiss offers a Native American Christian critique of colonial/cowboy forms of mission and argues for indigenous Christian expression. These works do not imply that all pre-Christian cultural practices are compatible with Christianity; they support the narrower rejection of unnecessary cultural assimilation. See Sanneh, *Translating the Message*; Twiss, *Rescuing the Gospel from the Cowboys*. [↩](#ref-26-1)
 
-<span class="endnote-entry" id="note-26-2"></span>**26.2.** Hanciles documents migration as a major force in the making of global Christianity and emphasizes Christianity's increasingly multidirectional movement. Escobar likewise argues for mission “from everywhere to everyone,” challenging a simple West-to-rest model. See Hanciles, *Migration and the Making of Global Christianity*; Escobar, *The New Global Mission*. [↩](#ref-26-2)
+<span class="endnote-entry" id="note-26-2"></span>**26.2.** Hanciles documents migration's historical influence on Christian expansion from its beginnings through approximately 1500 CE; that study is not a measurement of contemporary migration or mission. Escobar's *The New Global Mission* (2003) argues for mission “from everywhere to everyone,” but its publication date should not be confused with current demographic data. For a contemporary qualitative mission-oriented discussion of diaspora communities, see the Lausanne Movement's “Diasporas” network. None of these sources establishes a present-day migration count or quantitative ministry effect. See Hanciles, *Migration and the Making of Global Christianity*; Escobar, *The New Global Mission*; Lausanne Movement, “Diasporas.” [↩](#ref-26-2)
 
 ### Chapter 27 — Persevering in Love Through a Lifetime
 
 <span class="endnote-entry" id="note-27-1"></span>**27.1.** The chapter's summary is intentionally comparative. Reformed confessions classically teach preservation/perseverance of the truly regenerate; Wesleyan-Arminian and Free Will Baptist traditions allow final apostasy; Lutheran and Anglican formulations require their own nuance and should not be collapsed into either side. Representative primary sources include Westminster Confession XVII–XVIII; the Lutheran *Book of Concord*; the United Methodist Articles of Religion; the Church of the Nazarene Articles of Faith; the Anglican Articles of Religion; the Baptist Faith and Message; and relevant Free Will Baptist confessional material. The note documents diversity rather than adjudicating the dispute. [↩](#ref-27-1)
 
-<span class="endnote-entry" id="note-27-2"></span>**27.2.** Wesleyan-Holiness traditions use “Christian perfection,” “entire sanctification,” and “perfect love” for a present-life doctrine that, in careful formulations, is not identical to omniscience, freedom from every infirmity, or eschatological impeccability. See Church of the Nazarene, “Articles of Faith”; John Wesley, *A Plain Account of Christian Perfection*. Other Protestant traditions reject or reinterpret this doctrine, while all agree that final perfected holiness belongs to glorification. [↩](#ref-27-2)
+<span class="endnote-entry" id="note-27-2"></span>**27.2.** The Church of the Nazarene's Article X describes entire sanctification as a grace-given work subsequent to regeneration, addressing original sin or depravity, and distinguishes a pure heart from mature character, which continues to grow. This is more specific than a generic description of moral improvement. Within Wesleyan-Holiness theology, “Christian perfection” or “perfect love” does not, in careful formulations, mean omniscience, freedom from every infirmity, or eschatological impeccability. See Church of the Nazarene, “Articles of Faith”; John Wesley, *A Plain Account of Christian Perfection*. Other Protestant traditions reject or reinterpret this doctrine, while all agree that final perfected holiness belongs to glorification. [↩](#ref-27-2)
 
 
 ## Recommended Reading Bibliography
@@ -251,6 +251,8 @@ Tchividjian, Basyle, and Shira M. Berkovits. *The Child Safeguarding Policy Guid
 Escobar, Samuel. *The New Global Mission: The Gospel from Everywhere to Everyone*. IVP Academic, 2003.
 
 Hanciles, Jehu J. *Migration and the Making of Global Christianity*. Eerdmans, 2021.
+
+Lausanne Movement. “Diasporas.” Accessed October 30, 2026. <https://lausanne.org/network/diasporas>.
 
 Onyinah, Opoku. *Pentecostal Exorcism: Witchcraft and Demonology in Ghana*. Journal of Pentecostal Theology Supplement Series 34. Deo Publishing, 2012.
 
