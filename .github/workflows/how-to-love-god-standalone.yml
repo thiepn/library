@@ -19,9 +19,30 @@ jobs:
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Require exact candidate identity
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
       - name: Set up Node 22
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22.12.0
       - name: Run isolated source certification without private package or credential
         run: node scripts/certification/how-to-love-god-standalone.mjs
+      - name: Install isolated TypeScript test executor
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/book1-test-tools"
+          printf '{"private":true,"type":"module"}\n' > "$RUNNER_TEMP/book1-test-tools/package.json"
+          npm install --prefix "$RUNNER_TEMP/book1-test-tools" --no-package-lock --ignore-scripts --no-audit --no-fund --save-exact tsx@4.20.5
+      - name: Execute bounded native reader regression tests
+        shell: bash
+        run: |
+          "$RUNNER_TEMP/book1-test-tools/node_modules/.bin/tsx" --test \
+            scripts/regression/reader-canonical.test.ts \
+            scripts/regression/reader-core.test.ts \
+            scripts/regression/reader-entry.test.ts \
+            scripts/regression/reader-navigation-chrome.test.ts \
+            scripts/regression/reader-migration-fallback.test.ts
