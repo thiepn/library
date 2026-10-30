@@ -42,9 +42,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          # The SSO contract file imports @thiepn/account-session from a private
-          # repository. It remains explicitly NOT_TESTED until authorized CI.
+          # Both Account contract specs depend directly or transitively on
+          # private @thiepn/account-session. Do not stub or impersonate it.
+          # Their complete tests remain NOT_TESTED until authenticated CI.
           mapfile -t specs < <(find scripts/regression -type f -name '*.test.ts' \
-            ! -name 'account-sso.test.ts' | LC_ALL=C sort)
-          test "${#specs[@]}" -eq 21
+            ! -name 'account-sso.test.ts' \
+            ! -name 'account-personal-files.test.ts' | LC_ALL=C sort)
+          test "${#specs[@]}" -eq 20
           "$RUNNER_TEMP/book1-test-tools/node_modules/.bin/tsx" --test "${specs[@]}"
