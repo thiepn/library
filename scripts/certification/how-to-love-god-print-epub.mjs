@@ -66,12 +66,22 @@ zip.file('mimetype','application/epub+zip',{compression:'STORE'});
 zip.file('META-INF/container.xml','<?xml version="1.0" encoding="UTF-8"?>'+
  '<container xmlns="urn:oasis:names:tc:opendocument:xmlns:container" version="1.0"><rootfiles><rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/></rootfiles></container>');
 const epubs=new Map();
+let groupedFigures=0;
 for(const x of chapters){
- const content=transform(x.html,'epub').replace(/<br(\s[^>]*)?>/gi,'<br$1/>').replace(/<hr(\s[^>]*)?>/gi,'<hr$1/>');
+ let content=transform(x.html,'epub').replace(/<br(\s[^>]*)?>/gi,'<br$1/>').replace(/<hr(\s[^>]*)?>/gi,'<hr$1/>');
+ if(withMedia){
+   // Exact reproduced Markdown shape: image paragraph followed immediately by
+   // an italicized "Figure — ..." caption. Preserve both strings byte-for-byte
+   // while exposing a real figure/figcaption association to EPUB readers.
+   content=content.replace(/<p>\s*(<img\b[^>]*\/>)[\s]*<\/p>\s*<p>\s*<em>(Figure\s*—\s*[^<]+)<\/em>\s*<\/p>/g,
+     (_whole,img,caption)=>{groupedFigures++;return '<figure>'+img+'<figcaption>'+caption+'</figcaption></figure>';});
+ }
+
  const body='<?xml version="1.0" encoding="utf-8"?>'+
   '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"><head><title>'+esc(x.title)+'</title></head><body><main><h1>'+esc(x.title)+'</h1>'+content+'</main></body></html>';
  epubs.set(x.id,body);zip.file('OEBPS/text/'+x.id+'.xhtml',body);
 }
+if(withMedia)assert.equal(groupedFigures,6,'all six diagrams must have EPUB figure/caption groups');
 const nav='<?xml version="1.0" encoding="utf-8"?>'+
  '<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="en"><head><title>Contents</title></head><body><nav epub:type="toc" id="toc"><h1>Contents</h1><ol>'+
  (withMedia?'<li><a href="cover.xhtml">Cover</a></li>':'')+chapters.map(x=>'<li><a href="text/'+x.id+'.xhtml">'+esc(x.title)+'</a></li>').join('')+

@@ -32,6 +32,7 @@ for(const name of xhtml){
   imgs.push({
    file:fn,src:image.getAttribute('src'),alt,
    htmlParent:p?.localName||p?.nodeName,
+   figureCaption:(()=>{let el=image.parentNode;while(el?.nodeType===1){if(el.localName==='figure')return el.getElementsByTagName('figcaption').item(0)?.textContent?.trim()||null;el=el.parentNode;}return null;})(),
    containedInFigure:Boolean((()=>{
      let node=image.parentNode;
      while(node&&node.nodeType===1){if(node.localName==='figure')return true;node=node.parentNode;}return false;
@@ -91,4 +92,5 @@ console.log(JSON.stringify(report,null,2));
 await writeFile(path.join(dir,'accessibility-semantics.json'),JSON.stringify(report,null,2));
 assert.equal(structures.filter(x=>x.tagTreePresent).length,7,'tagged PDF page structure missing');
 assert.equal(missingFigureAssociation,0,'EPUB diagram captions not structurally associated with image elements');
+assert.ok(figures.every(x=>x.figureCaption?.startsWith('Figure — ')),'each diagram must retain its original associated caption');
 assert.equal(altFigureTagCount,7,'tagged PDF figures do not expose seven nonempty alt descriptions');

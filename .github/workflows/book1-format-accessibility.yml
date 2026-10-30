@@ -51,6 +51,18 @@ jobs:
         run: node scripts/certification/how-to-love-god-media.mjs
       - name: Generate only the unpublished media-complete proof
         run: BOOK1_MEDIA_PROOF=1 node scripts/certification/how-to-love-god-print-epub.mjs
+      - name: Verify modified proof with official EPUBCheck v5.4.0
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/book1-epubcheck"
+          curl --fail --location --silent --show-error --retry 3 \
+            "https://github.com/w3c/epubcheck/releases/download/v5.4.0/epubcheck-5.4.0.zip" \
+            --output "$RUNNER_TEMP/book1-epubcheck/dist.zip"
+          unzip -q "$RUNNER_TEMP/book1-epubcheck/dist.zip" -d "$RUNNER_TEMP/book1-epubcheck"
+          java -jar "$RUNNER_TEMP/book1-epubcheck/epubcheck-5.4.0/epubcheck.jar" \
+            "$RUNNER_TEMP/book1-format-qa/how-to-love-god-UNPUBLISHED-QA.epub" \
+            --json "$RUNNER_TEMP/book1-format-qa/epubcheck-a11y.json"
       - name: Execute actual EPUB/PDF image semantics audit
         run: node scripts/certification/how-to-love-god-format-a11y.mjs
       - name: Keep diagnostic JSON only
@@ -58,6 +70,8 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: book1-a11y-report-${{ github.run_id }}
-          path: ${{ runner.temp }}/book1-format-qa/accessibility-semantics.json
+          path: |
+            ${{ runner.temp }}/book1-format-qa/accessibility-semantics.json
+            ${{ runner.temp }}/book1-format-qa/epubcheck-a11y.json
           if-no-files-found: warn
           retention-days: 7
