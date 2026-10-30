@@ -29,7 +29,7 @@ Adoption should also correct sentimental ideas of fatherhood. God's fatherly lov
 
 ## Four lenses for assurance
 
-Assurance is often damaged by forcing every question through a single lens. A more balanced Protestant model uses four related lenses while keeping them in the right order.
+Assurance is often damaged by forcing every question through a single lens. For practical clarity, this chapter groups several biblical and Protestant confessional emphases into four related lenses. This is an editorial framework, not a formula shared identically by all Protestant traditions.
 
 **First, Christ and God's promise.** Assurance begins outside the fluctuating self. The gospel announces what God has done in Christ and calls us to trust him. The believer's hope is not that introspection will eventually discover a perfectly pure heart.
 
