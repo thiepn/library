@@ -21,7 +21,7 @@ Christian prayer is relational, but “relationship” must not be turned into a
 
 The Lord's Prayer gives theological architecture rather than a magic script. It begins with God's name and kingdom, moves through daily provision, forgiveness, and protection, and teaches dependence that is both God-centered and ordinary.
 
-Christians may pray the prayer verbatim or use its movements as a pattern. The New Testament does not require one method. Its enduring value is the order of concern: God's glory, God's reign, daily need, reconciled relationships, moral dependence, and protection.
+Christians may pray the prayer verbatim or use its movements as a pattern. Matthew introduces it with “pray like this” (Matthew 6:9), while Luke records Jesus saying “when you pray, say” (Luke 11:2). Neither direct recitation nor prayer shaped by its petitions should be treated as a technique that guarantees an outcome. Its enduring value includes the order of concern: God's glory, God's reign, daily need, reconciled relationships, moral dependence, and protection.
 
 Notice how little room it leaves for self-sufficient spirituality. We need bread. We need forgiveness. We need help against temptation. We pray as people dependent on God and entangled with neighbors.
 

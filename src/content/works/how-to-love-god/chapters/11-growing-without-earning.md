@@ -13,7 +13,7 @@ Grace opposes earning; it does not oppose grace-enabled effort.
 
 ## God works, therefore we act
 
-Philippians 2 places human working alongside God's working. The passage has been summarized in Christian tradition in many memorable ways, but Paul's point should be allowed to stand without turning a later slogan into his wording: God's action does not make Christian obedience passive. It grounds and empowers it.
+Philippians 2 places human working alongside God's working. Paul addresses the Philippian congregation after calling for shared humility and unity in Christ (Philippians 2:1–11); his words should not be isolated into a private self-improvement formula. The passage has been summarized in Christian tradition in many memorable ways, but Paul's point should be allowed to stand without turning a later slogan into his wording: God's action does not make Christian obedience passive. It grounds and empowers it.
 
 Galatians 5 similarly calls believers to walk by the Spirit while describing a real conflict with the flesh. Romans 8 speaks of putting sinful deeds to death by the Spirit. The Christian is neither self-savior nor spectator.
 
