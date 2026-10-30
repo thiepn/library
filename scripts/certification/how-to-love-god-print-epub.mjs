@@ -69,7 +69,7 @@ const unpacked=await JSZip.loadAsync(epub,{checkCRC32:true});
 assert.equal(Object.keys(unpacked.files).filter(x=>!x.endsWith('/')).length,55);
 const xmlProblems=[];
 const xml=(name,txt)=>{
- const errors=[];const doc=new DOMParser({errorHandler:{warning:e=>errors.push(e),error:e=>errors.push(e),fatalError:e=>errors.push(e)}}).parseFromString(txt,'application/xml');
+ const errors=[];const doc=new DOMParser({onError:(level,message)=>{errors.push(String(level)+': '+String(message));}}).parseFromString(txt,'application/xml');
  if(errors.length) xmlProblems.push({name,errors:errors.slice(0,3)});
  return doc;
 };
