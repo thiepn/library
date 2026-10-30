@@ -15,7 +15,7 @@ The words describe an experience. They do not diagnose its cause.
 
 The Psalms give believers language for low consolation and apparent distance. Psalm 42–43 moves through thirst, memory, grief, self-address, hope, and repeated longing. It does not give a clinical diagnosis, nor does it reduce the experience to one spiritual failure.
 
-That difference matters pastorally. “Dryness,” “coldness,” “distance,” and “low desire” describe conscious experience without identifying its cause. The primary cause may be moral, relational, bodily, psychological, social, spiritual, or mixed.<sup class="endnote-call" id="ref-17-1"><a href="#note-17-1">17.1</a></sup>
+That difference matters pastorally. “Dryness,” “coldness,” “distance,” and “low desire” describe conscious experience without identifying its cause. The primary cause may be moral, relational, bodily, psychological, social, spiritual, or mixed.<sup class="endnote-call" id="ref-17-1"><a href="./appendix-l-sources-notes-and-further-reading#note-17-1">17.1</a></sup>
 
 A wise first step is to slow down before reaching a verdict and name what is actually happening. Is prayer difficult? Is pleasure reduced broadly or only in explicitly religious activity? Is concentration impaired? Is there grief? Is there known sin? Is the problem new or longstanding? Is daily functioning deteriorating? Is there fear, coercion, or danger? The answers do not create a diagnosis, but they help determine what kind of care may be appropriate.
 
@@ -35,7 +35,7 @@ The story of Elijah in 1 Kings 19 shows a prophet who is fearful, depleted, isol
 
 It cannot diagnose Elijah retrospectively with a modern psychiatric disorder. Terms such as major depressive disorder, anxiety disorders, trauma-related conditions, or anhedonia belong to contemporary clinical frameworks and require contemporary assessment.
 
-The legitimate pastoral inference is modest: exhaustion, nourishment, sleep, illness, and bodily condition can matter to spiritual experience. Sometimes the faithful response to depleted attention is rest rather than adding another devotional burden.<sup class="endnote-call" id="ref-17-2"><a href="#note-17-2">17.2</a></sup>
+The legitimate pastoral inference is modest: exhaustion, nourishment, sleep, illness, and bodily condition can matter to spiritual experience. Sometimes the faithful response to depleted attention is rest rather than adding another devotional burden.<sup class="endnote-call" id="ref-17-2"><a href="./appendix-l-sources-notes-and-further-reading#note-17-2">17.2</a></sup>
 
 ## Depression, anhedonia, and other clinical factors
 
@@ -43,7 +43,7 @@ Depression is not a synonym for spiritual dryness. Anhedonia—the reduced capac
 
 Persistent low mood, significant loss of interest, major changes in functioning, severe anxiety, self-harm thoughts, or other serious symptoms warrant appropriate professional assessment. **If someone is at immediate risk of acting on suicidal or self-harm thoughts, seek local emergency or crisis assistance immediately rather than waiting for a routine appointment.** Seeking professional help is not an admission that spiritual realities do not matter. It recognizes that human beings are embodied creatures and that competent care can address dimensions pastors are not trained to diagnose.
 
-Medication decisions—including starting, stopping, adjusting, or attributing effects—belong with qualified clinicians who know the person's history and circumstances.<sup class="endnote-call" id="ref-17-3"><a href="#note-17-3">17.3</a></sup>
+Medication decisions—including starting, stopping, adjusting, or attributing effects—belong with qualified clinicians who know the person's history and circumstances.<sup class="endnote-call" id="ref-17-3"><a href="./appendix-l-sources-notes-and-further-reading#note-17-3">17.3</a></sup>
 
 ## Intrusive thoughts are not chosen allegiance
 
@@ -53,7 +53,7 @@ Christian moral responsibility includes what we choose, nurture, pursue, resist,
 
 Repeated reassurance can also become part of a compulsive cycle. A person asks, “Am I really saved?” receives an answer, feels relief, then asks again when anxiety returns. Or they repeatedly inspect motives, confessions, prayers, and memories. The goal becomes certainty of feeling rather than trust in Christ.
 
-Pastoral care should not shame this pattern or feed it with endless tests.<sup class="endnote-call" id="ref-17-4"><a href="#note-17-4">17.4</a></sup> Appendix H gives a bounded assurance guide; persistent compulsive patterns may need specialized clinical help.
+Pastoral care should not shame this pattern or feed it with endless tests.<sup class="endnote-call" id="ref-17-4"><a href="./appendix-l-sources-notes-and-further-reading#note-17-4">17.4</a></sup> Appendix H gives a bounded assurance guide; persistent compulsive patterns may need specialized clinical help.
 
 ## What to do when you do not know why
 

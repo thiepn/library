@@ -55,7 +55,7 @@ But the examination must end. If every answer produces another check, the practi
 
 Scrupulosity commonly refers to religious or moral forms of obsessive-compulsive concern. Not every tender conscience has OCD, and these pages do not diagnose anyone. Intrusive thoughts, unwanted images, repeated doubts, and compulsive checking can nevertheless be moralized in harmful ways.
 
-An unwanted thought is not identical to chosen allegiance. Anxiety is not confession. Repeatedly asking a pastor, friend, book, or search engine to settle the same question until anxiety disappears can provide short relief while strengthening the cycle of checking.<sup class="endnote-call" id="ref-7-1"><a href="#note-7-1">7.1</a></sup>
+An unwanted thought is not identical to chosen allegiance. Anxiety is not confession. Repeatedly asking a pastor, friend, book, or search engine to settle the same question until anxiety disappears can provide short relief while strengthening the cycle of checking.<sup class="endnote-call" id="ref-7-1"><a href="./appendix-l-sources-notes-and-further-reading#note-7-1">7.1</a></sup>
 
 A wise response may include competent mental health care alongside pastoral support. This is not unbelief. Pastors should not attempt to replace clinical assessment, and clinicians do not define Christian doctrine. Different forms of care can address different dimensions of one person's suffering.
 

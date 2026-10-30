@@ -13,7 +13,7 @@ Rival loves are competing trusts, valuations, loyalties, and patterns that displ
 
 ## Idolatry and disordered love
 
-Scripture's explicit language is worship, exchange, covetousness, mastery, loyalty, and false gods. Christian thinkers such as Augustine have helpfully described sin in terms of wrongly ordered loves. That phrase is a theological synthesis, not a biblical quotation.<sup class="endnote-call" id="ref-19-1"><a href="#note-19-1">19.1</a></sup>
+Scripture's explicit language is worship, exchange, covetousness, mastery, loyalty, and false gods. Christian thinkers such as Augustine have helpfully described sin in terms of wrongly ordered loves. That phrase is a theological synthesis, not a biblical quotation.<sup class="endnote-call" id="ref-19-1"><a href="./appendix-l-sources-notes-and-further-reading#note-19-1">19.1</a></sup>
 
 Its value is that sin often does not consist in loving an evil object. It consists in loving a good thing as ultimate, or loving it in a way that violates God's order. Family, nation, work, pleasure, security, ministry, reputation, and knowledge can all be genuine goods. They become rivals when they claim the allegiance, trust, or moral permission that belongs to God.
 
@@ -45,7 +45,7 @@ Collective idols can be harder to see because they are socially rewarded. What f
 
 ## Digital attention as one modern domain
 
-Digital systems can intensify distraction, comparison, pornography, outrage, consumerism, and constant stimulation. Algorithms often compete for attention because attention has economic value.<sup class="endnote-call" id="ref-19-2"><a href="#note-19-2">19.2</a></sup> These realities deserve practical thought.
+Digital systems can intensify distraction, comparison, pornography, outrage, consumerism, and constant stimulation. Algorithms often compete for attention because attention has economic value.<sup class="endnote-call" id="ref-19-2"><a href="./appendix-l-sources-notes-and-further-reading#note-19-2">19.2</a></sup> These realities deserve practical thought.
 
 But digital life is not the universal defining problem of modern Christianity. Billions of people experience technology differently, with varied access, costs, languages, infrastructure, and social effects. Christian counsel should not assume a high-income, always-connected Western user as the human default.
 
