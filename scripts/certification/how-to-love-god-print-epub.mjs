@@ -183,7 +183,7 @@ try{
  assert.ok(taggedPages>0,'PDF accessibility tag tree absent');
 }finally{await task.destroy();}
 // Files exist ONLY inside the trusted runner's ephemeral directory.
-const proofDir=path.join(process.env.RUNNER_TEMP||'/tmp','book1-format-qa');
+// Reuse proofDir from the verified-media setup.
 await mkdir(proofDir,{recursive:true,mode:0o700});
 await writeFile(path.join(proofDir,'how-to-love-god-UNPUBLISHED-QA.epub'),epub,{mode:0o600});
 await writeFile(path.join(proofDir,'how-to-love-god-UNPUBLISHED-QA.pdf'),pdf,{mode:0o600});

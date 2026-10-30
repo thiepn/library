@@ -34,6 +34,11 @@ jobs:
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22.12.0
+      - name: Check independent QA scripts for parse errors
+        run: |
+          node --check scripts/certification/how-to-love-god-print-epub.mjs
+          node --check scripts/certification/how-to-love-god-page-audit.mjs
+          node --check scripts/certification/how-to-love-god-media.mjs
       - name: Run isolated source certification without private package or credential
         run: node scripts/certification/how-to-love-god-standalone.mjs
       - name: Install isolated TypeScript test executor
