@@ -36,7 +36,8 @@ jobs:
         run: |
           mkdir -p "$RUNNER_TEMP/book1-test-tools"
           printf '{"private":true,"type":"module"}\n' > "$RUNNER_TEMP/book1-test-tools/package.json"
-          npm install --prefix "$RUNNER_TEMP/book1-test-tools" --no-package-lock --ignore-scripts --no-audit --no-fund --save-exact tsx@4.20.5
+          npm install --prefix "$RUNNER_TEMP/book1-test-tools" --no-package-lock --ignore-scripts --no-audit --no-fund --no-save tsx@4.20.5 epubjs@0.3.93
+          ln -s "$RUNNER_TEMP/book1-test-tools/node_modules" ./node_modules
       - name: Execute bounded native reader regression tests
         shell: bash
         run: |
