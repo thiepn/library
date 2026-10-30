@@ -47,7 +47,7 @@ for (const filename of files) {
   const body = content.slice(match[0].length);
   for (const m of body.matchAll(/id="ref-(\d+-\d+)"/g)) calls.push([m[1], filename]);
   for (const m of body.matchAll(/id="note-(\d+-\d+)"/g)) notes.push([m[1], filename]);
-  for (const m of body.matchAll(/\]\(#ref-(\d+-\d+)\)/g)) backlinks.push([m[1], filename]);
+  for (const m of body.matchAll(/\]\((?:\.\/[^)#]+)?#ref-(\d+-\d+)\)/g)) backlinks.push([m[1], filename]);
   for (const m of body.matchAll(/!\[[^\]]*\]\((https?:\/\/[^)]+)\)/g)) imageURLs.push(m[1]);
   for (const m of body.matchAll(/\bChapters?\s+(\d{1,2})(?:\s*[–-]\s*(\d{1,2}))?/g)) {
     const start = Number(m[1]), end = Number(m[2] || m[1]);
