@@ -6,6 +6,7 @@ on:
       - 'src/content/works/how-to-love-god/**'
       - 'src/publications/releases/how-to-love-god/**'
       - 'scripts/certification/how-to-love-god-standalone.mjs'
+      - 'scripts/certification/how-to-love-god-rendering.mjs'
       - '.github/workflows/how-to-love-god-standalone.yml'
   workflow_dispatch:
 
@@ -36,8 +37,10 @@ jobs:
         run: |
           mkdir -p "$RUNNER_TEMP/book1-test-tools"
           printf '{"private":true,"type":"module"}\n' > "$RUNNER_TEMP/book1-test-tools/package.json"
-          npm install --prefix "$RUNNER_TEMP/book1-test-tools" --no-package-lock --ignore-scripts --no-audit --no-fund --no-save tsx@4.20.5 epubjs@0.3.93
+          npm install --prefix "$RUNNER_TEMP/book1-test-tools" --no-package-lock --ignore-scripts --no-audit --no-fund --no-save tsx@4.20.5 epubjs@0.3.93 @astrojs/markdown-remark@7.3.0 linkedom@0.18.12
           ln -s "$RUNNER_TEMP/book1-test-tools/node_modules" ./node_modules
+      - name: Render all Book 1 Markdown pages and validate internal links
+        run: node scripts/certification/how-to-love-god-rendering.mjs
       - name: Execute all public-dependency Library regression files
         shell: bash
         run: |
