@@ -60,13 +60,6 @@ jobs:
             --output "$RUNNER_TEMP/book1-epubcheck/dist.zip"
           unzip -q "$RUNNER_TEMP/book1-epubcheck/dist.zip" -d "$RUNNER_TEMP/book1-epubcheck"
           java -jar "$RUNNER_TEMP/book1-epubcheck/epubcheck-5.4.0/epubcheck.jar" --version
-      - name: Execute genuine W3C EPUBCheck on isolated draft proof
-        shell: bash
-        run: |
-          set -euo pipefail
-          java -jar "$RUNNER_TEMP/book1-epubcheck/epubcheck-5.4.0/epubcheck.jar" \
-            "$RUNNER_TEMP/book1-format-qa/how-to-love-god-UNPUBLISHED-QA.epub" \
-            --json "$RUNNER_TEMP/book1-format-qa/epubcheck-report.json"
       - name: Render representative printed PDF pages with Poppler
         shell: bash
         run: |
@@ -94,6 +87,13 @@ jobs:
               assert w>400 and h>600
               print('RASTER_PASS',os.path.basename(f),f'{w}x{h}')
           PY
+      - name: Execute genuine W3C EPUBCheck on isolated draft proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          java -jar "$RUNNER_TEMP/book1-epubcheck/epubcheck-5.4.0/epubcheck.jar" \
+            "$RUNNER_TEMP/book1-format-qa/how-to-love-god-UNPUBLISHED-QA.epub" \
+            --json "$RUNNER_TEMP/book1-format-qa/epubcheck-report.json"
       - name: Preserve only unpublished QA evidence (no proof books)
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
