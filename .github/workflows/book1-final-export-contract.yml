@@ -1,0 +1,54 @@
+name: Book 1 final metadata contract (no publication)
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/book1-final-export-contract.yml'
+      - 'scripts/certification/how-to-love-god-final-export-contract.mjs'
+      - 'docs/audits/how-to-love-god/2026-10-31-final-export-decision-sheet.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  metadata-contract:
+    name: Synthetic metadata / release refusal contract only
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact PR HEAD, with history for immutable-asset checks
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Set up Node 22
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22.12.0
+      - name: Verify read-only scope; install only public YAML parser
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test ! -e src/publications/releases/how-to-love-god/1.1.1.yaml
+          test ! -e src/publications/releases/how-to-love-god/1.1.1-rc.1.yaml
+          node --check scripts/certification/how-to-love-god-final-export-contract.mjs
+          mkdir -p "$RUNNER_TEMP/book1-final-contract-tools"
+          printf '{"private":true,"type":"module"}\n' > "$RUNNER_TEMP/book1-final-contract-tools/package.json"
+          npm install --prefix "$RUNNER_TEMP/book1-final-contract-tools" --no-package-lock --ignore-scripts --no-audit --no-fund --no-save yaml@2.8.1
+          ln -s "$RUNNER_TEMP/book1-final-contract-tools/node_modules" ./node_modules
+      - name: Test synthetic metadata mapping and refuse all missing permissions
+        env:
+          BOOK1_EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: node scripts/certification/how-to-love-god-final-export-contract.mjs --self-test
+      - name: Upload only nonpublishing contract test JSON
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: book1-final-metadata-contract-${{ github.run_id }}
+          path: ${{ runner.temp }}/book1-final-export-contract/metadata-contract-result.json
+          retention-days: 14
+          if-no-files-found: warn
