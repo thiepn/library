@@ -58,7 +58,7 @@ jobs:
             -c 'test -r /data/how-to-love-god-UNPUBLISHED-QA.pdf && echo PDF_PROOF_READABLE'
           set +e
           docker run --rm --network none --user "$uid" -v "$base:/data:ro" verapdf/cli:v1.30.2 \
-            --format json --flavour ua1 --maxfailuresdisplayed 3 \
+            --format json --flavour ua1 --maxfailuresdisplayed 500 \
             /data/how-to-love-god-UNPUBLISHED-QA.pdf > "$base/pdfua-raw.json"
           rc="$?"
           set -e

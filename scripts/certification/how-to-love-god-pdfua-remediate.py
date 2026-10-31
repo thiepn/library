@@ -43,30 +43,32 @@ def visible_label(page: fitz.Page, rect_pdf) -> str:
     label=" ".join(str(w[4]) for w in selected)
     return " ".join(label.split())
 
-def normalize_list_body(pdf: pikepdf.Pdf) -> int:
-    """Wrap existing LI payload in LBody without replacing text or MCR nodes.
+def failed_list_objgens() -> set[tuple[int,int]]:
+    """Read exact failing SELI object references from the genuine baseline report."""
+    raw=json.loads((ROOT/"pdfua-raw.json").read_text())
+    val=raw["report"]["jobs"][0]["validationResult"][0]
+    assert "PDF/UA-1" in val["profileName"]
+    offending=set()
+    reported=0
+    for rule in val["details"]["ruleSummaries"]:
+        if str(rule.get("clause"))!="7.2" or rule.get("testNumber")!=20 or rule.get("status")!="failed":
+            continue
+        reported=rule["failedChecks"]
+        for item in rule.get("checks",[]):
+            match=re.search(r"\((\d+)\s+(\d+)\s+obj\s+SELI\s+LI\)",item.get("context",""))
+            if match and item.get("status")=="failed":
+                offending.add((int(match[1]),int(match[2])))
+    assert reported==29 and len(offending)==29, (
+        "Must receive complete exact-object veraPDF list failures",reported,len(offending))
+    return offending
 
-    Only children of original LI are reparented; the content marked references
-    and all original structure elements remain unchanged.
-    """
+def normalize_list_body(pdf: pikepdf.Pdf, offending: set[tuple[int,int]]) -> int:
+    """Only wrap list children on the 29 directly failed veraPDF LI objects."""
     st=pdf.Root.StructTreeRoot
     seen=set()
-    fixed=0
-    def exposes_direct_span(node):
-        if not hasattr(node,"get"):return False
-        kind=node.get("/S")
-        if kind==Name("/Span"):return True
-        if kind!=Name("/NonStruct"):return False
-        k=node.get("/K")
-        children=list(k) if isinstance(k,Array) else [k]
-        return any(exposes_direct_span(child) for child in children if child is not None)
+    fixed=set()
     def walk(node):
-        nonlocal fixed
-        if not hasattr(node,"get"):
-            return
-        s=node.get("/S")
-        if s is None and "/K" not in node:
-            return
+        if not hasattr(node,"get"):return
         if getattr(node,"is_indirect",False):
             key=node.objgen
             if key in seen:return
@@ -74,30 +76,27 @@ def normalize_list_body(pdf: pikepdf.Pdf) -> int:
         k=node.get("/K")
         if k is None:return
         kids=list(k) if isinstance(k,Array) else [k]
-        if s==Name("/LI"):
-            types=[kid.get("/S") for kid in kids if hasattr(kid,"get") and kid.get("/S") is not None]
-            # PDF UA validator traverses transparent NonStruct wrappers and sees their Span children.
-            if any(exposes_direct_span(kid) for kid in kids):
-                if Name("/LBody") in types:
-                    raise RuntimeError("Existing LBody mixed with direct Span requires separate review")
-                labels=[kid for kid in kids if hasattr(kid,"get") and kid.get("/S")==Name("/Lbl")]
-                bodykids=[kid for kid in kids if kid not in labels]
-                if not bodykids:raise RuntimeError("Missing list body")
-                payload=bodykids[0] if len(bodykids)==1 else Array(bodykids)
-                lbody=pdf.make_indirect(Dictionary({
-                    "/Type":Name("/StructElem"),"/S":Name("/LBody"),"/P":node,
-                    "/K":payload
-                }))
-                for kid in bodykids:
-                    if hasattr(kid,"get") and kid.get("/S") is not None:
-                        kid["/P"]=lbody
-                node["/K"]=Array(labels+[lbody])
-                fixed+=1
-                kids=labels+[lbody]
+        if node.get("/S")==Name("/LI") and node.objgen in offending:
+            labels=[kid for kid in kids if hasattr(kid,"get") and kid.get("/S")==Name("/Lbl")]
+            bodykids=[kid for kid in kids if kid not in labels]
+            if not bodykids or any(hasattr(kid,"get") and kid.get("/S")==Name("/LBody") for kid in bodykids):
+                raise RuntimeError(f"Unexpected list structure for verified failing LI: {node.objgen}")
+            payload=bodykids[0] if len(bodykids)==1 else Array(bodykids)
+            lbody=pdf.make_indirect(Dictionary({
+                "/Type":Name("/StructElem"),"/S":Name("/LBody"),"/P":node,"/K":payload
+            }))
+            for kid in bodykids:
+                if hasattr(kid,"get") and kid.get("/S") is not None:
+                    kid["/P"]=lbody
+            node["/K"]=Array(labels+[lbody])
+            fixed.add(node.objgen)
+            kids=labels+[lbody]
         for child in kids:walk(child)
-    for node in list(st.get("/K",[])) if isinstance(st.get("/K"),Array) else [st.get("/K")]:
+    root_k=st.get("/K")
+    for node in (list(root_k) if isinstance(root_k,Array) else [root_k]):
         if node is not None:walk(node)
-    return fixed
+    assert fixed==offending, {"unrepaired":sorted(offending-fixed),"extra":sorted(fixed-offending)}
+    return len(fixed)
 
 def main() -> None:
     assert SOURCE.is_file() and SOURCE.stat().st_size>100000
@@ -118,7 +117,7 @@ def main() -> None:
                 raise RuntimeError(f"Existing non-standard role {key} maps to another type: {rm[key]}")
             rm[key]=Name("/Span")
             counts["rolesMapped"]+=1
-        counts["listItemsRepaired"]=normalize_list_body(pdf)
+        counts["listItemsRepaired"]=normalize_list_body(pdf,failed_list_objgens())
         assert counts["listItemsRepaired"]==29, counts
         vp=pdf.Root.get("/ViewerPreferences")
         if vp is None:
