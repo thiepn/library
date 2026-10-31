@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - '.github/workflows/book1-pdfua-preflight.yml'
+      - 'scripts/certification/how-to-love-god-pdfua-remediate.py'
   workflow_dispatch:
 
 permissions:
@@ -94,6 +95,53 @@ jobs:
           (base/'pdfua-summary.json').write_text(json.dumps(out,indent=2))
           print(json.dumps(out,indent=2))
           PY
+      - name: Install narrow PDF structure correction tools in isolated venv
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/book1-pdfua-python"
+          "$RUNNER_TEMP/book1-pdfua-python/bin/python" -m pip install --disable-pip-version-check --no-cache-dir pikepdf==9.11.0 PyMuPDF==1.26.3
+          "$RUNNER_TEMP/book1-pdfua-python/bin/python" -m py_compile scripts/certification/how-to-love-god-pdfua-remediate.py
+      - name: Repair reproduced structural roles, annotation descriptions and PDF document metadata in QA COPY
+        run: "$RUNNER_TEMP/book1-pdfua-python/bin/python" scripts/certification/how-to-love-god-pdfua-remediate.py
+      - name: Validate remediated QA copy independently with genuine veraPDF PDF-UA-1
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="$RUNNER_TEMP/book1-format-qa"
+          uid="$(id -u):$(id -g)"
+          test -s "$base/how-to-love-god-PDFUA-REMEDIATED-QA.pdf"
+          set +e
+          docker run --rm --network none --user "$uid" -v "$base:/data:ro" verapdf/cli:v1.30.2 \
+            --format json --flavour ua1 --maxfailuresdisplayed 3 \
+            /data/how-to-love-god-PDFUA-REMEDIATED-QA.pdf > "$base/pdfua-repaired-raw.json"
+          rc="$?"
+          set -e
+          echo "REMEDIATED_VERAPDF_EXIT_CODE=$rc"
+          test -s "$base/pdfua-repaired-raw.json"
+          python3 - <<'PY'
+          import json,os,pathlib
+          base=pathlib.Path(os.environ['RUNNER_TEMP'])/'book1-format-qa'
+          before=json.loads((base/'pdfua-raw.json').read_text())['report']['jobs'][0]['validationResult'][0]
+          after=json.loads((base/'pdfua-repaired-raw.json').read_text())['report']['jobs'][0]['validationResult'][0]
+          assert 'PDF/UA-1' in before.get('profileName','') and 'PDF/UA-1' in after.get('profileName','')
+          b=before['details'];a=after['details']
+          summary={'verdict':'PDFUA1_MACHINE_PASS_HUMAN_HOLD' if after.get('compliant') is True else 'PDFUA1_MACHINE_NONCOMPLIANT',
+                   'tool':'veraPDF v1.30.2','profile':after.get('profileName'),
+                   'baseline':{'compliant':before.get('compliant'),'passedRules':b.get('passedRules'),'failedRules':b.get('failedRules'),
+                               'failedChecks':b.get('failedChecks')},
+                   'repaired':{'compliant':after.get('compliant'),'passedRules':a.get('passedRules'),'failedRules':a.get('failedRules'),
+                               'failedChecks':a.get('failedChecks'),
+                               'failedRuleSummaries':[{k:r.get(k) for k in ('clause','testNumber','description','failedChecks')}
+                                      for r in a.get('ruleSummaries',[]) if r.get('status')=='failed']},
+                   'humanHolds':['Real emphasis semantics under PDF/UA-1 RoleMap','Accessible link label quality',
+                                 'Author-approved long descriptions','Actual A5 figure readability',
+                                 'Screen reader and editorial rights approval'],
+                   'publication':'NOT_AUTHORIZED'}
+          (base/'pdfua-repaired-summary.json').write_text(json.dumps(summary,indent=2))
+          print(json.dumps(summary,indent=2))
+          assert a.get('failedChecks',999999)<=b.get('failedChecks',0),'Remediation increased veraPDF failures'
+          PY
       - name: Upload validator evidence only, never proof binaries
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -103,5 +151,8 @@ jobs:
             ${{ runner.temp }}/book1-format-qa/pdfua-raw.json
             ${{ runner.temp }}/book1-format-qa/pdfua-summary.json
             ${{ runner.temp }}/book1-format-qa/verapdf-image.txt
+            ${{ runner.temp }}/book1-format-qa/pdfua-remediation.json
+            ${{ runner.temp }}/book1-format-qa/pdfua-repaired-raw.json
+            ${{ runner.temp }}/book1-format-qa/pdfua-repaired-summary.json
           if-no-files-found: warn
           retention-days: 7
