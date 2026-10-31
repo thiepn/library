@@ -11,6 +11,7 @@ import json
 import os
 from pathlib import Path
 import re
+import sys
 import fitz
 import pikepdf
 from pikepdf import Dictionary, Name, String, Array
@@ -45,7 +46,7 @@ def visible_label(page: fitz.Page, rect_pdf) -> str:
 
 def failed_list_objgens() -> set[tuple[int,int]]:
     """Read exact failing SELI object references from the genuine baseline report."""
-    raw=json.loads((ROOT/"pdfua-raw.json").read_text())
+    raw=json.loads((ROOT/"pdfua-repaired-raw.json").read_text())
     val=raw["report"]["jobs"][0]["validationResult"][0]
     assert "PDF/UA-1" in val["profileName"]
     offending=set()
@@ -117,8 +118,7 @@ def main() -> None:
                 raise RuntimeError(f"Existing non-standard role {key} maps to another type: {rm[key]}")
             rm[key]=Name("/Span")
             counts["rolesMapped"]+=1
-        counts["listItemsRepaired"]=normalize_list_body(pdf,failed_list_objgens())
-        assert counts["listItemsRepaired"]==29, counts
+        # Defer list repair until veraPDF identifies the newly exposed exact LI objects.
         vp=pdf.Root.get("/ViewerPreferences")
         if vp is None:
             vp=Dictionary()
@@ -184,5 +184,38 @@ def main() -> None:
                            "Neither file is an approved publication or a release artifact"]}
     REPORT.write_text(json.dumps(report,indent=2)+"\n")
     print(json.dumps(report,indent=2))
+def fix_reported_lists() -> None:
+    """Second pass: ONLY veraPDF-identified failing LI objects, never all lists."""
+    FINAL=ROOT/"how-to-love-god-PDFUA-FINAL-QA.pdf"
+    targets=failed_list_objgens()
+    assert len(targets)==29
+    with fitz.open(TARGET) as prev:
+        text_digest=sha256("\n".join(p.get_text() for p in prev).encode("utf8"))
+        count_prev=len(prev)
+    with pikepdf.open(TARGET) as pdf:
+        repaired=normalize_list_body(pdf,targets)
+        assert repaired==len(targets)
+        pdf.save(FINAL,compress_streams=True)
+    with fitz.open(FINAL) as final:
+        assert len(final)==count_prev==245
+        digest=sha256("\n".join(p.get_text() for p in final).encode("utf8"))
+        assert digest==text_digest
+    report={"verdict":"EXACT_VERAPDF_OBJECT_LIST_REPAIR_PASS_AWAITING_FINAL_VALIDATOR",
+            "intermediateSha256":sha256(TARGET.read_bytes()),
+            "finalSha256":sha256(FINAL.read_bytes()),
+            "targetedLIObjgens":sorted([list(k) for k in targets]),
+            "repairedListItems":repaired,"pdfPages":count_prev,
+            "preservedTextDigest":digest,
+            "limitations":["No PDF/UA conformance claim before third validator run",
+                           "Human semantic verification and actual A5 legibility remain held",
+                           "Only unpublished QA copy changed"]}
+    (ROOT/"pdfua-list-remediation.json").write_text(json.dumps(report,indent=2))
+    print(json.dumps(report,indent=2))
+
 if __name__=="__main__":
-    main()
+    if sys.argv[1:]==["--fix-lists"]:
+        fix_reported_lists()
+    elif not sys.argv[1:]:
+        main()
+    else:raise SystemExit("Supported modes: no arguments or --fix-lists")
+
