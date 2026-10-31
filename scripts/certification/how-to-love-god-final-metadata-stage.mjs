@@ -123,6 +123,37 @@ function substituteOpf(opf,metadata) {
  assert.equal(count,2);
  return out;
 }
+// A separately verified media folder is insufficient: reject a media-omitting
+// or incomplete EPUB proof even if the approval record quotes that EPUB hash.
+async function requireCompleteMediaEpub(src,verifiedMedia){
+ const bytes=await readFile(src);
+ assert.ok(bytes.length>38&&bytes.readUInt32LE(0)===0x04034b50
+   &&bytes.readUInt16LE(8)===0
+   &&bytes.subarray(30,38).toString()==='mimetype',
+   'EPUB mimetype must be the first, uncompressed ZIP member');
+ const zip=await JSZip.loadAsync(bytes,{checkCRC32:true});
+ assert.equal(await zip.file('mimetype')?.async('string'),'application/epub+zip');
+ const members=Object.keys(zip.files).filter(name=>!name.endsWith('/'));
+ assert.equal(members.length,63,'Complete source EPUB must have 63 files, including all seven media');
+ const chapters=members.filter(name=>/^OEBPS\/text\/[^/]+\.xhtml$/.test(name));
+ assert.equal(chapters.length,51,'Input EPUB must include all 51 chapter sections');
+ assert.ok(zip.file('OEBPS/cover.xhtml'),'Input EPUB has no cover page');
+ const images=members.filter(name=>name.startsWith('OEBPS/images/'));
+ assert.equal(images.length,7,'Input EPUB must include exactly seven source images');
+ const opf=await zip.file('OEBPS/content.opf')?.async('string');
+ assert.ok(opf&&opf.includes('properties="cover-image"'),'Input EPUB has no OPF cover-image entry');
+ for(const item of verifiedMedia){
+   const member='OEBPS/images/'+item.name;
+   const image=zip.file(member);
+   assert.ok(image,'Original image is missing inside input EPUB: '+item.key);
+   const actual=await image.async('nodebuffer');
+   assert.equal(actual.length,item.size,'Embedded image size differs: '+item.key);
+   assert.equal(sha(actual),item.sha256,'Embedded image checksum differs: '+item.key);
+   assert.ok(opf.includes('href="images/'+item.name+'"'),
+     'Embedded image missing from OPF manifest: '+item.key);
+ }
+ return true;
+}
 async function rewriteEpub(src,dest,meta){
  const zip=await JSZip.loadAsync(await readFile(src),{checkCRC32:true});
  const before=Object.keys(zip.files).sort();
@@ -188,6 +219,8 @@ async function selfTest(){
  await mkdir(temp,{recursive:true,mode:0o700});
  const inp=path.join(temp,'fixture.epub'),out=path.join(temp,'rehearsal.epub');
  await writeFile(inp,await z.generateAsync({type:'nodebuffer',compression:'DEFLATE'}));
+ await assert.rejects(()=>requireCompleteMediaEpub(inp,sampleMedia),/63 files/,
+   'Do not accept a metadata-writable but cover/figure-incomplete EPUB');
  const result=await rewriteEpub(inp,out,metadata);
  assert.equal(result.members,5, 'JSZip also writes OEBPS and OEBPS/text directory entries');
  const renderer=await readFile('scripts/certification/how-to-love-god-print-epub.mjs','utf8');
@@ -222,6 +255,7 @@ async function prepare(){
  const source=path.join(ROOT,'how-to-love-god-UNPUBLISHED-QA.epub');
  const target=path.join(ROOT,'how-to-love-god-FINAL-METADATA-REHEARSAL-QA.epub');
  const originalPdf=path.join(ROOT,'how-to-love-god-PDFUA-FINAL-QA.pdf');
+ await requireCompleteMediaEpub(source,verifiedMedia);
  const actualInputEpubSha256=sha(await readFile(source));
  const actualInputPdfSha256=sha(await readFile(originalPdf));
  assert.ok(HASH.test(record?.inputProofSha256?.epub||'')&&HASH.test(record?.inputProofSha256?.pdf||''),
