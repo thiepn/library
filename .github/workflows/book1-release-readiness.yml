@@ -1,0 +1,70 @@
+name: Book 1 read-only release contract
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/certification/how-to-love-god-release-readiness.mjs'
+      - '.github/workflows/book1-release-readiness.yml'
+      - 'docs/audits/how-to-love-god/2026-10-31-1.1.1-rc1-approval-kit.md'
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Exact draft checkout including ancestry
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Guard existing active release and compile script
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test ! -e src/publications/releases/how-to-love-god/1.1.1-rc.1.yaml
+          node --check scripts/certification/how-to-love-god-release-readiness.mjs
+      - name: Install only public YAML parser
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/book1-readiness-tools"
+          printf '{"private":true,"type":"module"}\n' > "$RUNNER_TEMP/book1-readiness-tools/package.json"
+          npm install --prefix "$RUNNER_TEMP/book1-readiness-tools" --no-package-lock --ignore-scripts --no-audit --no-fund --no-save yaml@2.8.1
+          ln -s "$RUNNER_TEMP/book1-readiness-tools/node_modules" ./node_modules
+      - name: Reuse only the successful exact-source format evidence
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          run_identity="$(gh api repos/thiepn/library/actions/runs/41223682811 --jq '.head_sha+" "+.conclusion')"
+          test "$run_identity" = "785872e24eda06cab7e3db405fc3dfb5c01ef351 success"
+          mkdir -p "$RUNNER_TEMP/book1-readiness-evidence"
+          gh run download 41223682811 --repo thiepn/library \
+            --name book1-unpublished-versioned-export-evidence-41223682811 \
+            --dir "$RUNNER_TEMP/book1-readiness-evidence"
+          test -s "$RUNNER_TEMP/book1-readiness-evidence/book1-versioned-export-candidate.json"
+          test -s "$RUNNER_TEMP/book1-readiness-evidence/pdfua-final-raw.json"
+          test -s "$RUNNER_TEMP/book1-readiness-evidence/epubcheck-candidate.json"
+      - name: Check manifest schema, R2 staging and source evidence reuse
+        env:
+          BOOK1_RC_EVIDENCE_DIR: ${{ runner.temp }}/book1-readiness-evidence
+          BOOK1_EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+          BOOK1_EVIDENCE_RUN: '41223682811'
+        run: node scripts/certification/how-to-love-god-release-readiness.mjs
+      - name: Upload diagnostic JSON only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: book1-readonly-contract-${{ github.run_id }}
+          path: ${{ runner.temp }}/book1-release-contract/book1-release-readiness.json
+          if-no-files-found: warn
+          retention-days: 14
