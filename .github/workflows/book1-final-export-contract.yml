@@ -6,6 +6,9 @@ on:
       - '.github/workflows/book1-final-export-contract.yml'
       - 'scripts/certification/how-to-love-god-final-export-contract.mjs'
       - 'docs/audits/how-to-love-god/2026-10-31-final-export-decision-sheet.md'
+      - 'scripts/certification/how-to-love-god-final-metadata-stage.mjs'
+      - 'scripts/certification/how-to-love-god-final-pdf-metadata.py'
+      - '.github/workflows/book1-final-metadata-stage.yml'
   workflow_dispatch:
 
 permissions:
@@ -38,17 +41,32 @@ jobs:
           node --check scripts/certification/how-to-love-god-final-export-contract.mjs
           mkdir -p "$RUNNER_TEMP/book1-final-contract-tools"
           printf '{"private":true,"type":"module"}\n' > "$RUNNER_TEMP/book1-final-contract-tools/package.json"
-          npm install --prefix "$RUNNER_TEMP/book1-final-contract-tools" --no-package-lock --ignore-scripts --no-audit --no-fund --no-save yaml@2.8.1
+          npm install --prefix "$RUNNER_TEMP/book1-final-contract-tools" --no-package-lock --ignore-scripts --no-audit --no-fund --no-save yaml@2.8.1 jszip@3.10.1
           ln -s "$RUNNER_TEMP/book1-final-contract-tools/node_modules" ./node_modules
       - name: Test synthetic metadata mapping and refuse all missing permissions
         env:
           BOOK1_EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
         run: node scripts/certification/how-to-love-god-final-export-contract.mjs --self-test
+      - name: Run actual EPUB metadata writer against synthetic EPUB and reject mismatched source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check scripts/certification/how-to-love-god-final-metadata-stage.mjs
+          node scripts/certification/how-to-love-god-final-metadata-stage.mjs --self-test
+      - name: Test real pikepdf Info and XMP mapping with synthetic PDF only
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/book1-stage-python"
+          "$RUNNER_TEMP/book1-stage-python/bin/pip" install --disable-pip-version-check --no-cache-dir pikepdf==9.11.0
+          "$RUNNER_TEMP/book1-stage-python/bin/python" scripts/certification/how-to-love-god-final-pdf-metadata.py --self-test
       - name: Upload only nonpublishing contract test JSON
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: book1-final-metadata-contract-${{ github.run_id }}
-          path: ${{ runner.temp }}/book1-final-export-contract/metadata-contract-result.json
+          path: |
+            ${{ runner.temp }}/book1-final-export-contract/metadata-contract-result.json
+            ${{ runner.temp }}/book1-metadata-unit/metadata-stage-unit.json
           retention-days: 14
           if-no-files-found: warn
