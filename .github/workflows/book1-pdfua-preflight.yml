@@ -51,9 +51,17 @@ jobs:
           test -s "$base/how-to-love-god-UNPUBLISHED-QA.pdf"
           docker pull verapdf/cli:v1.30.2
           docker image inspect verapdf/cli:v1.30.2 --format '{{index .RepoDigests 0}}' > "$base/verapdf-image.txt"
-          docker run --rm --network none -v "$base:/data:ro" verapdf/cli:v1.30.2 \
+          uid="$(id -u):$(id -g)"
+          docker run --rm --network none --user "$uid" --entrypoint /bin/sh \
+            -v "$base:/data:ro" verapdf/cli:v1.30.2 \
+            -c 'test -r /data/how-to-love-god-UNPUBLISHED-QA.pdf && echo PDF_PROOF_READABLE'
+          set +e
+          docker run --rm --network none --user "$uid" -v "$base:/data:ro" verapdf/cli:v1.30.2 \
             --format json --flavour ua1 --maxfailuresdisplayed 3 \
             /data/how-to-love-god-UNPUBLISHED-QA.pdf > "$base/pdfua-raw.json"
+          rc="$?"
+          set -e
+          echo "VERAPDF_EXIT_CODE=$rc"
           test -s "$base/pdfua-raw.json"
       - name: Summarize genuine PDF-UA outcome and separate technical from human checks
         shell: bash
