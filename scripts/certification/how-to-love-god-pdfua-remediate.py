@@ -52,6 +52,14 @@ def normalize_list_body(pdf: pikepdf.Pdf) -> int:
     st=pdf.Root.StructTreeRoot
     seen=set()
     fixed=0
+    def exposes_direct_span(node):
+        if not hasattr(node,"get"):return False
+        kind=node.get("/S")
+        if kind==Name("/Span"):return True
+        if kind!=Name("/NonStruct"):return False
+        k=node.get("/K")
+        children=list(k) if isinstance(k,Array) else [k]
+        return any(exposes_direct_span(child) for child in children if child is not None)
     def walk(node):
         nonlocal fixed
         if not hasattr(node,"get"):
@@ -69,7 +77,7 @@ def normalize_list_body(pdf: pikepdf.Pdf) -> int:
         if s==Name("/LI"):
             types=[kid.get("/S") for kid in kids if hasattr(kid,"get") and kid.get("/S") is not None]
             # PDF UA validator traverses transparent NonStruct wrappers and sees their Span children.
-            if Name("/Span") in types or Name("/NonStruct") in types:
+            if any(exposes_direct_span(kid) for kid in kids):
                 if Name("/LBody") in types:
                     raise RuntimeError("Existing LBody mixed with direct Span requires separate review")
                 labels=[kid for kid in kids if hasattr(kid,"get") and kid.get("/S")==Name("/Lbl")]
