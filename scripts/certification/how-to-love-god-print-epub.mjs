@@ -152,7 +152,7 @@ const css=['@page{size:A5;margin:18mm 16mm 19mm}','html{color:#171717;font:11pt/
  'blockquote{border-left:2px solid #999;padding-left:9pt}',
  'table{border-collapse:collapse;width:100%}','td,th{border:1px solid #aaa;padding:3pt}', 'img.proof-figure{display:block;max-width:100%;max-height:98mm;object-fit:contain;break-inside:avoid;margin:8pt auto}', '.proof-cover{break-after:page;text-align:center}.proof-cover img{max-height:145mm;max-width:100%;object-fit:contain}'].join('');
 const html='<!doctype html><html lang="en"><head><meta charset="utf-8"><style>'+css+'</style></head><body><main>'+
- (withMedia?'<section class="proof-cover"><h2>How to Love God</h2><img src="data:image/webp;base64,'+mediaByKey.get('cover').bytes.toString('base64')+'" alt="Cover of How to Love God"/></section>':'')+
+ (withMedia?'<section class="proof-cover"><h1>How to Love God</h1><img src="data:image/webp;base64,'+mediaByKey.get('cover').bytes.toString('base64')+'" alt="Cover of How to Love God"/></section>':'')+
  chapters.map(x=>'<section id="chapter-'+x.id+'"><h1>'+esc(x.title)+'</h1>'+transform(x.html,'pdf')+'</section>').join('')+
  '</main></body></html>';
 assert.equal(linksPdf,40);assert.equal(figures,6);

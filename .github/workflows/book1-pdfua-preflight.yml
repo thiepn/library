@@ -71,23 +71,24 @@ jobs:
           import json,os,pathlib
           base=pathlib.Path(os.environ['RUNNER_TEMP'])/'book1-format-qa'
           data=json.loads((base/'pdfua-raw.json').read_text())
-          reports=[];failures=[]
-          def walk(x):
-              if isinstance(x,list):
-                  for y in x: walk(y)
-              elif isinstance(x,dict):
-                  if 'isCompliant' in x and 'profileName' in x: reports.append(x)
-                  if x.get('status')=='failed' and 'clause' in x:
-                      failures.append({k:x.get(k) for k in ('specification','clause','testNumber','object','description','failedChecks')})
-                  for v in x.values(): walk(v)
-          walk(data)
-          if len(reports)!=1 or 'ua-1' not in str(reports[0]['profileName']).lower():
-              raise SystemExit('VALIDATOR_REPORT_NOT_VERIFIED: unexpected veraPDF profile/report shape')
-          val=reports[0]
-          compliant=val['isCompliant'] is True or val['isCompliant']=='true'
+          jobs=data.get('report',{}).get('jobs',[])
+          if len(jobs)!=1 or len(jobs[0].get('validationResult',[]))!=1:
+              raise SystemExit('VALIDATOR_REPORT_NOT_VERIFIED: expected one job and one validation result')
+          val=jobs[0]['validationResult'][0]
+          if 'PDF/UA-1' not in val.get('profileName',''):
+              raise SystemExit('VALIDATOR_REPORT_NOT_VERIFIED: wrong validation profile')
+          compliant=val.get('compliant') is True
+          details=val.get('details',{})
+          failures=[{'specification':r.get('specification'),'clause':r.get('clause'),
+             'testNumber':r.get('testNumber'),'object':r.get('object'),
+             'description':r.get('description'),'failedChecks':r.get('failedChecks'),
+             'exampleErrors':[x.get('errorMessage') for x in r.get('checks',[])[:2]]}
+             for r in details.get('ruleSummaries',[]) if r.get('status')=='failed']
           out={'verdict':'MACHINE_PASS_HUMAN_HOLD' if compliant else 'PDFUA1_MACHINE_NONCOMPLIANT',
                'tool':'veraPDF v1.30.2','profile':val['profileName'],'machineCompliant':compliant,
-               'details':val.get('details'),'failedRules':failures[:60],
+               'passedRules':details.get('passedRules'),'failedRules':details.get('failedRules'),
+               'passedChecks':details.get('passedChecks'),'failedChecks':details.get('failedChecks'),
+               'ruleFindings':failures,
                'humanHolds':['Alt-text semantic adequacy','Human reading order and screen-reader check',
                  'Real A5 print readability','Author attribution and publication authority']}
           (base/'pdfua-summary.json').write_text(json.dumps(out,indent=2))
