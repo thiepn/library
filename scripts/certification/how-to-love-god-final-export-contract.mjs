@@ -10,6 +10,13 @@ import YAML from 'yaml';
 const WORK_ID = 'how-to-love-god';
 const BASE = '519c23b16ab450bf9577aab94114e982e76541b2';
 const MEDIA_ROOT = 'https://thiepn.dev/library/media/works/how-to-love-god/editions/';
+// Read the actual immutable 1.1.0 cover record; never accept caller-supplied
+// hashes or sizes as proof that a reuse URL points at the original bytes.
+const ORIGINAL_110 = YAML.parse(await readFile(
+  'src/publications/releases/how-to-love-god/1.1.0.yaml','utf8'));
+assert.equal(ORIGINAL_110.workId,'how-to-love-god');
+assert.equal(ORIGINAL_110.version,'1.1.0');
+const ORIGINAL_COVER = ORIGINAL_110.artifacts.cover;
 const sha256 = s => createHash('sha256').update(s).digest('hex');
 const ensure = (condition, message) => { if (!condition) throw new Error(message); };
 const nonempty = s => typeof s === 'string' && s.trim().length > 0;
@@ -52,13 +59,25 @@ function approvedBinary(kind, data, version) {
   const oldCover = MEDIA_ROOT+'1.1.0/'+data.filename;
   ensure(data.url === expectedNew || (kind === 'cover' && data.url === oldCover && data.approvedReuseOfImmutable110 === true),
     `${kind} URL does not match canonical versioned artifact path`);
+  if (kind === 'cover' && data.url === oldCover) {
+    ensure(data.approvedReuseOfImmutable110 === true
+      && data.url === ORIGINAL_COVER.url
+      && data.filename === ORIGINAL_COVER.filename
+      && data.mimeType === ORIGINAL_COVER.mimeType
+      && data.sizeBytes === ORIGINAL_COVER.sizeBytes
+      && data.sha256 === ORIGINAL_COVER.sha256,
+      'Immutable 1.1.0 cover reuse must exactly match the registered original bytes');
+  }
   ensure(data.exactBinaryQualified === true, `${kind} exact bytes not validated`);
   return {url:data.url,filename:data.filename,mimeType:mime,sizeBytes:data.sizeBytes,sha256:data.sha256};
 }
 function candidateManifest(input) {
   const meta=approvedIdentity(input?.identity);
   const version=input?.version;
-  ensure(/^\d+\.\d+\.\d+$/.test(version) && version !== '1.1.0', 'unapproved release version');
+  ensure(typeof version === 'string' && /^\d+\.\d+\.\d+$/.test(version), 'unapproved release version');
+  const [major,minor,patch] = version.split('.').map(Number);
+  ensure(major > 1 || (major === 1 && (minor > 1 || (minor === 1 && patch > 0))),
+    'New release version must be greater than immutable active 1.1.0');
   ensure(/^20\d\d-\d\d-\d\d$/.test(input.releasedAt), 'release date missing');
   ensure(isHash(input.sourceHash), 'final source hash missing');
   const gates=['sixDescriptions','a5Print','pdfScreenReader','epubReader','desktopAndroid','accountBuild','productionExport','finalRelease'];
@@ -116,7 +135,23 @@ async function run() {
   rejects('attempt to re-register active 1.1.0',v=>{v.version='1.1.0'});
   rejects('release with no final approval',v=>{v.gates.finalRelease='NO_GO'});
   rejects('unapproved cover reuse',v=>{v.files.cover.url=MEDIA_ROOT+'1.1.0/'+v.files.cover.filename});
-  assert.equal(passes,18);
+  rejects('previous release version regression',v=>{v.version='1.0.0'});
+  rejects('spoofed immutable cover SHA',v=>{
+    v.files.cover={...v.files.cover,filename:ORIGINAL_COVER.filename,url:ORIGINAL_COVER.url,
+      sizeBytes:ORIGINAL_COVER.sizeBytes,sha256:fakeHash,approvedReuseOfImmutable110:true};
+  });
+  rejects('spoofed immutable cover size',v=>{
+    v.files.cover={...v.files.cover,filename:ORIGINAL_COVER.filename,url:ORIGINAL_COVER.url,
+      sizeBytes:ORIGINAL_COVER.sizeBytes+1,sha256:ORIGINAL_COVER.sha256,approvedReuseOfImmutable110:true};
+  });
+  const syntheticReuse=synthetic();
+  syntheticReuse.files.cover={...syntheticReuse.files.cover,
+    filename:ORIGINAL_COVER.filename,url:ORIGINAL_COVER.url,
+    sizeBytes:ORIGINAL_COVER.sizeBytes,sha256:ORIGINAL_COVER.sha256,
+    approvedReuseOfImmutable110:true};
+  assert.equal(candidateManifest(syntheticReuse).manifest.artifacts.cover.sha256,ORIGINAL_COVER.sha256);
+  passes++;
+  assert.equal(passes,22);
   // Verify that the current repository itself has no pending release registration.
   const w=YAML.parse(await readFile('src/content/works/how-to-love-god/work.yaml','utf8'));
   const active=YAML.parse(await readFile('src/publications/releases/how-to-love-god/1.1.0.yaml','utf8'));
