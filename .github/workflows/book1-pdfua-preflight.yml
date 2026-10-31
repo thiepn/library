@@ -103,7 +103,9 @@ jobs:
           "$RUNNER_TEMP/book1-pdfua-python/bin/python" -m pip install --disable-pip-version-check --no-cache-dir pikepdf==9.11.0 PyMuPDF==1.26.3
           "$RUNNER_TEMP/book1-pdfua-python/bin/python" -m py_compile scripts/certification/how-to-love-god-pdfua-remediate.py
       - name: Repair reproduced structural roles, annotation descriptions and PDF document metadata in QA COPY
-        run: "$RUNNER_TEMP/book1-pdfua-python/bin/python" scripts/certification/how-to-love-god-pdfua-remediate.py
+        shell: bash
+        run: |
+          "$RUNNER_TEMP/book1-pdfua-python/bin/python" scripts/certification/how-to-love-god-pdfua-remediate.py
       - name: Validate remediated QA copy independently with genuine veraPDF PDF-UA-1
         shell: bash
         run: |
