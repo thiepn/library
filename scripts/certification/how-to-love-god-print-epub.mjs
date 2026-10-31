@@ -90,7 +90,7 @@ zip.file('OEBPS/nav.xhtml',nav);
 const opf='<?xml version="1.0" encoding="UTF-8"?>'+
  '<package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="bookid" xml:lang="en" prefix="schema: http://schema.org/"><metadata xmlns:dc="http://purl.org/dc/elements/1.1/">'+
  '<dc:identifier id="bookid">urn:uuid:1d0566b3-a9a1-4fed-b64c-1915c1d303a1</dc:identifier>'+
- '<dc:title>How to Love God — unpublished QA only</dc:title><dc:language>en</dc:language>'+
+ '<dc:title>'+esc(process.env.BOOK1_CANDIDATE_VERSION?'How to Love God — unpublished export candidate '+process.env.BOOK1_CANDIDATE_VERSION:'How to Love God — unpublished QA only')+'</dc:title><dc:language>en</dc:language>'+
  '<dc:creator>Thiepn (source metadata, ownership unresolved)</dc:creator>'+
  '<meta property="dcterms:modified">2026-10-30T00:00:00Z</meta>'+
  '<meta property="schema:accessMode">textual</meta><meta property="schema:accessibilityFeature">tableOfContents</meta>'+

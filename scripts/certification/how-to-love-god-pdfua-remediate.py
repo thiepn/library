@@ -124,9 +124,9 @@ def main() -> None:
             vp=Dictionary()
             pdf.Root["/ViewerPreferences"]=vp
         vp["/DisplayDocTitle"]=True
-        pdf.docinfo["/Title"]=String("How to Love God — unpublished PDF/UA QA proof")
+        pdf.docinfo["/Title"]=String("How to Love God — unpublished export candidate "+os.environ["BOOK1_CANDIDATE_VERSION"] if os.environ.get("BOOK1_CANDIDATE_VERSION") else "How to Love God — unpublished PDF/UA QA proof")
         with pdf.open_metadata(set_pikepdf_as_editor=False) as meta:
-            meta["dc:title"]="How to Love God — unpublished PDF/UA QA proof"
+            meta["dc:title"]=str(pdf.docinfo["/Title"])
             meta["pdfuaid:part"]="1"
         for index,page in enumerate(pdf.pages):
             for annot in page.get("/Annots",[]):
