@@ -130,7 +130,7 @@ async function selfTest(){
  const inp=path.join(temp,'fixture.epub'),out=path.join(temp,'rehearsal.epub');
  await writeFile(inp,await z.generateAsync({type:'nodebuffer',compression:'DEFLATE'}));
  const result=await rewriteEpub(inp,out,metadata);
- assert.equal(result.members,3);
+ assert.equal(result.members,5, 'JSZip also writes OEBPS and OEBPS/text directory entries');
  const renderer=await readFile('scripts/certification/how-to-love-god-print-epub.mjs','utf8');
  assert.ok(renderer.includes("how-to-love-god-UNPUBLISHED-QA.epub")
    && renderer.includes("how-to-love-god-UNPUBLISHED-QA.pdf"),
