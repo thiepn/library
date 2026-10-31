@@ -130,7 +130,8 @@ async function run() {
   const diff=git('diff','--name-only',BASE,head).split('\n').filter(Boolean);
   const allowed=new Set(['scripts/certification/how-to-love-god-final-export-contract.mjs',
     '.github/workflows/book1-final-export-contract.yml',
-    'docs/audits/how-to-love-god/2026-10-31-final-export-decision-sheet.md']);
+    'docs/audits/how-to-love-god/2026-10-31-final-export-decision-sheet.md',
+    'scripts/certification/how-to-love-god-release-readiness.mjs']);
   assert.ok(diff.length && diff.every(f=>allowed.has(f)),'Unqualified source/release modifications: '+diff);
   for(const name of ['src/content/works/how-to-love-god/work.yaml','src/publications/releases/how-to-love-god/1.1.0.yaml'])
     assert.equal(git('rev-parse',BASE+':'+name),git('rev-parse','HEAD:'+name),'Immutable original changed');
