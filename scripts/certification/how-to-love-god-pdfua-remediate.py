@@ -13,7 +13,7 @@ from pathlib import Path
 import re
 import fitz
 import pikepdf
-from pikepdf import Dictionary, Name, String
+from pikepdf import Dictionary, Name, String, Array
 
 ROOT = Path(os.environ.get("RUNNER_TEMP", "/tmp")) / "book1-format-qa"
 SOURCE = ROOT / "how-to-love-god-UNPUBLISHED-QA.pdf"
@@ -43,11 +43,58 @@ def visible_label(page: fitz.Page, rect_pdf) -> str:
     label=" ".join(str(w[4]) for w in selected)
     return " ".join(label.split())
 
+def normalize_list_body(pdf: pikepdf.Pdf) -> int:
+    """Wrap existing LI payload in LBody without replacing text or MCR nodes.
+
+    Only children of original LI are reparented; the content marked references
+    and all original structure elements remain unchanged.
+    """
+    st=pdf.Root.StructTreeRoot
+    seen=set()
+    fixed=0
+    def walk(node):
+        nonlocal fixed
+        if not hasattr(node,"get"):
+            return
+        s=node.get("/S")
+        if s is None and "/K" not in node:
+            return
+        if getattr(node,"is_indirect",False):
+            key=node.objgen
+            if key in seen:return
+            seen.add(key)
+        k=node.get("/K")
+        if k is None:return
+        kids=list(k) if isinstance(k,Array) else [k]
+        if s==Name("/LI"):
+            types=[kid.get("/S") for kid in kids if hasattr(kid,"get") and kid.get("/S") is not None]
+            if not types or any(t not in (Name("/Lbl"),Name("/LBody"),Name("/Span")) for t in types):
+                # An unusual list item must be reviewed instead of flattened.
+                if types and any(t not in (Name("/Lbl"),Name("/LBody")) for t in types):
+                    raise RuntimeError(f"Unexpected LI child type: {types}")
+            if types and Name("/Span") in types:
+                if Name("/Lbl") in types or Name("/LBody") in types:
+                    raise RuntimeError("Mixed LI label/body requires separate semantic inspection")
+                lbody=pdf.make_indirect(Dictionary({
+                    "/Type":Name("/StructElem"),"/S":Name("/LBody"),"/P":node,
+                    "/K":k
+                }))
+                for kid in kids:
+                    if hasattr(kid,"get") and kid.get("/S") is not None:
+                        kid["/P"]=lbody
+                node["/K"]=lbody
+                fixed+=1
+                kids=[lbody]
+        for child in kids:walk(child)
+    for node in list(st.get("/K",[])) if isinstance(st.get("/K"),Array) else [st.get("/K")]:
+        if node is not None:walk(node)
+    return fixed
+
 def main() -> None:
     assert SOURCE.is_file() and SOURCE.stat().st_size>100000
     original=SOURCE.read_bytes()
     counts={"linkAnnotations":0,"linkContentsAdded":0,"linksUsingVisibleText":0,
-            "linksUsingRealTarget":0,"rolesMapped":0,"missingLabels":[]}
+            "linksUsingRealTarget":0,"rolesMapped":0,"listItemsRepaired":0,"missingLabels":[]}
     with fitz.open(stream=original,filetype="pdf") as original_view, pikepdf.open(SOURCE) as pdf:
         assert len(pdf.pages)==len(original_view)==245, "Unexpected number of proof pages"
         before_text=sha256("\n".join(p.get_text() for p in original_view).encode("utf8"))
@@ -62,6 +109,8 @@ def main() -> None:
                 raise RuntimeError(f"Existing non-standard role {key} maps to another type: {rm[key]}")
             rm[key]=Name("/Span")
             counts["rolesMapped"]+=1
+        counts["listItemsRepaired"]=normalize_list_body(pdf)
+        assert counts["listItemsRepaired"]==29, counts
         vp=pdf.Root.get("/ViewerPreferences")
         if vp is None:
             vp=Dictionary()
@@ -70,8 +119,7 @@ def main() -> None:
         pdf.docinfo["/Title"]=String("How to Love God — unpublished PDF/UA QA proof")
         with pdf.open_metadata(set_pikepdf_as_editor=False) as meta:
             meta["dc:title"]="How to Love God — unpublished PDF/UA QA proof"
-            meta["pdfaid:part"]="1"
-            meta["pdfaid:conformance"]="U"
+            meta["pdfuaid:part"]="1"
         for index,page in enumerate(pdf.pages):
             for annot in page.get("/Annots",[]):
                 if annot.get("/Subtype") != Name("/Link"): continue
@@ -113,6 +161,8 @@ def main() -> None:
         assert "/Metadata" in proof.Root
         assert proof.Root.StructTreeRoot.RoleMap["/Em"]==Name("/Span")
         assert proof.Root.StructTreeRoot.RoleMap["/Strong"]==Name("/Span")
+        assert "/Metadata" in proof.Root
+        assert b"pdfuaid" in proof.Root.Metadata.read_bytes()
         all_links=[a for p in proof.pages for a in p.get("/Annots",[]) if a.get("/Subtype")==Name("/Link")]
         assert len(all_links)==counts["linkAnnotations"]
         assert all(str(a.get("/Contents","")).strip() for a in all_links)
