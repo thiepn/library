@@ -18,7 +18,10 @@ assert.equal(process.env.BOOK1_EVIDENCE_RUN,String(RUN));
 assert.equal(rc.exactSourceHead,BASE);
 cmd('merge-base','--is-ancestor',BASE,head);
 const changes=cmd('diff','--name-only',BASE,head).split('\n').filter(Boolean);
-const allowed=new Set(['scripts/certification/how-to-love-god-release-readiness.mjs','.github/workflows/book1-release-readiness.yml','docs/audits/how-to-love-god/2026-10-31-1.1.1-rc1-approval-kit.md']);
+const allowed=new Set(['scripts/certification/how-to-love-god-release-readiness.mjs','.github/workflows/book1-release-readiness.yml','docs/audits/how-to-love-god/2026-10-31-1.1.1-rc1-approval-kit.md',
+ 'scripts/certification/how-to-love-god-final-export-contract.mjs',
+ '.github/workflows/book1-final-export-contract.yml',
+ 'docs/audits/how-to-love-god/2026-10-31-final-export-decision-sheet.md']);
 assert.ok(changes.length>0&&changes.every(f=>allowed.has(f)),'Source/render/release changed; rerun full qualification: '+changes);
 const w=YAML.parse(await readFile('src/content/works/how-to-love-god/work.yaml','utf8'));
 const current=YAML.parse(await readFile('src/publications/releases/how-to-love-god/1.1.0.yaml','utf8'));
