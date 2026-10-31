@@ -51,7 +51,7 @@ The umbrella term can be useful conversationally but is too imprecise for action
 
 Examples may include threatening divine punishment for questioning a leader, demanding secrecy, isolating members from outside relationships, controlling marriage or employment decisions without legitimate authority, using confession against people, retaliating against reports, or equating loyalty to a leader with loyalty to God.
 
-The term should be used carefully, but the behaviors it names can be real and serious.<sup class="endnote-call" id="ref-24-1"><a href="#note-24-1">24.1</a></sup>
+The term should be used carefully, but the behaviors it names can be real and serious.<sup class="endnote-call" id="ref-24-1"><a href="./appendix-l-sources-notes-and-further-reading#note-24-1">24.1</a></sup>
 
 ### Matthew 18 is not a secrecy rule for abuse
 
@@ -75,7 +75,7 @@ Protective responsibility increases where people have less power or capacity to 
 
 Confidentiality is not absolute when safety requires action. Leaders and small groups should state confidentiality limits honestly rather than promising secrecy they cannot ethically keep.
 
-Urgent danger requires urgent help, not an extended internal discernment process.<sup class="endnote-call" id="ref-24-2"><a href="#note-24-2">24.2</a></sup>
+Urgent danger requires urgent help, not an extended internal discernment process.<sup class="endnote-call" id="ref-24-2"><a href="./appendix-l-sources-notes-and-further-reading#note-24-2">24.2</a></sup>
 
 ## III. Repentance, restoration, and culture
 
@@ -83,7 +83,7 @@ Urgent danger requires urgent help, not an extended internal discernment process
 
 A leader who has harmed people may genuinely repent. That is spiritually significant. It does not create a right to meet victims, receive their forgiveness in person, return to the same office, or control the timetable of restoration.
 
-Repentance should accept consequences.<sup class="endnote-call" id="ref-24-3"><a href="#note-24-3">24.3</a></sup> It should welcome truth. It should stop self-protection. It should respect no-contact requests and safeguarding measures.
+Repentance should accept consequences.<sup class="endnote-call" id="ref-24-3"><a href="./appendix-l-sources-notes-and-further-reading#note-24-3">24.3</a></sup> It should welcome truth. It should stop self-protection. It should respect no-contact requests and safeguarding measures.
 
 Restored Christian fellowship, where appropriate, is not identical to restored leadership. Some failures permanently or indefinitely alter qualification, credibility, or safe access to vulnerable people.
 

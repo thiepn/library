@@ -29,7 +29,7 @@ Christian perseverance is therefore active dependence. We pray, remain in the ch
 
 ## Can a true believer finally fall away?
 
-Historic Protestants disagree. <sup class="endnote-call" id="ref-27-1"><a href="#note-27-1">27.1</a></sup> Reformed and many Baptist traditions teach that those truly regenerated will be preserved by God and will finally persevere, while distinguishing temporary profession from saving faith. Wesleyan-Arminian traditions generally teach real security in Christ while allowing the possibility of final apostasy through persistent unbelief. Lutheran and Anglican traditions contain their own formulations and internal diversity.
+Historic Protestants disagree. <sup class="endnote-call" id="ref-27-1"><a href="./appendix-l-sources-notes-and-further-reading#note-27-1">27.1</a></sup> Reformed and many Baptist traditions teach that those truly regenerated will be preserved by God and will finally persevere, while distinguishing temporary profession from saving faith. Wesleyan-Arminian traditions generally teach real security in Christ while allowing the possibility of final apostasy through persistent unbelief. Lutheran and Anglican traditions contain their own formulations and internal diversity.
 
 The disagreement need not be erased, and it must not be weaponized pastorally.
 
@@ -55,9 +55,9 @@ Love does not need an audience to be real.
 
 This matters for perseverance because public usefulness can become an idol. If ministry success is the proof that God loves us, obscurity becomes spiritually threatening. Grace frees us to be faithful even when the outcome is not impressive.
 
-## Christian perfection and present love <sup class="endnote-call" id="ref-27-2"><a href="#note-27-2">27.2</a></sup>
+## Christian perfection and present love <sup class="endnote-call" id="ref-27-2"><a href="./appendix-l-sources-notes-and-further-reading#note-27-2">27.2</a></sup>
 
-Wesleyan-Holiness traditions use the language of Christian perfection or perfect love for a present-life work of grace characterized by wholehearted love and freedom from the reigning power of willful sin, while carefully distinguishing this from absolute sinlessness or omniscience in many formulations. Other Protestant traditions reject or reinterpret that doctrine and emphasize progressive sanctification continuing until glorification.
+Wesleyan-Holiness traditions use the language of Christian perfection or perfect love for present-life sanctification, but their formulations should not be reduced to ordinary moral improvement. For example, the Church of the Nazarene explicitly teaches entire sanctification as a grace-given work subsequent to regeneration, cleansing from original sin and directing the heart toward wholehearted love; it also distinguishes this from mature character, which continues to grow. This is a particular confessional claim, not an uncontested description of every Christian's present experience. Other Protestant traditions reject or reinterpret this doctrine and emphasize progressive sanctification continuing until glorification.
 
 The dispute deserves fair representation but not a chapter-length debate. The central common ground is substantial: Christians should pursue mature, wholehearted holiness now, while no present experience makes a creature omniscient, incapable of error, or beyond dependence on grace.
 

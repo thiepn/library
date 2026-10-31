@@ -35,7 +35,7 @@ estimatedMinutes: 3
 
 **Ordered and disordered love** — A historic theological framework especially associated with Augustinian reflection: created goods are loved rightly under God and wrongly when given ultimate place. Useful synthesis, not direct biblical wording.
 
-**Perfect love and Christian perfection** — In Wesleyan-Holiness traditions, language for a present work or state of mature, wholehearted love understood in ways that usually distinguish it from absolute sinlessness or omniscience. Other Protestants disagree. The present-life dispute is distinguished here from eschatological perfected love in resurrection.
+**Perfect love and Christian perfection** — Wesleyan-Holiness language for present-life sanctification, distinguished from final, eschatological perfection. Formulations vary: for example, the Church of the Nazarene teaches entire sanctification as a grace-given work subsequent to regeneration, distinguishing cleansing from original sin and a pure heart from continuing growth in mature character. Other Protestants dispute or reinterpret this doctrine; it is not a claim to omniscience or impeccability.
 
 **Reconciliation** — Restored relationship after alienation. Unlike unilateral refusal of vengeance, reconciliation normally requires sufficient truth, safety, and mutuality.
 

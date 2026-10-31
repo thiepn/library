@@ -13,7 +13,7 @@ Grace opposes earning; it does not oppose grace-enabled effort.
 
 ## God works, therefore we act
 
-Philippians 2 places human working alongside God's working. The passage has been summarized in Christian tradition in many memorable ways, but Paul's point should be allowed to stand without turning a later slogan into his wording: God's action does not make Christian obedience passive. It grounds and empowers it.
+Philippians 2 places human working alongside God's working. Paul addresses the Philippian congregation after calling for shared humility and unity in Christ (Philippians 2:1–11); his words should not be isolated into a private self-improvement formula. The passage has been summarized in Christian tradition in many memorable ways, but Paul's point should be allowed to stand without turning a later slogan into his wording: God's action does not make Christian obedience passive. It grounds and empowers it.
 
 Galatians 5 similarly calls believers to walk by the Spirit while describing a real conflict with the flesh. Romans 8 speaks of putting sinful deeds to death by the Spirit. The Christian is neither self-savior nor spectator.
 
@@ -27,7 +27,7 @@ None of this proves that repetition automatically produces love. A person can pe
 
 Spiritual practices are therefore tools and contexts, not mechanisms. Ten attentive minutes in Scripture may be more faithful than an hour used to preserve an impressive streak. A weekly prayer with another believer may be more sustaining than an elaborate private system that collapses after two weeks.
 
-The purpose governs the practice.<sup class="endnote-call" id="ref-11-1"><a href="#note-11-1">11.1</a></sup>
+The purpose governs the practice.<sup class="endnote-call" id="ref-11-1"><a href="./appendix-l-sources-notes-and-further-reading#note-11-1">11.1</a></sup>
 
 ## Attention, memory, body, and community
 
@@ -35,7 +35,7 @@ Christian growth involves the whole person. Romans 12 joins bodily offering and 
 
 This gives practical wisdom. If your phone interrupts prayer every thirty seconds, changing the environment may help. If you forget Scripture immediately, repetition or memorization may help. If isolation feeds discouragement, a trusted Christian community may help. If sleep deprivation is impairing concentration, rest may be more faithful than adding another hour of reading.
 
-These are prudential applications, not universal commands.<sup class="endnote-call" id="ref-11-2"><a href="#note-11-2">11.2</a></sup> The Bible does not prescribe one notification system, one journaling method, one quiet time length, or one rule of life.
+These are prudential applications, not universal commands.<sup class="endnote-call" id="ref-11-2"><a href="./appendix-l-sources-notes-and-further-reading#note-11-2">11.2</a></sup> The Bible does not prescribe one notification system, one journaling method, one quiet time length, or one rule of life.
 
 ## Mortification is not self-hatred
 
