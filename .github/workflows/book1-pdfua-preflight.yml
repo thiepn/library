@@ -1,0 +1,98 @@
+name: Book 1 independent PDF-UA preflight
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/book1-pdfua-preflight.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pdfua:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Require exact HEAD
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+      - name: Set up Node 22
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22.12.0
+      - name: Install only isolated public proof dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/book1-pdfua-tools"
+          printf '{"private":true,"type":"module"}\n' > "$RUNNER_TEMP/book1-pdfua-tools/package.json"
+          npm install --prefix "$RUNNER_TEMP/book1-pdfua-tools" --no-package-lock --ignore-scripts --no-audit --no-fund --no-save \
+            @astrojs/markdown-remark@7.3.0 @playwright/test@1.62.1 \
+            jszip@3.10.1 @xmldom/xmldom@0.9.12 pdfjs-dist@5.4.530
+          ln -s "$RUNNER_TEMP/book1-pdfua-tools/node_modules" ./node_modules
+      - name: Install Chromium
+        run: |
+          "$RUNNER_TEMP/book1-pdfua-tools/node_modules/.bin/playwright" install --with-deps chromium
+      - name: Authenticate seven original images by SHA-256
+        run: node scripts/certification/how-to-love-god-media.mjs
+      - name: Generate ephemeral media-complete PDF proof
+        run: BOOK1_MEDIA_PROOF=1 node scripts/certification/how-to-love-god-print-epub.mjs
+      - name: Run real veraPDF v1.30.2 PDF-UA-1 profile (machine checks)
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="$RUNNER_TEMP/book1-format-qa"
+          test -s "$base/how-to-love-god-UNPUBLISHED-QA.pdf"
+          docker pull verapdf/cli:v1.30.2
+          docker image inspect verapdf/cli:v1.30.2 --format '{{index .RepoDigests 0}}' > "$base/verapdf-image.txt"
+          docker run --rm --network none -v "$base:/data:ro" verapdf/cli:v1.30.2 \
+            --format json --flavour ua1 --maxfailuresdisplayed 3 \
+            /data/how-to-love-god-UNPUBLISHED-QA.pdf > "$base/pdfua-raw.json"
+          test -s "$base/pdfua-raw.json"
+      - name: Summarize genuine PDF-UA outcome and separate technical from human checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,os,pathlib
+          base=pathlib.Path(os.environ['RUNNER_TEMP'])/'book1-format-qa'
+          data=json.loads((base/'pdfua-raw.json').read_text())
+          reports=[];failures=[]
+          def walk(x):
+              if isinstance(x,list):
+                  for y in x: walk(y)
+              elif isinstance(x,dict):
+                  if 'isCompliant' in x and 'profileName' in x: reports.append(x)
+                  if x.get('status')=='failed' and 'clause' in x:
+                      failures.append({k:x.get(k) for k in ('specification','clause','testNumber','object','description','failedChecks')})
+                  for v in x.values(): walk(v)
+          walk(data)
+          if len(reports)!=1 or 'ua-1' not in str(reports[0]['profileName']).lower():
+              raise SystemExit('VALIDATOR_REPORT_NOT_VERIFIED: unexpected veraPDF profile/report shape')
+          val=reports[0]
+          compliant=val['isCompliant'] is True or val['isCompliant']=='true'
+          out={'verdict':'MACHINE_PASS_HUMAN_HOLD' if compliant else 'PDFUA1_MACHINE_NONCOMPLIANT',
+               'tool':'veraPDF v1.30.2','profile':val['profileName'],'machineCompliant':compliant,
+               'details':val.get('details'),'failedRules':failures[:60],
+               'humanHolds':['Alt-text semantic adequacy','Human reading order and screen-reader check',
+                 'Real A5 print readability','Author attribution and publication authority']}
+          (base/'pdfua-summary.json').write_text(json.dumps(out,indent=2))
+          print(json.dumps(out,indent=2))
+          PY
+      - name: Upload validator evidence only, never proof binaries
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: book1-pdfua-machine-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/book1-format-qa/pdfua-raw.json
+            ${{ runner.temp }}/book1-format-qa/pdfua-summary.json
+            ${{ runner.temp }}/book1-format-qa/verapdf-image.txt
+          if-no-files-found: warn
+          retention-days: 7
