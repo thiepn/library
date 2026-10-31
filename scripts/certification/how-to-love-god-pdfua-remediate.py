@@ -68,23 +68,23 @@ def normalize_list_body(pdf: pikepdf.Pdf) -> int:
         kids=list(k) if isinstance(k,Array) else [k]
         if s==Name("/LI"):
             types=[kid.get("/S") for kid in kids if hasattr(kid,"get") and kid.get("/S") is not None]
-            if not types or any(t not in (Name("/Lbl"),Name("/LBody"),Name("/Span")) for t in types):
-                # An unusual list item must be reviewed instead of flattened.
-                if types and any(t not in (Name("/Lbl"),Name("/LBody")) for t in types):
-                    raise RuntimeError(f"Unexpected LI child type: {types}")
-            if types and Name("/Span") in types:
-                if Name("/Lbl") in types or Name("/LBody") in types:
-                    raise RuntimeError("Mixed LI label/body requires separate semantic inspection")
+            if Name("/Span") in types:
+                if Name("/LBody") in types:
+                    raise RuntimeError("Existing LBody mixed with direct Span requires separate review")
+                labels=[kid for kid in kids if hasattr(kid,"get") and kid.get("/S")==Name("/Lbl")]
+                bodykids=[kid for kid in kids if kid not in labels]
+                if not bodykids:raise RuntimeError("Missing list body")
+                payload=bodykids[0] if len(bodykids)==1 else Array(bodykids)
                 lbody=pdf.make_indirect(Dictionary({
                     "/Type":Name("/StructElem"),"/S":Name("/LBody"),"/P":node,
-                    "/K":k
+                    "/K":payload
                 }))
-                for kid in kids:
+                for kid in bodykids:
                     if hasattr(kid,"get") and kid.get("/S") is not None:
                         kid["/P"]=lbody
-                node["/K"]=lbody
+                node["/K"]=Array(labels+[lbody])
                 fixed+=1
-                kids=[lbody]
+                kids=labels+[lbody]
         for child in kids:walk(child)
     for node in list(st.get("/K",[])) if isinstance(st.get("/K"),Array) else [st.get("/K")]:
         if node is not None:walk(node)
