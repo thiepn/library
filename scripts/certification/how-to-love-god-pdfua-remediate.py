@@ -68,7 +68,8 @@ def normalize_list_body(pdf: pikepdf.Pdf) -> int:
         kids=list(k) if isinstance(k,Array) else [k]
         if s==Name("/LI"):
             types=[kid.get("/S") for kid in kids if hasattr(kid,"get") and kid.get("/S") is not None]
-            if Name("/Span") in types:
+            # PDF UA validator traverses transparent NonStruct wrappers and sees their Span children.
+            if Name("/Span") in types or Name("/NonStruct") in types:
                 if Name("/LBody") in types:
                     raise RuntimeError("Existing LBody mixed with direct Span requires separate review")
                 labels=[kid for kid in kids if hasattr(kid,"get") and kid.get("/S")==Name("/Lbl")]
