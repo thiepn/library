@@ -66,7 +66,7 @@ function substituteOpf(opf,metadata) {
    const matches=[...opf.matchAll(pattern)];
    assert.equal(matches.length,1,'Expected exactly one '+tag);
    count++;
-   return opf.replace(pattern,'<dc:'+tag+'>'+esc(val)+'</dc:'+tag+'>');
+   return out.replace(pattern,'<dc:'+tag+'>'+esc(val)+'</dc:'+tag+'>');
  };
  let out=opf;
  out=replace.call(null,'title',metadata.title);
@@ -105,6 +105,7 @@ async function selfTest(){
  const opf='<package><metadata><dc:title>Unpublished</dc:title><dc:creator>QA</dc:creator><dc:language>en</dc:language></metadata><manifest/></package>';
  const actual=substituteOpf(opf,metadata);
  assert.ok(actual.includes('Example &amp; Test &lt;Writer&gt;'));
+ assert.ok(actual.includes('<dc:title>How to Love God</dc:title>'), 'Do not discard title while patching creator');
  assert.ok(actual.includes('<dc:rights>© Example &amp; Test</dc:rights>'));
  assert.throws(()=>substituteOpf(actual,metadata),/Existing rights entry/);
  const work=YAML.parse(await readFile('src/content/works/how-to-love-god/work.yaml','utf8'));
