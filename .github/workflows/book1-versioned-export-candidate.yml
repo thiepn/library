@@ -1,0 +1,124 @@
+name: Book 1 versioned export candidate qualification
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/book1-versioned-export-candidate.yml'
+      - 'scripts/certification/how-to-love-god-export-candidate.mjs'
+      - 'scripts/certification/how-to-love-god-print-epub.mjs'
+      - 'scripts/certification/how-to-love-god-pdfua-remediate.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  candidate:
+    name: Unpublished 1.1.1-rc.1 complete-format candidate
+    runs-on: ubuntu-latest
+    env:
+      BOOK1_CANDIDATE_VERSION: 1.1.1-rc.1
+    steps:
+      - name: Checkout exact draft HEAD without write credentials
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify immutable source revision and original active release
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          grep -q '^  activeRelease: 1.1.0$' src/content/works/how-to-love-god/work.yaml
+          test ! -e src/publications/releases/how-to-love-god/1.1.1-rc.1.yaml
+          node --check scripts/certification/how-to-love-god-export-candidate.mjs
+          node --check scripts/certification/how-to-love-god-print-epub.mjs
+          python3 -m py_compile scripts/certification/how-to-love-god-pdfua-remediate.py
+      - name: Set up Node 22
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22.12.0
+      - name: Prepare isolated public tools, never private repository dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/book1-candidate-tools"
+          printf '{"private":true,"type":"module"}\n' > "$RUNNER_TEMP/book1-candidate-tools/package.json"
+          npm install --prefix "$RUNNER_TEMP/book1-candidate-tools" --no-package-lock --ignore-scripts --no-audit --no-fund --no-save \
+            @astrojs/markdown-remark@7.3.0 @playwright/test@1.62.1 \
+            jszip@3.10.1 @xmldom/xmldom@0.9.12 pdfjs-dist@5.4.530
+          ln -s "$RUNNER_TEMP/book1-candidate-tools/node_modules" ./node_modules
+          "$RUNNER_TEMP/book1-candidate-tools/node_modules/.bin/playwright" install --with-deps chromium
+          sudo apt-get install -y -qq poppler-utils
+          python3 -m venv "$RUNNER_TEMP/book1-candidate-python"
+          "$RUNNER_TEMP/book1-candidate-python/bin/python" -m pip install --disable-pip-version-check --no-cache-dir pikepdf==9.11.0 PyMuPDF==1.26.3
+      - name: Fetch seven immutable media objects and verify registered SHA-256
+        run: node scripts/certification/how-to-love-god-media.mjs
+      - name: Render unpublished candidate EPUB and tagged PDF from exact sources
+        run: BOOK1_MEDIA_PROOF=1 node scripts/certification/how-to-love-god-print-epub.mjs
+      - name: First pass correct original PDF structural and metadata defects
+        shell: bash
+        run: |
+          "$RUNNER_TEMP/book1-candidate-python/bin/python" scripts/certification/how-to-love-god-pdfua-remediate.py
+      - name: Genuine intermediate veraPDF produces exact list-object findings
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="$RUNNER_TEMP/book1-format-qa"
+          docker pull verapdf/cli:v1.30.2
+          docker image inspect verapdf/cli:v1.30.2 --format '{{index .RepoDigests 0}}' > "$base/verapdf-image-candidate.txt"
+          grep -q 'sha256:d5ee329657cf9bc4b2400392dd54c7d0a0ce9980ff6fa2da5590eebeec007cdb' "$base/verapdf-image-candidate.txt"
+          uid="$(id -u):$(id -g)"
+          set +e
+          docker run --rm --network none --user "$uid" -v "$base:/data:ro" verapdf/cli:v1.30.2 \
+            --format json --flavour ua1 --maxfailuresdisplayed 500 \
+            /data/how-to-love-god-PDFUA-REMEDIATED-QA.pdf > "$base/pdfua-repaired-raw.json"
+          code="$?"
+          set -e
+          echo "INTERMEDIATE_VERAPDF_EXIT_CODE=$code"
+          test -s "$base/pdfua-repaired-raw.json"
+      - name: Fix only 29 intermediate-validator-identified list objects
+        shell: bash
+        run: |
+          "$RUNNER_TEMP/book1-candidate-python/bin/python" scripts/certification/how-to-love-god-pdfua-remediate.py --fix-lists
+      - name: Independently verify final PDF/UA-1 with real veraPDF
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="$RUNNER_TEMP/book1-format-qa"
+          uid="$(id -u):$(id -g)"
+          docker run --rm --network none --user "$uid" -v "$base:/data:ro" verapdf/cli:v1.30.2 \
+            --format json --flavour ua1 --maxfailuresdisplayed 100 \
+            /data/how-to-love-god-PDFUA-FINAL-QA.pdf > "$base/pdfua-final-raw.json"
+          test -s "$base/pdfua-final-raw.json"
+      - name: Genuine official EPUBCheck 5.4.0 on exact unpublished candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/book1-candidate-epubcheck"
+          curl --fail --silent --show-error --location --retry 3 \
+            "https://github.com/w3c/epubcheck/releases/download/v5.4.0/epubcheck-5.4.0.zip" \
+            --output "$RUNNER_TEMP/book1-candidate-epubcheck/dist.zip"
+          unzip -q "$RUNNER_TEMP/book1-candidate-epubcheck/dist.zip" -d "$RUNNER_TEMP/book1-candidate-epubcheck"
+          java -jar "$RUNNER_TEMP/book1-candidate-epubcheck/epubcheck-5.4.0/epubcheck.jar" \
+            "$RUNNER_TEMP/book1-format-qa/how-to-love-god-UNPUBLISHED-QA.epub" \
+            --json "$RUNNER_TEMP/book1-format-qa/epubcheck-candidate.json"
+      - name: Verify exact source, EPUB and PDF media/text parity and versioned hashes
+        shell: bash
+        run: |
+          node scripts/certification/how-to-love-god-export-candidate.mjs
+      - name: Upload JSON qualification evidence only, never any book binaries
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: book1-unpublished-versioned-export-evidence-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/book1-format-qa/book1-versioned-export-candidate.json
+            ${{ runner.temp }}/book1-format-qa/pdfua-list-remediation.json
+            ${{ runner.temp }}/book1-format-qa/pdfua-final-raw.json
+            ${{ runner.temp }}/book1-format-qa/epubcheck-candidate.json
+            ${{ runner.temp }}/book1-format-qa/verapdf-image-candidate.txt
+          if-no-files-found: warn
+          retention-days: 7
