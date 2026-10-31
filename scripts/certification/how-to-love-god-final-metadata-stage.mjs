@@ -10,6 +10,48 @@ import YAML from 'yaml';
 const sha=s=>createHash('sha256').update(s).digest('hex');
 const ROOT=path.join(process.env.RUNNER_TEMP||'/tmp','book1-format-qa');
 const BOOK='how-to-love-god';
+const HASH=/^[0-9a-f]{64}$/;
+const MEDIA_KEYS=['cover',...Array.from({length:6},(_,i)=>'figure0'+(i+1))];
+// Bind an approval to the EXACT source and original media identities; a bare
+// "approved" flag must not authorize different manuscript or image bytes.
+function checkApprovedSnapshot(record, sourceDigest, originalRelease, verifiedMedia){
+ assert.ok(HASH.test(record?.sourceContentSha256||''),'Signed source digest missing');
+ assert.equal(record.sourceContentSha256,sourceDigest,'Approval applies to a different manuscript');
+ assert.equal(originalRelease?.workId,BOOK);
+ assert.equal(originalRelease?.version,'1.1.0');
+ assert.ok(Array.isArray(verifiedMedia)&&verifiedMedia.length===7,'Exactly seven verified media objects required');
+ const seen=new Set();
+ for(const item of verifiedMedia){
+   assert.ok(MEDIA_KEYS.includes(item?.key)&&!seen.has(item.key),'Unexpected or duplicate source media key');
+   seen.add(item.key);
+   const original=originalRelease.artifacts[item.key];
+   assert.equal(item.verified,true,'Original media not verified: '+item.key);
+   assert.equal(item.sha256,original.sha256,'Media hash differs from released source: '+item.key);
+   assert.equal(item.size,original.sizeBytes,'Media size differs from released source: '+item.key);
+   assert.equal(item.url,original.url,'Media URL differs from released source: '+item.key);
+   assert.equal(item.name,original.filename,'Media filename differs: '+item.key);
+   assert.equal(item.mime,original.mimeType,'Media MIME differs: '+item.key);
+   const permitted=item.key==='cover'?record?.cover:record?.figures?.find(x=>x.key===item.key);
+   assert.equal(permitted?.original110Sha256,original.sha256,
+     'Approval is not bound to immutable original '+item.key);
+ }
+ assert.equal(seen.size,7);
+ return true;
+}
+async function currentManuscriptDigest(){
+ const dir='src/content/works/how-to-love-god/chapters';
+ const files=(await readdir(dir)).filter(x=>x.endsWith('.md')).sort();
+ assert.equal(files.length,51);
+ const sources=await Promise.all(files.map(x=>readFile(path.join(dir,x),'utf8')));
+ return sha(files.map((f,i)=>f+'\0'+sources[i].length+'\0'+sources[i]+'\n').join(''));
+}
+async function actualMediaDigest(verifiedMedia){
+ for(const item of verifiedMedia){
+   const b=await readFile(path.join(ROOT,'media',item.name));
+   assert.equal(b.length,item.size,'Actual source media bytes differ: '+item.key);
+   assert.equal(sha(b),item.sha256,'Actual source media checksum differs: '+item.key);
+ }
+}
 const FIGS=Array.from({length:6},(_,i)=>'figure'+String(i+1).padStart(2,'0'));
 const unsafe=s=>typeof s!=='string'||!s.trim()||/(UNPUBLISHED|PENDING|SYNTHETIC|UNAPPROVED|PLACEHOLDER|TBD)/i.test(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c]));
@@ -123,6 +165,23 @@ async function selfTest(){
  };
  assert.throws(()=>validate(fake('Jonathan'),work,source,proposals),/catalog byline/);
  assert.throws(()=>validate(fake('Thiepn'),work,source,proposals),/printed copyright/);
+ const release=YAML.parse(await readFile('src/publications/releases/how-to-love-god/1.1.0.yaml','utf8'));
+ const sampleMedia=MEDIA_KEYS.map(key=>{const o=release.artifacts[key];return {
+   key,verified:true,sha256:o.sha256,size:o.sizeBytes,url:o.url,name:o.filename,mime:o.mimeType};});
+ const digest=await currentManuscriptDigest();
+ const approved=fake('Thiepn');
+ approved.sourceContentSha256=digest;
+ approved.cover.original110Sha256=release.artifacts.cover.sha256;
+ for(const fig of approved.figures)fig.original110Sha256=release.artifacts[fig.key].sha256;
+ assert.equal(checkApprovedSnapshot(approved,digest,release,sampleMedia),true);
+ const wrongSource=structuredClone(approved);wrongSource.sourceContentSha256='a'.repeat(64);
+ assert.throws(()=>checkApprovedSnapshot(wrongSource,digest,release,sampleMedia),/different manuscript/);
+ const wrongCover=structuredClone(approved);wrongCover.cover.original110Sha256='b'.repeat(64);
+ assert.throws(()=>checkApprovedSnapshot(wrongCover,digest,release,sampleMedia),/immutable original cover/);
+ const wrongFigure=structuredClone(approved);wrongFigure.figures[2].original110Sha256='c'.repeat(64);
+ assert.throws(()=>checkApprovedSnapshot(wrongFigure,digest,release,sampleMedia),/immutable original figure03/);
+ const tamperedMedia=structuredClone(sampleMedia);tamperedMedia[1].sha256='d'.repeat(64);
+ assert.throws(()=>checkApprovedSnapshot(approved,digest,release,tamperedMedia),/Media hash differs/);
  const z=new JSZip();z.file('mimetype','application/epub+zip',{compression:'STORE'});
  z.file('OEBPS/content.opf',opf);z.file('OEBPS/text/one.xhtml','<h1>Original chapter</h1>');
  const temp=path.join(process.env.RUNNER_TEMP||'/tmp','book1-metadata-unit');
@@ -135,7 +194,7 @@ async function selfTest(){
  assert.ok(renderer.includes("how-to-love-god-UNPUBLISHED-QA.epub")
    && renderer.includes("how-to-love-god-UNPUBLISHED-QA.pdf"),
    'Actual renderer source paths must be verified');
- const report={status:'METADATA_STAGE_UNIT_PASS_RELEASE_NO_GO',tests:8,
+ const report={status:'METADATA_STAGE_UNIT_PASS_RELEASE_NO_GO',tests:12,
    exercised:'Real OPF patching of synthetic EPUB plus fail-closed checks against actual source discrepancy',
    exporter:'Actual QA renderer output paths statically qualified; full book NOT rendered in unit check',
    pdfWriter:'Independent Python synthetic PDF test is required',
@@ -155,15 +214,30 @@ async function prepare(){
  const copy=await readFile('src/content/works/how-to-love-god/chapters/00-copyright.md','utf8');
  const proposed=JSON.parse(await readFile('scripts/certification/book1-figure-long-descriptions.proposed.json','utf8'));
  const normalized=validate(record,work,copy,proposed);
+ const release=YAML.parse(await readFile('src/publications/releases/how-to-love-god/1.1.0.yaml','utf8'));
+ const verifiedMedia=JSON.parse(await readFile(path.join(ROOT,'media-verification.json'),'utf8'));
+ const sourceDigest=await currentManuscriptDigest();
+ checkApprovedSnapshot(record,sourceDigest,release,verifiedMedia);
+ await actualMediaDigest(verifiedMedia);
  const source=path.join(ROOT,'how-to-love-god-UNPUBLISHED-QA.epub');
  const target=path.join(ROOT,'how-to-love-god-FINAL-METADATA-REHEARSAL-QA.epub');
+ const originalPdf=path.join(ROOT,'how-to-love-god-PDFUA-FINAL-QA.pdf');
+ const actualInputEpubSha256=sha(await readFile(source));
+ const actualInputPdfSha256=sha(await readFile(originalPdf));
+ assert.ok(HASH.test(record?.inputProofSha256?.epub||'')&&HASH.test(record?.inputProofSha256?.pdf||''),
+   'Exact QA proof input identities are required');
+ assert.equal(record.inputProofSha256.epub,actualInputEpubSha256,'Approval is for another EPUB proof');
+ assert.equal(record.inputProofSha256.pdf,actualInputPdfSha256,'Approval is for another PDF proof');
+ normalized.sourceContentSha256=sourceDigest;
+ normalized.inputProofSha256={epub:actualInputEpubSha256,pdf:actualInputPdfSha256};
+ normalized.originalMediaSha256=Object.fromEntries(verifiedMedia.map(m=>[m.key,m.sha256]));
  const epub=await rewriteEpub(source,target,normalized);
  const metaFile=path.join(ROOT,'how-to-love-god-FINAL-METADATA-REHEARSAL.json');
  await writeFile(metaFile,JSON.stringify(normalized,null,2)+'\n',{flag:'wx',mode:0o600});
  // The PDF step uses EXACTLY the same normalized metadata, never its own author guess.
  const py=spawnSync(process.env.BOOK1_PYTHON||'python3',[
    'scripts/certification/how-to-love-god-final-pdf-metadata.py','--prepare',
-   path.join(ROOT,'how-to-love-god-PDFUA-FINAL-QA.pdf'),
+   originalPdf,
    path.join(ROOT,'how-to-love-god-FINAL-METADATA-REHEARSAL-QA.pdf'),
    metaFile],{encoding:'utf8'});
  assert.equal(py.status,0,'PDF metadata patch failed: '+py.stderr);

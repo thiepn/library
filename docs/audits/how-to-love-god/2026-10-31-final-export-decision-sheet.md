@@ -9,13 +9,13 @@ Record the reviewer’s identity/authority, a dated evidence identifier and an e
 | Decision | Exact question requiring an answer | Present status |
 |---|---|---|
 | Identity relationship | Are `Jonathan` on the 1.1.0 cover and `Thiepn` in `work.yaml` the same person, an authorized pen name, or different holders? Who has legal release authority? | **UNAPPROVED** |
-| Public bibliographic byline | Which **exact text** should appear consistently in Library byline, PDF Author, EPUB `dc:creator`, copyright page and cover? | **UNAPPROVED** |
+| Public bibliographic byline | The user explicitly selected **Thiepn** for AI books on **2026-10-04**. Preserve that public-facing choice; determine how it is legally attributed to the rights-holder before applying it to copyright/exports. | **USER PREFERENCE RECORDED — legal/production authorization outstanding** |
 | Ownership and copyright | Who owns the prose and the seven original media assets? What exact copyright notice and credit must be printed? Does this grant authorization for an updated edition? | **UNAPPROVED** |
 | Reusing cover/figures | May the 1.1.0 cover and six figures be reused unchanged? If the old `Jonathan` cover conflicts with the approved byline, who approves its revision? | **UNAPPROVED** |
 | Description approval | Are F01–F06 source-grounded long descriptions accepted individually, and which wording changes, if any, are required? | **UNAPPROVED** |
 | Final version/release authority | Is a later version (e.g., `1.1.1`, **not yet selected**) approved for public Library release after full sign-off? | **UNAPPROVED** |
 
-Do not select `Thiepn`, `Jonathan`, or a combined byline on the user’s behalf. The existing book is AI-authored and remains in the Library **AI** section; do not create another work record to change catalog placement.
+Preserve the user's previously explicit **Thiepn** AI-book byline preference; do **not** infer that Thiepn and Jonathan are the same legal person, or that a public author choice transfers copyright. The existing book is AI-authored and remains in the Library **AI** section; do not create another work record to change catalog placement.
 
 ## 2. Exact final-output metadata contract
 
@@ -60,4 +60,11 @@ A new, isolated **opt-in metadata stage** consumes the **existing real renderer 
 **Fail-closed requirement:** `BOOK1_FINAL_METADATA_REHEARSAL=1` and `BOOK1_FINAL_APPROVAL_RECORD` pointing to an externally supplied, uncommitted, dated approval JSON under the trusted temporary directory. Approval must explicitly cover public byline, copyright holder, rights notice, original cover reuse, all six figure permissions and *each approved description's SHA-256*, with a named reviewer and evidence reference. Before any rehearsal begins the metadata stage compares these approvals to actual `work.yaml`, the printed `00-copyright.md` and cover alternative text. **At present the current source is contradictory: Jonathan in copyright chapter versus Thiepn in work.yaml, therefore neither candidate identity can enter this stage without a separately approved and qualified source correction.** This is intentional, not a request to silently change the source.
 
 **After external approvals and source alignment only:** regenerate the existing unpublished real proof by its already qualified pipeline, validate the original PDF/EPUB, run the opt-in metadata stage, then independently rerun **veraPDF PDF/UA-1, official EPUBCheck, media/text/link fidelity, real A5 and assistive-reader acceptance on the exact newly altered rehearsal bytes**. The previous RC1 binary hashes must never be reused as final-byte certification. Final release manifests and actual public files remain unimplemented and **NO_GO**.
+
+
+## 7. Exact-source and media-binding requirements for any private rehearsal
+
+The opt-in metadata stage must now receive an externally supplied, noncommitted approval record with `sourceContentSha256` for the **current 51-chapter manuscript** (computed using the same filename/length/content aggregate algorithm as RC1), plus `inputProofSha256.epub` and `inputProofSha256.pdf` for the **actual QA proof binaries**. The `cover.original110Sha256` and each of the six `figures[].original110Sha256` must match the immutable `1.1.0.yaml` media checksums. The stage also reads the previously verified seven-media manifest and rehashes the **actual seven source images** before modifying any EPUB/PDF metadata. A reused approval for different content or images must refuse.
+
+A source-author decision must be made against the newly aligned, reviewed source *after* any copyright/byline corrections. Because the existing printed Jonathan copyright contradicts the user's already chosen Thiepn public-byline preference, rehearsal remains **blocked** pending rightful authorization to reconcile that discrepancy. A JSON statement of approval is a **custody record**, not independent cryptographic identity proof. Source changes require their own evidence and fresh exact-byte qualification; no existing 1.1.0 file may be overwritten.
 

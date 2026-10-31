@@ -53,6 +53,10 @@ def prepare(args):
     assert source.parent==out.parent==metadata.parent
     assert source.is_file() and metadata.is_file() and not out.exists()
     data=json.loads(metadata.read_text("utf8"))
+    import hashlib
+    expected=data.get("inputProofSha256",{}).get("pdf")
+    assert isinstance(expected,str) and len(expected)==64, "Normalized PDF source digest absent"
+    assert hashlib.sha256(source.read_bytes()).hexdigest()==expected, "QA proof PDF changed after authority review"
     with pikepdf.open(source) as pdf:
         assert len(pdf.pages)==245
         assert pdf.Root.get("/StructTreeRoot") is not None
