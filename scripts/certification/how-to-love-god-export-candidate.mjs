@@ -116,11 +116,13 @@ const epubcheck=JSON.parse(await readFile(path.join(root,'epubcheck-candidate.js
 assert.ok(Array.isArray(epubcheck.messages));
 const bad=epubcheck.messages.filter(x=>['ERROR','FATAL','WARNING'].includes(x.severity));
 assert.equal(bad.length,0,'official EPUBCheck warnings/errors');
-const head=process.env.GITHUB_SHA;
-assert.match(head||'',/^[a-f0-9]{40}$/);
+const checkout=spawnSync('git',['rev-parse','HEAD'],{encoding:'utf8'});
+assert.equal(checkout.status,0,checkout.stderr);
+const head=checkout.stdout.trim();
+assert.match(head,/^[a-f0-9]{40}$/);
 const report={
  schemaVersion:1,kind:'UNPUBLISHED_VERSIONED_PRODUCTION_EXPORT_CANDIDATE',
- workId:'how-to-love-god',version:VERSION,exactSourceHead:head,sourceContentSha256:sourceSha,
+ workId:'how-to-love-god',version:VERSION,exactSourceHead:head,workflowEventSha:process.env.GITHUB_SHA||null,sourceContentSha256:sourceSha,
  existingActiveRelease:'1.1.0',candidateReleaseStatus:'NO_GO',
  generatedFiles:files,
  executedChecks:{sourceSections:51,epubChapters:titles.size,epubToc:52,epubSpine:52,
