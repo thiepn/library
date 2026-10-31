@@ -77,7 +77,7 @@ const report={
   pipeline:'approved exact bytes in remote R2 -> stage:media hash verification -> versioned release YAML and activeRelease update -> approved build/deploy -> live verification'},
  holds:{sourceAuthorAndRights:'UNAPPROVED',sixFigures:'UNAPPROVED',printedA5:'NOT_TESTED',
   pdfEpubScreenReader:'NOT_TESTED',desktopAndroid:'NOT_TESTED',
-  productionFormatterAdoption:'NOT_APPROVED',privateAccountBuild:'BLOCKED_404',release:'NO_GO'}},
+  productionFormatterAdoption:'NOT_APPROVED',privateAccountBuild:'BLOCKED_404',release:'NO_GO'},
  noWorkPerformed:['No public binary rendered','No R2 upload','No release manifest created','No deployment','No merge']
 };
 const out=path.join(process.env.RUNNER_TEMP||'/tmp','book1-release-contract');
