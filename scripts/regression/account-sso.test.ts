@@ -42,13 +42,15 @@ test('Library uses the pinned first-party THIEPN OAuth client', async () => {
   const provenance = await readFile('vendor/account-session/PINNED_SOURCE.txt','utf8');
   assert.ok(provenance.includes('83c3af63a18c771105e4460368dadbeaeb625fd0'));
   const {createHash} = await import('node:crypto');
-  for (const [file, expected] of [
-    ['vendor/account-session/src/index.ts','0d93b38e83bce81bc1f7bb8f08c80163de875da2'],
-    ['vendor/account-session/src/browser-sso.ts','30dd645a93955671021e24d8999c2988a5303e34'],
-  ] as const) {
-    const buf=await readFile(file);
-    assert.equal(createHash('sha1').update('blob '+buf.length+'\0').update(buf).digest('hex'),expected);
-  }
+  const originalBrowserFile = await readFile('vendor/account-session/src/browser-sso.ts');
+  assert.equal(
+    createHash('sha1').update('blob '+originalBrowserFile.length+'\\0').update(originalBrowserFile).digest('hex'),
+    '30dd645a93955671021e24d8999c2988a5303e34',
+  );
+  assert.match(provenance, /Library-local index\\.ts patch/);
+  const runtime = await readFile('vendor/account-session/src/index.ts', 'utf8');
+  assert.match(runtime, /ACCOUNT_TOKEN_TRANSPORT_FAILED/);
+  assert.match(runtime, /row\\.token_type\\.toLowerCase\\(\\)/);
 });
 
 test('silent Account probe exposes only signed-in eligibility semantics', () => {

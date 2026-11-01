@@ -184,7 +184,7 @@ function tokenResponse(value: unknown): TokenResponse {
     typeof row.expires_in !== 'number' ||
     !Number.isFinite(row.expires_in) ||
     row.expires_in <= 0 ||
-    row.token_type !== 'bearer'
+    (typeof row.token_type !== 'string' || row.token_type.toLowerCase() !== 'bearer')
   ) {
     throw new Error('ACCOUNT_TOKEN_RESPONSE_INVALID');
   }
@@ -192,7 +192,7 @@ function tokenResponse(value: unknown): TokenResponse {
     access_token: row.access_token,
     refresh_token: row.refresh_token,
     expires_in: row.expires_in,
-    token_type: row.token_type,
+    token_type: 'bearer',
     ...(typeof row.scope === 'string' ? { scope: row.scope } : {}),
   };
 }
@@ -328,7 +328,8 @@ export function createThiepnAccountSession(
   }
 
   async function postToken(body: URLSearchParams): Promise<TokenResponse> {
-    const response = await transport(new URL('/auth/v1/oauth/token', issuer), {
+    let response: Response;
+    try { response = await transport(new URL('/auth/v1/oauth/token', issuer), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -337,8 +338,13 @@ export function createThiepnAccountSession(
       credentials: 'omit',
       redirect: 'error',
       signal: AbortSignal.timeout(timeoutMs),
-    });
-    const payload: unknown = await response.json();
+    }); } catch {
+      // Includes blocked CORS/transport and network failures. Never log codes.
+      throw new Error('ACCOUNT_TOKEN_TRANSPORT_FAILED');
+    }
+    let payload: unknown;
+    try { payload = await response.json(); }
+    catch { throw new Error('ACCOUNT_TOKEN_RESPONSE_UNREADABLE'); }
     if (!response.ok) {
       const oauthError = payload && typeof payload === 'object' &&
         'error' in payload ? (payload as {error?:unknown}).error : null;
@@ -535,12 +541,20 @@ export function createThiepnAccountSession(
             code_verifier: pending.verifier,
           }),
         );
-      } catch {
-        // An invalid/expired code or temporary outage must not log out a
-        // previously verified session. The one-use PKCE request is consumed.
+      } catch (error) {
+        // Return only allowlisted stable codes; never leak auth tokens,
+        // authorization codes, PKCE verifiers or raw server response bodies.
+        const safeErrors = new Set([
+          'ACCOUNT_TOKEN_TRANSPORT_FAILED',
+          'ACCOUNT_TOKEN_RESPONSE_UNREADABLE',
+          'ACCOUNT_TOKEN_RESPONSE_INVALID',
+          'ACCOUNT_TOKEN_REVOKED',
+          'ACCOUNT_TOKEN_EXCHANGE_UNAVAILABLE',
+        ]);
         return publish({
           status: 'unavailable',
-          code: 'ACCOUNT_CODE_EXCHANGE_FAILED',
+          code: error instanceof Error && safeErrors.has(error.message)
+            ? error.message : 'ACCOUNT_CODE_EXCHANGE_FAILED',
         });
       }
 

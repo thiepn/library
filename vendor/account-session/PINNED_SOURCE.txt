@@ -1,3 +1,6 @@
-THIEPN first-party source package pinned to thiepn/account 83c3af63a18c771105e4460368dadbeaeb625fd0
-Copied unchanged from packages/account-session at this commit, with original license.
-No private account repo access is required for Library dependency installation.
+THIEPN first-party Account runtime for Library.
+Source: thiepn/account packages/account-session @ 83c3af63a18c771105e4460368dadbeaeb625fd0.
+Original index.ts git blob: 0d93b38e83bce81bc1f7bb8f08c80163de875da2.
+Original browser-sso.ts git blob: 30dd645a93955671021e24d8999c2988a5303e34.
+Library-local index.ts patch: case-insensitive OAuth bearer token_type; safe exchange-error classification for blocked transport, response JSON, HTTP and invalid token envelopes.
+index.ts is no longer byte-identical to original; browser-sso.ts remains unchanged. No OAuth client IDs, permissions, keys, credentials or user data were changed.
