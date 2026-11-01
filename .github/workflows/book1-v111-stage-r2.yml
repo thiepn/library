@@ -49,7 +49,7 @@ jobs:
           (
           cd "$RUNNER_TEMP/book1-111-stage"
           printf '%s\n' \
-            'fd4ece4200edc03f209e5c8bf8fe314c48ac3d528c67e5d79ac0ad1a42beea2d  How_to_Love_God_Thiepn_1.1.1.pdf' \
+            '6acce45ad4e86d38372ff71be04fecf1be794bfe8850c4be4a8b826a03e5e565  How_to_Love_God_Thiepn_1.1.1.pdf' \
             'b8e31dfe97d421040ad405aeead8e1cce216d9999c16037f0be568bf2df8abf5  How_to_Love_God_Thiepn_1.1.1.epub' \
             '159b64c274fc8395b9317a34437bbcc662b1d95d2ef22993df324fd430535d4d  How_to_Love_God_Thiepn.webp' \
             '9ffe0d789bd2f44e281f2ae320864770b5f3956f0cd657c6481f4a54a9eb3f19  F01_phasec.svg' \
