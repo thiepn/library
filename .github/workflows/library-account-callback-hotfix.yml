@@ -1,0 +1,56 @@
+name: Library Account callback recovery deploy
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/library-account-callback-hotfix.yml'
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: library-account-callback-hotfix-one-shot
+  cancel-in-progress: false
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    environment:
+      name: github-pages
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      R2_BUCKET: thiepn-library-publications
+      PUBLIC_THIEPN_ACCOUNT_PUBLISHABLE_KEY: sb_publishable_1rZzRPzfLMaAH5pIgCwIjA_19UPMIsR
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2
+        with:
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+          cache: true
+      - name: Pinned dependency install
+        run: pnpm install --frozen-lockfile
+      - name: Exact OAuth callback, storage failure and Account boundary regressions
+        run: pnpm exec tsx --test scripts/regression/account-oauth-storage.test.ts scripts/regression/account-sso.test.ts
+      - name: Build Library with auth hotfix and original content
+        run: pnpm build
+      - name: Stage existing publication assets with original hash checks
+        run: pnpm stage:media
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
+        with:
+          enablement: true
+      - name: Upload Library with corrected Account callback
+        uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
+        with:
+          name: library-account-hotfix-pages
+          path: ./dist/library
+      - name: Publish Library OAuth hotfix
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
+        with:
+          artifact_name: library-account-hotfix-pages
