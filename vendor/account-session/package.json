@@ -1,0 +1,14 @@
+{
+  "name": "@thiepn/account-session",
+  "version": "0.1.0",
+  "private": false,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "src"
+  ],
+  "description": "Shared browser OAuth 2.1/PKCE session runtime for THIEPN first-party apps.",
+  "license": "SEE LICENSE IN LICENSE"
+}
