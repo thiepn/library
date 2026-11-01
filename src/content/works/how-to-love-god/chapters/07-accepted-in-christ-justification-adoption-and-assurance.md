@@ -67,7 +67,7 @@ The New Testament contains strong promises and strong warnings. Christians have 
 
 The shared pastoral center is that confidence in Christ is compatible with serious exhortation. God's promises do not create permission for indifference. Warnings do not require endless terror. The Christian life is one of trusting Christ, receiving the Spirit, remaining in the church, repenting of sin, bearing fruit, and persevering in hope.
 
-![Four Lenses for Assurance](https://thiepn.dev/library/media/works/how-to-love-god/editions/1.1.0/F03_four_lenses_assurance.png)
+![Four Lenses for Assurance](https://thiepn.dev/library/media/works/how-to-love-god/editions/1.1.1/F03_phasec.svg)
 
 *Figure — Four Lenses for Assurance.*
 

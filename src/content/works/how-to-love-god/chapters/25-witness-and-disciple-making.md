@@ -71,7 +71,7 @@ Every Christian participates in witness, but cross-cultural relocation is not a 
 
 Conversely, specialized missionary vocation does not create a higher class of Christian.
 
-![One Witnessing People, Differentiated Roles](https://thiepn.dev/library/media/works/how-to-love-god/editions/1.1.0/F06_differentiated_mission_participation.png)
+![One Witnessing People, Differentiated Roles](https://thiepn.dev/library/media/works/how-to-love-god/editions/1.1.1/F06_phasec.svg)
 
 *Figure — One Witnessing People, Differentiated Roles.*
 

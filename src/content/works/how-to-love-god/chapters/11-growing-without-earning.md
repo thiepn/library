@@ -63,7 +63,7 @@ The shared point is enough: Scripture, prayer, gathered worship, baptism, the Lo
 
 Part IV will examine that ecology in the church.
 
-![How Christian Practices Serve Growth](https://thiepn.dev/library/media/works/how-to-love-god/editions/1.1.0/F04_practices_and_growth.png)
+![How Christian Practices Serve Growth](https://thiepn.dev/library/media/works/how-to-love-god/editions/1.1.1/F04_phasec.svg)
 
 *Figure — How Christian Practices Serve Growth.*
 

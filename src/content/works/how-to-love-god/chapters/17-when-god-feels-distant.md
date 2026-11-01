@@ -78,7 +78,7 @@ Low affect therefore does not automatically mean love is absent. Neither should 
 
 The believer's task is not to produce a reassuring feeling about the heart. It is to remain truthful before God, receive the gospel, repent where needed, use appropriate care, and keep returning to Christ.
 
-![When God Feels Distant: Discern Before You Diagnose](https://thiepn.dev/library/media/works/how-to-love-god/editions/1.1.0/F05_dryness_discernment.png)
+![When God Feels Distant: Discern Before You Diagnose](https://thiepn.dev/library/media/works/how-to-love-god/editions/1.1.1/F05_phasec.svg)
 
 *Figure — When God Feels Distant: Discern Before You Diagnose.*
 
