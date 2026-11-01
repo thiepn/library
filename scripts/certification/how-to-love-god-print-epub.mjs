@@ -85,7 +85,7 @@ for(const x of chapters){
    const d=descriptionByChapter.get(x.id);
    assert.ok(content.includes('</figure>'),'candidate EPUB figure group missing '+x.id);
    const paragraph='<p class="figure-long-description" id="'+d.key+'-description">'+esc(d.description)+'</p>';
-   content=content.replace(/(<figcaption>[^<]*<\/figcaption>)(<\/figure>)/,'$1'+paragraph+'$2');
+   content=content.replace(/(<figure><img\b[^>]*\/>)(<figcaption>)/,'$1'+paragraph+'$2');
    content=content.replace(/(<figure><img\b[^>]*)(\/>)/,'$1 aria-describedby="'+d.key+'-description"$2');
  }
  const body='<?xml version="1.0" encoding="utf-8"?>'+
