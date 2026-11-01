@@ -48,18 +48,17 @@ jobs:
           done
           (
           cd "$RUNNER_TEMP/book1-111-stage"
-          cat > SHA256SUMS <<'EOF'
-fd4ece4200edc03f209e5c8bf8fe314c48ac3d528c67e5d79ac0ad1a42beea2d  How_to_Love_God_Thiepn_1.1.1.pdf
-b8e31dfe97d421040ad405aeead8e1cce216d9999c16037f0be568bf2df8abf5  How_to_Love_God_Thiepn_1.1.1.epub
-159b64c274fc8395b9317a34437bbcc662b1d95d2ef22993df324fd430535d4d  How_to_Love_God_Thiepn.webp
-9ffe0d789bd2f44e281f2ae320864770b5f3956f0cd657c6481f4a54a9eb3f19  F01_phasec.svg
-091ba4c034de846618f4cb57741b7831d3850c9281dbfe401e27c2137e866779  F02_phasec.svg
-9fa64fda88596779098ed9cd3792e8cc680ec741b3db90bb14c92dc42075d879  F03_phasec.svg
-64f80fe32a6ab8bd8a1d3500dee22d569c9abbde21d04a3217d42eb21f34b81d  F04_phasec.svg
-f1d42799ea0a616d27b7f5ad794b5c237d46b211350ed4b908ef7f3460f0605e  F05_phasec.svg
-0f1bd222f0aa8d2bf9010a2ee175704b110ae16cdc2c799c15048ba3aa11e341  F06_phasec.svg
-EOF
-          sha256sum -c SHA256SUMS
+          printf '%s\n' \
+            'fd4ece4200edc03f209e5c8bf8fe314c48ac3d528c67e5d79ac0ad1a42beea2d  How_to_Love_God_Thiepn_1.1.1.pdf' \
+            'b8e31dfe97d421040ad405aeead8e1cce216d9999c16037f0be568bf2df8abf5  How_to_Love_God_Thiepn_1.1.1.epub' \
+            '159b64c274fc8395b9317a34437bbcc662b1d95d2ef22993df324fd430535d4d  How_to_Love_God_Thiepn.webp' \
+            '9ffe0d789bd2f44e281f2ae320864770b5f3956f0cd657c6481f4a54a9eb3f19  F01_phasec.svg' \
+            '091ba4c034de846618f4cb57741b7831d3850c9281dbfe401e27c2137e866779  F02_phasec.svg' \
+            '9fa64fda88596779098ed9cd3792e8cc680ec741b3db90bb14c92dc42075d879  F03_phasec.svg' \
+            '64f80fe32a6ab8bd8a1d3500dee22d569c9abbde21d04a3217d42eb21f34b81d  F04_phasec.svg' \
+            'f1d42799ea0a616d27b7f5ad794b5c237d46b211350ed4b908ef7f3460f0605e  F05_phasec.svg' \
+            '0f1bd222f0aa8d2bf9010a2ee175704b110ae16cdc2c799c15048ba3aa11e341  F06_phasec.svg'
+          | sha256sum -c -
           )
       - name: Install Wrangler separately from Library application dependencies
         shell: bash
