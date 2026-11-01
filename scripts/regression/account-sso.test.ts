@@ -47,7 +47,7 @@ test('Library uses the pinned first-party THIEPN OAuth client', async () => {
     ['vendor/account-session/src/browser-sso.ts','30dd645a93955671021e24d8999c2988a5303e34'],
   ] as const) {
     const buf=await readFile(file);
-    assert.equal(createHash('sha1').update('blob '+buf.length+'\\0').update(buf).digest('hex'),expected);
+    assert.equal(createHash('sha1').update('blob '+buf.length+'\0').update(buf).digest('hex'),expected);
   }
 });
 
