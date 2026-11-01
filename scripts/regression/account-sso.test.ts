@@ -38,10 +38,17 @@ test('Library uses the pinned first-party THIEPN OAuth client', async () => {
   assert.equal(authSource.includes('getLibraryBrowserSso().completeCallback(window.location)'), true);
   assert.equal(runtime.includes('if (!hasThiepnAccountConfiguration()) return () => {};'), true);
   assert.equal(authSource.includes('if (!hasThiepnAccountConfiguration()) return null;'), true);
-  assert.match(
-    pkg.dependencies?.['@thiepn/account-session'] ?? '',
-    /^github:thiepn\/account#83c3af63a18c771105e4460368dadbeaeb625fd0&path:\/packages\/account-session$/,
-  );
+  assert.equal(pkg.dependencies?.['@thiepn/account-session'], 'link:vendor/account-session');
+  const provenance = await readFile('vendor/account-session/PINNED_SOURCE.txt','utf8');
+  assert.ok(provenance.includes('83c3af63a18c771105e4460368dadbeaeb625fd0'));
+  const {createHash} = await import('node:crypto');
+  for (const [file, expected] of [
+    ['vendor/account-session/src/index.ts','0d93b38e83bce81bc1f7bb8f08c80163de875da2'],
+    ['vendor/account-session/src/browser-sso.ts','30dd645a93955671021e24d8999c2988a5303e34'],
+  ] as const) {
+    const buf=await readFile(file);
+    assert.equal(createHash('sha1').update('blob '+buf.length+'\0').update(buf).digest('hex'),expected);
+  }
 });
 
 test('silent Account probe exposes only signed-in eligibility semantics', () => {

@@ -1,0 +1,201 @@
+name: Book 1 independent PDF-UA preflight
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/book1-pdfua-preflight.yml'
+      - 'scripts/certification/how-to-love-god-pdfua-remediate.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pdfua:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Require exact HEAD
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+      - name: Set up Node 22
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22.12.0
+      - name: Install only isolated public proof dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/book1-pdfua-tools"
+          printf '{"private":true,"type":"module"}\n' > "$RUNNER_TEMP/book1-pdfua-tools/package.json"
+          npm install --prefix "$RUNNER_TEMP/book1-pdfua-tools" --no-package-lock --ignore-scripts --no-audit --no-fund --no-save \
+            @astrojs/markdown-remark@7.3.0 @playwright/test@1.62.1 \
+            jszip@3.10.1 @xmldom/xmldom@0.9.12 pdfjs-dist@5.4.530
+          ln -s "$RUNNER_TEMP/book1-pdfua-tools/node_modules" ./node_modules
+      - name: Install Chromium
+        run: |
+          "$RUNNER_TEMP/book1-pdfua-tools/node_modules/.bin/playwright" install --with-deps chromium
+      - name: Authenticate seven original images by SHA-256
+        run: node scripts/certification/how-to-love-god-media.mjs
+      - name: Generate ephemeral media-complete PDF proof
+        run: BOOK1_MEDIA_PROOF=1 node scripts/certification/how-to-love-god-print-epub.mjs
+      - name: Run real veraPDF v1.30.2 PDF-UA-1 profile (machine checks)
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="$RUNNER_TEMP/book1-format-qa"
+          test -s "$base/how-to-love-god-UNPUBLISHED-QA.pdf"
+          docker pull verapdf/cli:v1.30.2
+          docker image inspect verapdf/cli:v1.30.2 --format '{{index .RepoDigests 0}}' > "$base/verapdf-image.txt"
+          uid="$(id -u):$(id -g)"
+          docker run --rm --network none --user "$uid" --entrypoint /bin/sh \
+            -v "$base:/data:ro" verapdf/cli:v1.30.2 \
+            -c 'test -r /data/how-to-love-god-UNPUBLISHED-QA.pdf && echo PDF_PROOF_READABLE'
+          set +e
+          docker run --rm --network none --user "$uid" -v "$base:/data:ro" verapdf/cli:v1.30.2 \
+            --format json --flavour ua1 --maxfailuresdisplayed 500 \
+            /data/how-to-love-god-UNPUBLISHED-QA.pdf > "$base/pdfua-raw.json"
+          rc="$?"
+          set -e
+          echo "VERAPDF_EXIT_CODE=$rc"
+          test -s "$base/pdfua-raw.json"
+      - name: Summarize genuine PDF-UA outcome and separate technical from human checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,os,pathlib
+          base=pathlib.Path(os.environ['RUNNER_TEMP'])/'book1-format-qa'
+          data=json.loads((base/'pdfua-raw.json').read_text())
+          jobs=data.get('report',{}).get('jobs',[])
+          if len(jobs)!=1 or len(jobs[0].get('validationResult',[]))!=1:
+              raise SystemExit('VALIDATOR_REPORT_NOT_VERIFIED: expected one job and one validation result')
+          val=jobs[0]['validationResult'][0]
+          if 'PDF/UA-1' not in val.get('profileName',''):
+              raise SystemExit('VALIDATOR_REPORT_NOT_VERIFIED: wrong validation profile')
+          compliant=val.get('compliant') is True
+          details=val.get('details',{})
+          failures=[{'specification':r.get('specification'),'clause':r.get('clause'),
+             'testNumber':r.get('testNumber'),'object':r.get('object'),
+             'description':r.get('description'),'failedChecks':r.get('failedChecks'),
+             'exampleErrors':[x.get('errorMessage') for x in r.get('checks',[])[:2]]}
+             for r in details.get('ruleSummaries',[]) if r.get('status')=='failed']
+          out={'verdict':'MACHINE_PASS_HUMAN_HOLD' if compliant else 'PDFUA1_MACHINE_NONCOMPLIANT',
+               'tool':'veraPDF v1.30.2','profile':val['profileName'],'machineCompliant':compliant,
+               'passedRules':details.get('passedRules'),'failedRules':details.get('failedRules'),
+               'passedChecks':details.get('passedChecks'),'failedChecks':details.get('failedChecks'),
+               'ruleFindings':failures,
+               'humanHolds':['Alt-text semantic adequacy','Human reading order and screen-reader check',
+                 'Real A5 print readability','Author attribution and publication authority']}
+          (base/'pdfua-summary.json').write_text(json.dumps(out,indent=2))
+          print(json.dumps(out,indent=2))
+          PY
+      - name: Install narrow PDF structure correction tools in isolated venv
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/book1-pdfua-python"
+          "$RUNNER_TEMP/book1-pdfua-python/bin/python" -m pip install --disable-pip-version-check --no-cache-dir pikepdf==9.11.0 PyMuPDF==1.26.3
+          "$RUNNER_TEMP/book1-pdfua-python/bin/python" -m py_compile scripts/certification/how-to-love-god-pdfua-remediate.py
+      - name: Repair reproduced structural roles, annotation descriptions and PDF document metadata in QA COPY
+        shell: bash
+        run: |
+          "$RUNNER_TEMP/book1-pdfua-python/bin/python" scripts/certification/how-to-love-god-pdfua-remediate.py
+      - name: Validate remediated QA copy independently with genuine veraPDF PDF-UA-1
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="$RUNNER_TEMP/book1-format-qa"
+          uid="$(id -u):$(id -g)"
+          test -s "$base/how-to-love-god-PDFUA-REMEDIATED-QA.pdf"
+          set +e
+          docker run --rm --network none --user "$uid" -v "$base:/data:ro" verapdf/cli:v1.30.2 \
+            --format json --flavour ua1 --maxfailuresdisplayed 500 \
+            /data/how-to-love-god-PDFUA-REMEDIATED-QA.pdf > "$base/pdfua-repaired-raw.json"
+          rc="$?"
+          set -e
+          echo "REMEDIATED_VERAPDF_EXIT_CODE=$rc"
+          test -s "$base/pdfua-repaired-raw.json"
+          python3 - <<'PY'
+          import json,os,pathlib
+          base=pathlib.Path(os.environ['RUNNER_TEMP'])/'book1-format-qa'
+          before=json.loads((base/'pdfua-raw.json').read_text())['report']['jobs'][0]['validationResult'][0]
+          after=json.loads((base/'pdfua-repaired-raw.json').read_text())['report']['jobs'][0]['validationResult'][0]
+          assert 'PDF/UA-1' in before.get('profileName','') and 'PDF/UA-1' in after.get('profileName','')
+          b=before['details'];a=after['details']
+          summary={'verdict':'PDFUA1_MACHINE_PASS_HUMAN_HOLD' if after.get('compliant') is True else 'PDFUA1_MACHINE_NONCOMPLIANT',
+                   'tool':'veraPDF v1.30.2','profile':after.get('profileName'),
+                   'baseline':{'compliant':before.get('compliant'),'passedRules':b.get('passedRules'),'failedRules':b.get('failedRules'),
+                               'failedChecks':b.get('failedChecks')},
+                   'repaired':{'compliant':after.get('compliant'),'passedRules':a.get('passedRules'),'failedRules':a.get('failedRules'),
+                               'failedChecks':a.get('failedChecks'),
+                               'failedRuleSummaries':[{k:r.get(k) for k in ('clause','testNumber','description','failedChecks')}
+                                      for r in a.get('ruleSummaries',[]) if r.get('status')=='failed']},
+                   'humanHolds':['Real emphasis semantics under PDF/UA-1 RoleMap','Accessible link label quality',
+                                 'Author-approved long descriptions','Actual A5 figure readability',
+                                 'Screen reader and editorial rights approval'],
+                   'publication':'NOT_AUTHORIZED'}
+          (base/'pdfua-repaired-summary.json').write_text(json.dumps(summary,indent=2))
+          print(json.dumps(summary,indent=2))
+          assert a.get('failedChecks',999999)<=b.get('failedChecks',0),'Remediation increased veraPDF failures'
+          PY
+      - name: Repair only the 29 exact LI objects from intermediate veraPDF report
+        shell: bash
+        run: |
+          "$RUNNER_TEMP/book1-pdfua-python/bin/python" scripts/certification/how-to-love-god-pdfua-remediate.py --fix-lists
+      - name: Independent final PDF-UA-1 validator of two-stage proof repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="$RUNNER_TEMP/book1-format-qa"
+          uid="$(id -u):$(id -g)"
+          test -s "$base/how-to-love-god-PDFUA-FINAL-QA.pdf"
+          set +e
+          docker run --rm --network none --user "$uid" -v "$base:/data:ro" verapdf/cli:v1.30.2 \
+            --format json --flavour ua1 --maxfailuresdisplayed 100 \
+            /data/how-to-love-god-PDFUA-FINAL-QA.pdf > "$base/pdfua-final-raw.json"
+          rc=$?
+          set -e
+          echo "FINAL_VERAPDF_EXIT_CODE=$rc"
+          test -s "$base/pdfua-final-raw.json"
+          python3 - <<'PY'
+          import json,os,pathlib
+          base=pathlib.Path(os.environ['RUNNER_TEMP'])/'book1-format-qa'
+          stage=json.loads((base/'pdfua-repaired-raw.json').read_text())['report']['jobs'][0]['validationResult'][0]
+          final=json.loads((base/'pdfua-final-raw.json').read_text())['report']['jobs'][0]['validationResult'][0]
+          b=stage['details'];a=final['details']
+          out={'verdict':'PDFUA1_MACHINE_PASS_HUMAN_HOLD' if final.get('compliant') is True else 'PDFUA1_MACHINE_NONCOMPLIANT',
+               'profile':final.get('profileName'),'tool':'veraPDF 1.30.2',
+               'intermediateFailedRules':b.get('failedRules'),'intermediateFailedChecks':b.get('failedChecks'),
+               'finalFailedRules':a.get('failedRules'),'finalFailedChecks':a.get('failedChecks'),
+               'finalMachineCompliant':final.get('compliant'),
+               'remainingRules':[{k:r.get(k) for k in ('clause','testNumber','description','failedChecks')}
+                                 for r in a.get('ruleSummaries',[]) if r.get('status')=='failed'],
+               'releaseHold':['Author approval','Long-description semantics','Real A5 print and screen-reader acceptance',
+                              'Private Account full Library build','No deployment/merge authorized']}
+          (base/'pdfua-final-summary.json').write_text(json.dumps(out,indent=2))
+          print(json.dumps(out,indent=2))
+          assert a['failedChecks']<=b['failedChecks'],'Final list repair increased validator failures'
+          PY
+      - name: Upload validator evidence only, never proof binaries
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: book1-pdfua-machine-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/book1-format-qa/pdfua-raw.json
+            ${{ runner.temp }}/book1-format-qa/pdfua-summary.json
+            ${{ runner.temp }}/book1-format-qa/verapdf-image.txt
+            ${{ runner.temp }}/book1-format-qa/pdfua-remediation.json
+            ${{ runner.temp }}/book1-format-qa/pdfua-repaired-raw.json
+            ${{ runner.temp }}/book1-format-qa/pdfua-repaired-summary.json
+            ${{ runner.temp }}/book1-format-qa/pdfua-list-remediation.json
+            ${{ runner.temp }}/book1-format-qa/pdfua-final-raw.json
+            ${{ runner.temp }}/book1-format-qa/pdfua-final-summary.json
+          if-no-files-found: warn
+          retention-days: 7

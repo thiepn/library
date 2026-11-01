@@ -154,11 +154,11 @@ This pipeline exists to protect the reader from incomplete or mutable hosted rel
 
 **Understanding, Receiving, and Growing in Wholehearted Love for God**
 
-- native web compatibility edition: 57 publication sections
-- integrated PDF edition: available with redesigned cover
-- EPUB: not supplied in the source edition
-- active first-edition release: `1.0.1`
-- `1.0.0` remains preserved as the previous immutable release
+- native web compatibility edition: 51 publication sections
+- EPUB reader edition: registered in the active release
+- integrated PDF edition: registered in the active release
+- active first-edition release: `1.1.0`
+- earlier immutable releases `1.0.0` and `1.0.1` remain preserved
 
 ### The Unfinished Mission
 

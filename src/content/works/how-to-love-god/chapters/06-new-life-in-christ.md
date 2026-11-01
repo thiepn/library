@@ -21,7 +21,7 @@ Ezekiel 36 speaks more directly of cleansing, a new heart, a new spirit, God's S
 
 ## New birth and divine initiative
 
-Jesus tells Nicodemus that entrance into God's kingdom requires birth from above or new birth and connects this work with the Spirit (John 3:1–8). The image emphasizes dependence. A person does not cause his own birth.
+Jesus tells Nicodemus that entrance into God's kingdom requires birth from above or new birth and connects this work with the Spirit (John 3:1–8). Verse 5 also speaks of being born “of water and the Spirit.” Interpreters connect that wording with Old Testament cleansing and renewal imagery (compare Ezekiel 36:25–27), with baptism, or with both in different ways. The central point here—that entry into God's kingdom depends on divine renewal—does not require settling those differences. The birth image emphasizes dependence: a person does not cause his own birth.
 
 That does not make repentance and faith unreal. The gospel calls people to turn and believe. Acts portrays hearers responding to the message. The Epistles command faith and perseverance. Christian theology has long asked how divine initiative and human response should be ordered conceptually. Across these differences, the shared Protestant center is that saving response depends on grace, not autonomous human spiritual power.
 

@@ -1,0 +1,3 @@
+THIEPN first-party source package pinned to thiepn/account 83c3af63a18c771105e4460368dadbeaeb625fd0
+Copied unchanged from packages/account-session at this commit, with original license.
+No private account repo access is required for Library dependency installation.

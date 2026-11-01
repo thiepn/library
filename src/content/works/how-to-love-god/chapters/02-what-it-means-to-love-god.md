@@ -67,7 +67,7 @@ Self-examination has a place, but Christian assurance does not begin with measur
 
 Then stop. Bring what you see to Christ. Perfect self-knowledge is impossible; truthful Godward life is enough.
 
-![Whole-Person Love, Oriented to God](https://thiepn.dev/library/media/works/how-to-love-god/editions/1.1.0/F01_whole_person_love.png)
+![Whole-Person Love, Oriented to God](https://thiepn.dev/library/media/works/how-to-love-god/editions/1.1.1/F01_phasec.svg)
 
 *Figure — Whole-Person Love, Oriented to God.*
 

@@ -1,0 +1,61 @@
+schemaVersion: 1
+workId: how-to-love-god
+version: 1.1.1
+edition: 1
+releasedAt: 2026-11-01
+sourceHash: a832c3e8ea704b70828798c5a4d1c19f6a234c69fe4a8d84576ca1b871993a7e
+artifacts:
+  pdf:
+    url: https://thiepn.dev/library/media/works/how-to-love-god/editions/1.1.1/How_to_Love_God_Thiepn_1.1.1.pdf
+    filename: How_to_Love_God_Thiepn_1.1.1.pdf
+    mimeType: application/pdf
+    sizeBytes: 1566891
+    sha256: 6acce45ad4e86d38372ff71be04fecf1be794bfe8850c4be4a8b826a03e5e565
+  epub:
+    url: https://thiepn.dev/library/media/works/how-to-love-god/editions/1.1.1/How_to_Love_God_Thiepn_1.1.1.epub
+    filename: How_to_Love_God_Thiepn_1.1.1.epub
+    mimeType: application/epub+zip
+    sizeBytes: 173554
+    sha256: b8e31dfe97d421040ad405aeead8e1cce216d9999c16037f0be568bf2df8abf5
+  cover:
+    url: https://thiepn.dev/library/media/works/how-to-love-god/editions/1.1.1/How_to_Love_God_Thiepn.webp
+    filename: How_to_Love_God_Thiepn.webp
+    mimeType: image/webp
+    sizeBytes: 9630
+    sha256: 159b64c274fc8395b9317a34437bbcc662b1d95d2ef22993df324fd430535d4d
+  figure01:
+    url: https://thiepn.dev/library/media/works/how-to-love-god/editions/1.1.1/F01_phasec.svg
+    filename: F01_phasec.svg
+    mimeType: image/svg+xml
+    sizeBytes: 5061
+    sha256: 9ffe0d789bd2f44e281f2ae320864770b5f3956f0cd657c6481f4a54a9eb3f19
+  figure02:
+    url: https://thiepn.dev/library/media/works/how-to-love-god/editions/1.1.1/F02_phasec.svg
+    filename: F02_phasec.svg
+    mimeType: image/svg+xml
+    sizeBytes: 4143
+    sha256: 091ba4c034de846618f4cb57741b7831d3850c9281dbfe401e27c2137e866779
+  figure03:
+    url: https://thiepn.dev/library/media/works/how-to-love-god/editions/1.1.1/F03_phasec.svg
+    filename: F03_phasec.svg
+    mimeType: image/svg+xml
+    sizeBytes: 4070
+    sha256: 9fa64fda88596779098ed9cd3792e8cc680ec741b3db90bb14c92dc42075d879
+  figure04:
+    url: https://thiepn.dev/library/media/works/how-to-love-god/editions/1.1.1/F04_phasec.svg
+    filename: F04_phasec.svg
+    mimeType: image/svg+xml
+    sizeBytes: 4127
+    sha256: 64f80fe32a6ab8bd8a1d3500dee22d569c9abbde21d04a3217d42eb21f34b81d
+  figure05:
+    url: https://thiepn.dev/library/media/works/how-to-love-god/editions/1.1.1/F05_phasec.svg
+    filename: F05_phasec.svg
+    mimeType: image/svg+xml
+    sizeBytes: 4939
+    sha256: f1d42799ea0a616d27b7f5ad794b5c237d46b211350ed4b908ef7f3460f0605e
+  figure06:
+    url: https://thiepn.dev/library/media/works/how-to-love-god/editions/1.1.1/F06_phasec.svg
+    filename: F06_phasec.svg
+    mimeType: image/svg+xml
+    sizeBytes: 6758
+    sha256: 0f1bd222f0aa8d2bf9010a2ee175704b110ae16cdc2c799c15048ba3aa11e341

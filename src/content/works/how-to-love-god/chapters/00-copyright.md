@@ -10,9 +10,9 @@ estimatedMinutes: 1
 *How to Love God*  
 *Understanding, Receiving, and Growing in Wholehearted Love for God*
 
-**Jonathan**
+**Thiepn**
 
-Copyright © 2026 Jonathan. All rights reserved.
+Copyright © 2026 Thiepn. All rights reserved.
 
 First edition, 2026.
 

@@ -1,0 +1,173 @@
+name: Book 1 standalone source integrity
+
+on:
+  pull_request:
+    paths:
+      - 'src/content/works/how-to-love-god/**'
+      - 'src/publications/releases/how-to-love-god/**'
+      - 'scripts/certification/how-to-love-god-standalone.mjs'
+      - 'scripts/certification/how-to-love-god-rendering.mjs'
+      - 'scripts/certification/how-to-love-god-browser.mjs'
+      - 'scripts/certification/how-to-love-god-print-epub.mjs'
+      - 'scripts/certification/how-to-love-god-page-audit.mjs'
+      - 'scripts/certification/how-to-love-god-media.mjs'
+      - '.github/workflows/how-to-love-god-standalone.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  book1-exact-source:
+    name: Exact-head book source and publication registry
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Require exact candidate identity
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+      - name: Set up Node 22
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22.12.0
+      - name: Check independent QA scripts for parse errors
+        run: |
+          node --check scripts/certification/how-to-love-god-print-epub.mjs
+          node --check scripts/certification/how-to-love-god-page-audit.mjs
+          node --check scripts/certification/how-to-love-god-media.mjs
+      - name: Run isolated source certification without private package or credential
+        run: node scripts/certification/how-to-love-god-standalone.mjs
+      - name: Install isolated TypeScript test executor
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/book1-test-tools"
+          printf '{"private":true,"type":"module"}\n' > "$RUNNER_TEMP/book1-test-tools/package.json"
+          npm install --prefix "$RUNNER_TEMP/book1-test-tools" --no-package-lock --ignore-scripts --no-audit --no-fund --no-save tsx@4.20.5 epubjs@0.3.93 @astrojs/markdown-remark@7.3.0 linkedom@0.18.12 @playwright/test@1.62.1 @axe-core/playwright@4.11.1 jszip@3.10.1 @xmldom/xmldom@0.9.12 pdfjs-dist@5.4.530
+          ln -s "$RUNNER_TEMP/book1-test-tools/node_modules" ./node_modules
+      - name: Render all Book 1 Markdown pages and validate internal links
+        run: node scripts/certification/how-to-love-god-rendering.mjs
+      - name: Install isolated Chromium
+        run: |
+          "$RUNNER_TEMP/book1-test-tools/node_modules/.bin/playwright" install --with-deps chromium
+      - name: Run actual Chromium typography, layout, navigation, and accessibility acceptance
+        run: node scripts/certification/how-to-love-god-browser.mjs
+      - name: Validate real non-release EPUB ZIP and tagged paginated PDF
+        run: node scripts/certification/how-to-love-god-print-epub.mjs
+      - name: Audit geometry and text across every generated PDF page
+        run: node scripts/certification/how-to-love-god-page-audit.mjs
+      - name: Install official W3C EPUBCheck v5.4.0 (QA only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/book1-epubcheck"
+          curl --fail --location --silent --show-error --retry 3 \
+            "https://github.com/w3c/epubcheck/releases/download/v5.4.0/epubcheck-5.4.0.zip" \
+            --output "$RUNNER_TEMP/book1-epubcheck/dist.zip"
+          unzip -q "$RUNNER_TEMP/book1-epubcheck/dist.zip" -d "$RUNNER_TEMP/book1-epubcheck"
+          java -jar "$RUNNER_TEMP/book1-epubcheck/epubcheck-5.4.0/epubcheck.jar" --version
+      - name: Render representative printed PDF pages with Poppler
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq poppler-utils
+          pdf="$RUNNER_TEMP/book1-format-qa/how-to-love-god-UNPUBLISHED-QA.pdf"
+          pdfinfo "$pdf" | tee "$RUNNER_TEMP/book1-format-qa/pdfinfo.txt"
+          pdffonts "$pdf" | tee "$RUNNER_TEMP/book1-format-qa/fonts.txt"
+          pages="$(pdfinfo "$pdf" | awk '/^Pages:/ { print $2 }')"
+          test "$pages" -gt 51
+          for p in 1 "$(( (pages+3)/4 ))" "$(( (pages+1)/2 ))" "$(( (3*pages+3)/4 ))" "$pages"; do
+            pdftoppm -f "$p" -l "$p" -singlefile -r 120 -png "$pdf" \
+              "$RUNNER_TEMP/book1-format-qa/pdf-page-$p"
+            pdftotext -f "$p" -l "$p" "$pdf" - | wc -m
+          done
+          test "$(find "$RUNNER_TEMP/book1-format-qa" -maxdepth 1 -name 'pdf-page-*.png' | wc -l)" -eq 5
+          python3 - <<'PY'
+          import glob,os,struct
+          files=sorted(glob.glob(os.environ['RUNNER_TEMP']+'/book1-format-qa/pdf-page-*.png'))
+          for f in files:
+              with open(f,'rb') as h: data=h.read(24)
+              assert data[:8]==b'\x89PNG\r\n\x1a\n'
+              w,h=struct.unpack('>II',data[16:24])
+              assert w>400 and h>600
+              print('RASTER_PASS',os.path.basename(f),f'{w}x{h}')
+          PY
+      - name: Execute genuine W3C EPUBCheck on isolated draft proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          java -jar "$RUNNER_TEMP/book1-epubcheck/epubcheck-5.4.0/epubcheck.jar" \
+            "$RUNNER_TEMP/book1-format-qa/how-to-love-god-UNPUBLISHED-QA.epub" \
+            --json "$RUNNER_TEMP/book1-format-qa/epubcheck-report.json"
+      - name: Fetch and SHA-256-check six original figures and cover (read only)
+        id: mediaFetch
+        continue-on-error: true
+        run: node scripts/certification/how-to-love-god-media.mjs
+      - name: Generate temporary media-complete EPUB and tagged PDF proofs
+        if: steps.mediaFetch.outcome == 'success'
+        run: BOOK1_MEDIA_PROOF=1 node scripts/certification/how-to-love-god-print-epub.mjs
+      - name: Re-audit all pages of media-complete PDF
+        if: steps.mediaFetch.outcome == 'success'
+        run: node scripts/certification/how-to-love-god-page-audit.mjs
+      - name: Run official EPUBCheck on media-complete EPUB proof
+        if: steps.mediaFetch.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          java -jar "$RUNNER_TEMP/book1-epubcheck/epubcheck-5.4.0/epubcheck.jar" \
+            "$RUNNER_TEMP/book1-format-qa/how-to-love-god-UNPUBLISHED-QA.epub" \
+            --json "$RUNNER_TEMP/book1-format-qa/epubcheck-report.json"
+      - name: Inspect media-complete PDF image XObjects and render their pages
+        if: steps.mediaFetch.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          pdf="$RUNNER_TEMP/book1-format-qa/how-to-love-god-UNPUBLISHED-QA.pdf"
+          pdfimages -list "$pdf" | tee "$RUNNER_TEMP/book1-format-qa/embedded-pdf-images.txt"
+          pdfinfo "$pdf" | tee "$RUNNER_TEMP/book1-format-qa/pdfinfo.txt"
+          pdffonts "$pdf" | tee "$RUNNER_TEMP/book1-format-qa/fonts.txt"
+          awk '$1 ~ /^[0-9]+$/ && $2 ~ /^[0-9]+$/ && $3=="image" {print $1}' "$RUNNER_TEMP/book1-format-qa/embedded-pdf-images.txt" | sort -nu > "$RUNNER_TEMP/book1-format-qa/image-pages.txt"
+          test "$(wc -l < "$RUNNER_TEMP/book1-format-qa/image-pages.txt")" -ge 7
+          while read -r p; do
+            pdftoppm -f "$p" -l "$p" -singlefile -r 120 -png "$pdf" \
+              "$RUNNER_TEMP/book1-format-qa/media-page-$p"
+          done < "$RUNNER_TEMP/book1-format-qa/image-pages.txt"
+          test "$(find "$RUNNER_TEMP/book1-format-qa" -maxdepth 1 -name 'media-page-*.png' | wc -l)" -ge 7
+      - name: Preserve only unpublished QA evidence (no proof books)
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: book1-format-QA-evidence-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/book1-format-qa/pdf-page-*.png
+            ${{ runner.temp }}/book1-format-qa/pdfinfo.txt
+            ${{ runner.temp }}/book1-format-qa/fonts.txt
+            ${{ runner.temp }}/book1-format-qa/epubcheck-report.json
+            ${{ runner.temp }}/book1-format-qa/page-audit.json
+            ${{ runner.temp }}/book1-format-qa/media-verification.json
+            ${{ runner.temp }}/book1-format-qa/embedded-pdf-images.txt
+            ${{ runner.temp }}/book1-format-qa/image-pages.txt
+            ${{ runner.temp }}/book1-format-qa/media-page-*.png
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Execute all public-dependency Library regression files
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Both Account contract specs depend directly or transitively on
+          # private @thiepn/account-session. Do not stub or impersonate it.
+          # Their complete tests remain NOT_TESTED until authenticated CI.
+          mapfile -t specs < <(find scripts/regression -type f -name '*.test.ts' \
+            ! -name 'account-sso.test.ts' \
+            ! -name 'account-personal-files.test.ts' | LC_ALL=C sort)
+          test "${#specs[@]}" -eq 20
+          "$RUNNER_TEMP/book1-test-tools/node_modules/.bin/tsx" --test "${specs[@]}"
+      - name: Require original media availability for complete-format qualification
+        if: steps.mediaFetch.outcome == 'failure'
+        run: |
+          echo "::error::Verified media acquisition unavailable; full-media proof NOT_TESTED."
+          exit 1
