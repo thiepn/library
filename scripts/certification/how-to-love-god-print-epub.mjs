@@ -12,6 +12,8 @@ import {getDocument} from 'pdfjs-dist/legacy/build/pdf.mjs';
 import remarkExplicitHeadingIds from '../../src/lib/markdown/remark-explicit-heading-ids.mjs';
 const dir='src/content/works/how-to-love-god/chapters';
 const newEditionCandidate=process.env.BOOK1_111_PREP==='1';
+const finalCandidate=process.env.BOOK1_111_FINAL_CANDIDATE==='1';
+if(finalCandidate)assert.ok(newEditionCandidate,'final candidate requires new edition mode');
 const detailedDescriptions=newEditionCandidate?JSON.parse(await readFile('src/publications/candidates/how-to-love-god/1.1.1/long-descriptions.proposed.json','utf8')).items:[];
 const descriptionByChapter=new Map(detailedDescriptions.map(x=>[x.chapterId,x]));
 if(newEditionCandidate)assert.equal(descriptionByChapter.size,6);
@@ -101,7 +103,7 @@ zip.file('OEBPS/nav.xhtml',nav);
 const opf='<?xml version="1.0" encoding="UTF-8"?>'+
  '<package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="bookid" xml:lang="en" prefix="schema: http://schema.org/"><metadata xmlns:dc="http://purl.org/dc/elements/1.1/">'+
  '<dc:identifier id="bookid">urn:uuid:1d0566b3-a9a1-4fed-b64c-1915c1d303a1</dc:identifier>'+
- '<dc:title>'+esc(process.env.BOOK1_CANDIDATE_VERSION?'How to Love God — unpublished export candidate '+process.env.BOOK1_CANDIDATE_VERSION:'How to Love God — unpublished QA only')+'</dc:title><dc:language>en</dc:language>'+
+ '<dc:title>'+esc(finalCandidate?'How to Love God':process.env.BOOK1_CANDIDATE_VERSION?'How to Love God — unpublished export candidate '+process.env.BOOK1_CANDIDATE_VERSION:'How to Love God — unpublished QA only')+'</dc:title><dc:language>en</dc:language>'+
  '<dc:creator>'+(newEditionCandidate?'Thiepn':'Thiepn (source metadata, ownership unresolved)')+'</dc:creator>'+
  (newEditionCandidate?'<dc:rights>Copyright © 2026 Thiepn. All rights reserved.</dc:rights>':'')+
  '<meta property="dcterms:modified">2026-10-30T00:00:00Z</meta>'+

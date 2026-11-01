@@ -17,6 +17,7 @@ jobs:
       BOOK1_111_PREP: '1'
       BOOK1_MEDIA_PROOF: '1'
       BOOK1_CANDIDATE_VERSION: '1.1.1'
+      BOOK1_111_FINAL_CANDIDATE: '1'
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
@@ -32,6 +33,7 @@ jobs:
           node --check scripts/certification/how-to-love-god-print-epub.mjs
           node --check scripts/certification/book1-v111-stage.mjs
           node --check scripts/certification/book1-v111-verify.mjs
+          python3 -m py_compile scripts/certification/book1-v111-pdfua.py
           grep -q '^  activeRelease: 1.1.0$' src/content/works/how-to-love-god/work.yaml
           test ! -e src/publications/releases/how-to-love-god/1.1.1.yaml
       - name: Install isolated public-only build dependencies
@@ -58,7 +60,54 @@ jobs:
           curl --fail --silent --show-error --location --retry 3 https://github.com/w3c/epubcheck/releases/download/v5.4.0/epubcheck-5.4.0.zip -o "$RUNNER_TEMP/book1-epubcheck.zip"
           unzip -q "$RUNNER_TEMP/book1-epubcheck.zip" -d "$RUNNER_TEMP/epubcheck"
           java -jar "$RUNNER_TEMP/epubcheck/epubcheck-5.4.0/epubcheck.jar" "$RUNNER_TEMP/book1-format-qa/how-to-love-god-UNPUBLISHED-QA.epub" --json "$RUNNER_TEMP/book1-format-qa/epubcheck-111.json"
-      - name: Upload audit JSON only; never book binaries or release assets
+
+      - name: Install isolated PDF verification tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get install -y -qq poppler-utils
+          python3 -m venv "$RUNNER_TEMP/book1-111-python"
+          "$RUNNER_TEMP/book1-111-python/bin/python" -m pip install --disable-pip-version-check --no-cache-dir pikepdf==9.11.0 PyMuPDF==1.26.3
+          docker pull verapdf/cli:v1.30.2
+          docker image inspect verapdf/cli:v1.30.2 --format '{{index .RepoDigests 0}}' > "$RUNNER_TEMP/book1-format-qa/verapdf-image-111.txt"
+          grep -q 'sha256:d5ee329657cf9bc4b2400392dd54c7d0a0ce9980ff6fa2da5590eebeec007cdb' "$RUNNER_TEMP/book1-format-qa/verapdf-image-111.txt"
+      - name: Repair exact known PDF structure without changing source
+        run: "$RUNNER_TEMP/book1-111-python/bin/python" scripts/certification/book1-v111-pdfua.py
+      - name: Independently inspect intermediate PDF/UA
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="$RUNNER_TEMP/book1-format-qa"
+          set +e
+          docker run --rm --network none --user "$(id -u):$(id -g)" -v "$base:/data:ro" verapdf/cli:v1.30.2 --format json --flavour ua1 --maxfailuresdisplayed 500 /data/how-to-love-god-PDFUA-REMEDIATED-QA.pdf > "$base/pdfua-repaired-raw.json"
+          code="$?"
+          set -e
+          test -s "$base/pdfua-repaired-raw.json"
+          echo "INTERMEDIATE_VERAPDF_EXIT_CODE=$code"
+      - name: Repair only genuine validator-identified list defects
+        run: "$RUNNER_TEMP/book1-111-python/bin/python" scripts/certification/book1-v111-pdfua.py --fix-lists
+      - name: Independently qualify exact final PDF/UA-1 bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="$RUNNER_TEMP/book1-format-qa"
+          docker run --rm --network none --user "$(id -u):$(id -g)" -v "$base:/data:ro" verapdf/cli:v1.30.2 --format json --flavour ua1 --maxfailuresdisplayed 200 /data/how-to-love-god-PDFUA-FINAL-QA.pdf > "$base/pdfua-final-111.json"
+          test -s "$base/pdfua-final-111.json"
+      - name: Verify corrected byline in PDF Info and XMP
+        shell: bash
+        run: |
+          "$RUNNER_TEMP/book1-111-python/bin/python" - <<'PY'
+          import os, pathlib, pikepdf
+          p=pathlib.Path(os.environ['RUNNER_TEMP'])/'book1-format-qa/how-to-love-god-PDFUA-FINAL-QA.pdf'
+          with pikepdf.open(p) as f:
+              assert str(f.docinfo['/Title'])=='How to Love God'
+              assert str(f.docinfo['/Author'])=='Thiepn'
+              with f.open_metadata() as m:
+                  assert m['dc:creator']==['Thiepn']
+                  assert m['dc:rights']=='Copyright © 2026 Thiepn. All rights reserved.'
+              print('BOOK1_111_PDF_TITLE_CREATOR_RIGHTS_PASS',len(f.pages))
+          PY
+      - name: Upload unpublished exact candidate and validator evidence for private review
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
@@ -67,4 +116,10 @@ jobs:
             ${{ runner.temp }}/book1-format-qa/new-version-staging.json
             ${{ runner.temp }}/book1-format-qa/book1-111-audit.json
             ${{ runner.temp }}/book1-format-qa/epubcheck-111.json
+            ${{ runner.temp }}/book1-format-qa/pdfua-final-111.json
+            ${{ runner.temp }}/book1-format-qa/pdfua-repaired-raw.json
+            ${{ runner.temp }}/book1-format-qa/verapdf-image-111.txt
+            ${{ runner.temp }}/book1-format-qa/how-to-love-god-UNPUBLISHED-QA.epub
+            ${{ runner.temp }}/book1-format-qa/how-to-love-god-PDFUA-FINAL-QA.pdf
+            ${{ runner.temp }}/book1-format-qa/media/how-to-love-god.webp
           if-no-files-found: warn
