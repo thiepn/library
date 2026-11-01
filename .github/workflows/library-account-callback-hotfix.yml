@@ -39,6 +39,7 @@ jobs:
         run: pnpm exec tsx --test scripts/regression/account-oauth-token-response.test.ts scripts/regression/account-oauth-storage.test.ts scripts/regression/account-sso.test.ts
       - name: Build Library with auth hotfix and original content
         run: pnpm build
+      # R2 staging at this HEAD retries transient 5xx without relaxing file hashes.
       - name: Stage existing publication assets with original hash checks
         run: pnpm stage:media
       - name: Configure GitHub Pages
