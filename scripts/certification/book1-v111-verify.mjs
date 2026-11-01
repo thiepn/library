@@ -15,6 +15,11 @@ assert.ok(opf.includes('<dc:creator>Thiepn</dc:creator>'));
 assert.ok(opf.includes('<dc:rights>Copyright © 2026 Thiepn. All rights reserved.</dc:rights>'));
 const media=JSON.parse(await readFile(path.join(root,'media-verification.json'),'utf8'));
 const descriptions=JSON.parse(await readFile('src/publications/candidates/how-to-love-god/1.1.1/long-descriptions.proposed.json','utf8')).items;
+const cover=media.find(x=>x.key==='cover');
+assert.equal(cover.name,'How_to_Love_God_Thiepn.webp');
+const coverBytes=await zip.file('OEBPS/images/'+cover.name)?.async('nodebuffer');
+assert.ok(coverBytes&&coverBytes.length===cover.size);
+assert.equal(sha(coverBytes),cover.sha256);
 const checks=[];
 for(let i=1;i<=6;i++){
  const key='figure0'+i, a=media.find(x=>x.key===key);

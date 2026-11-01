@@ -123,5 +123,5 @@ jobs:
             ${{ runner.temp }}/book1-format-qa/verapdf-image-111.txt
             ${{ runner.temp }}/book1-format-qa/how-to-love-god-UNPUBLISHED-QA.epub
             ${{ runner.temp }}/book1-format-qa/how-to-love-god-PDFUA-FINAL-QA.pdf
-            ${{ runner.temp }}/book1-format-qa/media/how-to-love-god.webp
+            ${{ runner.temp }}/book1-format-qa/media/How_to_Love_God_Thiepn.webp
           if-no-files-found: warn

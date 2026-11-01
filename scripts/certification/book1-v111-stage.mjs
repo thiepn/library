@@ -24,6 +24,21 @@ const original=JSON.parse(await readFile(path.join(root,'media-verification.json
 assert.equal(original.length,7);assert.ok(original.every(x=>x.verified));
 await writeFile(path.join(root,'media-verification-original-110.json'),JSON.stringify(original,null,2));
 const result=original.map(x=>({...x}));
+// The existing catalog cover visibly says THIEPN. The immutable 1.1.0 media
+// cover says JONATHAN and must NEVER be reused in the new byline edition.
+const coverSource='public/covers/how-to-love-god-v2.webp';
+const coverName='How_to_Love_God_Thiepn.webp';
+const coverBytes=await readFile(coverSource);
+const coverGitHash=(await import('node:child_process')).spawnSync('git',['hash-object',coverSource],{encoding:'utf8'});
+assert.equal(coverGitHash.status,0,'Existing catalog cover unavailable');
+assert.equal(coverGitHash.stdout.trim(),'508b913d7356e5284087b7b71cdefa7d61422892','Catalog cover source changed unexpectedly');
+assert.ok(coverBytes.length>8000,'Cover bytes unexpectedly small');
+await mkdir(path.join(root,'media'),{recursive:true});
+await writeFile(path.join(root,'media',coverName),coverBytes);
+const coverIndex=result.findIndex(x=>x.key==='cover');
+assert.ok(coverIndex>=0);
+result[coverIndex]={...result[coverIndex],name:coverName,mime:'image/webp',size:coverBytes.length,sha256:sha(coverBytes),origin:'existing-Thiepn-catalog-cover-192x288; print-resolution-review-pending'};
+
 const figures=[];
 await mkdir(path.join(root,'media'),{recursive:true});
 for(let i=1;i<=6;i++){
