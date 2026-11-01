@@ -57,8 +57,7 @@ jobs:
             '9fa64fda88596779098ed9cd3792e8cc680ec741b3db90bb14c92dc42075d879  F03_phasec.svg' \
             '64f80fe32a6ab8bd8a1d3500dee22d569c9abbde21d04a3217d42eb21f34b81d  F04_phasec.svg' \
             'f1d42799ea0a616d27b7f5ad794b5c237d46b211350ed4b908ef7f3460f0605e  F05_phasec.svg' \
-            '0f1bd222f0aa8d2bf9010a2ee175704b110ae16cdc2c799c15048ba3aa11e341  F06_phasec.svg'
-          | sha256sum -c -
+            '0f1bd222f0aa8d2bf9010a2ee175704b110ae16cdc2c799c15048ba3aa11e341  F06_phasec.svg' | sha256sum -c -
           )
       - name: Install Wrangler separately from Library application dependencies
         shell: bash
