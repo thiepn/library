@@ -44,13 +44,13 @@ test('Library uses the pinned first-party THIEPN OAuth client', async () => {
   const {createHash} = await import('node:crypto');
   const originalBrowserFile = await readFile('vendor/account-session/src/browser-sso.ts');
   assert.equal(
-    createHash('sha1').update('blob '+originalBrowserFile.length+'\\0').update(originalBrowserFile).digest('hex'),
+    createHash('sha1').update('blob '+originalBrowserFile.length+'\0').update(originalBrowserFile).digest('hex'),
     '30dd645a93955671021e24d8999c2988a5303e34',
   );
-  assert.match(provenance, /Library-local index\\.ts patch/);
-  const runtime = await readFile('vendor/account-session/src/index.ts', 'utf8');
-  assert.match(runtime, /ACCOUNT_TOKEN_TRANSPORT_FAILED/);
-  assert.match(runtime, /row\\.token_type\\.toLowerCase\\(\\)/);
+  assert.match(provenance, /Library-local index\.ts patch/);
+  const patchedRuntime = await readFile('vendor/account-session/src/index.ts', 'utf8');
+  assert.match(patchedRuntime, /ACCOUNT_TOKEN_TRANSPORT_FAILED/);
+  assert.match(patchedRuntime, /row\.token_type\.toLowerCase\(\)/);
 });
 
 test('silent Account probe exposes only signed-in eligibility semantics', () => {
