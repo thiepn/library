@@ -1,0 +1,70 @@
+name: Book 1 v1.1.1 isolated preparation
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/book1-v111-preparation.yml'
+      - 'src/publications/candidates/how-to-love-god/1.1.1/**'
+      - 'scripts/certification/book1-v111-*.mjs'
+      - 'scripts/certification/how-to-love-god-print-epub.mjs'
+      - 'src/content/works/how-to-love-god/chapters/00-copyright.md'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  candidate:
+    runs-on: ubuntu-latest
+    env:
+      BOOK1_111_PREP: '1'
+      BOOK1_MEDIA_PROOF: '1'
+      BOOK1_CANDIDATE_VERSION: '1.1.1'
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22.12.0'
+      - name: Syntax and immutable-release preflight
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check scripts/certification/how-to-love-god-print-epub.mjs
+          node --check scripts/certification/book1-v111-stage.mjs
+          node --check scripts/certification/book1-v111-verify.mjs
+          grep -q '^  activeRelease: 1.1.0$' src/content/works/how-to-love-god/work.yaml
+          test ! -e src/publications/releases/how-to-love-god/1.1.1.yaml
+      - name: Install isolated public-only build dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/book1-111-tools"
+          printf '{"private":true,"type":"module"}\n' > "$RUNNER_TEMP/book1-111-tools/package.json"
+          npm install --prefix "$RUNNER_TEMP/book1-111-tools" --ignore-scripts --no-package-lock --no-audit --no-fund --no-save @astrojs/markdown-remark@7.3.0 @playwright/test@1.62.1 jszip@3.10.1 @xmldom/xmldom@0.9.12 pdfjs-dist@5.4.530
+          ln -s "$RUNNER_TEMP/book1-111-tools/node_modules" ./node_modules
+          "$RUNNER_TEMP/book1-111-tools/node_modules/.bin/playwright" install --with-deps chromium
+      - name: Independently verify old cover and original 1.1.0 assets
+        run: node scripts/certification/how-to-love-god-media.mjs
+      - name: Stage six source-verified SVGs without altering old release
+        run: node scripts/certification/book1-v111-stage.mjs
+      - name: Render 1.1.1 unpublished EPUB and tagged A5 PDF
+        run: node scripts/certification/how-to-love-god-print-epub.mjs
+      - name: Verify actual media binaries, creator and descriptions in EPUB/PDF
+        run: node scripts/certification/book1-v111-verify.mjs
+      - name: Official EPUBCheck v5.4.0 against new EPUB
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --retry 3 https://github.com/w3c/epubcheck/releases/download/v5.4.0/epubcheck-5.4.0.zip -o "$RUNNER_TEMP/book1-epubcheck.zip"
+          unzip -q "$RUNNER_TEMP/book1-epubcheck.zip" -d "$RUNNER_TEMP/epubcheck"
+          java -jar "$RUNNER_TEMP/epubcheck/epubcheck-5.4.0/epubcheck.jar" "$RUNNER_TEMP/book1-format-qa/how-to-love-god-UNPUBLISHED-QA.epub" --json "$RUNNER_TEMP/book1-format-qa/epubcheck-111.json"
+      - name: Upload audit JSON only; never book binaries or release assets
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: book1-111-nonpublishing-evidence-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/book1-format-qa/new-version-staging.json
+            ${{ runner.temp }}/book1-format-qa/book1-111-audit.json
+            ${{ runner.temp }}/book1-format-qa/epubcheck-111.json
+          if-no-files-found: warn

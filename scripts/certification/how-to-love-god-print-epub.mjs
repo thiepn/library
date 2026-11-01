@@ -11,6 +11,10 @@ import {chromium} from '@playwright/test';
 import {getDocument} from 'pdfjs-dist/legacy/build/pdf.mjs';
 import remarkExplicitHeadingIds from '../../src/lib/markdown/remark-explicit-heading-ids.mjs';
 const dir='src/content/works/how-to-love-god/chapters';
+const newEditionCandidate=process.env.BOOK1_111_PREP==='1';
+const detailedDescriptions=newEditionCandidate?JSON.parse(await readFile('src/publications/candidates/how-to-love-god/1.1.1/long-descriptions.proposed.json','utf8')).items:[];
+const descriptionByChapter=new Map(detailedDescriptions.map(x=>[x.chapterId,x]));
+if(newEditionCandidate)assert.equal(descriptionByChapter.size,6);
 const esc=x=>String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const parser=await createMarkdownProcessor({remarkPlugins:[remarkExplicitHeadingIds]});
 const chapters=[];
@@ -77,6 +81,13 @@ for(const x of chapters){
      (_whole,img,caption)=>{groupedFigures++;return '<figure>'+img+'<figcaption>'+caption+'</figcaption></figure>';});
  }
 
+ if(newEditionCandidate&&descriptionByChapter.has(x.id)){
+   const d=descriptionByChapter.get(x.id);
+   assert.ok(content.includes('</figure>'),'candidate EPUB figure group missing '+x.id);
+   const paragraph='<p class="figure-long-description" id="'+d.key+'-description">'+esc(d.description)+'</p>';
+   content=content.replace(/(<figcaption>[^<]*<\/figcaption>)(<\/figure>)/,'$1'+paragraph+'$2');
+   content=content.replace(/(<figure><img\b[^>]*)(\/>)/,'$1 aria-describedby="'+d.key+'-description"$2');
+ }
  const body='<?xml version="1.0" encoding="utf-8"?>'+
   '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"><head><title>'+esc(x.title)+'</title></head><body><main><h1>'+esc(x.title)+'</h1>'+content+'</main></body></html>';
  epubs.set(x.id,body);zip.file('OEBPS/text/'+x.id+'.xhtml',body);
@@ -91,7 +102,8 @@ const opf='<?xml version="1.0" encoding="UTF-8"?>'+
  '<package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="bookid" xml:lang="en" prefix="schema: http://schema.org/"><metadata xmlns:dc="http://purl.org/dc/elements/1.1/">'+
  '<dc:identifier id="bookid">urn:uuid:1d0566b3-a9a1-4fed-b64c-1915c1d303a1</dc:identifier>'+
  '<dc:title>'+esc(process.env.BOOK1_CANDIDATE_VERSION?'How to Love God — unpublished export candidate '+process.env.BOOK1_CANDIDATE_VERSION:'How to Love God — unpublished QA only')+'</dc:title><dc:language>en</dc:language>'+
- '<dc:creator>Thiepn (source metadata, ownership unresolved)</dc:creator>'+
+ '<dc:creator>'+(newEditionCandidate?'Thiepn':'Thiepn (source metadata, ownership unresolved)')+'</dc:creator>'+
+ (newEditionCandidate?'<dc:rights>Copyright © 2026 Thiepn. All rights reserved.</dc:rights>':'')+
  '<meta property="dcterms:modified">2026-10-30T00:00:00Z</meta>'+
  '<meta property="schema:accessMode">textual</meta><meta property="schema:accessibilityFeature">tableOfContents</meta>'+
  '</metadata><manifest><item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>'+
@@ -150,10 +162,19 @@ const css=['@page{size:A5;margin:18mm 16mm 19mm}','html{color:#171717;font:11pt/
  'h1{font-size:20pt;break-before:page;break-after:avoid}','h2,h3{break-after:avoid}',
  'p,li{orphans:2;widows:2}','a{color:#162d53;text-decoration:underline}',
  'blockquote{border-left:2px solid #999;padding-left:9pt}',
- 'table{border-collapse:collapse;width:100%}','td,th{border:1px solid #aaa;padding:3pt}', 'img.proof-figure{display:block;max-width:100%;max-height:98mm;object-fit:contain;break-inside:avoid;margin:8pt auto}', '.proof-cover{break-after:page;text-align:center}.proof-cover img{max-height:145mm;max-width:100%;object-fit:contain}'].join('');
+ 'table{border-collapse:collapse;width:100%}','td,th{border:1px solid #aaa;padding:3pt}', 'img.proof-figure{display:block;max-width:100%;max-height:98mm;object-fit:contain;break-inside:avoid;margin:8pt auto}', '.figure-long-description{font-size:9pt;line-height:1.45;margin:6pt 0 10pt;color:#263D54}', '.proof-cover{break-after:page;text-align:center}.proof-cover img{max-height:145mm;max-width:100%;object-fit:contain}'].join('');
 const html='<!doctype html><html lang="en"><head><meta charset="utf-8"><style>'+css+'</style></head><body><main>'+
  (withMedia?'<section class="proof-cover"><h1>How to Love God</h1><img src="data:image/webp;base64,'+mediaByKey.get('cover').bytes.toString('base64')+'" alt="Cover of How to Love God"/></section>':'')+
- chapters.map(x=>'<section id="chapter-'+x.id+'"><h1>'+esc(x.title)+'</h1>'+transform(x.html,'pdf')+'</section>').join('')+
+ chapters.map(x=>{
+  let chapterHtml=transform(x.html,'pdf');
+  if(newEditionCandidate&&descriptionByChapter.has(x.id)){
+    const d=descriptionByChapter.get(x.id);
+    const match=chapterHtml.match(/<p>\s*<em>Figure\s*—\s*[^<]+<\/em>\s*<\/p>/);
+    assert.ok(match,'candidate PDF caption missing '+x.id);
+    chapterHtml=chapterHtml.replace(match[0],match[0]+'<p class="figure-long-description">'+esc(d.description)+'</p>');
+  }
+  return '<section id="chapter-'+x.id+'"><h1>'+esc(x.title)+'</h1>'+chapterHtml+'</section>';
+ }).join('')+
  '</main></body></html>';
 assert.equal(linksPdf,40);assert.equal(figures,6);
 const browser=await chromium.launch({headless:true});
