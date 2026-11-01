@@ -1,4 +1,4 @@
-name: Library Account callback recovery deploy
+name: Library OAuth token exchange hotfix deploy
 on:
   push:
     branches: [main]
@@ -36,7 +36,7 @@ jobs:
       - name: Pinned dependency install
         run: pnpm install --frozen-lockfile
       - name: Exact OAuth callback, storage failure and Account boundary regressions
-        run: pnpm exec tsx --test scripts/regression/account-oauth-storage.test.ts scripts/regression/account-sso.test.ts
+        run: pnpm exec tsx --test scripts/regression/account-oauth-token-response.test.ts scripts/regression/account-oauth-storage.test.ts scripts/regression/account-sso.test.ts
       - name: Build Library with auth hotfix and original content
         run: pnpm build
       - name: Stage existing publication assets with original hash checks
