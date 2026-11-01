@@ -10,6 +10,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     <section class="section" aria-labelledby="sso-callback-title">
       <h1 id="sso-callback-title">Connecting THIEPN Account…</h1>
       <p data-sso-callback-status>Verifying the secure sign-in response.</p>
+      <p><a data-sso-retry href="/library/account/" hidden>Return to Account and reconnect</a></p>
     </section>
   </div>
 
@@ -28,10 +29,16 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
         }
         window.location.replace(consumeLibraryAccountSsoReturnTo());
       })
-      .catch(() => {
+      .catch((error: unknown) => {
+        // Only display stable error codes. OAuth query parameters, bearer
+        // tokens, and PKCE verifiers must never appear in error messages.
+        const code = error instanceof Error && /^ACCOUNT_[A-Z0-9_]+$/.test(error.message)
+          ? error.message : 'ACCOUNT_CALLBACK_UNAVAILABLE';
         if (status) {
-          status.textContent = 'THIEPN Account authorization could not be verified. Return to Library and try again.';
+          status.textContent = 'THIEPN Account authorization could not be verified (' + code + ').';
         }
+        const link = document.querySelector<HTMLAnchorElement>('[data-sso-retry]');
+        if (link) link.hidden = false;
       });
   </script>
 </BaseLayout>
