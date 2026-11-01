@@ -1,0 +1,88 @@
+name: Book 1 1.1.1 versioned publication media
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/book1-v111-stage-r2.yml'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  upload:
+    if: github.event.pull_request.head.repo.full_name == 'thiepn/library'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      GH_TOKEN: ${{ github.token }}
+      PREFIX: works/how-to-love-god/editions/1.1.1
+      BUCKET: thiepn-library-publications
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22.12.0'
+      - name: Require exact known media and configured storage
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN:-}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID:-}"
+          grep -q '^  activeRelease: 1.1.0$' src/content/works/how-to-love-god/work.yaml
+          test ! -f src/publications/releases/how-to-love-god/1.1.1.yaml
+      - name: Fetch successful independently verified 1.1.1 file evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api repos/thiepn/library/actions/runs/41265529778 --jq '.conclusion+" "+.head_sha' | grep -Fx 'success 4e61217b0e26de36fc4cb78d54135d84c609c3eb'
+          mkdir -p "$RUNNER_TEMP/book1-111-exact" "$RUNNER_TEMP/book1-111-stage"
+          gh run download 41265529778 --repo thiepn/library --name book1-111-nonpublishing-evidence-41265529778 --dir "$RUNNER_TEMP/book1-111-exact"
+          cp "$RUNNER_TEMP/book1-111-exact/how-to-love-god-PDFUA-FINAL-QA.pdf" "$RUNNER_TEMP/book1-111-stage/How_to_Love_God_Thiepn_1.1.1.pdf"
+          cp "$RUNNER_TEMP/book1-111-exact/how-to-love-god-UNPUBLISHED-QA.epub" "$RUNNER_TEMP/book1-111-stage/How_to_Love_God_Thiepn_1.1.1.epub"
+          cp "$RUNNER_TEMP/book1-111-exact/media/How_to_Love_God_Thiepn.webp" "$RUNNER_TEMP/book1-111-stage/How_to_Love_God_Thiepn.webp"
+          for i in 01 02 03 04 05 06; do
+            gzip -dc "src/publications/candidates/how-to-love-god/1.1.1/figures/F${i}_phasec.svg.gz" > "$RUNNER_TEMP/book1-111-stage/F${i}_phasec.svg"
+          done
+          (
+          cd "$RUNNER_TEMP/book1-111-stage"
+          cat > SHA256SUMS <<'EOF'
+fd4ece4200edc03f209e5c8bf8fe314c48ac3d528c67e5d79ac0ad1a42beea2d  How_to_Love_God_Thiepn_1.1.1.pdf
+b8e31dfe97d421040ad405aeead8e1cce216d9999c16037f0be568bf2df8abf5  How_to_Love_God_Thiepn_1.1.1.epub
+159b64c274fc8395b9317a34437bbcc662b1d95d2ef22993df324fd430535d4d  How_to_Love_God_Thiepn.webp
+9ffe0d789bd2f44e281f2ae320864770b5f3956f0cd657c6481f4a54a9eb3f19  F01_phasec.svg
+091ba4c034de846618f4cb57741b7831d3850c9281dbfe401e27c2137e866779  F02_phasec.svg
+9fa64fda88596779098ed9cd3792e8cc680ec741b3db90bb14c92dc42075d879  F03_phasec.svg
+64f80fe32a6ab8bd8a1d3500dee22d569c9abbde21d04a3217d42eb21f34b81d  F04_phasec.svg
+f1d42799ea0a616d27b7f5ad794b5c237d46b211350ed4b908ef7f3460f0605e  F05_phasec.svg
+0f1bd222f0aa8d2bf9010a2ee175704b110ae16cdc2c799c15048ba3aa11e341  F06_phasec.svg
+EOF
+          sha256sum -c SHA256SUMS
+          )
+      - name: Install Wrangler separately from Library application dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/book1-wrangler"
+          printf '{"private":true}\n' > "$RUNNER_TEMP/book1-wrangler/package.json"
+          npm install --prefix "$RUNNER_TEMP/book1-wrangler" --no-package-lock --no-audit --no-fund --no-save wrangler@4.125.0
+      - name: Upload new immutable versioned media to Cloudflare R2
+        shell: bash
+        run: |
+          set -euo pipefail
+          exe="$RUNNER_TEMP/book1-wrangler/node_modules/.bin/wrangler"
+          base="$RUNNER_TEMP/book1-111-stage"
+          for file in How_to_Love_God_Thiepn_1.1.1.pdf How_to_Love_God_Thiepn_1.1.1.epub How_to_Love_God_Thiepn.webp F01_phasec.svg F02_phasec.svg F03_phasec.svg F04_phasec.svg F05_phasec.svg F06_phasec.svg; do
+            case "$file" in
+              *.pdf) kind=application/pdf ;;
+              *.epub) kind=application/epub+zip ;;
+              *.webp) kind=image/webp ;;
+              *.svg) kind=image/svg+xml ;;
+            esac
+            "$exe" r2 object put "$BUCKET/$PREFIX/$file" --file="$base/$file" --content-type="$kind" --remote
+            "$exe" r2 object get "$BUCKET/$PREFIX/$file" --file="$RUNNER_TEMP/verified-$file" --remote
+            cmp "$base/$file" "$RUNNER_TEMP/verified-$file"
+            echo "BOOK1_111_R2_VERIFIED $file"
+          done
