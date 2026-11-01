@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { mkdir, readFile, readdir, stat } from 'node:fs/promises';
+import { mkdir, readFile, readdir, rm, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import YAML from 'yaml';
@@ -45,15 +45,32 @@ async function stageObject({ key, target, expectedSize, expectedHash, label }) {
   if (!sha256Pattern.test(expectedHash)) throw new Error(`${label}: invalid SHA-256`);
 
   await mkdir(path.dirname(target), { recursive: true });
-  await new Promise((resolve, reject) => {
-    const child = spawn(
-      'pnpm',
-      ['exec', 'wrangler', 'r2', 'object', 'get', `${bucket}/${key}`, `--file=${target}`, '--remote'],
-      { stdio: 'inherit' },
-    );
-    child.once('error', reject);
-    child.once('close', (code) => code === 0 ? resolve() : reject(new Error(`${label}: failed to download from R2 (exit ${code})`)));
-  });
+  // Cloudflare occasionally returns a transient 500 during large bulk stages.
+  // Retry failed downloads only; checksum or size mismatches remain fatal.
+  const maxAttempts = 4;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    await rm(target, { force: true });
+    try {
+      await new Promise((resolve, reject) => {
+        const child = spawn(
+          'pnpm',
+          ['exec', 'wrangler', 'r2', 'object', 'get', `${bucket}/${key}`, `--file=${target}`, '--remote'],
+          { stdio: 'inherit' },
+        );
+        child.once('error', reject);
+        child.once('close', (code) => code === 0 ? resolve() : reject(new Error(`${label}: failed to download from R2 (exit ${code})`)));
+      });
+      break;
+    } catch (error) {
+      await rm(target, { force: true });
+      if (attempt === maxAttempts) {
+        throw new Error(`${label}: R2 download failed after ${maxAttempts} attempts`, { cause: error });
+      }
+      const delayMs = 1000 * 2 ** (attempt - 1);
+      console.warn(`R2_DOWNLOAD_RETRY ${label}: attempt ${attempt}/${maxAttempts} failed; retry in ${delayMs} ms`);
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+    }
+  }
 
   const actualSize = (await stat(target)).size;
   if (actualSize !== expectedSize) throw new Error(`${label}: size mismatch ${actualSize} != ${expectedSize}`);
