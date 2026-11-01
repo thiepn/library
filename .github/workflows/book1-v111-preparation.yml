@@ -72,7 +72,8 @@ jobs:
           docker image inspect verapdf/cli:v1.30.2 --format '{{index .RepoDigests 0}}' > "$RUNNER_TEMP/book1-format-qa/verapdf-image-111.txt"
           grep -q 'sha256:d5ee329657cf9bc4b2400392dd54c7d0a0ce9980ff6fa2da5590eebeec007cdb' "$RUNNER_TEMP/book1-format-qa/verapdf-image-111.txt"
       - name: Repair exact known PDF structure without changing source
-        run: |\n          "$RUNNER_TEMP/book1-111-python/bin/python" scripts/certification/book1-v111-pdfua.py
+        run: |
+          "$RUNNER_TEMP/book1-111-python/bin/python" scripts/certification/book1-v111-pdfua.py
       - name: Independently inspect intermediate PDF/UA
         shell: bash
         run: |
@@ -85,7 +86,8 @@ jobs:
           test -s "$base/pdfua-repaired-raw.json"
           echo "INTERMEDIATE_VERAPDF_EXIT_CODE=$code"
       - name: Repair only genuine validator-identified list defects
-        run: |\n          "$RUNNER_TEMP/book1-111-python/bin/python" scripts/certification/book1-v111-pdfua.py --fix-lists
+        run: |
+          "$RUNNER_TEMP/book1-111-python/bin/python" scripts/certification/book1-v111-pdfua.py --fix-lists
       - name: Independently qualify exact final PDF/UA-1 bytes
         shell: bash
         run: |
