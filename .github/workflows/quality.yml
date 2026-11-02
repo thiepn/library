@@ -62,3 +62,31 @@ jobs:
           cache: false
       - name: Verify guest-first boundaries
         run: node --experimental-strip-types --test scripts/regression/account-hotfix-no-deps.test.mjs
+
+  # Run actual guest navigation with a configured public Account client.
+  # Blocking Account-origin requests must not trap Library navigation.
+  guest-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+    env:
+      PUBLIC_THIEPN_ACCOUNT_PUBLISHABLE_KEY: sb_publishable_1rZzRPzfLMaAH5pIgCwIjA_19UPMIsR
+    steps:
+      - name: Checkout exact source HEAD
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Setup Node and pinned dependencies
+        uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2
+        with:
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+          cache: true
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm exec playwright install --with-deps chromium firefox
+      - name: Verify guest and failed-callback browser behavior
+        run: pnpm exec playwright test tests/e2e/account-guest-first.spec.ts --project=chromium-desktop --project=firefox-desktop
