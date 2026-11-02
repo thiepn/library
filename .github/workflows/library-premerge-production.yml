@@ -1,0 +1,82 @@
+name: Library premerge full production acceptance (no publish)
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  premerge-production:
+    if: github.event.pull_request.number == 197 && github.event.pull_request.head.repo.full_name == 'thiepn/library'
+    runs-on: ubuntu-latest
+    timeout-minutes: 105
+    env:
+      CI: 'true'
+      PUBLIC_THIEPN_ACCOUNT_PUBLISHABLE_KEY: sb_publishable_1rZzRPzfLMaAH5pIgCwIjA_19UPMIsR
+    steps:
+      - name: Checkout actual PR head, without persisted credentials
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Verify exact source checkout
+        run: test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+      - name: Setup pinned Node and pnpm
+        uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2
+        with:
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+          cache: true
+      - name: Frozen production dependency install
+        run: pnpm install --frozen-lockfile
+      - name: Certify production source and build
+        run: pnpm release:certify
+      - name: Fetch immutable previous published media artifact (no Cloudflare credentials)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .build/verified-media-archive .build/verified-media-extract
+          curl --fail --silent --show-error --location --retry 3 \
+            --header "Accept: application/vnd.github+json" \
+            --header "Authorization: Bearer ${GH_TOKEN}" \
+            "https://api.github.com/repos/thiepn/library/actions/artifacts/13100449491/zip" \
+            --output .build/verified-media-archive/published.zip
+          printf '%s  %s\n' 'da0db74bfd16cbb9b99fbe4e1c46d70434563b8eef23e63e4472cbf53238e250' '.build/verified-media-archive/published.zip' | sha256sum -c -
+          unzip -q .build/verified-media-archive/published.zip -d .build/verified-media-archive
+          test -f .build/verified-media-archive/artifact.tar
+          tar -xf .build/verified-media-archive/artifact.tar -C .build/verified-media-extract
+          test -d .build/verified-media-extract/media
+          cp -a .build/verified-media-extract/media/. dist/library/media/
+      - name: Validate every staged original asset byte and SHA256
+        run: node scripts/certification/premerge-publication-media.mjs
+      - name: Install real Chromium, Firefox and WebKit
+        run: pnpm exec playwright install --with-deps chromium firefox webkit
+      - name: Full production browser acceptance
+        run: pnpm test:e2e:production
+      - name: RR4 performance
+        run: pnpm test:performance
+      - name: RR5 offline and PWA storage
+        run: pnpm test:offline
+      - name: RR6 accessibility
+        env:
+          RR6_STAGED_HOSTED_MEDIA: '1'
+        run: pnpm test:accessibility
+      - name: RR7 reading ergonomics
+        env:
+          RR6_STAGED_HOSTED_MEDIA: '1'
+        run: pnpm test:ergonomics
+      - name: RR8 data durability
+        run: pnpm test:durability
+      - name: RR9 security, dependencies, provenance
+        run: |
+          pnpm certify:security
+          pnpm security:audit
+          pnpm security:licenses
+          pnpm security:sbom
+          pnpm test:security
+      - name: Certify guest-first Chromium and Firefox recovery
+        run: pnpm exec playwright test tests/e2e/account-guest-first.spec.ts --project=chromium-desktop --project=firefox-desktop
