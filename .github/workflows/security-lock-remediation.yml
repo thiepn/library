@@ -1,0 +1,39 @@
+name: Temporary Library dependency lock security remediation
+on:
+  push:
+    branches: [hotfix/library-guest-security-gates-20261102]
+    paths:
+      - pnpm-workspace.yaml
+      - .github/workflows/security-lock-remediation.yml
+permissions:
+  contents: write
+jobs:
+  refresh-lock:
+    if: github.actor == 'thiepn' && github.ref == 'refs/heads/hotfix/library-guest-security-gates-20261102'
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: true
+      - uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2
+        with:
+          version: 11.21.0
+          runtime: node@22.12.0
+          install: false
+          cache: false
+      - name: Generate exact frozen graph without lifecycle scripts
+        run: pnpm install --lockfile-only --ignore-scripts --no-frozen-lockfile
+      - name: Confirm vulnerable production dependencies are fixed
+        run: pnpm audit --prod --audit-level=high
+      - name: Publish only regenerated lockfile to isolated remediation branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse --abbrev-ref HEAD)" = "HEAD"
+          git add -- pnpm-lock.yaml
+          if ! git diff --cached --quiet; then
+            git -c user.name='thiepn-library-lock-bot' -c user.email='thiepn-library-lock-bot@users.noreply.github.com' commit -m 'build(security): refresh patched Vite, Zod and Undici lock graph'
+            git push origin HEAD:refs/heads/hotfix/library-guest-security-gates-20261102
+          fi
