@@ -1,9 +1,8 @@
 import {
   beginLibraryAccountSso,
-  initializeLibraryAccountSso,
   getVerifiedLibraryAccountUser,
-  hasThiepnAccountConfiguration,
   subscribeLibraryAccountAuth,
+  signOutLibraryAppSession,
   type LibraryAccountUser,
 } from './supabase';
 import {
@@ -97,7 +96,7 @@ async function render(userOverride?: LibraryAccountUser | null): Promise<Library
   hidden('[data-sync-panel]', !user);
 
   if (!user) {
-    text('[data-account-summary]', 'Library stays guest-first. If THIEPN Account is already signed in, Library connects automatically; reading-state sync remains a separate choice.');
+    text('[data-account-summary]', 'Library works without an account. Connect only if you want optional cloud sync.');
     hidden('[data-sync-conflict]', true);
     return null;
   }
@@ -137,12 +136,7 @@ export function mountLibraryAccountPage(): () => void {
     if (disposed) return;
     setBusy(true);
     try {
-      // Resolve the shared Account SSO state before showing personalized data.
-      // Redirects are deduplicated with the global Library Account runtime.
-      if (hasThiepnAccountConfiguration()) {
-        const initial = await initializeLibraryAccountSso();
-        if (disposed || initial.status === 'redirecting') return;
-      }
+      // Only the explicit Connect button can initiate authorization.
       user = await render();
     } catch (error) {
       // Identity verification can be unavailable behind tracking blockers or
@@ -152,7 +146,7 @@ export function mountLibraryAccountPage(): () => void {
       hidden('[data-account-signed-out]', false);
       hidden('[data-account-signed-in]', true);
       hidden('[data-sync-panel]', true);
-      text('[data-account-summary]', error instanceof Error ? error.message : 'Unable to verify THIEPN Account.');
+      text('[data-account-summary]', 'Account status is unavailable. You can continue reading without signing in.');
     } finally {
       setBusy(false);
     }
@@ -176,6 +170,11 @@ export function mountLibraryAccountPage(): () => void {
       setBusy(false);
       text('[data-account-summary]', error instanceof Error ? error.message : 'THIEPN Account connection failed.');
     });
+  });
+
+  document.querySelector('[data-sign-out]')?.addEventListener('click', () => {
+    // This clears the Library app session, never the user's local reading data.
+    signOutLibraryAppSession();
   });
 
   document.querySelector('[data-sync-enable]')?.addEventListener('click', () => void act(enableLibraryAccountSync));

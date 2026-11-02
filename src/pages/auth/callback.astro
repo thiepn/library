@@ -10,7 +10,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     <section class="section" aria-labelledby="sso-callback-title">
       <h1 id="sso-callback-title">Connecting THIEPN Account…</h1>
       <p data-sso-callback-status>Verifying the secure sign-in response.</p>
-      <p><a data-sso-retry href="/library/account/" hidden>Return to Account and reconnect</a></p>
+      <p><a data-sso-retry href="/library/account/">Return to Account and reconnect</a></p>
+      <p><a data-sso-guest href="/library/">Continue reading without an account</a></p>
     </section>
   </div>
 
@@ -24,7 +25,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     void completeLibraryAccountSsoCallback()
       .then((user) => {
         if (!user) {
-          if (status) status.textContent = 'THIEPN Account authorization was not completed.';
+          if (status) status.textContent = 'THIEPN Account authorization was not completed. You can continue reading as a guest.';
+          window.history.replaceState(null, '', window.location.pathname);
           return;
         }
         window.location.replace(consumeLibraryAccountSsoReturnTo());
@@ -35,10 +37,10 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
         const code = error instanceof Error && /^ACCOUNT_[A-Z0-9_]+$/.test(error.message)
           ? error.message : 'ACCOUNT_CALLBACK_UNAVAILABLE';
         if (status) {
-          status.textContent = 'THIEPN Account authorization could not be verified (' + code + ').';
+          status.textContent = 'THIEPN Account authorization could not be verified (' + code + '). You can continue reading as a guest.';
         }
-        const link = document.querySelector<HTMLAnchorElement>('[data-sso-retry]');
-        if (link) link.hidden = false;
+        // Do not retain one-use OAuth code/state in the visible failed URL.
+        window.history.replaceState(null, '', window.location.pathname);
       });
   </script>
 </BaseLayout>
