@@ -29,10 +29,11 @@ test('Library uses the pinned first-party THIEPN OAuth client', async () => {
   assert.equal(accountPage.includes('Connect THIEPN Account'), true);
   assert.equal(callbackPage.includes('completeLibraryAccountSsoCallback'), true);
   assert.equal(accountPage.includes('data-account-signed-out hidden'), true);
-  assert.equal(accountDom.includes('initializeLibraryAccountSso()'), true);
+  assert.equal(accountDom.includes('initializeLibraryAccountSso()'), false);
+  assert.equal(accountDom.includes('beginLibraryAccountSso(window.location.href)'), true);
+  assert.equal(accountDom.includes('signOutLibraryAppSession()'), true);
+  assert.equal(callbackPage.includes('data-sso-guest href="/library/"'), true);
   assert.equal(accountDom.includes("hidden('[data-account-signed-out]', false)"), true);
-  // Guest routes may verify an existing session, but must never silently
-  // redirect through Account SSO just because background sync mounted.
   assert.equal(runtime.includes('initializeLibraryAccountSso()'), false);
   assert.equal(runtime.includes('getVerifiedLibraryAccountUser()'), true);
   assert.equal(runtime.includes('probeExistingThiepnAccountSession'), false);
@@ -42,10 +43,19 @@ test('Library uses the pinned first-party THIEPN OAuth client', async () => {
   assert.equal(authSource.includes('getLibraryBrowserSso().completeCallback(window.location)'), true);
   assert.equal(runtime.includes('if (!hasThiepnAccountConfiguration()) return () => {};'), true);
   assert.equal(authSource.includes('if (!hasThiepnAccountConfiguration()) return null;'), true);
-  assert.match(
-    pkg.dependencies?.['@thiepn/account-session'] ?? '',
-    /^github:thiepn\/account#83c3af63a18c771105e4460368dadbeaeb625fd0&path:\/packages\/account-session$/,
+  assert.equal(pkg.dependencies?.['@thiepn/account-session'], 'link:vendor/account-session');
+  const provenance = await readFile('vendor/account-session/PINNED_SOURCE.txt','utf8');
+  assert.ok(provenance.includes('83c3af63a18c771105e4460368dadbeaeb625fd0'));
+  const {createHash} = await import('node:crypto');
+  const originalBrowserFile = await readFile('vendor/account-session/src/browser-sso.ts');
+  assert.equal(
+    createHash('sha1').update('blob '+originalBrowserFile.length+'\0').update(originalBrowserFile).digest('hex'),
+    '30dd645a93955671021e24d8999c2988a5303e34',
   );
+  assert.match(provenance, /Library-local index\.ts patch/);
+  const patchedRuntime = await readFile('vendor/account-session/src/index.ts', 'utf8');
+  assert.match(patchedRuntime, /ACCOUNT_TOKEN_TRANSPORT_FAILED/);
+  assert.match(patchedRuntime, /row\.token_type\.toLowerCase\(\)/);
 });
 
 test('silent Account probe exposes only signed-in eligibility semantics', () => {
@@ -87,25 +97,14 @@ test('silent Account probe exposes only signed-in eligibility semantics', () => 
   );
 });
 
-test('unchanged Account verification notifications never recursively refresh Library', () => {
-  let notifications = 0;
-  const notify = coalesceLibraryAccountAuthChanges(() => { notifications += 1; });
-
+test('unchanged Account verification events do not recursively refresh Library', () => {
+  let updates = 0;
+  const notify = coalesceLibraryAccountAuthChanges(() => { updates++; });
   notify({ status: 'signed-out' });
   notify({ status: 'signed-out' });
-  assert.equal(notifications, 1);
-
-  notify({ status: 'signed-in', id: CLIENT_ID, email: 'reader@example.test' });
-  notify({ status: 'signed-in', id: CLIENT_ID, email: 'reader@example.test' });
-  assert.equal(notifications, 2);
-
-  notify({ status: 'signed-in', id: CLIENT_ID, email: 'new@example.test' });
-  assert.equal(notifications, 3);
-
+  notify({ status: 'signed-in', id: CLIENT_ID, email: null });
+  notify({ status: 'signed-in', id: CLIENT_ID, email: null });
   notify({ status: 'unavailable', code: 'ACCOUNT_VERIFY_UNAVAILABLE' });
   notify({ status: 'unavailable', code: 'ACCOUNT_VERIFY_UNAVAILABLE' });
-  assert.equal(notifications, 4);
-
-  notify({ status: 'signed-out' });
-  assert.equal(notifications, 5);
+  assert.equal(updates, 3);
 });

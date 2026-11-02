@@ -35,7 +35,7 @@ That complexity is not an excuse for sin. It is a reason to interpret experience
 
 It is useful to distinguish several processes without turning them into a new spiritual anatomy.
 
-A person can **want** something in the sense of experiencing an urge. They can **like** the pleasure associated with it. They can **value** it as good or bad after reflection. They can have a **habit** that moves behavior quickly. They can make a **deliberate choice** to pursue or resist it. These processes often reinforce one another, but they can also conflict.<sup class="endnote-call" id="ref-10-1"><a href="#note-10-1">10.1</a></sup>
+A person can **want** something in the sense of experiencing an urge. They can **like** the pleasure associated with it. They can **value** it as good or bad after reflection. They can have a **habit** that moves behavior quickly. They can make a **deliberate choice** to pursue or resist it. These processes often reinforce one another, but they can also conflict.<sup class="endnote-call" id="ref-10-1"><a href="./appendix-l-sources-notes-and-further-reading#note-10-1">10.1</a></sup>
 
 A person recovering from addiction may experience intense desire while deeply rejecting the behavior. A person with obsessive thoughts may experience unwanted mental content that horrifies them. A grieving Christian may still value God while experiencing little pleasure in anything. A disciplined believer may obey while praying for desire to catch up.
 
@@ -45,7 +45,7 @@ This is why the sentence “What you want most in the moment is what you truly l
 
 Some Christian traditions rightly emphasize delight in God as central to mature faith. That emphasis corrects cold moralism. But it becomes harmful if a particular level of emotional intensity is treated as proof of regeneration.
 
-Temperament differs. Suffering can alter emotional experience. Mental-health conditions can alter pleasure, motivation, energy, and concentration. Spiritual maturity is not measured by how visibly expressive a person is in worship.<sup class="endnote-call" id="ref-10-2"><a href="#note-10-2">10.2</a></sup>
+Temperament differs. Suffering can alter emotional experience. Mental-health conditions can alter pleasure, motivation, energy, and concentration. Spiritual maturity is not measured by how visibly expressive a person is in worship.<sup class="endnote-call" id="ref-10-2"><a href="./appendix-l-sources-notes-and-further-reading#note-10-2">10.2</a></sup>
 
 This does not make affection optional. It means affection should be assessed within the larger pattern of trust, allegiance, obedience, longing, repentance, and perseverance. Low affect can coexist with real love. High affect can coexist with serious disobedience.
 

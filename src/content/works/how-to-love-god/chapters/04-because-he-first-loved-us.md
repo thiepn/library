@@ -61,7 +61,7 @@ Fallen people remain capable of natural affection, civic good, family love, appr
 
 Grace must therefore confront the condition from which our love needs rescue.
 
-![Grace Before Response](https://thiepn.dev/library/media/works/how-to-love-god/editions/1.1.0/F02_grace_before_response.png)
+![Grace Before Response](https://thiepn.dev/library/media/works/how-to-love-god/editions/1.1.1/F02_phasec.svg)
 
 *Figure — Grace Before Response.*
 

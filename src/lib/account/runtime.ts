@@ -20,10 +20,8 @@ export function mountLibraryAccountRuntime(): () => void {
     if (disposed || running) return;
     running = true;
     try {
-      // Background sync must not navigate away from a public reader. A broken
-      // Account probe or OAuth flow must not prevent guest-first local reading.
-      // Only reuse an already authenticated Library app session; the explicit
-      // Account page still offers first-party SSO connection.
+      // Guest reading must never initiate OAuth or navigate in the background.
+      // Reuse only an already verified, explicitly connected Library session.
       const user = await getVerifiedLibraryAccountUser();
       if (!user) return;
 

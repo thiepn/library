@@ -1,0 +1,56 @@
+name: Book 1 gated metadata-stage unit tests
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/certification/how-to-love-god-final-metadata-stage.mjs'
+      - 'scripts/certification/how-to-love-god-final-pdf-metadata.py'
+      - '.github/workflows/book1-final-metadata-stage.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  stage:
+    name: No approvals, only synthetic OPF/PDF metadata and refusal tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Exact-head checkout without credentials
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Assert immutable active edition and check scripts
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          grep -q '^  activeRelease: 1.1.0$' src/content/works/how-to-love-god/work.yaml
+          test ! -e src/publications/releases/how-to-love-god/1.1.1.yaml
+          node --check scripts/certification/how-to-love-god-final-metadata-stage.mjs
+          python3 -m py_compile scripts/certification/how-to-love-god-final-pdf-metadata.py
+      - name: Install only public test dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/book1-stage-tools"
+          printf '{"private":true,"type":"module"}\n' > "$RUNNER_TEMP/book1-stage-tools/package.json"
+          npm install --prefix "$RUNNER_TEMP/book1-stage-tools" --no-package-lock --ignore-scripts --no-audit --no-fund --no-save jszip@3.10.1 yaml@2.8.1
+          ln -s "$RUNNER_TEMP/book1-stage-tools/node_modules" ./node_modules
+          python3 -m venv "$RUNNER_TEMP/book1-stage-python"
+          "$RUNNER_TEMP/book1-stage-python/bin/pip" install --disable-pip-version-check --no-cache-dir pikepdf==9.11.0
+      - name: Real EPUB OPF writer and current-copyright refusal self-test
+        run: node scripts/certification/how-to-love-god-final-metadata-stage.mjs --self-test
+      - name: Genuine pikepdf PDF Info and XMP writer synthetic self-test
+        run: "$RUNNER_TEMP/book1-stage-python/bin/python" scripts/certification/how-to-love-god-final-pdf-metadata.py --self-test
+      - name: Upload no book binaries, just synthetic diagnostic summary
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: book1-nonpublishing-metadata-stage-${{ github.run_id }}
+          path: ${{ runner.temp }}/book1-metadata-unit/metadata-stage-unit.json
+          if-no-files-found: warn
+          retention-days: 14

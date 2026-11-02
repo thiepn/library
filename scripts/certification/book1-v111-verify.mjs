@@ -1,0 +1,43 @@
+// Genuine EPUB/PDF candidate inspection. Not a public release test.
+import assert from 'node:assert/strict';
+import {readFile,writeFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+import path from 'node:path';
+import JSZip from 'jszip';
+import {getDocument} from 'pdfjs-dist/legacy/build/pdf.mjs';
+const root=path.join(process.env.RUNNER_TEMP||'/tmp','book1-format-qa');
+const sha=b=>createHash('sha256').update(b).digest('hex');
+const epub=await readFile(path.join(root,'how-to-love-god-UNPUBLISHED-QA.epub'));
+const pdf=await readFile(path.join(root,'how-to-love-god-UNPUBLISHED-QA.pdf'));
+const zip=await JSZip.loadAsync(epub,{checkCRC32:true});
+const opf=await zip.file('OEBPS/content.opf').async('string');
+assert.ok(opf.includes('<dc:creator>Thiepn</dc:creator>'));
+assert.ok(opf.includes('<dc:rights>Copyright © 2026 Thiepn. All rights reserved.</dc:rights>'));
+const media=JSON.parse(await readFile(path.join(root,'media-verification.json'),'utf8'));
+const descriptions=JSON.parse(await readFile('src/publications/candidates/how-to-love-god/1.1.1/long-descriptions.proposed.json','utf8')).items;
+const cover=media.find(x=>x.key==='cover');
+assert.equal(cover.name,'How_to_Love_God_Thiepn.webp');
+const coverBytes=await zip.file('OEBPS/images/'+cover.name)?.async('nodebuffer');
+assert.ok(coverBytes&&coverBytes.length===cover.size);
+assert.equal(sha(coverBytes),cover.sha256);
+const checks=[];
+for(let i=1;i<=6;i++){
+ const key='figure0'+i, a=media.find(x=>x.key===key);
+ assert.equal(a.mime,'image/svg+xml');
+ const b=await zip.file('OEBPS/images/'+a.name)?.async('nodebuffer');
+ assert.ok(b,'Missing EPUB SVG '+a.name);assert.equal(sha(b),a.sha256);
+ const item=descriptions.find(x=>x.key===key);
+ const page=await zip.file('OEBPS/text/'+item.chapterId+'.xhtml').async('string');
+ assert.ok(page.includes(item.description.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;')),'Missing long description '+key);
+ assert.ok(page.includes('aria-describedby="'+key+'-description"'));
+ checks.push({key,sha256:a.sha256,bytes:b.length,longDescriptionPresent:true});
+}
+const copyright=await zip.file('OEBPS/text/copyright-and-scripture-notice.xhtml').async('string');
+assert.ok(copyright.includes('Copyright © 2026 Thiepn.'));
+assert.ok(!copyright.includes('Jonathan'));
+const pdfdoc=await getDocument({data:new Uint8Array(pdf),useSystemFonts:true,isEvalSupported:false,disableFontFace:true}).promise;
+const numPages=pdfdoc.numPages;const page=await pdfdoc.getPage(1);const tagged=Boolean((await page.getStructTree())?.children?.length);
+await pdfdoc.destroy();assert.ok(numPages>51&&numPages<900);assert.ok(tagged);
+const report={verdict:'ISOLATED_111_MEDIA_SOURCE_PARITY_PASS',release:'NO_GO',epubSha256:sha(epub),pdfSha256:sha(pdf),pdfPages:numPages,pdfTaggedSample:true,figures:checks,accessibilityLongDescriptions:'PROPOSED_NOT_APPROVED',limits:['Not PDF/UA certified','Not a screen-reader human test','Not a production or final-metadata export','Cover graphic has not been independently checked for printed byline','No R2 or publication']};
+await writeFile(path.join(root,'book1-111-audit.json'),JSON.stringify(report,null,2));
+console.log(JSON.stringify(report,null,2));

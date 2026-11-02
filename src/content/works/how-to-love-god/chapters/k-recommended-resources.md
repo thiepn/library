@@ -59,6 +59,6 @@ The following resources are grouped for reader exploration rather than used as a
 
 ### Scope note
 
-These resources are primarily North American and do not replace current local law, denominational safeguarding procedures, emergency services, or qualified local professional advice. Reporting duties, mandatory-reporting rules, investigation structures, confidentiality requirements, and protective processes vary by jurisdiction.
+The safeguarding resources immediately above are largely U.S.-based; the broader reading list includes authors and perspectives from multiple regions. Safeguarding publications do not replace current local law, denominational procedures, emergency services, or qualified local professional advice. Reporting duties, investigation structures, confidentiality requirements, and protective processes vary by jurisdiction.
 
 Readers should use recommended resources as conversation partners under Scripture. Historical works may contain assumptions or arguments that require contextual evaluation; modern works likewise reflect particular traditions and settings.

@@ -1,0 +1,31 @@
+name: Book 1 figure description proposal custody
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/certification/book1-figure-long-descriptions.proposed.json'
+      - 'scripts/certification/book1-figure-description-provenance.mjs'
+      - '.github/workflows/book1-figure-description-provenance.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  figure-description-provenance:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact PR HEAD
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify exact HEAD
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+      - name: Set up Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22.12.0
+      - name: Verify proposed descriptions against original source and release manifest
+        run: node scripts/certification/book1-figure-description-provenance.mjs

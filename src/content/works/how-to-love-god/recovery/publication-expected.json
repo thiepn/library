@@ -1,63 +1,63 @@
 {
   "schemaVersion": 1,
   "workId": "how-to-love-god",
-  "release": "1.1.0",
+  "release": "1.1.1",
   "expectedReaderFiles": 51,
   "chapterWordsTotal": 40785,
   "source": {
-    "filename": "How_to_Love_God_Jonathan.pdf",
-    "pages": 197,
-    "bytes": 1454573,
-    "sha256": "4e01b17b03ad8295a580946bf92c4ada07e074ed91716cef3455befba7b12ad0",
+    "filename": "How_to_Love_God_Thiepn_1.1.1.pdf",
+    "pages": 249,
+    "bytes": 1566891,
+    "sha256": "6acce45ad4e86d38372ff71be04fecf1be794bfe8850c4be4a8b826a03e5e565",
     "pdfTitle": "How to Love God",
     "pdfSubject": "A biblical theology, practical discipleship guide, and pastoral resource",
-    "createdAt": "2026-08-28T23:45:00Z"
+    "createdAt": "2026-11-01T00:00:00Z"
   },
   "assets": {
     "pdf": {
-      "filename": "How_to_Love_God_Jonathan.pdf",
-      "bytes": 1454573,
-      "sha256": "4e01b17b03ad8295a580946bf92c4ada07e074ed91716cef3455befba7b12ad0"
+      "filename": "How_to_Love_God_Thiepn_1.1.1.pdf",
+      "bytes": 1566891,
+      "sha256": "6acce45ad4e86d38372ff71be04fecf1be794bfe8850c4be4a8b826a03e5e565"
     },
     "epub": {
-      "filename": "How_to_Love_God_Jonathan.epub",
-      "bytes": 1508862,
-      "sha256": "3245562961e1fdcbbf234653ed1abd35df22cbb87df8cad4cac72cb0607e7a95"
+      "filename": "How_to_Love_God_Thiepn_1.1.1.epub",
+      "bytes": 173554,
+      "sha256": "b8e31dfe97d421040ad405aeead8e1cce216d9999c16037f0be568bf2df8abf5"
     },
     "cover": {
-      "filename": "how-to-love-god.webp",
-      "bytes": 324780,
-      "sha256": "b384824f1a53f84ab97afb0e2578f2d4d8bc5d3fbd6b489d2597208e59dbc539"
+      "filename": "How_to_Love_God_Thiepn.webp",
+      "bytes": 9630,
+      "sha256": "159b64c274fc8395b9317a34437bbcc662b1d95d2ef22993df324fd430535d4d"
     },
     "figure01": {
-      "filename": "F01_whole_person_love.png",
-      "bytes": 198634,
-      "sha256": "82af39c5746f3a59b9000028c3b917f25814ee8aa7ff578f281d3ad669ae6dc5"
+      "filename": "F01_phasec.svg",
+      "bytes": 5061,
+      "sha256": "9ffe0d789bd2f44e281f2ae320864770b5f3956f0cd657c6481f4a54a9eb3f19"
     },
     "figure02": {
-      "filename": "F02_grace_before_response.png",
-      "bytes": 103687,
-      "sha256": "0bc6a9c84bbb698f993e07feee034730100dc75678ddea6857ccf8040379789a"
+      "filename": "F02_phasec.svg",
+      "bytes": 4143,
+      "sha256": "091ba4c034de846618f4cb57741b7831d3850c9281dbfe401e27c2137e866779"
     },
     "figure03": {
-      "filename": "F03_four_lenses_assurance.png",
-      "bytes": 111605,
-      "sha256": "e505a41583ec533284241dd9f5a90dafcd161fd1370871bd3bf726d4521db899"
+      "filename": "F03_phasec.svg",
+      "bytes": 4070,
+      "sha256": "9fa64fda88596779098ed9cd3792e8cc680ec741b3db90bb14c92dc42075d879"
     },
     "figure04": {
-      "filename": "F04_practices_and_growth.png",
-      "bytes": 131882,
-      "sha256": "2dccc74f4f53dfa5460d01446ff41ed02f14c55ede2b606fb48fbd5faa3ff767"
+      "filename": "F04_phasec.svg",
+      "bytes": 4127,
+      "sha256": "64f80fe32a6ab8bd8a1d3500dee22d569c9abbde21d04a3217d42eb21f34b81d"
     },
     "figure05": {
-      "filename": "F05_dryness_discernment.png",
-      "bytes": 134019,
-      "sha256": "fbc70d55b1a717585adbfc24fe1600d1be03ac09c6feef0c261bd582660015ca"
+      "filename": "F05_phasec.svg",
+      "bytes": 4939,
+      "sha256": "f1d42799ea0a616d27b7f5ad794b5c237d46b211350ed4b908ef7f3460f0605e"
     },
     "figure06": {
-      "filename": "F06_differentiated_mission_participation.png",
-      "bytes": 163033,
-      "sha256": "e9065beb648e657e41652bcfc1c52d21db737dacce1ded1defb499e4a5c07f54"
+      "filename": "F06_phasec.svg",
+      "bytes": 6758,
+      "sha256": "0f1bd222f0aa8d2bf9010a2ee175704b110ae16cdc2c799c15048ba3aa11e341"
     }
   },
   "records": [
@@ -69,7 +69,7 @@
       "file": "00-copyright.md",
       "words": 61,
       "estimatedMinutes": 1,
-      "sha256": "77ace612e5eeb19e37933a52bdc35441e3903e47a35978b69b56f0a7748f2aae"
+      "sha256": "fc56da634764156a75a3f78e07a67cb97d0c15c1852eee608c7ba04b593a9b84"
     },
     {
       "id": "preface",
@@ -119,7 +119,7 @@
       "file": "02-what-it-means-to-love-god.md",
       "words": 1394,
       "estimatedMinutes": 7,
-      "sha256": "964ca44f90e0fa0f5b64c85bde75843dfadc0e0a81d3cc2e03d452117a2cae11"
+      "sha256": "821aa2c6a35b969af5bb65850df379754980460b18e909b4492b49f16ead0c4e"
     },
     {
       "id": "the-greatest-commandment-god-neighbor-and-the-whole-life",
@@ -139,7 +139,7 @@
       "file": "04-because-he-first-loved-us.md",
       "words": 1150,
       "estimatedMinutes": 6,
-      "sha256": "2569c4f024dec105b9771ed8299ac59ae13b1f2e53ecd6407d5b033a477c2405"
+      "sha256": "241e3cde808c058d535d5874aca82376e969d61330ed7c19eda6324759d381e7"
     },
     {
       "id": "part-ii",
@@ -169,7 +169,7 @@
       "file": "06-new-life-in-christ.md",
       "words": 1051,
       "estimatedMinutes": 5,
-      "sha256": "95801966002d4112ffe9ab0d3e83a06dfa32d15218f36bdde0295095b6ee8c32"
+      "sha256": "238e3de94affd1090211f9c11ffe8cd985c4377ce85440bc3c3f5f9fb901a9de"
     },
     {
       "id": "accepted-in-christ-justification-adoption-and-assurance",
@@ -179,7 +179,7 @@
       "file": "07-accepted-in-christ-justification-adoption-and-assurance.md",
       "words": 1123,
       "estimatedMinutes": 5,
-      "sha256": "469e61b9db5c5b3bf5d8b2df1217bb89beeb95c2b718d92d3956137638ba9f49"
+      "sha256": "041bf1af264a3b4e57bcb27443c9815ffce28d8114209819243010048284c061"
     },
     {
       "id": "communion-with-the-triune-god",
@@ -219,7 +219,7 @@
       "file": "10-love-desires-affection-delight-joy-and-holy-longing.md",
       "words": 981,
       "estimatedMinutes": 5,
-      "sha256": "08be2ead0ab6ba43b780b7c24676473a627e0f4358d884d13f2a8cd9dc190e58"
+      "sha256": "9488e13f5dd444e18b45775d69be4dda63edd690b13f45b2bccbe25106a6c30f"
     },
     {
       "id": "growing-without-earning",
@@ -229,7 +229,7 @@
       "file": "11-growing-without-earning.md",
       "words": 914,
       "estimatedMinutes": 5,
-      "sha256": "192633ea99552f53da2c1ae5cda01d46602fcec45b7e57848bf4d764b9aa64ff"
+      "sha256": "d0419cff5b4700354b0635937d4fbdc0f89da8501b1400d5cad5b71f70ad4d2e"
     },
     {
       "id": "part-iv",
@@ -269,7 +269,7 @@
       "file": "14-prayer-and-communion.md",
       "words": 738,
       "estimatedMinutes": 4,
-      "sha256": "517cec488885cc4677b0d948e563220bc362c548f50ef0c7c8aa1137e11809b5"
+      "sha256": "7416f3245f29f6c4add4633638c9417cf7533812f50c663cfb1d751482d08123"
     },
     {
       "id": "gathered-worship-baptism-and-the-lord-s-supper",
@@ -279,7 +279,7 @@
       "file": "15-gathered-worship-baptism-and-the-lord-s-supper.md",
       "words": 846,
       "estimatedMinutes": 4,
-      "sha256": "18286d3906acc7385850b3f111b70073edd2e2df05d7ce12c6e4fb438d703605"
+      "sha256": "df50db991ce39b263efe3668e70f5a4195f9e041f6662db0cd7db6afaf6ea116"
     },
     {
       "id": "repentance-and-ordinary-obedience",
@@ -309,7 +309,7 @@
       "file": "17-when-god-feels-distant.md",
       "words": 1118,
       "estimatedMinutes": 5,
-      "sha256": "6daf131244c9ce5cfbc94a29fa2e3725e6e5014d271476a9c6dc2f79b13456bd"
+      "sha256": "aa9f01ad445218bde1b2e65f699dbdd383f49e569fd698b9e6ad537761793362"
     },
     {
       "id": "loving-god-through-suffering-grief-and-unanswered-prayer",
@@ -329,7 +329,7 @@
       "file": "19-rival-loves-in-a-distracted-and-disordered-world.md",
       "words": 857,
       "estimatedMinutes": 4,
-      "sha256": "a7f04e14b928a8fb4fd62a52439ac26676921ca7fb1f69edd752496c9276c15c"
+      "sha256": "33c6df79625e7b56cf9c269178eebbd910ee5c8bd4f9949751ec9bfe989cf9fe"
     },
     {
       "id": "spiritual-warfare-without-fear-or-speculation",
@@ -339,7 +339,7 @@
       "file": "20-spiritual-warfare-without-fear-or-speculation.md",
       "words": 896,
       "estimatedMinutes": 4,
-      "sha256": "88c5ec4586e14b71c53767a5e73a4886ed0025407647837c08e81492870f2818"
+      "sha256": "e2a3fa8536d30bba9b750a83f3da0299d55792605f81d8b38e46af1e3a6a16fe"
     },
     {
       "id": "part-vi",
@@ -389,7 +389,7 @@
       "file": "24-church-authority-discipline-hurt-and-safety.md",
       "words": 1325,
       "estimatedMinutes": 6,
-      "sha256": "1f787257cf9f193ff0db677b58cb8774470f81532eab0639bea1c23012910979"
+      "sha256": "7b7bd49091a6f228a9453586a1a089439e4390889ea9f51a100422113d50b5fb"
     },
     {
       "id": "from-love-within-community-to-love-in-the-world",
@@ -409,7 +409,7 @@
       "file": "25-witness-and-disciple-making.md",
       "words": 918,
       "estimatedMinutes": 5,
-      "sha256": "9738677e82951d5cb53bc3b834b169f62074f0639a0ccf629cc2b19c6da70b20"
+      "sha256": "34133efad33129f615e5661696f46f1bc03093eb9593d1a0bd8b688626de584b"
     },
     {
       "id": "cross-cultural-mission-and-the-global-church",
@@ -419,7 +419,7 @@
       "file": "26-cross-cultural-mission-and-the-global-church.md",
       "words": 1313,
       "estimatedMinutes": 6,
-      "sha256": "589b4003d4f2201014180b70f8169896f3f82864f5959ccf786b22b578608b0f"
+      "sha256": "7133845908406c80729334942d9acd4653ef73c234e0e7fbcc8d9895949eb88a"
     },
     {
       "id": "part-vii",
@@ -439,7 +439,7 @@
       "file": "27-persevering-in-love-through-a-lifetime.md",
       "words": 1107,
       "estimatedMinutes": 5,
-      "sha256": "c08ddeb5ec9daf58181bb907aa0e4f09388c34d8cc24fb3996edd054b49d1d7b"
+      "sha256": "6b2c3d597bd07f87dc699f22b2adcfc085cfeb2f94dd56dea76b54fb34251359"
     },
     {
       "id": "love-made-complete-resurrection-new-creation-and-perfected-communion",
@@ -479,7 +479,7 @@
       "file": "c-thirty-days-of-practicing-love-for-god.md",
       "words": 789,
       "estimatedMinutes": 4,
-      "sha256": "0f083ccd3f094f39ccfe930d17c6a149496e009702934c0e567a6adbe10b899d"
+      "sha256": "332c4e9cc5ec4b07a492b411bf0d3cda6a794f1605ec454abc0544ed73cbcf4e"
     },
     {
       "id": "appendix-d-spiritual-dryness-and-distance-discernment-guide",
@@ -549,7 +549,7 @@
       "file": "j-glossary-and-disputed-terms.md",
       "words": 666,
       "estimatedMinutes": 3,
-      "sha256": "0d0e2646db850227fabdfdf4310ab8a1236af51fe5144ff79641483d7b1a54c8"
+      "sha256": "46e50d5680e1d8de672d568f023d6d2573087801a62810d870ea1dd3d488f3ca"
     },
     {
       "id": "appendix-k-recommended-resources",
@@ -559,7 +559,7 @@
       "file": "k-recommended-resources.md",
       "words": 357,
       "estimatedMinutes": 2,
-      "sha256": "593db979d17132fe4221712dff394dd5487aa7fa4f3e94572e2e295b0132a43d"
+      "sha256": "fb913fb16208890b114f516df24b70783339ae90360965d160c35a09c253b15f"
     },
     {
       "id": "appendix-l-sources-notes-and-further-reading",
@@ -569,7 +569,7 @@
       "file": "l-sources-notes-and-further-reading.md",
       "words": 3258,
       "estimatedMinutes": 15,
-      "sha256": "f55010e3e11183c86440003fb57503ae0edef6e6a25f4d867d012ab862cac166"
+      "sha256": "b8f7c2114cc0f27a146f0cb4bc4877697fc478e4e8e513e8edbd263a5391cd93"
     }
   ]
 }

@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "workId": "how-to-love-god",
+  "candidateVersion": "1.1.1",
+  "approval": "PROPOSED_NOT_APPROVED",
+  "basis": "User-accepted visual direction only; no final-artwork, A5, accessibility or release approval.",
+  "items": [
+    {
+      "key": "figure01",
+      "chapterId": "what-it-means-to-love-god",
+      "description": "The figure places God, revealed in Christ, above a single grouped panel of seven dimensions of whole-person love: trust, value and desire, reverence, clinging allegiance, obedience, worship, and neighbor-directed fruit. The dimensions are arranged as equal-sized cards in two columns. One connection from the God-centered heading to the group conveys common orientation, not a sequence, hierarchy, psychological score or seven independent faculties."
+    },
+    {
+      "key": "figure02",
+      "chapterId": "because-he-first-loved-us",
+      "description": "The diagram begins with God's prior grace in Christ as the single source and ground. Two adjacent panels below distinguish the Holy Spirit's work of giving and sustaining life from a person's genuine response in repentance, faith, love and prayer. Lines meet before the lower panel describing embodied fruit in obedience, worship, holiness, neighbor-love and perseverance. The relationship represents dependence on grace, not independent sources or a ladder for earning justification."
+    },
+    {
+      "key": "figure03",
+      "chapterId": "accepted-in-christ-justification-adoption-and-assurance",
+      "description": "The upper dark panel identifies Christ and God's promise as the governing ground of assurance. A connected set of three horizontal panels lists confirming lenses: the Spirit and adoption, external gospel means (Word, preaching, baptism and the Lord's Supper), and fruit and perseverance. These confirmations accompany assurance and do not replace Christ as its basis. A footnote explains that Protestant sacramental understandings differ."
+    },
+    {
+      "key": "figure04",
+      "chapterId": "growing-without-earning",
+      "description": "Three broad cards are stacked vertically: God-given gifts and contexts (Scripture and preaching, prayer, gathered church, baptism and the Lord's Supper, mutual ministry, mercy and service); human participation (attending, listening, receiving, praying, repenting, obeying, serving and persevering); and fruit over time (deeper trust, holiness, neighbor-love, wisdom, communion and perseverance). Small connectors show a relationship, not an automatic process. Practices neither earn acceptance nor guarantee results. Protestant traditions differ about classification of baptism and the Lord's Supper."
+    },
+    {
+      "key": "figure05",
+      "chapterId": "when-god-feels-distant",
+      "description": "The diagram begins with the reported experience that God feels distant. Its first prominent panel requires checking safety and daily functioning, prioritizing danger, abuse, crisis or severe impairment and appropriate urgent, safeguarding or professional help. A grouped two-column grid names eight possible, sometimes overlapping domains: known sin, grief or loss, bodily fatigue, depression or anhedonia, scrupulosity or anxiety, doubt, church injury and mixed or unclear factors. The footer recommends proportionate responses and explicitly warns against presuming hidden sin."
+    },
+    {
+      "key": "figure06",
+      "chapterId": "witness-and-disciple-making",
+      "description": "One heading identifies the church as a witnessing, disciple-making people. A balanced two-column grid shows seven illustrative and overlapping roles: local witness, prayer and giving, hospitality and mercy, cross-cultural sending, teaching and discipling, work and ordinary presence, and specialized mission service. The eighth position contains clarification, not another role: distinct callings are not ranked and may overlap. All Christians share in witness without having identical missionary assignments."
+    }
+  ]
+}

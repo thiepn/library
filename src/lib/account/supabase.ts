@@ -1,7 +1,8 @@
 import { createThiepnAccountSession, createThiepnBrowserSso, type ThiepnIdentity } from '@thiepn/account-session';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { libraryOAuthTokenStorage } from './oauth-storage';
 import { coalesceLibraryAccountAuthChanges } from './auth-notifications';
 export { coalesceLibraryAccountAuthChanges } from './auth-notifications';
-import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 export const THIEPN_ACCOUNT_PROJECT_REF = 'hycegznamzjhwinegaai';
 export const THIEPN_ACCOUNT_URL = 'https://hycegznamzjhwinegaai.supabase.co';
@@ -61,6 +62,7 @@ export function getThiepnAccountSession() {
     redirectUri: getLibraryAccountCallbackUrl(),
     scopes: ['openid', 'email', 'profile', 'offline_access'],
     storageKey: LIBRARY_SSO_STORAGE_KEY,
+    localStorage: libraryOAuthTokenStorage(window),
     authPolicy: 'guest-first',
   });
   return session;

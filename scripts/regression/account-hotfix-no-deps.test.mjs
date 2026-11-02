@@ -32,11 +32,13 @@ test('identical verification events cannot recursively schedule Account work', (
 });
 
 test('public Library routes do not trigger automatic Account OAuth navigation', async () => {
-  const [runtime, account, layout, auth] = await Promise.all([
+  const [runtime, account, layout, auth, callback, accountPage] = await Promise.all([
     readFile('src/lib/account/runtime.ts', 'utf8'),
     readFile('src/lib/account/account-dom.ts', 'utf8'),
     readFile('src/layouts/BaseLayout.astro', 'utf8'),
     readFile('src/lib/account/supabase.ts', 'utf8'),
+    readFile('src/pages/auth/callback.astro', 'utf8'),
+    readFile('src/pages/account.astro', 'utf8'),
   ]);
   // Read-only authenticated-session lookup is permitted; starting a silent
   // OAuth probe/redirect from a public reading route is not.
@@ -45,9 +47,15 @@ test('public Library routes do not trigger automatic Account OAuth navigation', 
   assert.doesNotMatch(runtime, /initializeLibraryAccountSso\s*\(/);
   assert.doesNotMatch(runtime, /beginLibraryAccountSso\s*\(/);
   assert.match(runtime, /catch\s*\{/);
-  assert.match(account, /initializeLibraryAccountSso\s*\(/);
+  assert.doesNotMatch(account, /initializeLibraryAccountSso\s*\(/);
+  assert.match(account, /signOutLibraryAppSession\s*\(/);
   assert.match(account, /beginLibraryAccountSso\s*\(/);
   assert.match(auth, /subscribe\(coalesceLibraryAccountAuthChanges\(listener\)\)/);
+  assert.match(callback, /data-sso-guest href="\/library\/"/);
+  assert.doesNotMatch(callback, /data-sso-retry[^>]*hidden/);
+  assert.match(callback, /window\.history\.replaceState/);
+  assert.match(accountPage, /data-sign-out/);
+  assert.doesNotMatch(accountPage, /connects automatically/i);
 });
 
 test('conflicting local progress cannot be silently overwritten on first cloud connection', () => {

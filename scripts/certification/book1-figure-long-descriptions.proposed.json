@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "workId": "how-to-love-god",
+  "sourcePr": 198,
+  "sourceHead": "73c1b259d03fbe7c8bd104cd13b9957c8089323f",
+  "approval": "PROPOSED_NOT_APPROVED",
+  "purpose": "Non-published editorial long-description proposals; no change to canonical manuscript, accessibility metadata, EPUB/PDF output, or rights.",
+  "items": [
+    {
+      "key": "figure01",
+      "file": "02-what-it-means-to-love-god.md",
+      "caption": "Whole-Person Love, Oriented to God",
+      "description": "A radial diagram places GOD, as revealed in Christ, at the center. Seven surrounding circles name trust, value and desire, reverence, clinging allegiance, obedience, worship, and neighbor-directed fruit. Lines connect each dimension to the same center; no circle is marked as the first step or a superior category. The visual presents devotion as whole-person, supreme and responsive, not as a psychological score or seven independent faculties.",
+      "note": "The center and the seven connected dimensions describe orientation, not a sequential hierarchy."
+    },
+    {
+      "key": "figure02",
+      "file": "04-because-he-first-loved-us.md",
+      "caption": "Grace Before Response",
+      "description": "A top-to-bottom relationship diagram begins with God's prior grace in Christ as the source and ground. Beneath it, two parallel boxes describe the Holy Spirit giving and sustaining life, and real human response in repentance, faith, love, and prayer. Lines from both boxes lead to embodied fruit, including obedience, worship, holiness, neighbor-love, and perseverance. The arrows describe dependence on grace, not a chronological salvation ladder or works becoming the basis of justification.",
+      "note": "Grace is the source; Spirit-enabled power and human response converge in fruit without earning acceptance."
+    },
+    {
+      "key": "figure03",
+      "file": "07-accepted-in-christ-justification-adoption-and-assurance.md",
+      "caption": "Four Lenses for Assurance",
+      "description": "A dark upper box names the governing ground: Christ and God's promise. Three connected boxes below name confirming lenses: Spirit and adoption, with filial witness and Godward life; external gospel means, including Word, preaching, baptism, and the Lord's Supper; and fruit and perseverance, including repentance, love, obedience, and endurance. The three confirming lenses accompany assurance but do not replace Christ as its governing ground. The figure explicitly notes that Protestant sacramental understandings differ.",
+      "note": "One governing foundation stands above three supporting lenses; the four are not equal grounds."
+    },
+    {
+      "key": "figure04",
+      "file": "11-growing-without-earning.md",
+      "caption": "How Christian Practices Serve Growth",
+      "description": "Three linked columns move from God-appointed gifts and contexts, through human participation, toward fruit over time. The left column lists Scripture and preaching, prayer, the gathered church, baptism and the Lord's Supper, mutual ministry, and mercy and service. The middle lists attending, listening, receiving, praying, repenting, obeying, serving, and persevering. The right lists deeper trust, holiness, love of neighbor, wisdom, communion, and perseverance. The diagram does not present an automatic mechanism: no practice earns acceptance, compels grace, or guarantees an experience. Traditions differ on how they classify baptism and the Lord's Supper.",
+      "note": "Three columns show receptive practices and growth; they are not a guaranteed cause-and-effect machine."
+    },
+    {
+      "key": "figure05",
+      "file": "17-when-god-feels-distant.md",
+      "caption": "When God Feels Distant: Discern Before You Diagnose",
+      "description": "A vertical discernment path begins with the statement 'God feels distant' and directs the reader first to check safety and daily functioning. Danger, severe impairment, abuse, or crisis calls for appropriate help. Below that check, several possible domains are arranged as alternatives that may coexist: known sin; grief or loss; bodily fatigue; depression or anhedonia; scrupulosity or anxiety; doubt; church injury; and mixed or unknown factors. The closing guidance is proportional response rather than a hidden-sin verdict: repent for known sin, lament grief, rest or seek medical and mental-health or safeguarding help where appropriate, and remain connected.",
+      "note": "The diagram expressly resists treating spiritual dryness as a single diagnosis."
+    },
+    {
+      "key": "figure06",
+      "file": "25-witness-and-disciple-making.md",
+      "caption": "One Witnessing People, Differentiated Roles",
+      "description": "A radial diagram places the church, described as a witnessing, disciple-making people, at the center. Seven connected boxes name local witness, prayer and giving, hospitality and mercy, cross-cultural sending, teaching and discipling, work and ordinary presence, and specialized mission service. The connections indicate shared participation across different vocations, not a ranking. Roles overlap and differ by gifts, calling, circumstances, church discernment, and opportunity; every Christian participates, but not every Christian has the same missionary assignment.",
+      "note": "Shared Christian witness has distinct, overlapping vocations, not identical missionary assignments."
+    }
+  ]
+}

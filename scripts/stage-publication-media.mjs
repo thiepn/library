@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
-import { mkdir, readFile, readdir, stat } from 'node:fs/promises';
+import { mkdir, readFile, readdir, rm, stat } from 'node:fs/promises';
 import path from 'node:path';
-import { spawnSync } from 'node:child_process';
+import { spawn } from 'node:child_process';
 import YAML from 'yaml';
 
 const releasesRoot = path.join(process.cwd(), 'src/publications/releases');
@@ -45,12 +45,32 @@ async function stageObject({ key, target, expectedSize, expectedHash, label }) {
   if (!sha256Pattern.test(expectedHash)) throw new Error(`${label}: invalid SHA-256`);
 
   await mkdir(path.dirname(target), { recursive: true });
-  const result = spawnSync(
-    'pnpm',
-    ['exec', 'wrangler', 'r2', 'object', 'get', `${bucket}/${key}`, `--file=${target}`, '--remote'],
-    { stdio: 'inherit' },
-  );
-  if (result.status !== 0) throw new Error(`${label}: failed to download from R2`);
+  // Cloudflare occasionally returns a transient 500 during large bulk stages.
+  // Retry failed downloads only; checksum or size mismatches remain fatal.
+  const maxAttempts = 4;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    await rm(target, { force: true });
+    try {
+      await new Promise((resolve, reject) => {
+        const child = spawn(
+          'pnpm',
+          ['exec', 'wrangler', 'r2', 'object', 'get', `${bucket}/${key}`, `--file=${target}`, '--remote'],
+          { stdio: 'inherit' },
+        );
+        child.once('error', reject);
+        child.once('close', (code) => code === 0 ? resolve() : reject(new Error(`${label}: failed to download from R2 (exit ${code})`)));
+      });
+      break;
+    } catch (error) {
+      await rm(target, { force: true });
+      if (attempt === maxAttempts) {
+        throw new Error(`${label}: R2 download failed after ${maxAttempts} attempts`, { cause: error });
+      }
+      const delayMs = 1000 * 2 ** (attempt - 1);
+      console.warn(`R2_DOWNLOAD_RETRY ${label}: attempt ${attempt}/${maxAttempts} failed; retry in ${delayMs} ms`);
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+    }
+  }
 
   const actualSize = (await stat(target)).size;
   if (actualSize !== expectedSize) throw new Error(`${label}: size mismatch ${actualSize} != ${expectedSize}`);
@@ -59,7 +79,21 @@ async function stageObject({ key, target, expectedSize, expectedHash, label }) {
 }
 
 const files = await walk(releasesRoot);
-let staged = 0;
+const pending = [];
+const seen = new Map();
+let stagedReferences = 0;
+function enqueue(task) {
+  const existing = seen.get(task.key);
+  if (existing) {
+    if (existing.expectedHash !== task.expectedHash || existing.expectedSize !== task.expectedSize || existing.target !== task.target) {
+      throw new Error(`Conflicting immutable publication registration for R2 key ${task.key}`);
+    }
+  } else {
+    seen.set(task.key, task);
+    pending.push(task);
+  }
+  stagedReferences++;
+}
 for (const releaseFile of files) {
   const release = YAML.parse(await readFile(releaseFile, 'utf8'));
   const artifacts = release?.artifacts && typeof release.artifacts === 'object' ? release.artifacts : {};
@@ -71,18 +105,16 @@ for (const releaseFile of files) {
     }
     const key = decodeURIComponent(url.pathname.slice(mediaPrefix.length));
     const target = path.join(distMediaRoot, key);
-    await stageObject({
+    enqueue({
       key,
       target,
       expectedSize: Number(artifact.sizeBytes),
       expectedHash: String(artifact.sha256).toLowerCase(),
       label: `${releaseFile}: ${kind}`,
+      description: `${release.workId}@${release.version} ${kind}`,
     });
-    staged++;
-    console.log(`STAGED ${release.workId}@${release.version} ${kind} ${key}`);
   }
 }
-
 for (const manifestFile of await listJsonFiles(unlistedAssetsRoot)) {
   const manifest = JSON.parse(await readFile(manifestFile, 'utf8'));
   const assetId = String(manifest?.assetId ?? '');
@@ -91,17 +123,23 @@ for (const manifestFile of await listJsonFiles(unlistedAssetsRoot)) {
     throw new Error(`${manifestFile}: invalid unlisted asset id`);
   }
   const key = `unlisted/${assetId}.bin`;
-  const target = path.join(distMediaRoot, 'unlisted', `${assetId}.bin`);
-  await stageObject({
+  enqueue({
     key,
-    target,
+    target: path.join(distMediaRoot, 'unlisted', `${assetId}.bin`),
     expectedSize: Number(manifest.sizeBytes),
     expectedHash: String(manifest.sha256 ?? '').toLowerCase(),
     label: `${manifestFile}: encrypted asset`,
+    description: `unlisted encrypted asset ${assetId}`,
   });
-  staged++;
-  console.log(`STAGED unlisted encrypted asset ${assetId}`);
 }
-
-if (!staged) throw new Error('No canonical publication media found to stage');
-console.log(`PUBLICATION_MEDIA_STAGE_PASS ${staged} artifact(s)`);
+if (pending.length === 0) throw new Error('No canonical publication media found to stage');
+let cursor = 0;
+const concurrency = Math.min(6, pending.length);
+await Promise.all(Array.from({ length: concurrency }, async () => {
+  while (cursor < pending.length) {
+    const task = pending[cursor++];
+    await stageObject(task);
+    console.log(`STAGED ${task.description} ${task.key}`);
+  }
+}));
+console.log(`PUBLICATION_MEDIA_STAGE_PASS ${pending.length} distinct artifact(s), ${stagedReferences} registered reference(s)`);

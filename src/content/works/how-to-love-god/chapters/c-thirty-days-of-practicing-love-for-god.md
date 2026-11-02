@@ -9,7 +9,7 @@ estimatedMinutes: 4
 ---
 This thirty-day guide is an organizational tool, not a promise of transformation within thirty days. Completion does not prove maturity. Missed days are not failure. Adapt the sequence to your schedule, health, disability, family responsibilities, work, safety, and church access.
 
-Each day has four simple movements: **Receive** a biblical truth; **Respond** in prayer; **Practice** one concrete act; **Release** the outcome to God.
+Use four movements as a flexible way to approach the prompts: **Receive** a biblical truth; **Respond** in prayer; **Practice** one concrete act where appropriate; **Release** the outcome to God. Individual day prompts do not spell out all four movements; use the pattern as helpful, not as another requirement to complete.
 
 ## Days 1–7 — Know and receive
 
