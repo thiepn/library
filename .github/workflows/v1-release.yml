@@ -37,13 +37,13 @@ jobs:
           [[ "$PHYSICAL_EVIDENCE_SHA" =~ ^[a-f0-9]{40}$ ]]
 
       - name: Checkout exact candidate source
-        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.expected_source_sha }}
           fetch-depth: 0
 
       - name: Checkout exact physical evidence snapshot
-        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: ${{ github.repository }}
           ref: ${{ inputs.physical_evidence_sha }}
@@ -133,7 +133,7 @@ jobs:
       EXPECTED_SOURCE_SHA: ${{ inputs.expected_source_sha }}
     steps:
       - name: Checkout exact certified source
-        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.expected_source_sha }}
           fetch-depth: 0
