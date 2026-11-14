@@ -1,0 +1,58 @@
+schemaVersion: 1
+id: romans-1
+slug: romans-1
+title: Romans 1
+subtitle: The Gospel of God and the Need for Salvation
+type: book
+language: en-US
+authorship: ai-generated
+contributors:
+- name: Thiepn
+  role: author
+description: A detailed English study commentary on Romans 1:1–32, set against the
+  world of first-century Rome and Paul’s missionary work. It explains the gospel,
+  the righteousness of God, idolatry, judgment, and why the opening chapter leads
+  into the universal need for grace in Romans 2–3. Includes historical maps, biblical
+  references, Greek vocabulary, and discussion questions.
+shortDescription: A 38-page historical and expository study guide to Romans 1, with
+  maps, commentary, and discussion questions.
+status: published
+visibility: public
+publication:
+  firstPublished: '2026-11-14'
+  lastUpdated: '2026-11-14'
+  edition: 1
+  editionLabel: First Edition
+  version: 1.0.0
+  activeRelease: 1.0.0
+cover:
+  src: /media/works/romans-1/editions/1.0.0/romans-1-cover.webp
+  alt: 'Dark blue Romans 1 booklet cover with a large ROMANS title, the numeral I, and the subtitle The Gospel of God and the Need for Salvation'
+classification:
+  subjects:
+  - theology
+  - bible-study
+  tags:
+  - romans
+  - paul
+  - biblical-exegesis
+  - christian-theology
+  - historical-context
+  collections:
+  - bible-study
+parts: []
+formats:
+  web:
+    enabled: false
+  pdf:
+    enabled: true
+  epub:
+    enabled: false
+relationships:
+  relatedWorks: []
+  prerequisites: []
+resources: []
+rights:
+  status: copyright
+  notice: © 2026 Thiepn. Original commentary and design; Scripture quotations and
+    other third-party material retain their respective rights.
