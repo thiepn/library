@@ -1,0 +1,19 @@
+schemaVersion: 1
+workId: romans-1
+version: 1.0.0
+edition: 1
+releasedAt: 2026-11-14
+sourceHash: 4ca7af97588eb4e566717ffb3e30042eb3e5015a2d6de91a6b264142e86303f1
+artifacts:
+  pdf:
+    url: https://thiepn.dev/library/media/works/romans-1/editions/1.0.0/Romans_1_Final_Proofread.pdf
+    filename: Romans_1_Final_Proofread.pdf
+    mimeType: application/pdf
+    sizeBytes: 1198984
+    sha256: 4ca7af97588eb4e566717ffb3e30042eb3e5015a2d6de91a6b264142e86303f1
+  cover:
+    url: https://thiepn.dev/library/media/works/romans-1/editions/1.0.0/romans-1-cover.webp
+    filename: romans-1-cover.webp
+    mimeType: image/webp
+    sizeBytes: 16164
+    sha256: e3f3e9671a48a0f282208d6f038cf0b78714e552fae769f98028c73a3e5dfa4b
