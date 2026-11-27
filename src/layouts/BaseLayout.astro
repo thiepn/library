@@ -66,6 +66,7 @@ const contentSecurityPolicy = [
         <a href={href('/account')}>Account</a>
         <a href={href('/about')}>About</a>
       </nav>
+      {!Astro.url.pathname.replace(/\/$/, '').endsWith('/auth/callback') && !Astro.url.pathname.replace(/\/$/, '').endsWith('/hub/bridge') && <button class="appearance-toggle" type="button" data-app-switcher aria-label="Switch THIEPN app">Apps</button>}
       <button class="appearance-toggle" type="button" data-appearance-toggle aria-label="Change appearance">Theme</button>
     </header>
     <main id="main"><slot /></main>
@@ -76,6 +77,10 @@ const contentSecurityPolicy = [
     </footer>
     <script>
       import { registerLibraryPwa } from '../lib/client/pwa';
+      import { mountAppSwitcher } from '../lib/app-navigation/switcher.mjs';
+      import '../lib/app-navigation/switcher.css';
+      const trigger = document.querySelector<HTMLButtonElement>('[data-app-switcher]');
+      if (trigger) mountAppSwitcher(trigger, 'thiepn-library');
       void registerLibraryPwa();
     </script>
     <script>
