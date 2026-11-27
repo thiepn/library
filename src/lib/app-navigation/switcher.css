@@ -1,0 +1,54 @@
+.thiepn-app-switcher {
+  box-sizing: border-box;
+  width: min(36rem, calc(100% - 2rem));
+  max-height: calc(100% - 2rem);
+  overflow: auto;
+  padding: 1rem;
+  border: 1px solid currentColor;
+  border-radius: 1rem;
+  background: Canvas;
+  color: CanvasText;
+  font: 1rem/1.4 system-ui, sans-serif;
+}
+.thiepn-app-switcher::backdrop {
+  background: rgb(0 0 0 / 45%);
+}
+.thiepn-app-switcher header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.thiepn-app-switcher h2,
+.thiepn-app-switcher h3,
+.thiepn-app-switcher p {
+  margin: 0 0 0.75rem;
+}
+.thiepn-app-switcher nav {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(9rem, 100%), 1fr));
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+}
+.thiepn-app-switcher nav a,
+.thiepn-app-switcher nav span,
+.thiepn-app-switcher button {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0.5rem;
+  color: inherit;
+  border: 1px solid currentColor;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  background: transparent;
+  font: inherit;
+}
+.thiepn-app-switcher nav span {
+  font-weight: 600;
+}
+.thiepn-app-switcher a:focus-visible,
+.thiepn-app-switcher button:focus-visible {
+  outline: 3px solid Highlight;
+  outline-offset: 2px;
+}

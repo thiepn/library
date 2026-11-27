@@ -1,0 +1,3 @@
+# H25-U — Library reference integration
+
+Vendored public navigation v1 from Hub PR #215, commit 7eb78b91276dc8dd91ddd6d3f58d97ffd47d2f9e. The Library shell opens approved apps and owner actions in a separate tab. Account callback and Hub bridge pages are excluded. Reader-specific controls, saved state, reading progress, offline and Account contracts are unchanged. No private book identity, annotations, token or arbitrary return URL is transmitted. Existing owner deep links remain authoritative. Physical devices and offline browser integration still require observed acceptance. No merge or deployment authorized.
